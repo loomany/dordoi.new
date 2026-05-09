@@ -1,0 +1,47 @@
+/**
+ * Dordoi.help design tokens — source for spacing, radius, shadows, type scale, accents.
+ * Map landing-spec.json spacing/typography hints to these variables in components.
+ */
+:root {
+  /* Accent — blue / green SaaS */
+  --d-accent: oklch(0.55 0.14 250);
+  --d-accent-foreground: oklch(0.99 0 0);
+  --d-accent-muted: oklch(0.94 0.04 250);
+  --d-green: oklch(0.55 0.12 165);
+  --d-green-foreground: oklch(0.99 0 0);
+
+  /* Spacing scale (rem) */
+  --d-space-xs: 0.5rem;
+  --d-space-sm: 0.75rem;
+  --d-space-md: 1rem;
+  --d-space-lg: 1.5rem;
+  --d-space-xl: 2rem;
+  --d-space-2xl: 2.5rem;
+  --d-space-3xl: 3.5rem;
+  --d-space-section-y: 4.5rem;
+  --d-space-section-y-lg: 6rem;
+
+  /* Radius */
+  --d-radius-card: 1rem;
+  --d-radius-xl: 1.25rem;
+  --d-radius-2xl: 1.5rem;
+
+  /* Shadows */
+  --d-shadow-soft: 0 1px 2px oklch(0 0 0 / 0.04),
+    0 12px 40px oklch(0.2 0.02 250 / 0.08);
+  --d-shadow-mockup: 0 24px 80px oklch(0.25 0.04 250 / 0.12);
+
+  /* Typography scale */
+  --d-text-xs: 0.75rem;
+  --d-text-sm: 0.875rem;
+  --d-text-base: 1rem;
+  --d-text-lg: 1.125rem;
+  --d-text-xl: 1.25rem;
+  --d-text-2xl: clamp(1.35rem, 1.1rem + 0.9vw, 1.65rem);
+  --d-text-3xl: clamp(1.65rem, 1.2rem + 1.4vw, 2.1rem);
+  --d-text-4xl: clamp(2rem, 1.2rem + 2.6vw, 3rem);
+  --d-text-5xl: clamp(2.35rem, 1rem + 3.5vw, 3.75rem);
+  --d-leading-tight: 1.15;
+  --d-leading-snug: 1.3;
+  --d-tracking-tight: -0.02em;
+}

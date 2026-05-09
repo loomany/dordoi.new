@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "hero": {
+    "layout": "split",
+    "mockupPosition": "right",
+    "ctaOrder": ["buyer", "supplier", "buyerAgent"],
+    "messageKeys": {
+      "title": "Pages.home.hero.title",
+      "subtitle": "Pages.home.hero.subtitle",
+      "ctas": {
+        "buyer": "Pages.home.hero.ctaBuyer",
+        "supplier": "Pages.home.hero.ctaSupplier",
+        "buyerAgent": "Pages.home.hero.ctaBuyerAgent"
+      }
+    }
+  },
+  "sections": [
+    { "id": "valueProps", "variant": "three-columns" },
+    { "id": "audiences", "variant": "split-list" },
+    { "id": "howItWorks", "variant": "steps" },
+    { "id": "ecosystem", "variant": "highlight" },
+    { "id": "ctaBand", "variant": "conversion" }
+  ],
+  "mobileSectionOrder": [
+    "hero",
+    "valueProps",
+    "audiences",
+    "howItWorks",
+    "ecosystem",
+    "ctaBand"
+  ],
+  "typography": {
+    "heroTitle": "d-text-5xl",
+    "heroSubtitle": "d-text-xl",
+    "sectionTitle": "d-text-3xl",
+    "sectionLead": "d-text-lg",
+    "cardTitle": "d-text-xl",
+    "body": "d-text-base"
+  },
+  "spacing": {
+    "sectionY": "d-space-section-y",
+    "heroPaddingY": "d-space-section-y-lg",
+    "blockGap": "d-block-gap",
+    "cardPadding": "d-space-lg"
+  }
+}
