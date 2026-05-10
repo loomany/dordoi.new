@@ -38,7 +38,12 @@ export function baseUrl(): string {
   return normalizePublicSiteUrl(raw);
 }
 
-/** When false (default), pages emit noindex and robots.txt disallows crawlers. Set NEXT_PUBLIC_SITE_INDEXABLE=true to open for search engines. */
+/**
+ * When false (default), pages emit noindex and robots.txt disallows crawlers.
+ * Set `NEXT_PUBLIC_SITE_INDEXABLE=true` for production.
+ * `app/robots.ts` and `app/sitemap.ts` use `dynamic = "force-dynamic"` so this flag is read at request time there.
+ * Canonical/OG URLs from `baseUrl()` still use `NEXT_PUBLIC_APP_URL` — set it before `next build` on CI so prerendered metadata matches the public host.
+ */
 export function siteIndexable(): boolean {
   return process.env.NEXT_PUBLIC_SITE_INDEXABLE === "true";
 }

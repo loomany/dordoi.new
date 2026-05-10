@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { routing } from "@/i18n/routing";
+import {
+  hreflangAlternatesForPath,
+  ogAlternateLocalesForRouteLocale,
+  ogLocaleFromRouteLocale,
+} from "@/lib/hreflang";
 import { baseUrl, siteIndexable } from "@/lib/site";
 
 function noindexMetadata(): Pick<Metadata, "robots"> {
@@ -12,19 +16,32 @@ function noindexMetadata(): Pick<Metadata, "robots"> {
   };
 }
 
-/** hreflang / alternate URLs for every locale, same path under each locale prefix */
-export function localeAlternates(pathWithoutLocale: string): Record<string, string> {
-  const path =
-    pathWithoutLocale === "/" || pathWithoutLocale === ""
-      ? ""
-      : pathWithoutLocale.startsWith("/")
-        ? pathWithoutLocale
-        : `/${pathWithoutLocale}`;
-  const languages: Record<string, string> = {};
-  for (const locale of routing.locales) {
-    languages[locale] = `${baseUrl()}/${locale}${path}`;
-  }
-  return languages;
+function indexFollowMetadata(): Pick<Metadata, "robots"> {
+  return {
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true },
+    },
+  };
+}
+
+function defaultOgImages(): {
+  openGraphImages: NonNullable<NonNullable<Metadata["openGraph"]>["images"]>;
+  twitterImages: NonNullable<NonNullable<Metadata["twitter"]>["images"]>;
+} {
+  const root = baseUrl();
+  const ogImageUrl = new URL("/opengraph-image", root).toString();
+  const image = {
+    url: ogImageUrl,
+    width: 1200,
+    height: 630,
+    alt: "Dordoi.help",
+  };
+  return {
+    openGraphImages: [image],
+    twitterImages: [ogImageUrl],
+  };
 }
 
 export function buildPageMetadata(opts: {
@@ -32,6 +49,8 @@ export function buildPageMetadata(opts: {
   pathWithoutLocale: string;
   title: string;
   description: string;
+  /** Cabinet and other non-public UI — never index even when the site is indexable. */
+  privateArea?: boolean;
 }): Metadata {
   const path =
     opts.pathWithoutLocale === "/" || opts.pathWithoutLocale === ""
@@ -40,30 +59,38 @@ export function buildPageMetadata(opts: {
         ? opts.pathWithoutLocale
         : `/${opts.pathWithoutLocale}`;
   const selfUrl = `${baseUrl()}/${opts.locale}${path}`;
-  const languages = localeAlternates(opts.pathWithoutLocale === "" ? "/" : opts.pathWithoutLocale);
+  const languages = hreflangAlternatesForPath(
+    opts.pathWithoutLocale === "" ? "/" : opts.pathWithoutLocale,
+  );
+  const ogLocale = ogLocaleFromRouteLocale(opts.locale);
+  const { openGraphImages, twitterImages } = defaultOgImages();
 
   return {
-    ...(!siteIndexable() ? noindexMetadata() : {}),
+    ...(!siteIndexable() || opts.privateArea ? noindexMetadata() : indexFollowMetadata()),
     metadataBase: new URL(baseUrl()),
     title: opts.title,
     description: opts.description,
-    alternates: {
-      canonical: selfUrl,
-      languages,
-    },
+    alternates: opts.privateArea
+      ? { canonical: selfUrl }
+      : {
+          canonical: selfUrl,
+          languages,
+        },
     openGraph: {
       title: opts.title,
       description: opts.description,
       url: selfUrl,
-      siteName: "Dordoi.help",
+      siteName: "Dordoi Help",
       type: "website",
-      locale: opts.locale,
-      alternateLocale: routing.locales.filter((l) => l !== opts.locale),
+      locale: ogLocale,
+      alternateLocale: ogAlternateLocalesForRouteLocale(opts.locale),
+      images: openGraphImages,
     },
     twitter: {
       card: "summary_large_image",
       title: opts.title,
       description: opts.description,
+      images: twitterImages,
     },
   };
 }

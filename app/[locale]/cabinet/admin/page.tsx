@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: Props) {
     pathWithoutLocale: "/cabinet/admin",
     title: t("metaTitle"),
     description: t("metaDescription"),
+    privateArea: true,
   });
 }
 

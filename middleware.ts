@@ -46,10 +46,22 @@ function withoutInternalForwardedPort(request: NextRequest): NextRequest {
   });
 }
 
+function routeLocaleFromPathname(pathname: string): string {
+  if (pathname.startsWith("/api")) {
+    return "ru";
+  }
+  const m = pathname.match(/^\/(ru|kk|kg|uz|tj)(\/|$)/);
+  return m?.[1] ?? "ru";
+}
+
 export default async function middleware(request: NextRequest) {
   const req = withoutInternalForwardedPort(request);
-  const response = intlMiddleware(req);
-  return updateSession(req, response);
+  const routeLocale = routeLocaleFromPathname(req.nextUrl.pathname);
+  const headers = new Headers(req.headers);
+  headers.set("x-dordoi-route-locale", routeLocale);
+  const reqWithLocale = new NextRequest(req, { headers });
+  const response = intlMiddleware(reqWithLocale);
+  return updateSession(reqWithLocale, response);
 }
 
 export const config = {

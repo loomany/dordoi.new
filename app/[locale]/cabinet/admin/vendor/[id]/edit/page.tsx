@@ -44,6 +44,7 @@ export async function generateMetadata({ params }: Props) {
     pathWithoutLocale: "/cabinet/admin/vendor/edit",
     title: t("vendorEditMetaTitle"),
     description: t("vendorEditMetaDescription"),
+    privateArea: true,
   });
 }
 

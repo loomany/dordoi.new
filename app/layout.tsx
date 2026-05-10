@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
+import { htmlLangFromRouteLocale } from "@/lib/hreflang";
 import { baseUrl, siteIndexable } from "@/lib/site";
 
 const inter = Inter({
@@ -32,14 +34,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const routeLocale = headersList.get("x-dordoi-route-locale") ?? "ru";
+  const htmlLang = htmlLangFromRouteLocale(routeLocale);
+
   return (
     <html
-      lang="ru"
+      lang={htmlLang}
       suppressHydrationWarning
       className={`${inter.variable} ${geistMono.variable} min-h-dvh h-full antialiased`}
     >

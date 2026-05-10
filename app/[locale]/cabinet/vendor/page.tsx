@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: Props) {
     pathWithoutLocale: "/cabinet/vendor",
     title: t("metaTitle"),
     description: t("metaDescription"),
+    privateArea: true,
   });
 }
 
