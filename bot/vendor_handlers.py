@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from aiogram import Bot, F, Router
-from aiogram.enums import ParseMode
+from aiogram.enums import ChatAction, ParseMode
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import (
@@ -326,6 +326,12 @@ async def _complete_vendor_logo_step(
 ) -> None:
     """Сохраняет логотип в Storage и переводит на шаг описания; при ошибке отвечает в чат."""
     uid = message.chat.id
+    try:
+        await message.bot.send_chat_action(
+            chat_id=uid, action=ChatAction.UPLOAD_PHOTO
+        )
+    except Exception:
+        pass
     if len(body) > 10 * 1024 * 1024:
         await message.answer("⚠️ Файл больше 10 МБ — сожмите фото или пришлите другое.")
         return
@@ -596,7 +602,9 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             "🖼️ Шаг 4 — логотип для карточки магазина\n\n"
             "Пришлите одно фото с логотипом или вывеской "
             "(JPG, PNG или WebP с телефона).\n"
-            "Это фото покажем на витрине в каталоге."
+            "Форма кадра любая — вертикальное 9:16 и квадрат 1:1 одинаково подходят.\n"
+            "Это фото покажем на витрине в каталоге.\n\n"
+            "После отправки пару секунд сохраняем файл на сервер — дождитесь следующего сообщения."
         )
 
     @r.message(StateFilter(VendorOnboarding.logo), F.photo)
@@ -604,6 +612,12 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         if not message.from_user:
             return
         uid = message.chat.id
+        try:
+            await bot.send_chat_action(
+                chat_id=uid, action=ChatAction.UPLOAD_PHOTO
+            )
+        except Exception:
+            pass
         try:
             body, mime = await _download_photo_jpeg(bot, message.photo[-1])
         except Exception:
@@ -632,6 +646,12 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             )
             return
         uid = message.chat.id
+        try:
+            await bot.send_chat_action(
+                chat_id=uid, action=ChatAction.UPLOAD_DOCUMENT
+            )
+        except Exception:
+            pass
         try:
             buf = io.BytesIO()
             await bot.download(doc, destination=buf)
@@ -697,11 +717,14 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             "⚠️ На этом шаге нужно текстовое описание одним сообщением, без фото и стикеров."
         )
 
-    @r.callback_query(
-        StateFilter(VendorOnboarding.description_detail),
-        F.data == CB_DESC_DETAIL_SKIP,
-    )
+    @r.callback_query(F.data == CB_DESC_DETAIL_SKIP)
     async def cb_description_detail_skip(query: CallbackQuery, state: FSMContext) -> None:
+        if await state.get_state() != VendorOnboarding.description_detail.state:
+            await query.answer(
+                "Этот шаг уже не активен. Отправьте /start, чтобы продолжить анкету.",
+                show_alert=True,
+            )
+            return
         await query.answer()
         if not query.message:
             return
@@ -897,6 +920,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
     )
     async def cb_photos_done(query: CallbackQuery, state: FSMContext) -> None:
         if not query.message:
+            await query.answer()
             return
         data = await state.get_data()
         urls: list[str] = list(data.get("product_photo_urls") or [])
@@ -1060,13 +1084,22 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             "⚠️ Отправьте контакт кнопкой или напишите номер текстом в международном формате."
         )
 
-    @r.callback_query(StateFilter(VendorOnboarding.whatsapp_2), F.data == CB_WA2_SKIP)
+    @r.callback_query(F.data == CB_WA2_SKIP)
     async def cb_wa2_skip(query: CallbackQuery, state: FSMContext) -> None:
+        if await state.get_state() != VendorOnboarding.whatsapp_2.state:
+            await query.answer(
+                "Этот шаг уже не активен. Отправьте /start, чтобы продолжить анкету.",
+                show_alert=True,
+            )
+            return
         await query.answer()
         if not query.message:
             return
         await state.update_data(whatsapp_2=None)
-        await query.message.edit_reply_markup(reply_markup=None)
+        try:
+            await query.message.edit_reply_markup(reply_markup=None)
+        except Exception:
+            pass
         await state.set_state(VendorOnboarding.instagram)
         await query.message.answer(
             "📷 Instagram (необязательно)\n\n"
@@ -1112,13 +1145,22 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             reply_markup=_skip_kb(CB_IG_SKIP),
         )
 
-    @r.callback_query(StateFilter(VendorOnboarding.instagram), F.data == CB_IG_SKIP)
+    @r.callback_query(F.data == CB_IG_SKIP)
     async def cb_ig_skip(query: CallbackQuery, state: FSMContext) -> None:
+        if await state.get_state() != VendorOnboarding.instagram.state:
+            await query.answer(
+                "Этот шаг уже не активен. Отправьте /start, чтобы продолжить анкету.",
+                show_alert=True,
+            )
+            return
         await query.answer()
         if not query.message:
             return
         await state.update_data(instagram_url=None)
-        await query.message.edit_reply_markup(reply_markup=None)
+        try:
+            await query.message.edit_reply_markup(reply_markup=None)
+        except Exception:
+            pass
         await state.set_state(VendorOnboarding.telegram_channel)
         await query.message.answer(
             _TELEGRAM_CHANNEL_STEP_PROMPT + "\n\nИли пропустите:",
@@ -1140,13 +1182,22 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             reply_markup=_skip_kb(CB_TG_SKIP),
         )
 
-    @r.callback_query(StateFilter(VendorOnboarding.telegram_channel), F.data == CB_TG_SKIP)
+    @r.callback_query(F.data == CB_TG_SKIP)
     async def cb_tg_skip(query: CallbackQuery, state: FSMContext) -> None:
+        if await state.get_state() != VendorOnboarding.telegram_channel.state:
+            await query.answer(
+                "Этот шаг уже не активен. Отправьте /start, чтобы продолжить анкету.",
+                show_alert=True,
+            )
+            return
         await query.answer()
         if not query.message:
             return
         await state.update_data(telegram_url=None)
-        await query.message.edit_reply_markup(reply_markup=None)
+        try:
+            await query.message.edit_reply_markup(reply_markup=None)
+        except Exception:
+            pass
         await state.set_state(VendorOnboarding.samples)
         await query.message.answer(
             _SAMPLES_STEP_PROMPT,
@@ -1333,11 +1384,11 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             if "unique" in err or "duplicate" in err:
                 await message.answer(
                     "⚠️ Этот номер или профиль уже есть в базе Dordoi.help.\n"
-                    "Если это ошибка — напишите в поддержку."
+                    "Если это ошибка — напишите @loomany."
                 )
             else:
                 await message.answer(
-                    "⚠️ Не удалось сохранить заявку. Попробуйте позже или напишите в поддержку."
+                    "⚠️ Не удалось сохранить заявку. Попробуйте позже или напишите @loomany."
                 )
             return
 

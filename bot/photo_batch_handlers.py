@@ -248,6 +248,7 @@ def create_photo_batch_router(
     )
     async def cb_finish(query: CallbackQuery, state: FSMContext) -> None:
         if not query.message:
+            await query.answer()
             return
         data = await state.get_data()
         saved = int(data.get("saved_count") or 0)
