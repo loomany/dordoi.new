@@ -87,7 +87,8 @@ export function CatalogCardPhotoRail({ urls, altBase, className }: Props) {
           ref={scrollerRef}
           className={cn(
             "flex h-full w-full min-w-0 snap-x snap-mandatory overflow-y-hidden overscroll-x-contain scroll-smooth",
-            multi ? "overflow-x-auto touch-pan-x" : "overflow-x-hidden",
+            /* pan-x: свайп по фото между снимками; pan-y: скролл страницы вверх/вниз с той же области (touch-pan-x ломал вертикаль). */
+            multi ? "overflow-x-auto touch-[pan-x_pan-y]" : "overflow-x-hidden",
             "[-ms-overflow-style:none] [scrollbar-width:none]",
             "[&::-webkit-scrollbar]:hidden",
           )}
