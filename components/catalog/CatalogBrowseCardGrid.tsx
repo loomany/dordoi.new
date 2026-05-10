@@ -24,9 +24,8 @@ type Props = {
 };
 
 /**
- * Синхрон сворачивания только там, где карточки стоят **в одном ряду сетки**:
- * на `md+` это пары (0–1), (2–3), … — общая высота ряда.
- * На мобилке (`grid-cols-1`) у каждой карточки свой «ряд» — состояние **не общее** с соседом сверху/снизу.
+ * Состояние свёрнутости — **по индексу карточки** (стабильно при SSR и после гидрации).
+ * Раньше на мобилке после гидрации менялся ключ `floor(i/2)` → `i`, из‑за этого стейт и тоггл расходились.
  */
 export function CatalogBrowseCardGrid({
   cards,
@@ -44,29 +43,19 @@ export function CatalogBrowseCardGrid({
 
   const [rowCollapsed, setRowCollapsed] = useState<Record<number, boolean>>({});
 
-  const collapseRowKey = useCallback(
-    (index: number) => (isMobile ? index : Math.floor(index / 2)),
-    [isMobile],
-  );
-
   const collapsedForIndex = useCallback(
     (index: number) => {
-      const row = collapseRowKey(index);
-      if (Object.prototype.hasOwnProperty.call(rowCollapsed, row)) {
-        return rowCollapsed[row]!;
+      if (Object.prototype.hasOwnProperty.call(rowCollapsed, index)) {
+        return rowCollapsed[index]!;
       }
       return isMobile ? index >= 1 : index >= 2;
     },
-    [rowCollapsed, isMobile, collapseRowKey],
+    [rowCollapsed, isMobile],
   );
 
-  const setCollapsedForRowOfIndex = useCallback(
-    (index: number, next: boolean) => {
-      const row = collapseRowKey(index);
-      setRowCollapsed((prev) => ({ ...prev, [row]: next }));
-    },
-    [collapseRowKey],
-  );
+  const setCollapsedForRowOfIndex = useCallback((index: number, next: boolean) => {
+    setRowCollapsed((prev) => ({ ...prev, [index]: next }));
+  }, []);
 
   return (
     <section

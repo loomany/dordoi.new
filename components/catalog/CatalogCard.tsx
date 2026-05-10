@@ -211,12 +211,13 @@ export function CatalogCard({
   const collapseToggle = canCollapse ? (
     <button
       type="button"
+      onPointerDown={(e) => e.stopPropagation()}
       onClick={onToggleCollapsed}
       aria-expanded={!collapsed}
       aria-label={collapsed ? expandLabel : collapseLabel}
       title={collapsed ? expandLabel : collapseLabel}
       className={cn(
-        "flex size-9 items-center justify-center rounded-full border bg-card/95 shadow-sm ring-1 ring-black/[0.03] transition-colors",
+        "touch-manipulation flex size-9 items-center justify-center rounded-full border bg-card/95 shadow-sm ring-1 ring-black/[0.03] transition-colors",
         "border-border/80 text-muted-foreground",
         "hover:border-[color-mix(in_oklch,var(--d-card-accent)_38%,transparent)] hover:text-[var(--d-card-accent)]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklch,var(--d-card-accent)_40%,transparent)]",
@@ -411,19 +412,17 @@ export function CatalogCard({
     </>
   );
 
-  // Внешняя обводка карточки — синяя (`--d-card-accent`), независимо от `--primary` (зелёного бренда).
-  // У всех карточек в покое — лёгкая синяя рамка; на hover — более выраженная + shadow.
+  // Рамка: сплошные токены (см. tokens.css) — на мобильном WebKit лучше, чем `color-mix` + тонкий border.
+  // Тень: на <lg компактная, иначе длинный blur на высокой карточке выглядит как «растянутая» обводка.
   const cardOutline =
-    "border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] " +
-    "hover:border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] " +
-    "hover:ring-1 hover:ring-[color-mix(in_oklch,var(--d-card-accent)_15%,transparent)] " +
-    "hover:shadow-md";
+    "border border-solid border-[var(--d-catalog-card-border)] " +
+    "hover:border-[var(--d-catalog-card-border-hover)] hover:shadow-md";
   const cardFocusRing =
-    "focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklch,var(--d-card-accent)_40%,transparent)]";
+    "focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.14_250_/_0.35)]";
 
   const articleClass = cn(
-    "relative flex rounded-[var(--d-radius-2xl)] border bg-card transition-all",
-    "p-5 shadow-[var(--d-shadow-soft)] sm:p-6",
+    "relative flex rounded-[var(--d-radius-2xl)] bg-card transition-[box-shadow,border-color]",
+    "p-5 shadow-[var(--d-catalog-card-shadow-mobile)] sm:p-6 lg:shadow-[var(--d-shadow-soft)]",
     cardOutline,
     href && cn("group outline-none", cardFocusRing),
     className,
