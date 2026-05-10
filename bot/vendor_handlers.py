@@ -266,6 +266,11 @@ async def _download_photo_jpeg(bot: Bot, photo) -> tuple[bytes, str]:
     return body, "image/jpeg"
 
 
+def _phone_digits_for_storage(raw: str) -> str:
+    """Как в веб-логине: в БД только цифры для совпадения с OTP."""
+    return re.sub(r"\D", "", raw)
+
+
 def create_router(settings: "Settings", repo: VendorRepository) -> Router:
     r = Router()
     bucket = settings.vendor_media_bucket
@@ -326,8 +331,10 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.phone)
         await query.message.answer(
-            "Этот номер (WhatsApp) будет использоваться для входа в админку.\n"
-            "Поделитесь контактом кнопкой ниже.",
+            "Этот номер (WhatsApp) будет использоваться для входа в админку.\n\n"
+            "Как указать номер:\n"
+            "• нажмите «Поделиться контактом», если это тот же номер, что и WhatsApp;\n"
+            "• или введите номер вручную сообщением — если Telegram и WhatsApp на разных телефонах.",
             reply_markup=_contact_kb(),
         )
 
@@ -339,7 +346,33 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         if not phone:
             await message.answer("Не удалось прочитать номер. Попробуйте снова.")
             return
-        await state.update_data(phone_number=phone)
+        digits = _phone_digits_for_storage(phone)
+        if len(digits) < 10:
+            await message.answer("Не удалось распознать номер. Введите его вручную текстом.")
+            return
+        await state.update_data(phone_number=digits)
+        await state.set_state(VendorOnboarding.store_name)
+        await message.answer(
+            "Название магазина:",
+            reply_markup=ReplyKeyboardRemove(),
+        )
+
+    @r.message(StateFilter(VendorOnboarding.phone), F.text)
+    async def step_phone_text(message: Message, state: FSMContext) -> None:
+        if not message.text:
+            return
+        validated = validate_phone(message.text.strip())
+        if not validated:
+            await message.answer(
+                "Неверный формат. Укажите номер как в WhatsApp, например:\n"
+                "+7 778 816 6661 или +996 555 123456",
+            )
+            return
+        digits = _phone_digits_for_storage(validated)
+        if len(digits) < 10:
+            await message.answer("Слишком короткий номер. Попробуйте снова.")
+            return
+        await state.update_data(phone_number=digits)
         await state.set_state(VendorOnboarding.store_name)
         await message.answer(
             "Название магазина:",
@@ -348,7 +381,9 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
 
     @r.message(StateFilter(VendorOnboarding.phone))
     async def step_phone_invalid(message: Message) -> None:
-        await message.answer("Отправьте контакт через кнопку «Поделиться контактом».")
+        await message.answer(
+            "Отправьте номер текстом или нажмите «Поделиться контактом».",
+        )
 
     @r.message(StateFilter(VendorOnboarding.store_name), F.text)
     async def step_store_name(message: Message, state: FSMContext) -> None:
