@@ -12,6 +12,7 @@ import { getTranslations } from "next-intl/server";
 
 import { VendorAboutExpandable } from "@/components/cabinet/VendorAboutExpandable";
 import { cabinetShell } from "@/components/cabinet/cabinet-tokens";
+import { formatPhoneDisplay } from "@/lib/phone";
 import type { VendorShopSelf } from "@/lib/vendor/vendor-shop";
 import { cn } from "@/lib/utils";
 
@@ -227,7 +228,7 @@ export async function VendorPendingReviewDashboard({
                 {t("pendingLoginPhone")}
               </p>
               <p className="mt-1 font-mono text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                {shop.phone_number.trim()}
+                {formatPhoneDisplay(shop.phone_number.trim())}
               </p>
             </div>
           ) : null}

@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CabinetChrome } from "@/components/cabinet/CabinetChrome";
 import { cabinetAreaForProfile } from "@/lib/auth/cabinet-routing";
 import { getSessionProfile } from "@/lib/auth/session-profile";
+import { formatPhoneDisplay } from "@/lib/phone";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -40,7 +41,7 @@ export default async function CabinetLayout({ children, params }: Props) {
           : t("roleBadgeBuyer");
 
   const phoneLine = profile.phone
-    ? t("signedInAs", { phone: profile.phone })
+    ? t("signedInAs", { phone: formatPhoneDisplay(profile.phone) })
     : null;
 
   return (
