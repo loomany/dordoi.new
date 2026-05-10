@@ -1,10 +1,8 @@
 import "server-only";
 
-import { linkVendorProfileForPhone } from "@/lib/auth/link-vendor-profile";
-import { digitsOnly } from "@/lib/phone";
-import { createAdminClient } from "@/lib/supabase/admin";
 import type { VendorModerationStatus } from "@/lib/vendor/status";
 import { isVendorModerationStatus } from "@/lib/vendor/status";
+import { fetchVendorRowForAuthenticatedUser } from "@/lib/vendor/vendor-session-access";
 import { createClient } from "@/utils/supabase/server";
 
 export type VendorShopSelf = {
@@ -26,38 +24,8 @@ export async function getVendorShopForSession(): Promise<VendorShopSelf | null> 
     return null;
   }
 
-  const selectMine = () =>
-    supabase
-      .from("vendors")
-      .select(
-        "id, store_name, location_row, logo_url, status, language, created_at",
-      )
-      .eq("user_id", user.id)
-      .maybeSingle();
-
-  let { data: row, error } = await selectMine();
-
+  const row = await fetchVendorRowForAuthenticatedUser(user.id);
   if (!row) {
-    try {
-      const admin = createAdminClient();
-      const { data: profile } = await admin
-        .from("profiles")
-        .select("phone")
-        .eq("id", user.id)
-        .maybeSingle();
-      const phoneDigits = profile?.phone
-        ? digitsOnly(String(profile.phone))
-        : "";
-      if (phoneDigits) {
-        await linkVendorProfileForPhone(admin, user.id, phoneDigits);
-      }
-    } catch (e) {
-      console.error("[vendor-shop] ensure vendor link by phone", e);
-    }
-    ({ data: row, error } = await selectMine());
-  }
-
-  if (error || !row) {
     return null;
   }
 

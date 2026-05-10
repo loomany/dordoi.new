@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { AppRole } from "@/lib/auth/roles";
+import { fetchVendorRowForAuthenticatedUser } from "@/lib/vendor/vendor-session-access";
 import { createClient } from "@/utils/supabase/server";
 
 export type SessionProfile = {
@@ -37,18 +38,17 @@ export async function getSessionProfile(): Promise<SessionProfile | null> {
 
   const role = (profile.role as AppRole) ?? "buyer";
 
-  const { data: vendor } = await supabase
-    .from("vendors")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const vendorRow = await fetchVendorRowForAuthenticatedUser(
+    user.id,
+    profile.phone ?? null,
+  );
 
   return {
     userId: user.id,
     phone: profile.phone ?? null,
     name: profile.name ?? null,
     role,
-    vendorId: vendor?.id ?? null,
+    vendorId: vendorRow?.id ?? null,
   };
 }
 
