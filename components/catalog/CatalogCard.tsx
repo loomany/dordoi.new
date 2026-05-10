@@ -300,10 +300,10 @@ export function CatalogCard({
       ) : null}
       <h2
         className={cn(
-          "text-lg font-bold leading-tight text-card-foreground",
-          "text-center",
+          "text-center text-sm font-bold leading-tight text-card-foreground lg:text-lg",
           !hideAvatar && "pl-[4.25rem]" /* size-14 + gap-3 */,
-          hideAvatar && topButtonsCount > 0 && cn(topPadSymmetric, "lg:px-0"),
+          /* Симметричный px сужал заголовок вдвойне с родительским pr под кнопки — на <lg оставляем только отступ справа у обёртки. */
+          hideAvatar && topButtonsCount > 0 && "max-lg:px-0 lg:px-0",
         )}
       >
         {title}
@@ -313,7 +313,7 @@ export function CatalogCard({
           className={cn(
             "mt-1.5 text-center text-sm font-semibold leading-snug text-muted-foreground",
             !hideAvatar && "pl-[4.25rem] lg:pl-0",
-            hideAvatar && topButtonsCount > 0 && cn(topPadSymmetric, "lg:px-0"),
+            hideAvatar && topButtonsCount > 0 && "max-lg:px-0 lg:px-0",
           )}
         >
           {headingCategory}
@@ -375,7 +375,7 @@ export function CatalogCard({
       ) : (
         <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
           <div className={cn("relative w-full min-w-0", topButtonsCount > 0 && topPadSymmetric)}>
-            <h2 className="text-center text-base font-bold leading-tight text-card-foreground sm:text-lg">
+            <h2 className="text-center text-sm font-bold leading-tight text-card-foreground sm:text-base lg:text-lg">
               {title}
             </h2>
             {headingCategory ? (
