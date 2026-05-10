@@ -430,7 +430,8 @@ export function CatalogCard({
 
   const shellClass = cn(
     articleClass,
-    "flex h-full min-h-0 w-full flex-col",
+    /* Без `h-full`: в grid с высоким соседом рамка не должна тянуться на всю строку после сворачивания. */
+    "flex min-h-0 w-full flex-col",
   );
 
   if (href) {
@@ -440,7 +441,7 @@ export function CatalogCard({
         data-collapsed={collapsed ? "true" : "false"}
         className={shellClass}
       >
-        <div className="flex min-h-0 flex-1 flex-col">{body}</div>
+        <div className="flex min-h-0 flex-col">{body}</div>
       </Link>
     );
   }
@@ -450,7 +451,7 @@ export function CatalogCard({
       data-collapsed={collapsed ? "true" : "false"}
       className={shellClass}
     >
-      <div className="flex min-h-0 flex-1 flex-col">{body}</div>
+      <div className="flex min-h-0 flex-col">{body}</div>
     </article>
   );
 }

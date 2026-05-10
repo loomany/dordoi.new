@@ -59,7 +59,7 @@ export function CatalogBrowseCardGrid({
 
   return (
     <section
-      className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-stretch"
+      className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start"
       aria-label={gridAriaLabel}
     >
       {cards.map((c, index) => {
@@ -80,9 +80,9 @@ export function CatalogBrowseCardGrid({
         const defaultCollapsedMobile = index >= 1;
 
         return (
-          <div key={c.id} className="flex min-h-0 h-full flex-col">
+          <div key={c.id} className="flex min-h-0 w-full min-w-0 flex-col">
           <CatalogCard
-            className="flex min-h-0 flex-1"
+            className="flex min-h-0 w-full"
             href={c.href}
             title={c.title}
             tagline={c.tagline ?? undefined}
