@@ -4,7 +4,7 @@ import asyncio
 import io
 import logging
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from aiogram import Bot, F, Router
@@ -113,67 +113,6 @@ def build_seller_confirmation_md2(phone: str, cabinet_url: str) -> str:
         f"Ваш логин для входа: {p}\n"
         f"Ссылка на кабинет: [{link_title}]({u})"
     )
-
-
-def build_admin_notification_text(
-    vendor_id: Any,
-    telegram_chat_id: int,
-    row: dict[str, Any],
-    fsm_data: dict[str, Any],
-) -> str:
-    """Полная копия данных для администратора (plain text)."""
-    lines: list[str] = [
-        "📋 Новая заявка продавца (таблица vendors)",
-        f"id заявки: {vendor_id}",
-        f"telegram_chat_id: {telegram_chat_id}",
-        f"язык: {row.get('language')}",
-        f"телефон (логин): {row.get('phone_number')}",
-        "",
-        f"магазин: {row.get('store_name')}",
-        f"торговый ряд: {row.get('location_row')}",
-        f"описание: {row.get('description')}",
-        f"категории: {', '.join(row.get('categories') or [])}",
-        f"мин. партия: {row.get('min_batch')}",
-        f"оплата: {row.get('payment_methods')}",
-        f"помощь с доставкой: {row.get('delivery_help')}",
-        f"образцы: {row.get('samples_available')}",
-        f"возврат брака: {row.get('returns_policy')}",
-        "",
-        "— Медиа —",
-        f"логотип: {row.get('logo_url')}",
-        f"фото контейнера: {row.get('container_photo_url')}",
-    ]
-    photos = row.get("product_photos") or fsm_data.get("product_photo_urls") or []
-    if photos:
-        lines.append("фото товаров:")
-        for i, url in enumerate(photos, 1):
-            lines.append(f"  {i}. {url}")
-    else:
-        lines.append("фото товаров: —")
-
-    lines.extend(
-        [
-            "",
-            "— Контакты —",
-            f"WhatsApp 1: {row.get('whatsapp_1')}",
-            f"WhatsApp 2: {row.get('whatsapp_2') or '—'}",
-            f"Instagram: {row.get('instagram_url') or '—'}",
-            f"Telegram: {row.get('telegram_url') or '—'}",
-            "",
-            f"статус в БД: {row.get('status')}",
-        ]
-    )
-    return "\n".join(lines)
-
-
-async def _send_admin_text_chunks(bot: Bot, chat_id: str | int, text: str) -> None:
-    """Отправка текста администратору с учётом лимита Telegram 4096 символов."""
-    max_len = 4096
-    if len(text) <= max_len:
-        await bot.send_message(chat_id=chat_id, text=text)
-        return
-    for i in range(0, len(text), max_len):
-        await bot.send_message(chat_id=chat_id, text=text[i : i + max_len])
 
 
 def _lock(d: dict[int, asyncio.Lock], uid: int) -> asyncio.Lock:
@@ -1118,12 +1057,6 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         saved_row = saved if isinstance(saved, dict) else row
         phone_login = str(saved_row.get("phone_number") or row["phone_number"])
         seller_text = build_seller_confirmation_md2(phone_login, st.vendor_login_url)
-        admin_text = build_admin_notification_text(
-            saved_row.get("id", "?"),
-            uid,
-            saved_row,
-            data,
-        )
 
         try:
             await message.answer(
@@ -1139,21 +1072,6 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
                 f"Личный кабинет: {st.vendor_login_url}",
                 reply_markup=ReplyKeyboardRemove(),
             )
-
-        try:
-            await _send_admin_text_chunks(
-                message.bot, st.admin_notify_chat, admin_text
-            )
-        except Exception:
-            _log.exception(
-                "Admin notify failed (chat=%s)", st.admin_notify_chat
-            )
-
-        for aid in st.admin_telegram_ids:
-            try:
-                await _send_admin_text_chunks(message.bot, aid, admin_text)
-            except Exception:
-                _log.exception("Admin notify failed (chat_id=%s)", aid)
 
         _photo_locks.pop(uid, None)
         _cat_locks.pop(uid, None)
