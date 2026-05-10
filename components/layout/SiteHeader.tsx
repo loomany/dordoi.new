@@ -1,5 +1,6 @@
 "use client";
 
+import type { User } from "@supabase/supabase-js";
 import type { LucideIcon } from "lucide-react";
 import {
   ChevronDown,
@@ -22,8 +23,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { AuthDialog } from "@/components/auth/AuthDialog";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/client";
 
 const locales = routing.locales;
 
@@ -161,6 +164,21 @@ export function SiteHeader() {
   const tb = useTranslations("brand");
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const nav: {
     href: string;
@@ -259,12 +277,22 @@ export function SiteHeader() {
               pathname={pathname}
               langNavLabel={th("langNav")}
             />
-            <Link
-              href="/contact"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {th("ctaStart")}
-            </Link>
+            {user ? (
+              <Link
+                href="/cabinet"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {th("ctaAccount")}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAuthOpen(true)}
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {th("ctaStart")}
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
@@ -273,15 +301,26 @@ export function SiteHeader() {
               pathname={pathname}
               langNavLabel={th("langNav")}
             />
-            <Link
-              href="/contact"
-              className="inline-flex shrink-0 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-900/[0.04] transition-colors hover:border-gray-300 hover:bg-gray-50"
-            >
-              {th("ctaStart")}
-            </Link>
+            {user ? (
+              <Link
+                href="/cabinet"
+                className="inline-flex shrink-0 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-900/[0.04] transition-colors hover:border-gray-300 hover:bg-gray-50"
+              >
+                {th("ctaAccount")}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAuthOpen(true)}
+                className="inline-flex shrink-0 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-900/[0.04] transition-colors hover:border-gray-300 hover:bg-gray-50"
+              >
+                {th("ctaStart")}
+              </button>
+            )}
           </div>
         </div>
       </div>
+      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
     </header>
   );
 }

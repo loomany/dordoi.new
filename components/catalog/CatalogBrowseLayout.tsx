@@ -54,9 +54,9 @@ export async function CatalogBrowseLayout() {
   });
 
   return (
-    <div className="bg-gray-50/80 pb-16 pt-10 sm:pt-12">
+    <div className="bg-gray-50/80 pb-12 pt-5 sm:pt-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="space-y-6">
+        <div className="space-y-4">
             <nav aria-label={t("breadcrumbNav")} className="text-xs text-gray-400">
               <ol className="flex flex-wrap items-center gap-1.5">
                 <li>

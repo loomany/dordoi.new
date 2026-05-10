@@ -1,0 +1,4 @@
+# Telegram онбординг (Python). Установка: pip install -r bot/requirements.txt
+aiogram>=3.4,<4
+supabase>=2.10,<3
+python-dotenv>=1.0
