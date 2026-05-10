@@ -47,6 +47,7 @@ CB_LANG_KG = "vo:l:kg"
 CB_CAT_PREFIX = "vo:g:"
 CB_CAT_DONE = "vo:cat_done"
 CB_PHOTOS_DONE = "vo:photos_done"
+CB_PHOTOS_MORE = "vo:photos_more"
 CB_PAY_CASH = "vo:pay:cash"
 CB_PAY_TRANSFER = "vo:pay:transfer"
 CB_PAY_BOTH = "vo:pay:both"
@@ -179,6 +180,29 @@ def _contact_kb() -> ReplyKeyboardMarkup:
         resize_keyboard=True,
         one_time_keyboard=True,
     )
+
+
+def _product_photos_kb(saved_count: int) -> InlineKeyboardMarkup:
+    """После каждого сохранённого фото — действия внизу чата, без прокрутки наверх."""
+    rows: list[list[InlineKeyboardButton]] = []
+    if saved_count < 15:
+        rows.append(
+            [
+                InlineKeyboardButton(
+                    text="Добавить ещё фото",
+                    callback_data=CB_PHOTOS_MORE,
+                )
+            ]
+        )
+    rows.append(
+        [
+            InlineKeyboardButton(
+                text="Завершить загрузку фото",
+                callback_data=CB_PHOTOS_DONE,
+            )
+        ]
+    )
+    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 def _category_kb(indices: list[int]) -> InlineKeyboardMarkup:
@@ -598,16 +622,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             "(можно по одному или несколько в одном альбоме).\n\n"
             "💡 Чем понятнее фото — тем проще покупателю решиться на контакт.\n"
             "Когда загрузите всё нужное — нажмите «Завершить загрузку фото».",
-            reply_markup=InlineKeyboardMarkup(
-                inline_keyboard=[
-                    [
-                        InlineKeyboardButton(
-                            text="Завершить загрузку фото",
-                            callback_data=CB_PHOTOS_DONE,
-                        )
-                    ]
-                ]
-            ),
+            reply_markup=_product_photos_kb(0),
         )
 
     @r.message(StateFilter(VendorOnboarding.product_photos), F.photo)
@@ -621,7 +636,8 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             if len(urls) >= 15:
                 await message.answer(
                     "📎 Уже загружено максимум 15 фото.\n"
-                    "Нажмите «Завершить загрузку фото», чтобы перейти дальше."
+                    "Нажмите «Завершить загрузку фото», чтобы перейти дальше.",
+                    reply_markup=_product_photos_kb(15),
                 )
                 return
             try:
@@ -649,7 +665,28 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
                 return
             urls.append(pub)
             await state.update_data(product_photo_urls=urls)
-            await message.answer(f"✅ Сохранено фото {len(urls)} из 15. Можете добавить ещё или завершить загрузку.")
+            await message.answer(
+                f"✅ Сохранено фото {len(urls)} из 15. Можете добавить ещё или завершить загрузку.",
+                reply_markup=_product_photos_kb(len(urls)),
+            )
+
+    @r.callback_query(
+        StateFilter(VendorOnboarding.product_photos), F.data == CB_PHOTOS_MORE
+    )
+    async def cb_photos_more_hint(query: CallbackQuery, state: FSMContext) -> None:
+        data = await state.get_data()
+        urls: list[str] = list(data.get("product_photo_urls") or [])
+        left = 15 - len(urls)
+        if left <= 0:
+            await query.answer(
+                "Уже 15 фото — завершите загрузку кнопкой ниже.",
+                show_alert=True,
+            )
+            return
+        await query.answer(
+            f"Отправьте следующее фото сообщением в чат. Ещё можно до {left} шт.",
+            show_alert=True,
+        )
 
     @r.callback_query(
         StateFilter(VendorOnboarding.product_photos), F.data == CB_PHOTOS_DONE
