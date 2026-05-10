@@ -65,7 +65,12 @@ def load_settings() -> Settings:
     site = os.getenv("NEXT_PUBLIC_APP_URL", "").strip().rstrip("/")
     login_url = os.getenv("VENDOR_LOGIN_URL", "").strip()
     if not login_url:
-        login_url = f"{site}/login" if site else "https://example.com/login"
+        login_url = f"{site}/login" if site else ""
+    if not login_url:
+        raise RuntimeError(
+            "Задайте NEXT_PUBLIC_APP_URL (например https://dordoi.help) или полную "
+            "VENDOR_LOGIN_URL в .env / .env.local — иначе в боте не будет корректной ссылки на вход."
+        )
 
     notify = os.getenv("ADMIN_NOTIFY_CHAT", "@loomany").strip()
     if not notify:
