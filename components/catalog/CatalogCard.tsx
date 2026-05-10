@@ -364,8 +364,8 @@ export function CatalogCard({
             ) : null}
           </div>
 
-          <div className="flex w-full shrink-0 flex-col lg:h-full lg:min-h-0 lg:max-w-[min(100%,260px)]">
-            <CatalogCardPhotoRail urls={photoUrls!} altBase={title} className="w-full" />
+          <div className="flex w-full min-w-0 shrink-0 flex-col lg:h-full lg:min-h-0 lg:max-w-[min(100%,260px)]">
+            <CatalogCardPhotoRail urls={photoUrls!} altBase={title} className="w-full min-w-0" />
             {/* На lg лишняя высота ряда уходит сюда — низ карточки совпадает у соседей */}
             <div className="flex shrink-0 flex-col justify-end pt-3 lg:min-h-0 lg:flex-1">
               <div className="flex shrink-0 justify-center">{renderCtaLink("justify-center")}</div>

@@ -73,26 +73,29 @@ export function CatalogCardPhotoRail({ urls, altBase, className }: Props) {
 
   const showArrows = urls.length > 1;
 
+  const multi = urls.length > 1;
+
   return (
     <div
-      className={cn("relative w-full shrink-0", className)}
+      className={cn("relative w-full min-w-0 shrink-0 overflow-hidden", className)}
       role="group"
       aria-label={altBase}
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="relative aspect-[9/16] w-full overflow-hidden rounded-xl border border-border/80 bg-muted shadow-inner">
+      <div className="relative aspect-[9/16] w-full min-w-0 overflow-hidden rounded-xl border border-border/80 bg-muted shadow-inner">
         <div
           ref={scrollerRef}
           className={cn(
-            "flex h-full w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain scroll-smooth",
-            "touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none]",
+            "flex h-full w-full min-w-0 snap-x snap-mandatory overflow-y-hidden overscroll-x-contain scroll-smooth",
+            multi ? "overflow-x-auto touch-pan-x" : "overflow-x-hidden",
+            "[-ms-overflow-style:none] [scrollbar-width:none]",
             "[&::-webkit-scrollbar]:hidden",
           )}
         >
           {urls.map((url, i) => (
             <div
               key={`${url}-${i}`}
-              className="h-full min-w-full shrink-0 snap-center snap-always"
+              className="h-full w-full shrink-0 grow-0 basis-full snap-center snap-always"
               aria-roledescription="slide"
               aria-label={`${i + 1} / ${urls.length}`}
             >
@@ -100,7 +103,7 @@ export function CatalogCardPhotoRail({ urls, altBase, className }: Props) {
               <img
                 src={url}
                 alt=""
-                className="h-full w-full object-cover"
+                className="pointer-events-none h-full w-full select-none object-cover [-webkit-user-drag:none]"
                 loading={i === 0 ? "eager" : "lazy"}
                 decoding="async"
                 draggable={false}
