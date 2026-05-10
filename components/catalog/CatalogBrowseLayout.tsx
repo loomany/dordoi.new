@@ -2,7 +2,6 @@ import { getTranslations } from "next-intl/server";
 import { ChevronDown, LayoutGrid, Search } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { CatalogCard } from "@/components/catalog/CatalogCard";
-import { FeaturedWidget } from "@/components/catalog/FeaturedWidget";
 
 const SAMPLE_IDS = ["0", "1", "2", "3", "4", "5"] as const;
 
@@ -16,7 +15,7 @@ const SAMPLE_PROFILE_HREFS: (string | undefined)[] = [
   undefined,
 ];
 
-/** Full catalog browse chrome: header, filters, featured widget, responsive card grid. */
+/** Full catalog browse chrome: header, filters, responsive card grid. */
 export async function CatalogBrowseLayout() {
   const t = await getTranslations("Pages.catalogBrowse");
 
@@ -30,8 +29,7 @@ export async function CatalogBrowseLayout() {
   return (
     <div className="bg-gray-50/80 pb-16 pt-10 sm:pt-12">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-10">
-          <div className="min-w-0 flex-1 space-y-6">
+        <div className="space-y-6">
             <nav aria-label={t("breadcrumbNav")} className="text-xs text-gray-400">
               <ol className="flex flex-wrap items-center gap-1.5">
                 <li>
@@ -79,11 +77,6 @@ export async function CatalogBrowseLayout() {
                 <ChevronDown className="size-4 text-gray-400" aria-hidden />
               </button>
             </div>
-          </div>
-
-          <div className="w-full shrink-0 lg:w-[min(100%,22rem)] lg:max-w-sm">
-            <FeaturedWidget />
-          </div>
         </div>
 
         <section
