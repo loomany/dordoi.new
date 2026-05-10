@@ -43,7 +43,10 @@ def load_settings() -> Settings:
         "NEXT_PUBLIC_SUPABASE_URL", ""
     ).strip()
     key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
-    admins = _parse_admin_ids(os.getenv("ADMIN_TELEGRAM_IDS"))
+    admins_raw = os.getenv("ADMIN_TELEGRAM_IDS") or os.getenv(
+        "TELEGRAM_ADMIN_IDS",
+    )
+    admins = _parse_admin_ids(admins_raw)
 
     missing = [
         name

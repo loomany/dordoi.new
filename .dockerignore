@@ -1,0 +1,9 @@
+# Контекст только для Dockerfile.bot (бот не использует фронтенд).
+node_modules
+.next
+.git
+.turbo
+*.log
+.env
+.env.*
+!.env.example

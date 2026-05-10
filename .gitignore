@@ -41,6 +41,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Supabase CLI (локальный кэш)
+supabase/.temp/
+
 # Python bot
 bot/.venv/
 bot/__pycache__/
