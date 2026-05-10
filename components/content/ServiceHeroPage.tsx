@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { cn } from "@/lib/utils";
 
-type ServiceNamespace = "catalog" | "sell" | "cargo" | "buyers";
+type ServiceNamespace = "catalog" | "sell" | "buyers";
 
 type Props = {
   namespace: ServiceNamespace;

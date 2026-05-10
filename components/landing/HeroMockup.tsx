@@ -39,12 +39,6 @@ export async function HeroMockup() {
           status={t("suppliersStatus")}
         />
         <CatalogMiniCard
-          title={t("buyersTitle")}
-          meta={t("buyersMeta")}
-          statusLabel={t("statusLabel")}
-          status={t("buyersStatus")}
-        />
-        <CatalogMiniCard
           title={t("cargoTitle")}
           meta={t("cargoMeta")}
           statusLabel={t("statusLabel")}

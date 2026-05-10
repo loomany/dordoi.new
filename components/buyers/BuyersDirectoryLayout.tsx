@@ -7,8 +7,8 @@ export async function BuyersDirectoryLayout() {
   const t = await getTranslations("Pages.buyers");
 
   return (
-    <div className="bg-gray-50/80 pb-16 pt-10 sm:pt-12">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+    <div className="bg-gray-50/80 py-6 sm:py-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-5 px-4 sm:px-6">
         <nav aria-label={t("breadcrumbNav")} className="text-xs text-gray-400">
           <ol className="flex flex-wrap items-center gap-1.5">
             <li>
@@ -23,11 +23,17 @@ export async function BuyersDirectoryLayout() {
           </ol>
         </nav>
 
-        <header className="mt-8">
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">
+        <header className="text-center">
+          <h1 className="text-balance text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
             {t("h1")}
           </h1>
-          <p className="mt-3 max-w-3xl text-gray-500">{t("subtitle")}</p>
+          <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-slate-600">
+            {t("subtitle")}
+          </p>
+          <div
+            className="mx-auto mt-8 h-px max-w-lg bg-gradient-to-r from-transparent via-slate-300 to-transparent"
+            aria-hidden
+          />
         </header>
 
         <BuyersDirectoryInteractive />

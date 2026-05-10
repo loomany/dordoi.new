@@ -10,12 +10,12 @@
   },
   "sections": [
     {
-      "id": "audiences",
-      "variant": "split-list"
-    },
-    {
       "id": "valueProps",
       "variant": "three-columns"
+    },
+    {
+      "id": "audiences",
+      "variant": "split-list"
     },
     {
       "id": "howItWorks",
@@ -32,8 +32,8 @@
   ],
   "mobileSectionOrder": [
     "hero",
-    "audiences",
     "valueProps",
+    "audiences",
     "howItWorks",
     "serviceProviders",
     "ctaBand"

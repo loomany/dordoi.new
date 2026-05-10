@@ -1,5 +1,12 @@
 import { getTranslations } from "next-intl/server";
+import { landingBlueCtaClassName } from "@/lib/landing-cta";
 import { cn } from "@/lib/utils";
+
+/** Matches hero primary CTA on `/sell`. */
+const primaryCta = cn(
+  landingBlueCtaClassName,
+  "rounded-2xl px-8 py-4 text-center",
+);
 
 type Props = {
   className?: string;
@@ -7,6 +14,7 @@ type Props = {
 
 export async function SellHowItWorksSection({ className }: Props) {
   const t = await getTranslations("Pages.sell.howItWorks");
+  const tSell = await getTranslations("Pages.sell");
 
   const indices = [0, 1, 2] as const;
 
@@ -46,6 +54,11 @@ export async function SellHowItWorksSection({ className }: Props) {
             </div>
           </div>
         ))}
+      </div>
+      <div className="mt-12 flex justify-center sm:mt-14">
+        <a href="#sell-how-it-works" className={primaryCta}>
+          {tSell("hero.ctaPrimary")}
+        </a>
       </div>
     </section>
   );

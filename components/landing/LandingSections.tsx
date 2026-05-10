@@ -11,14 +11,22 @@ import {
   Truck,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
+import { landingBlueCtaClassName } from "@/lib/landing-cta";
 import { cn } from "@/lib/utils";
 import { getLandingSpec, spacingClass, typographyClass } from "@/lib/landing-spec";
 
 const VALUE_CARD_ICON_WRAP =
   "flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400";
+
+/** Mobile: icon + title stacked, centered; md+: horizontal row like desktop. */
+const VALUE_CARD_HEADER_ROW =
+  "flex flex-col items-center gap-3 text-center md:flex-row md:items-center md:gap-3 md:text-left";
+
+/** Centered section title + lead (home landing stripes). */
+const sectionIntro =
+  "space-y-2 text-center [&_h2]:text-balance [&_p]:mx-auto [&_p]:max-w-3xl [&_p]:text-pretty";
 
 export async function LandingSections() {
   const spec = getLandingSpec();
@@ -83,8 +91,19 @@ async function ValuePropsBlock({
 
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
-      <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
-      <p className={leadClass}>{t("lead")}</p>
+      <div className="space-y-2 text-center [&_h2]:text-balance">
+        <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
+        <div className="text-center md:overflow-x-auto md:[-webkit-overflow-scrolling:touch]">
+          <p
+            className={cn(
+              leadClass,
+              "mx-auto max-w-3xl px-1 text-pretty whitespace-normal md:inline-block md:max-w-none md:whitespace-nowrap",
+            )}
+          >
+            {t("lead")}
+          </p>
+        </div>
+      </div>
       <div className="grid gap-4 md:grid-cols-3 md:gap-5">
         {(["0", "1", "2"] as const).map((k, i) => {
           const Icon = icons[i]!;
@@ -94,16 +113,20 @@ async function ValuePropsBlock({
               className={`rounded-[var(--d-radius-2xl)] border-border/70 shadow-[var(--d-shadow-soft)] ${cardPad}`}
             >
               <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
+                <div className={VALUE_CARD_HEADER_ROW}>
                   <div className={VALUE_CARD_ICON_WRAP} aria-hidden>
                     <Icon className="size-6" strokeWidth={1.5} />
                   </div>
-                  <CardTitle className={`${cardTitle} min-w-0 flex-1 font-semibold leading-snug`}>
+                  <CardTitle
+                    className={`${cardTitle} min-w-0 font-semibold leading-snug md:flex-1`}
+                  >
                     {t(`items.${k}.title`)}
                   </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className={`${bodyClass} text-muted-foreground`}>
+              <CardContent
+                className={`${bodyClass} text-center text-muted-foreground md:text-left`}
+              >
                 {t(`items.${k}.body`)}
               </CardContent>
             </Card>
@@ -132,8 +155,19 @@ async function AudiencesBlock({
 
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
-      <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
-      <p className={leadClass}>{t("lead")}</p>
+      <div className="space-y-2 text-center [&_h2]:text-balance">
+        <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
+        <div className="text-center md:overflow-x-auto md:[-webkit-overflow-scrolling:touch]">
+          <p
+            className={cn(
+              leadClass,
+              "mx-auto max-w-3xl px-1 text-pretty whitespace-normal md:inline-block md:max-w-none md:whitespace-nowrap",
+            )}
+          >
+            {t("lead")}
+          </p>
+        </div>
+      </div>
       <div className="grid gap-4 md:grid-cols-3 md:gap-5">
         {(["0", "1", "2"] as const).map((k, i) => {
           const Icon = icons[i]!;
@@ -143,16 +177,20 @@ async function AudiencesBlock({
               className={`rounded-[var(--d-radius-2xl)] border-border/70 shadow-[var(--d-shadow-soft)] ${cardPad}`}
             >
               <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
+                <div className={VALUE_CARD_HEADER_ROW}>
                   <div className={VALUE_CARD_ICON_WRAP} aria-hidden>
                     <Icon className="size-6" strokeWidth={1.5} />
                   </div>
-                  <CardTitle className={`${cardTitle} min-w-0 flex-1 font-semibold leading-snug`}>
+                  <CardTitle
+                    className={`${cardTitle} min-w-0 font-semibold leading-snug md:flex-1`}
+                  >
                     {t(`items.${k}.title`)}
                   </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className={`${bodyClass} text-muted-foreground`}>
+              <CardContent
+                className={`${bodyClass} text-center text-muted-foreground md:text-left`}
+              >
                 {t(`items.${k}.body`)}
               </CardContent>
             </Card>
@@ -163,8 +201,8 @@ async function AudiencesBlock({
         <Link
           href="/sell"
           className={cn(
-            buttonVariants({ size: "lg" }),
-            "w-full max-w-lg rounded-full px-8 text-center text-base font-semibold shadow-sm md:w-auto md:min-w-[min(100%,20rem)]",
+            landingBlueCtaClassName,
+            "w-full max-w-lg rounded-full px-8 py-4 text-center md:w-auto md:min-w-[min(100%,20rem)]",
           )}
         >
           {t("cta")}
@@ -192,8 +230,10 @@ async function HowItWorksBlock({
 
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
-      <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
-      <p className={leadClass}>{t("lead")}</p>
+      <div className={sectionIntro}>
+        <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
+        <p className={leadClass}>{t("lead")}</p>
+      </div>
       <div className="grid gap-4 md:grid-cols-3 md:gap-5">
         {(["0", "1", "2"] as const).map((k, i) => {
           const Icon = icons[i]!;
@@ -203,16 +243,20 @@ async function HowItWorksBlock({
               className={`rounded-[var(--d-radius-2xl)] border-border/70 shadow-[var(--d-shadow-soft)] ${cardPad}`}
             >
               <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
+                <div className={VALUE_CARD_HEADER_ROW}>
                   <div className={VALUE_CARD_ICON_WRAP} aria-hidden>
                     <Icon className="size-6" strokeWidth={1.5} />
                   </div>
-                  <CardTitle className={`${cardTitle} min-w-0 flex-1 font-semibold leading-snug`}>
+                  <CardTitle
+                    className={`${cardTitle} min-w-0 font-semibold leading-snug md:flex-1`}
+                  >
                     {t(`steps.${k}.title`)}
                   </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className={`${bodyClass} text-muted-foreground`}>
+              <CardContent
+                className={`${bodyClass} text-center text-muted-foreground md:text-left`}
+              >
                 {t(`steps.${k}.body`)}
               </CardContent>
             </Card>
@@ -241,8 +285,10 @@ async function ServiceProvidersBlock({
 
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
-      <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
-      <p className={leadClass}>{t("lead")}</p>
+      <div className={sectionIntro}>
+        <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
+        <p className={leadClass}>{t("lead")}</p>
+      </div>
       <div className="grid gap-4 md:grid-cols-2 md:gap-5">
         {(["0", "1"] as const).map((k, i) => {
           const Icon = icons[i]!;
@@ -252,16 +298,20 @@ async function ServiceProvidersBlock({
               className={`rounded-[var(--d-radius-2xl)] border-border/70 shadow-[var(--d-shadow-soft)] ${cardPad}`}
             >
               <CardHeader className="pb-2">
-                <div className="flex items-center gap-3">
+                <div className={VALUE_CARD_HEADER_ROW}>
                   <div className={VALUE_CARD_ICON_WRAP} aria-hidden>
                     <Icon className="size-6" strokeWidth={1.5} />
                   </div>
-                  <CardTitle className={`${cardTitle} min-w-0 flex-1 font-semibold leading-snug`}>
+                  <CardTitle
+                    className={`${cardTitle} min-w-0 font-semibold leading-snug md:flex-1`}
+                  >
                     {t(`items.${k}.title`)}
                   </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className={`${bodyClass} text-muted-foreground`}>
+              <CardContent
+                className={`${bodyClass} text-center text-muted-foreground md:text-left`}
+              >
                 {t(`items.${k}.body`)}
               </CardContent>
             </Card>
@@ -272,8 +322,8 @@ async function ServiceProvidersBlock({
         <Link
           href="/contact"
           className={cn(
-            buttonVariants({ size: "lg" }),
-            "w-full max-w-lg rounded-full px-8 text-center text-base font-semibold shadow-sm md:w-auto md:min-w-[min(100%,20rem)]",
+            landingBlueCtaClassName,
+            "w-full max-w-lg rounded-full px-8 py-4 text-center md:w-auto md:min-w-[min(100%,20rem)]",
           )}
         >
           {t("cta")}
@@ -297,17 +347,16 @@ async function CtaBandBlock({
     { href: "/catalog" as const, Icon: ShoppingBag, key: "0" as const },
     { href: "/sell" as const, Icon: Store, key: "1" as const },
     { href: "/buyers" as const, Icon: ShieldCheck, key: "2" as const },
-    { href: "/cargo" as const, Icon: Truck, key: "3" as const },
   ];
 
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
       <div className="rounded-[var(--d-radius-2xl)] border border-border/60 bg-slate-50 p-[var(--d-space-xl)] shadow-[var(--d-shadow-soft)] dark:bg-slate-950/40">
-        <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
-        <div className="mt-2 overflow-x-auto pb-0.5 [-webkit-overflow-scrolling:touch]">
-          <p className={`${leadClass} whitespace-nowrap`}>{t("lead")}</p>
+        <div className={sectionIntro}>
+          <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
+          <p className={leadClass}>{t("lead")}</p>
         </div>
-        <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-4">
+        <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
           {roles.map(({ href, Icon, key }) => (
             <Link
               key={key}

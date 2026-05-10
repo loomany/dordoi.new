@@ -10,7 +10,6 @@ export async function buildSeoMetadata(
     | "Seo.sell"
     | "Seo.suppliers"
     | "Seo.buyers"
-    | "Seo.cargo"
     | "Seo.buyerService"
     | "Seo.about"
     | "Seo.help"

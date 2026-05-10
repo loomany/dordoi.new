@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { buttonVariants } from "@/components/ui/button";
+import { landingBlueCtaClassName } from "@/lib/landing-cta";
 import { cn } from "@/lib/utils";
 import { getLandingSpec, spacingClass, typographyClass } from "@/lib/landing-spec";
 import { HeroMockup } from "./HeroMockup";
@@ -23,33 +23,40 @@ export async function HeroSection() {
       )}
       aria-labelledby="home-hero-title"
     >
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_minmax(0,0.92fr)] lg:items-center lg:gap-10 lg:px-8">
-        <div className={cn("flex min-w-0 flex-col", textOrder)}>
-          <div className="mb-4 inline-flex w-fit max-w-full rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-sm font-medium text-zinc-700 shadow-sm">
-            {th("badge")}
-          </div>
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1fr_minmax(0,0.92fr)] lg:items-start lg:gap-10 lg:px-8">
+        <div className={cn("flex min-w-0 flex-col text-left", textOrder)}>
           <h1
             id="home-hero-title"
-            className={cn(titleClass, "font-semibold tracking-tight text-zinc-950")}
+            className={cn(titleClass, "font-semibold tracking-tight text-balance text-zinc-950")}
           >
             {th("title")}
           </h1>
-          <p className={cn(subtitleClass, "mt-4 max-w-2xl text-pretty text-zinc-600")}>
+          <p
+            className={cn(
+              subtitleClass,
+              "mt-4 max-w-2xl text-pretty text-zinc-600",
+            )}
+          >
             {th("subtitle")}
           </p>
           <div className="mt-6 flex w-full max-w-2xl justify-center">
             <Link
               href="/catalog"
               className={cn(
-                buttonVariants({ size: "lg" }),
-                "min-w-[13.5rem] rounded-full px-10 text-center shadow-sm sm:min-w-[17rem] sm:px-14",
+                landingBlueCtaClassName,
+                "min-w-[13.5rem] rounded-full px-10 py-4 text-center sm:min-w-[17rem] sm:px-14",
               )}
             >
               {th("ctaCatalog")}
             </Link>
           </div>
         </div>
-        <div className={cn("min-w-0", mockOrder)}>
+        <div className={cn("flex min-w-0 flex-col", mockOrder)}>
+          <div className="mb-4 hidden justify-center lg:flex">
+            <div className="inline-flex w-fit max-w-full rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-sm font-medium text-zinc-700 shadow-sm">
+              {th("badge")}
+            </div>
+          </div>
           <HeroMockup />
         </div>
       </div>

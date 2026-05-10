@@ -8,7 +8,6 @@ import {
   LayoutGrid,
   Menu,
   Store,
-  Truck,
   Users,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -165,12 +164,11 @@ export function SiteHeader() {
 
   const nav: {
     href: string;
-    labelKey: "catalog" | "sell" | "cargo" | "buyers";
+    labelKey: "catalog" | "sell" | "buyers";
     Icon: LucideIcon;
   }[] = [
     { href: "/catalog", labelKey: "catalog", Icon: LayoutGrid },
     { href: "/sell", labelKey: "sell", Icon: Store },
-    { href: "/cargo", labelKey: "cargo", Icon: Truck },
     { href: "/buyers", labelKey: "buyers", Icon: Users },
   ];
 

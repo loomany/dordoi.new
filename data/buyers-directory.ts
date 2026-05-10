@@ -15,10 +15,13 @@ export type BuyerProfile = {
   experienceYears: number;
   /** Display string, e.g. "200+" */
   completedOrdersDisplay: string;
-  rating: number;
   /** WhatsApp wa.me/{digits} — digits only */
   whatsappDigits: string;
-  /** Portrait under `public/` — `/buyers/…` */
+  /** https://t.me/… — публичный канал или профиль */
+  telegramUrl: string;
+  /** Профиль или канал в Instagram */
+  instagramUrl: string;
+  /** Portrait under `public/buyers/` (square PNG/JPEG). */
   photoSrc: string;
 };
 
@@ -38,14 +41,15 @@ export const BUYERS: BuyerProfile[] = [
     ],
     experienceYears: 5,
     completedOrdersDisplay: "200+",
-    rating: 5.0,
     whatsappDigits: "996555010101",
-    photoSrc: "/buyers/arman.jpg",
+    telegramUrl: "https://t.me/dordoi_buyers_arman",
+    instagramUrl: "https://www.instagram.com/dordoi.help/",
+    photoSrc: "/buyers/portrait-arman.png",
   },
   {
     id: "aisuluu-bakytova",
     category: "textile",
-    name: "Айсулuu Бакытова",
+    name: "Айсулу Бакытова",
     specialization: "Женский текстиль и Проверка брака",
     description:
       "Эксперт по тканям и лекалам. Провожу детальный осмотр каждой партии перед отправкой. Работаю с крупными швейными цехами.",
@@ -57,9 +61,10 @@ export const BUYERS: BuyerProfile[] = [
     ],
     experienceYears: 7,
     completedOrdersDisplay: "350+",
-    rating: 5.0,
     whatsappDigits: "996555020202",
-    photoSrc: "/buyers/aisuluu.jpg",
+    telegramUrl: "https://t.me/dordoi_buyers_aisulu",
+    instagramUrl: "https://www.instagram.com/dordoi.help/",
+    photoSrc: "/buyers/portrait-aisuluu.png",
   },
   {
     id: "daniyar-isakov",
@@ -76,8 +81,9 @@ export const BUYERS: BuyerProfile[] = [
     ],
     experienceYears: 4,
     completedOrdersDisplay: "120+",
-    rating: 5.0,
     whatsappDigits: "996555030303",
-    photoSrc: "/buyers/daniyar.jpg",
+    telegramUrl: "https://t.me/dordoi_buyers_daniyar",
+    instagramUrl: "https://www.instagram.com/dordoi.help/",
+    photoSrc: "/buyers/portrait-daniyar.png",
   },
 ];

@@ -1,13 +1,34 @@
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Check, Send } from "lucide-react";
 import type { BuyerProfile } from "@/data/buyers-directory";
 import { cn } from "@/lib/utils";
 
+function InstagramGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+  );
+}
+
 export type BuyerCardStrings = {
-  badgeVerified: string;
+  verifiedBadgeAria: string;
   experienceLine: string;
   ordersLine: string;
   ctaContact: string;
+  ctaTelegram: string;
+  ctaInstagram: string;
 };
 
 type Props = {
@@ -19,10 +40,11 @@ type Props = {
 const waBtn =
   "inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3.5 text-center text-sm font-semibold text-white shadow-[0_1px_2px_rgba(15,23,42,0.08)] transition-all hover:bg-emerald-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/80 focus-visible:ring-offset-2";
 
+const socialBtn =
+  "inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200/90 bg-white px-2 py-2.5 text-center text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/50 focus-visible:ring-offset-2 sm:gap-2 sm:text-sm";
+
 export function BuyerCard({ buyer, strings, className }: Props) {
   const waHref = `https://wa.me/${buyer.whatsappDigits}`;
-  const ratingStr =
-    buyer.rating % 1 === 0 ? buyer.rating.toFixed(1) : String(buyer.rating);
 
   return (
     <article
@@ -41,25 +63,18 @@ export function BuyerCard({ buyer, strings, className }: Props) {
             className="size-20 rounded-2xl object-cover shadow-md ring-[3px] ring-slate-100"
             sizes="80px"
           />
+          <span
+            className="pointer-events-none absolute -bottom-0.5 -right-0.5 flex size-[22px] items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm ring-[3px] ring-white"
+            aria-label={strings.verifiedBadgeAria}
+            role="img"
+          >
+            <Check className="size-3.5" strokeWidth={3} aria-hidden />
+          </span>
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <h2 className="text-lg font-bold tracking-tight text-slate-900">
-              {buyer.name}
-            </h2>
-            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-              <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-100">
-                {strings.badgeVerified}
-              </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-900 ring-1 ring-amber-100/80">
-                <Star
-                  className="size-3.5 fill-amber-400 text-amber-400"
-                  aria-hidden
-                />
-                {ratingStr}
-              </span>
-            </div>
-          </div>
+          <h2 className="text-lg font-bold tracking-tight text-slate-900">
+            {buyer.name}
+          </h2>
           <p className="mt-2 text-sm font-medium leading-snug text-slate-600">
             {buyer.specialization}
           </p>
@@ -87,7 +102,7 @@ export function BuyerCard({ buyer, strings, className }: Props) {
         <p className="mt-1">{strings.ordersLine}</p>
       </div>
 
-      <div className="mt-auto pt-7">
+      <div className="mt-auto space-y-3 pt-7">
         <a
           href={waHref}
           target="_blank"
@@ -96,6 +111,26 @@ export function BuyerCard({ buyer, strings, className }: Props) {
         >
           {strings.ctaContact}
         </a>
+        <div className="grid grid-cols-2 gap-2">
+          <a
+            href={buyer.telegramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={socialBtn}
+          >
+            <Send className="size-3.5 shrink-0 sm:size-4" strokeWidth={2.25} />
+            <span className="truncate">{strings.ctaTelegram}</span>
+          </a>
+          <a
+            href={buyer.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={socialBtn}
+          >
+            <InstagramGlyph className="size-3.5 shrink-0 sm:size-4" />
+            <span className="truncate">{strings.ctaInstagram}</span>
+          </a>
+        </div>
       </div>
     </article>
   );

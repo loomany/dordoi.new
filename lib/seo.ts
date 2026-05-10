@@ -74,7 +74,6 @@ export const publicRoutes = [
   "/sell",
   "/suppliers",
   "/buyers",
-  "/cargo",
   "/buyer-service",
   "/about",
   "/help",
