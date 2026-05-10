@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { Link } from "@/i18n/navigation";
+import { CabinetChrome } from "@/components/cabinet/CabinetChrome";
+import { cabinetAreaForProfile } from "@/lib/auth/cabinet-routing";
 import { getSessionProfile } from "@/lib/auth/session-profile";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -25,39 +25,31 @@ export default async function CabinetLayout({ children, params }: Props) {
   }
 
   const t = await getTranslations("Cabinet");
-  const navClass =
-    "rounded-lg px-3 py-1.5 text-sm text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900";
+  const area = cabinetAreaForProfile({
+    role: profile.role,
+    vendorId: profile.vendorId,
+  });
+
+  const roleHeadline =
+    area === "admin"
+      ? t("roleBadgeAdmin")
+      : area === "vendor"
+        ? t("roleBadgeVendor")
+        : area === "buyer_agent"
+          ? t("roleBadgeBuyerAgent")
+          : t("roleBadgeBuyer");
+
+  const phoneLine = profile.phone
+    ? t("signedInAs", { phone: profile.phone })
+    : null;
 
   return (
-    <div className="border-b border-zinc-200/90 bg-zinc-50/80 dark:border-zinc-800 dark:bg-zinc-950/40">
-      <div className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-8">
-        <header className="flex flex-col gap-3 border-b border-zinc-200/80 pb-6 dark:border-zinc-800">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {t("navTitle")}
-          </p>
-          <nav className="flex flex-wrap gap-2">
-            <Link href="/cabinet/buyer" className={cn(navClass)}>
-              {t("navBuyer")}
-            </Link>
-            {(profile.role === "vendor" || profile.vendorId) && (
-              <Link href="/cabinet/vendor" className={cn(navClass)}>
-                {t("navVendor")}
-              </Link>
-            )}
-            {profile.role === "admin" && (
-              <Link href="/cabinet/admin" className={cn(navClass)}>
-                {t("navAdmin")}
-              </Link>
-            )}
-          </nav>
-          {profile.phone ? (
-            <p className="text-sm text-muted-foreground">
-              {t("signedInAs", { phone: profile.phone })}
-            </p>
-          ) : null}
-        </header>
-        <div>{children}</div>
-      </div>
-    </div>
+    <CabinetChrome
+      navTitle={t("navTitle")}
+      roleHeadline={roleHeadline}
+      phoneLine={phoneLine}
+    >
+      {children}
+    </CabinetChrome>
   );
 }

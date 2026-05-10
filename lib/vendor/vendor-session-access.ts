@@ -11,6 +11,19 @@ export type VendorRowSelf = {
   store_name: string | null;
   location_row: string | null;
   logo_url: string | null;
+  description: string | null;
+  categories: string[] | null;
+  product_photos: string[] | null;
+  container_photo_url: string | null;
+  min_batch: string | null;
+  payment_methods: string | null;
+  delivery_help: boolean;
+  whatsapp_1: string | null;
+  whatsapp_2: string | null;
+  instagram_url: string | null;
+  telegram_url: string | null;
+  samples_available: boolean;
+  returns_policy: string | null;
   status: string;
   language: string;
   created_at: string;
@@ -52,7 +65,30 @@ export async function fetchVendorRowForAuthenticatedUser(
   const { data: row, error } = await admin
     .from("vendors")
     .select(
-      "id, user_id, store_name, location_row, logo_url, status, language, created_at, phone_number",
+      [
+        "id",
+        "user_id",
+        "store_name",
+        "location_row",
+        "logo_url",
+        "description",
+        "categories",
+        "product_photos",
+        "container_photo_url",
+        "min_batch",
+        "payment_methods",
+        "delivery_help",
+        "whatsapp_1",
+        "whatsapp_2",
+        "instagram_url",
+        "telegram_url",
+        "samples_available",
+        "returns_policy",
+        "status",
+        "language",
+        "created_at",
+        "phone_number",
+      ].join(","),
     )
     .or(orClause)
     .maybeSingle();
@@ -64,8 +100,10 @@ export async function fetchVendorRowForAuthenticatedUser(
     return null;
   }
 
-  const rowDigits = row.phone_number
-    ? digitsOnly(String(row.phone_number))
+  const vendor = row as unknown as VendorRowSelf;
+
+  const rowDigits = vendor.phone_number
+    ? digitsOnly(String(vendor.phone_number))
     : "";
   const linkDigits = phoneDigits || rowDigits;
   if (linkDigits) {
@@ -76,5 +114,5 @@ export async function fetchVendorRowForAuthenticatedUser(
     }
   }
 
-  return row as VendorRowSelf;
+  return vendor;
 }

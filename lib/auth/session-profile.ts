@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cabinetPathForProfile } from "@/lib/auth/cabinet-routing";
 import type { AppRole } from "@/lib/auth/roles";
 import { fetchVendorRowForAuthenticatedUser } from "@/lib/vendor/vendor-session-access";
 import { createClient } from "@/utils/supabase/server";
@@ -54,11 +55,8 @@ export async function getSessionProfile(): Promise<SessionProfile | null> {
 
 /** Куда вести после /cabinet (корень кабинета). */
 export function cabinetHomePath(locale: string, p: SessionProfile): string {
-  if (p.role === "admin") {
-    return `/${locale}/cabinet/admin`;
-  }
-  if (p.role === "vendor" || p.vendorId) {
-    return `/${locale}/cabinet/vendor`;
-  }
-  return `/${locale}/cabinet/buyer`;
+  return cabinetPathForProfile(locale, {
+    role: p.role,
+    vendorId: p.vendorId,
+  });
 }

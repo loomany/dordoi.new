@@ -1,3 +1,8 @@
-export type AppRole = "user" | "buyer" | "vendor" | "admin";
+export type AppRole =
+  | "user"
+  | "buyer"
+  | "buyer_agent"
+  | "vendor"
+  | "admin";
 
 export const DEFAULT_ROLE: AppRole = "buyer";

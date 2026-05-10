@@ -1,8 +1,9 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { VendorStoreNameBridge } from "@/components/cabinet/CabinetChrome";
 import {
   VendorApprovedDashboard,
-  VendorPendingFullscreen,
+  VendorPendingReviewDashboard,
   VendorRejectedNotice,
 } from "@/components/cabinet/VendorCabinetViews";
 import { buildPageMetadata } from "@/lib/seo";
@@ -47,9 +48,14 @@ export default async function VendorCabinetPage({ params }: Props) {
     );
   }
 
+  const displayName = shop.store_name?.trim() || t("storeHeaderFallback");
+
   if (shop.status === "pending_moderation") {
     return (
-      <VendorPendingFullscreen message={t("pendingFullscreenMessage")} />
+      <>
+        <VendorStoreNameBridge name={displayName} />
+        <VendorPendingReviewDashboard shop={shop} locale={locale} />
+      </>
     );
   }
 
@@ -57,17 +63,20 @@ export default async function VendorCabinetPage({ params }: Props) {
     return <VendorRejectedNotice message={t("rejectedNotice")} />;
   }
 
-  const displayName = shop.store_name?.trim() || t("storeHeaderFallback");
-
   return (
-    <VendorApprovedDashboard
-      storeName={displayName}
-      locationRow={shop.location_row?.trim() || null}
-      logoUrl={shop.logo_url}
-      logoAlt={t("approvedLogoAlt")}
-      cardProducts={t("cardProductsSoon")}
-      cardOrders={t("cardOrdersSoon")}
-      cardSettings={t("cardSettingsSoon")}
-    />
+    <>
+      <VendorStoreNameBridge name={displayName} />
+      <VendorApprovedDashboard
+        locationRow={shop.location_row?.trim() || null}
+        locationLabel={t("pendingLabelLocation")}
+        logoUrl={shop.logo_url}
+        logoAlt={t("approvedLogoAlt")}
+        photosSectionTitle={t("pendingSectionPhotos")}
+        logoCaption={t("pendingLogoCaption")}
+        cardProducts={t("cardProductsSoon")}
+        cardOrders={t("cardOrdersSoon")}
+        cardSettings={t("cardSettingsSoon")}
+      />
+    </>
   );
 }

@@ -11,7 +11,7 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function VendorCabinetSectionLayout({
+export default async function BuyerCabinetSectionLayout({
   children,
   params,
 }: Props) {
@@ -21,7 +21,7 @@ export default async function VendorCabinetSectionLayout({
     redirect(`/${locale}`);
   }
   if (
-    cabinetAreaForProfile({ role: p.role, vendorId: p.vendorId }) !== "vendor"
+    cabinetAreaForProfile({ role: p.role, vendorId: p.vendorId }) !== "buyer"
   ) {
     redirect(cabinetPathForProfile(locale, { role: p.role, vendorId: p.vendorId }));
   }
