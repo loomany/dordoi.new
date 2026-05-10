@@ -1,9 +1,12 @@
 import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
-import { baseUrl } from "@/lib/site";
+import { baseUrl, siteIndexable } from "@/lib/site";
 import { publicRoutes } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (!siteIndexable()) {
+    return [];
+  }
   const root = baseUrl();
   const entries: MetadataRoute.Sitemap = [];
 

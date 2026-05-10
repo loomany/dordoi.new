@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { baseUrl } from "@/lib/site";
+import { baseUrl, siteIndexable } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -15,6 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  ...(!siteIndexable()
+    ? {
+        robots: {
+          index: false,
+          follow: false,
+          googleBot: { index: false, follow: false },
+        },
+      }
+    : {}),
   metadataBase: new URL(baseUrl()),
   title: {
     default: "Dordoi.help",

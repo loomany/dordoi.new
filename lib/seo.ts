@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
 import { routing } from "@/i18n/routing";
-import { baseUrl } from "@/lib/site";
+import { baseUrl, siteIndexable } from "@/lib/site";
+
+function noindexMetadata(): Pick<Metadata, "robots"> {
+  return {
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: { index: false, follow: false },
+    },
+  };
+}
 
 /** hreflang / alternate URLs for every locale, same path under each locale prefix */
 export function localeAlternates(pathWithoutLocale: string): Record<string, string> {
@@ -33,6 +43,7 @@ export function buildPageMetadata(opts: {
   const languages = localeAlternates(opts.pathWithoutLocale === "" ? "/" : opts.pathWithoutLocale);
 
   return {
+    ...(!siteIndexable() ? noindexMetadata() : {}),
     metadataBase: new URL(baseUrl()),
     title: opts.title,
     description: opts.description,
