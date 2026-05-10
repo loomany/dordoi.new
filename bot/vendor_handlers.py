@@ -69,6 +69,12 @@ _STORE_NAME_STEP_PROMPT = (
     "и им будут пользоваться оптовики."
 )
 
+_TELEGRAM_CHANNEL_STEP_PROMPT = (
+    "✈️ Канал или чат в Telegram (необязательно)\n\n"
+    "Введите ссылку на канал или чат: t.me/… или @username. Покупатель откроет её из карточки "
+    "магазина в Dordoi.help и сможет посмотреть витрину и новинки до того, как напишет вам."
+)
+
 _photo_locks: dict[int, asyncio.Lock] = {}
 _cat_locks: dict[int, asyncio.Lock] = {}
 _log = logging.getLogger(__name__)
@@ -917,9 +923,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.telegram_channel)
         await query.message.answer(
-            "✈️ Telegram канал или чат (необязательно)\n\n"
-            "Укажите ссылку t.me/… или @username вашего канала/бота для заказов.\n\n"
-            "Или пропустите:",
+            _TELEGRAM_CHANNEL_STEP_PROMPT + "\n\nИли пропустите:",
             reply_markup=_skip_kb(CB_TG_SKIP),
         )
 
@@ -934,7 +938,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(instagram_url=raw)
         await state.set_state(VendorOnboarding.telegram_channel)
         await message.answer(
-            "✈️ Telegram для заказов — ссылка или @username (необязательно):",
+            _TELEGRAM_CHANNEL_STEP_PROMPT,
             reply_markup=_skip_kb(CB_TG_SKIP),
         )
 
