@@ -62,6 +62,7 @@ export const publicRoutes = [
   "/catalog",
   "/suppliers",
   "/buyers",
+  "/cargo",
   "/buyer-service",
   "/about",
   "/help",

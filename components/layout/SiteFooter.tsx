@@ -1,11 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { Separator } from "@/components/ui/separator";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export async function SiteFooter() {
   const t = await getTranslations("Footer");
   const tb = await getTranslations("brand");
-  const tl = await getTranslations("LegalDisclaimer");
 
   const legal = [
     { href: "/about", key: "about" as const },
@@ -18,35 +17,21 @@ export async function SiteFooter() {
   ];
 
   return (
-    <footer className="border-t border-border/60 bg-muted/20">
-      <div className="mx-auto max-w-6xl space-y-8 px-4 py-12 sm:px-6">
-        <div className="grid gap-8 md:grid-cols-2">
-          <div className="space-y-3">
-            <p className="text-lg font-semibold">{tb("name")}</p>
-            <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-              {t("tagline")}
-            </p>
-            <p className="text-xs text-muted-foreground">{tl("short")}</p>
-          </div>
-          <div className="space-y-3 text-sm">
-            <p>
-              <span className="font-medium text-foreground">{t("supportEmail")}</span>
-            </p>
-            <p>
-              <span className="font-medium text-foreground">{t("privacyEmail")}</span>
-            </p>
-            <p className="text-muted-foreground">{t("social")}</p>
-          </div>
-        </div>
-        <Separator />
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <p className="text-xs font-medium text-muted-foreground">{t("legal")}</p>
-          <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm" aria-label={t("legal")}>
+    <footer className="border-t border-border/40 bg-background">
+      <div className="mx-auto flex max-w-6xl justify-center px-4 py-8 sm:px-6 sm:py-8">
+        <div className="flex flex-col items-center justify-center gap-5 text-center sm:flex-row sm:gap-6 sm:text-left">
+          <Link href="/" className="inline-flex shrink-0" aria-label={tb("name")}>
+            <BrandLogo name={tb("name")} size="md" />
+          </Link>
+          <nav
+            className="flex max-w-full flex-wrap justify-center gap-x-4 gap-y-2 sm:justify-start"
+            aria-label={tb("name")}
+          >
             {legal.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 {t(`links.${item.key}`)}
               </Link>

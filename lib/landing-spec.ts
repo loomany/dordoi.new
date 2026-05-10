@@ -1,22 +1,14 @@
 import { z } from "zod";
 import rawSpec from "../docs/landing-spec.json";
 
-const ctaKeySchema = z.enum(["buyer", "supplier", "buyerAgent"]);
-
 const landingSpecSchema = z.object({
   version: z.number(),
   hero: z.object({
     layout: z.literal("split"),
     mockupPosition: z.enum(["left", "right"]),
-    ctaOrder: z.array(ctaKeySchema).length(3),
     messageKeys: z.object({
       title: z.string(),
       subtitle: z.string(),
-      ctas: z.object({
-        buyer: z.string(),
-        supplier: z.string(),
-        buyerAgent: z.string(),
-      }),
     }),
   }),
   sections: z.array(

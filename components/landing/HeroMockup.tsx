@@ -1,48 +1,63 @@
 import { getTranslations } from "next-intl/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+function CatalogMiniCard({
+  title,
+  meta,
+  statusLabel,
+  status,
+}: {
+  title: string;
+  meta: string;
+  statusLabel: string;
+  status: string;
+}) {
+  return (
+    <div className="rounded-[var(--d-radius-card)] border border-zinc-100 bg-white p-3.5 shadow-[var(--d-shadow-soft)]">
+      <div className="text-sm font-semibold text-zinc-950">{title}</div>
+      <p className="mt-1 text-xs leading-relaxed text-zinc-600">{meta}</p>
+      <div className="mt-2.5 border-t border-zinc-100 pt-2 text-[11px] leading-snug text-zinc-500">
+        <span className="font-medium text-zinc-600">{statusLabel}: </span>
+        <span>{status}</span>
+      </div>
+    </div>
+  );
+}
 
 export async function HeroMockup() {
   const t = await getTranslations("Pages.home.mockup");
 
   return (
     <div
-      className="relative isolate rounded-[var(--d-radius-2xl)] border border-border/60 bg-gradient-to-br from-card via-background to-muted/40 p-[var(--d-space-lg)] shadow-[var(--d-shadow-mockup)]"
+      className="rounded-[var(--d-radius-2xl)] border border-zinc-200/90 bg-white p-4 shadow-[var(--d-shadow-mockup)] sm:p-5"
       aria-hidden
     >
-      <div className="mb-3 inline-flex rounded-full border border-border bg-background/80 px-3 py-1 text-[length:var(--d-text-xs)] font-medium text-muted-foreground">
-        {t("badge")}
+      <div className="flex flex-col gap-2.5">
+        <CatalogMiniCard
+          title={t("suppliersTitle")}
+          meta={t("suppliersMeta")}
+          statusLabel={t("statusLabel")}
+          status={t("suppliersStatus")}
+        />
+        <CatalogMiniCard
+          title={t("buyersTitle")}
+          meta={t("buyersMeta")}
+          statusLabel={t("statusLabel")}
+          status={t("buyersStatus")}
+        />
+        <CatalogMiniCard
+          title={t("cargoTitle")}
+          meta={t("cargoMeta")}
+          statusLabel={t("statusLabel")}
+          status={t("cargoStatus")}
+        />
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Card className="rounded-[var(--d-radius-card)] border-border/70 shadow-[var(--d-shadow-soft)]">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-[length:var(--d-text-sm)] font-medium">
-              {t("card1Title")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-[length:var(--d-text-xs)] text-muted-foreground">
-            {t("card1Meta")}
-          </CardContent>
-        </Card>
-        <Card className="rounded-[var(--d-radius-card)] border-border/70 shadow-[var(--d-shadow-soft)]">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-[length:var(--d-text-sm)] font-medium">
-              {t("card2Title")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-[length:var(--d-text-xs)] text-muted-foreground">
-            {t("card2Meta")}
-          </CardContent>
-        </Card>
-        <Card className="sm:col-span-2 rounded-[var(--d-radius-card)] border-primary/20 bg-primary/5 shadow-[var(--d-shadow-soft)]">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-[length:var(--d-text-sm)] font-medium">
-              {t("card3Title")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-[length:var(--d-text-xs)] text-muted-foreground">
-            {t("card3Meta")}
-          </CardContent>
-        </Card>
+
+      <div className="mt-4 rounded-[var(--d-radius-card)] border border-zinc-100 bg-[#F8FAFC] p-4">
+        <div className="text-sm font-semibold text-zinc-950">{t("leadTitle")}</div>
+        <p className="mt-1 text-xs leading-relaxed text-zinc-600">{t("leadBody")}</p>
+        <div className="mt-3 inline-flex rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-800 shadow-sm">
+          {t("leadCta")}
+        </div>
       </div>
     </div>
   );

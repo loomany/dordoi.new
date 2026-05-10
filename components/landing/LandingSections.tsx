@@ -1,10 +1,24 @@
 import type { ReactNode } from "react";
+import {
+  Eye,
+  Handshake,
+  MessageCircle,
+  Search,
+  Send,
+  ShieldCheck,
+  ShoppingBag,
+  Store,
+  Truck,
+} from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { getLandingSpec, spacingClass, typographyClass } from "@/lib/landing-spec";
+
+const VALUE_CARD_ICON_WRAP =
+  "flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400";
 
 export async function LandingSections() {
   const spec = getLandingSpec();
@@ -25,14 +39,25 @@ export async function LandingSections() {
     howItWorks: (
       <HowItWorksBlock titleClass={titleClass} leadClass={leadClass} blockGap={blockGap} />
     ),
-    ecosystem: <EcosystemBlock titleClass={titleClass} blockGap={blockGap} />,
+    serviceProviders: (
+      <ServiceProvidersBlock titleClass={titleClass} leadClass={leadClass} blockGap={blockGap} />
+    ),
     ctaBand: <CtaBandBlock titleClass={titleClass} leadClass={leadClass} blockGap={blockGap} />,
   };
 
+  const stripeBg = (i: number) =>
+    i % 2 === 0
+      ? "bg-background"
+      : "bg-[#FAFAF8] dark:bg-zinc-950/35";
+
   return (
     <div className="flex flex-col">
-      {sections.map((id) => (
-        <div key={id} className={sectionY}>
+      {sections.map((id, i) => (
+        <div
+          key={id}
+          id={id === "howItWorks" ? "how-it-works" : undefined}
+          className={cn(sectionY, stripeBg(i))}
+        >
           {nodes[id] ?? null}
         </div>
       ))}
@@ -54,24 +79,36 @@ async function ValuePropsBlock({
   const cardTitle = typographyClass(spec, "cardTitle");
   const bodyClass = typographyClass(spec, "body");
   const cardPad = spacingClass(spec, "cardPadding");
+  const icons = [MessageCircle, Eye, Truck] as const;
+
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
       <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
       <p className={leadClass}>{t("lead")}</p>
-      <div className="grid gap-6 md:grid-cols-3">
-        {(["0", "1", "2"] as const).map((k) => (
-          <Card
-            key={k}
-            className={`rounded-[var(--d-radius-2xl)] border-border/70 shadow-[var(--d-shadow-soft)] ${cardPad}`}
-          >
-            <CardHeader>
-              <CardTitle className={`${cardTitle} font-semibold`}>{t(`items.${k}.title`)}</CardTitle>
-            </CardHeader>
-            <CardContent className={`${bodyClass} text-muted-foreground`}>
-              {t(`items.${k}.body`)}
-            </CardContent>
-          </Card>
-        ))}
+      <div className="grid gap-4 md:grid-cols-3 md:gap-5">
+        {(["0", "1", "2"] as const).map((k, i) => {
+          const Icon = icons[i]!;
+          return (
+            <Card
+              key={k}
+              className={`rounded-[var(--d-radius-2xl)] border-border/70 shadow-[var(--d-shadow-soft)] ${cardPad}`}
+            >
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-3">
+                  <div className={VALUE_CARD_ICON_WRAP} aria-hidden>
+                    <Icon className="size-6" strokeWidth={1.5} />
+                  </div>
+                  <CardTitle className={`${cardTitle} min-w-0 flex-1 font-semibold leading-snug`}>
+                    {t(`items.${k}.title`)}
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className={`${bodyClass} text-muted-foreground`}>
+                {t(`items.${k}.body`)}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
@@ -88,27 +125,50 @@ async function AudiencesBlock({
 }) {
   const spec = getLandingSpec();
   const t = await getTranslations("Pages.home.sections.audiences");
+  const cardTitle = typographyClass(spec, "cardTitle");
   const bodyClass = typographyClass(spec, "body");
+  const cardPad = spacingClass(spec, "cardPadding");
+  const icons = [Handshake, Send, Store] as const;
+
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
       <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
       <p className={leadClass}>{t("lead")}</p>
-      <div className="grid gap-6 md:grid-cols-3">
-        {[
-          { title: "buyersTitle" as const, body: "buyersBody" as const },
-          { title: "suppliersTitle" as const, body: "suppliersBody" as const },
-          { title: "agentsTitle" as const, body: "agentsBody" as const },
-        ].map((item) => (
-          <div
-            key={item.title}
-            className="rounded-[var(--d-radius-2xl)] border border-border/70 bg-card p-[var(--d-space-lg)] shadow-[var(--d-shadow-soft)]"
-          >
-            <h3 className={`${typographyClass(spec, "cardTitle")} font-semibold`}>
-              {t(item.title)}
-            </h3>
-            <p className={`mt-2 ${bodyClass} text-muted-foreground`}>{t(item.body)}</p>
-          </div>
-        ))}
+      <div className="grid gap-4 md:grid-cols-3 md:gap-5">
+        {(["0", "1", "2"] as const).map((k, i) => {
+          const Icon = icons[i]!;
+          return (
+            <Card
+              key={k}
+              className={`rounded-[var(--d-radius-2xl)] border-border/70 shadow-[var(--d-shadow-soft)] ${cardPad}`}
+            >
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-3">
+                  <div className={VALUE_CARD_ICON_WRAP} aria-hidden>
+                    <Icon className="size-6" strokeWidth={1.5} />
+                  </div>
+                  <CardTitle className={`${cardTitle} min-w-0 flex-1 font-semibold leading-snug`}>
+                    {t(`items.${k}.title`)}
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className={`${bodyClass} text-muted-foreground`}>
+                {t(`items.${k}.body`)}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+      <div className="mt-6 flex justify-center">
+        <Link
+          href="/suppliers"
+          className={cn(
+            buttonVariants({ size: "lg" }),
+            "w-full max-w-lg rounded-full px-8 text-center text-base font-semibold shadow-sm md:w-auto md:min-w-[min(100%,20rem)]",
+          )}
+        >
+          {t("cta")}
+        </Link>
       </div>
     </div>
   );
@@ -125,46 +185,99 @@ async function HowItWorksBlock({
 }) {
   const spec = getLandingSpec();
   const t = await getTranslations("Pages.home.sections.howItWorks");
+  const cardTitle = typographyClass(spec, "cardTitle");
   const bodyClass = typographyClass(spec, "body");
+  const cardPad = spacingClass(spec, "cardPadding");
+  const icons = [Store, Search, MessageCircle] as const;
+
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
       <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
       <p className={leadClass}>{t("lead")}</p>
-      <ol className="grid gap-4 md:grid-cols-3">
-        {(["0", "1", "2"] as const).map((k, i) => (
-          <li
-            key={k}
-            className="flex gap-4 rounded-[var(--d-radius-2xl)] border border-border/60 bg-muted/20 p-[var(--d-space-lg)]"
-          >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-              {i + 1}
-            </span>
-            <div>
-              <h3 className="font-semibold">{t(`steps.${k}.title`)}</h3>
-              <p className={`mt-1 ${bodyClass} text-muted-foreground`}>{t(`steps.${k}.body`)}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
+      <div className="grid gap-4 md:grid-cols-3 md:gap-5">
+        {(["0", "1", "2"] as const).map((k, i) => {
+          const Icon = icons[i]!;
+          return (
+            <Card
+              key={k}
+              className={`rounded-[var(--d-radius-2xl)] border-border/70 shadow-[var(--d-shadow-soft)] ${cardPad}`}
+            >
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-3">
+                  <div className={VALUE_CARD_ICON_WRAP} aria-hidden>
+                    <Icon className="size-6" strokeWidth={1.5} />
+                  </div>
+                  <CardTitle className={`${cardTitle} min-w-0 flex-1 font-semibold leading-snug`}>
+                    {t(`steps.${k}.title`)}
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className={`${bodyClass} text-muted-foreground`}>
+                {t(`steps.${k}.body`)}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-async function EcosystemBlock({
+async function ServiceProvidersBlock({
   titleClass,
+  leadClass,
   blockGap,
 }: {
   titleClass: string;
+  leadClass: string;
   blockGap: string;
 }) {
   const spec = getLandingSpec();
-  const t = await getTranslations("Pages.home.sections.ecosystem");
+  const t = await getTranslations("Pages.home.sections.serviceProviders");
+  const cardTitle = typographyClass(spec, "cardTitle");
   const bodyClass = typographyClass(spec, "body");
+  const cardPad = spacingClass(spec, "cardPadding");
+  const icons = [ShieldCheck, Truck] as const;
+
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
-      <div className="rounded-[var(--d-radius-2xl)] border border-primary/25 bg-gradient-to-br from-primary/5 via-background to-muted/30 p-[var(--d-space-xl)] shadow-[var(--d-shadow-soft)]">
-        <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
-        <p className={`mt-4 max-w-3xl ${bodyClass} text-muted-foreground`}>{t("body")}</p>
+      <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
+      <p className={leadClass}>{t("lead")}</p>
+      <div className="grid gap-4 md:grid-cols-2 md:gap-5">
+        {(["0", "1"] as const).map((k, i) => {
+          const Icon = icons[i]!;
+          return (
+            <Card
+              key={k}
+              className={`rounded-[var(--d-radius-2xl)] border-border/70 shadow-[var(--d-shadow-soft)] ${cardPad}`}
+            >
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-3">
+                  <div className={VALUE_CARD_ICON_WRAP} aria-hidden>
+                    <Icon className="size-6" strokeWidth={1.5} />
+                  </div>
+                  <CardTitle className={`${cardTitle} min-w-0 flex-1 font-semibold leading-snug`}>
+                    {t(`items.${k}.title`)}
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className={`${bodyClass} text-muted-foreground`}>
+                {t(`items.${k}.body`)}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+      <div className="mt-6 flex justify-center">
+        <Link
+          href="/contact"
+          className={cn(
+            buttonVariants({ size: "lg" }),
+            "w-full max-w-lg rounded-full px-8 text-center text-base font-semibold shadow-sm md:w-auto md:min-w-[min(100%,20rem)]",
+          )}
+        >
+          {t("cta")}
+        </Link>
       </div>
     </div>
   );
@@ -180,29 +293,40 @@ async function CtaBandBlock({
   blockGap: string;
 }) {
   const t = await getTranslations("Pages.home.sections.ctaBand");
+  const roles = [
+    { href: "/catalog" as const, Icon: ShoppingBag, key: "0" as const },
+    { href: "/suppliers" as const, Icon: Store, key: "1" as const },
+    { href: "/buyer-service" as const, Icon: ShieldCheck, key: "2" as const },
+    { href: "/cargo" as const, Icon: Truck, key: "3" as const },
+  ];
+
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
-      <div className="flex flex-col items-start justify-between gap-6 rounded-[var(--d-radius-2xl)] border border-border/80 bg-card p-[var(--d-space-xl)] shadow-[var(--d-shadow-soft)] md:flex-row md:items-center">
-        <div>
-          <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
-          <p className={`mt-2 max-w-xl ${leadClass}`}>{t("lead")}</p>
+      <div className="rounded-[var(--d-radius-2xl)] border border-border/60 bg-slate-50 p-[var(--d-space-xl)] shadow-[var(--d-shadow-soft)] dark:bg-slate-950/40">
+        <h2 className={`${titleClass} font-semibold`}>{t("title")}</h2>
+        <div className="mt-2 overflow-x-auto pb-0.5 [-webkit-overflow-scrolling:touch]">
+          <p className={`${leadClass} whitespace-nowrap`}>{t("lead")}</p>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Link
-            href="/contact"
-            className={cn(buttonVariants({ size: "lg" }), "rounded-full text-center")}
-          >
-            {t("primary")}
-          </Link>
-          <Link
-            href="/catalog"
-            className={cn(
-              buttonVariants({ size: "lg", variant: "outline" }),
-              "rounded-full text-center",
-            )}
-          >
-            {t("secondary")}
-          </Link>
+        <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-4">
+          {roles.map(({ href, Icon, key }) => (
+            <Link
+              key={key}
+              href={href}
+              className={cn(
+                "group flex cursor-pointer items-center gap-3 rounded-xl border border-border/70 bg-background p-4 shadow-sm outline-none transition-all",
+                "hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-md",
+                "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+              )}
+            >
+              <Icon className="size-7 shrink-0 text-primary" strokeWidth={1.75} aria-hidden />
+              <div className="min-w-0 flex-1 space-y-1">
+                <p className="font-semibold leading-snug">{t(`roles.${key}.title`)}</p>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {t(`roles.${key}.subtitle`)}
+                </p>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>

@@ -1,18 +1,14 @@
 {
+  "brand": { "name": "Dordoi.help" },
   "Nav": {
     "catalog": "Katalog",
-    "suppliers": "Yetkazib beruvchilarga",
-    "buyers": "Xaridorlarga",
-    "buyerService": "Buyerlarga",
+    "suppliers": "Optom sotish",
+    "cargo": "Kargo yetkazib berish",
+    "buyerService": "Buyerni topish",
     "help": "Yordam"
   },
-  "Header": { "ctaStart": "Bepul boshlash", "openMenu": "Menyuni ochish", "closeMenu": "Yopish", "langSwitcher": "Til: {locale}", "langNav": "Interfeys tilini almashtirish" },
+  "Header": { "ctaStart": "Kirish", "openMenu": "Menyuni ochish", "closeMenu": "Yopish", "langSwitcher": "Til: {locale}", "langNav": "Interfeys tilini almashtirish", "langExpand": "Tillarni ko‘rsatish", "langCollapse": "Tillarni yashirish", "mainNav": "Asosiy navigatsiya", "closeSheet": "Panelni yopish" },
   "Footer": {
-    "tagline": "Dordoy bozori uchun ulgurji savdo platformasi va raqamli ekotizim.",
-    "supportEmail": "support@dordoi.help",
-    "privacyEmail": "privacy@dordoi.help",
-    "legal": "Huquqiy ma'lumot",
-    "social": "Ijtimoiy tarmoqlar (tez orada)",
     "links": {
       "about": "Loyiha haqida",
       "help": "Yordam",
@@ -31,6 +27,7 @@
     "catalog": { "title": "Kategoriyalar katalogi — Dordoi.help", "description": "Dordoy ulgurji tovarlari: kiyim, poyabzal, matolar." },
     "suppliers": { "title": "Yetkazib beruvchilarga — Dordoi.help", "description": "Onlayn vitrina va arizalar Dordoy sotuvchilari uchun." },
     "buyers": { "title": "Xaridorlarga — Dordoi.help", "description": "Dordoy yetkazib beruvchilarini topish va bozorga ortiqcha sayohatsiz ulgurji." },
+    "cargo": { "title": "Kargo yetkazib berish — Dordoi.help", "description": "Dordoy bozoridan shahringiz yoki mamlakatingizga yetkazib berish: kargo va kontaktlar bo‘yicha yo‘nalishlar." },
     "buyerService": { "title": "Buyerlarga — Dordoi.help", "description": "Tovar tanlash, sifat tekshirish va buyurtmalarni yig‘ish." },
     "about": { "title": "Loyiha haqida — Dordoi.help", "description": "MDH ulgurji oqimi uchun Dordoy ekotizimi." },
     "help": { "title": "Yordam — Dordoi.help", "description": "Dordoi.help dan foydalanish." },
@@ -42,35 +39,49 @@
   },
   "Pages": {
     "home": {
-      "h1": "Dordoi.help — Dordoy bozori uchun ulgurji platforma",
-      "h2": "Tovarlar, yetkazib beruvchilar va buyerlarni bir joydan toping",
+      "h1": "Dordoy bozorining yetkazib beruvchilari, buyerlari va kargosi bitta katalogda",
+      "h2": "Dordoyda kerakli kontaktlarni tez toping: yetkazib beruvchilar, buyerlar, kargo",
       "hero": {
-        "title": "Dordoi.help — Dordoy bozori uchun ulgurji platforma",
-        "subtitle": "Tovarlar, yetkazib beruvchilar va buyerlarni bir joydan toping.",
-        "ctaBuyer": "Men xaridorman",
-        "ctaSupplier": "Men yetkazib beruvchiman",
-        "ctaBuyerAgent": "Menga buyer kerak"
+        "badge": "Dordoi.help · Dordoy bozorining B2B katalogi",
+        "title": "Dordoy bozorining yetkazib beruvchilari, buyerlari va kargosi bitta katalogda",
+        "subtitle": "Dordoi.help Dordoyda kerakli kontaktlarni tez topishga yordam beradi: ulgurji yetkazib beruvchilar, joydagi buyerlar va shahringiz yoki mamlakatingizga yetkazib berish uchun kargo.",
+        "ctaCatalog": "Katalogni ko‘rish"
       },
-      "mockup": { "badge": "Arizalar", "card1Title": "Yangi lidlar", "card1Meta": "bugun 12", "card2Title": "Katalog", "card2Meta": "yangilandi", "card3Title": "Yetkazib beruvchilar", "card3Meta": "tekshirildi" },
+      "mockup": {
+        "statusLabel": "Holat",
+        "suppliersTitle": "Yetkazib beruvchilar",
+        "suppliersMeta": "Kiyim · poyabzal · mato",
+        "suppliersStatus": "Profillar va kontaktlar",
+        "buyersTitle": "Buyerlar",
+        "buyersMeta": "Tovar qidirish · foto/video · sotib olish",
+        "buyersStatus": "Joyda yordam",
+        "cargoTitle": "Kargo",
+        "cargoMeta": "Qozog‘iston · Rossiya · O‘zbekiston · Tojikiston",
+        "cargoStatus": "Bozordan yetkazib berish",
+        "leadTitle": "Kimga murojaat qilishni bilmayapsizmi?",
+        "leadBody": "Ariza qoldiring — kontakt tanlashda yordam beramiz.",
+        "leadCta": "Ariza qoldirish"
+      },
       "sections": {
-        "valueProps": { "title": "Nega Dordoi.help", "lead": "Kamroq xaos — ko‘proq nazorat.", "items": { "0": { "title": "Vaqt tejash", "body": "Arizalar va katalog." }, "1": { "title": "Aniq tuzilma", "body": "Rollar: xaridor, yetkazib beruvchi, buyer." }, "2": { "title": "Dordoyga yo‘naltirish", "body": "Mintaqaviy ulgurji ekotizimi." } } },
-        "audiences": { "title": "Platforma kimga", "lead": "Uch tomon — bir tizimda.", "buyersTitle": "Xaridorlarga", "buyersBody": "Katalog va arizalar.", "suppliersTitle": "Yetkazib beruvchilarga", "suppliersBody": "Mijozlar oqimi va vitrina.", "agentsTitle": "Buyerlarga", "agentsBody": "Tanlash va sifat." },
-        "howItWorks": { "title": "Qanday ishlaydi", "lead": "Qiziqishdan arizagacha.", "steps": { "0": { "title": "Rolni tanlang", "body": "Har bir rolning ssenariysi." }, "1": { "title": "Katalogni ko‘ring", "body": "Kategoriyalar." }, "2": { "title": "Ariza qoldiring", "body": "Tomolar to‘g‘ridan-to‘g‘ri bog‘lanadi." } } },
-        "ecosystem": { "title": "Dordoy raqamli ekotizimi", "body": "Biz B2B qatlamini quramiz." },
-        "ctaBand": { "title": "Dordoi.help ga qo‘shiling", "lead": "Bepul boshlang.", "primary": "Bepul boshlash", "secondary": "Katalogni ochish" }
+        "valueProps": { "title": "Xarid uchun hammasi bir joyda", "lead": "Qatorlarni kezishga kunlarni sarflamang. Yetkazib beruvchilarni, buyerlarni va kargoni bir necha bosishda toping.", "items": { "0": { "title": "To‘g‘ridan-to‘g‘ri sotuvchi kontaktlari", "body": "Yashirin ustama va qayta sotuvchilar yo‘q. Kategoriyani tanlang va konteyner egalariga bevosita yozing." }, "1": { "title": "Buyerlar yordamga tayyor", "body": "Shaxsan kelish imkoni yo‘qmi? Katalogdan buyer toping: sotib olish, foto-hisobot va partiyani tekshirish uchun." }, "2": { "title": "Logistika va kargo", "body": "Xarid qildingiz, lekin yukni qanday jo‘natishni bilmaysizmi? Qo‘llanmada transport kompaniyalari kontaktlari bor — butun MDH bo‘ylab yetkazib berish." } } },
+        "audiences": { "title": "Dordoyda nuqtangiz bormi?", "lead": "Do‘koningizni Dordoi.help bazasiga qo‘shing — yangi ulgurji xaridorlar siz bilan bevosita bog‘lana olsin.", "items": { "0": { "title": "To‘g‘ridan-to‘g‘ri kontaktlar", "body": "Qayta sotuvchilar yo‘q. Xaridor vitrangizni ko‘radi va bevosita yozadi — barcha kelishuvlar faqat o‘rtangizda." }, "1": { "title": "Telegramda arizalar", "body": "Murakkab shaxsiy kabinetlarni unuting. Xaridorlar so‘rovlari to‘g‘ridan-to‘g‘ri odatdagi Telegramingizga keladi." }, "2": { "title": "Raqamli vitrina", "body": "Konteyner profilingizni 2 daqiqada yarating. Qator va kategoriyani ko‘rsating va mashhur mahsulotlarning fotosini qo‘shing." } }, "cta": "Nuqtani katalogga qo‘shish" },
+        "howItWorks": { "title": "Mijozlarni qanday olasiz", "lead": "Murakkab shaxsiy kabinetlar yo‘q — barcha arizalar to‘g‘ridan-to‘g‘ri telefoningizga keladi.", "steps": { "0": { "title": "1. Nuqtani qo‘shasiz", "body": "Konteyner raqami, qator, mahsulot kategoriyasi va kontaktlarni ko‘rsatasiz. Onlayn vitrangiz tayyor." }, "1": { "title": "2. Xaridor mahsulot topadi", "body": "Ulgurji xaridor katalogga kiradi, kategoriyangizni tanlaydi, assortimentni ko‘radi va «Aloqa» tugmasini bosadi." }, "2": { "title": "3. Ariza Telegramga tushadi", "body": "Bot mijozdan so‘rovni darhol yuboradi. Keyin xarid bo‘yicha bevosita kelishasiz." } } },
+        "serviceProviders": { "title": "Dordoyda xizmat ko‘rsatasizmi?", "lead": "Xarid va yetkazib berishda yordam kerak bo‘lgan issiq mijozlarni oling.", "items": { "0": { "title": "Buyerlar: doimiy buyurtmalar", "body": "Anketangizni qo‘llanmada joylashtiring. Boshqa mamlakatlardan ulgurji xaridorlar buyurtma yig‘ish, brak tekshiruvi va partiyani sotib olish uchun sizga bevosita yozadi." }, "1": { "title": "Kargo: jo‘natish oqimi", "body": "MDH bo‘ylab yo‘nalishlaringizni ko‘rsating. Saytimiz orqali mahsulot topgan xaridorlar ishonchli yuk jo‘natish uchun sizga murojaat qiladi." } }, "cta": "Xizmatlaringizni joylashtirish" },
+        "ctaBand": { "title": "Dordoi.help jamiyatiga qo‘shiling", "lead": "Katalogga o‘tish yoki xizmatlaringizni joylashtirish uchun rolingizni tanlang.", "roles": { "0": { "title": "Men mahsulot qidiryapman", "subtitle": "Yetkazib beruvchilar katalogini ko‘rish" }, "1": { "title": "Men sotuvchiman", "subtitle": "Konteyneringizni qo‘shish" }, "2": { "title": "Men buyerlik qilaman", "subtitle": "Ulgurji mijozlarni topish" }, "3": { "title": "Men kargoman", "subtitle": "Jo‘natish uchun yuklar olish" } } }
       }
     },
-    "catalog": { "h1": "Kategoriyalar katalogi", "h2": "Dordoy ulgurji yo‘nalishlari" },
-    "suppliers": { "h1": "Yetkazib beruvchilarga", "h2": "Mijozlar va onlayn vitrina" },
-    "buyers": { "h1": "Xaridorlarga", "h2": "Sayohatsiz ulgurji" },
-    "buyerService": { "h1": "Buyerlarga", "h2": "Bitimni qo‘llab-quvvatlash" },
-    "about": { "h1": "Loyiha haqida", "h2": "Missiya" },
-    "help": { "h1": "Yordam", "h2": "Boshlash" },
-    "faq": { "h1": "TBS", "h2": "Qisqacha" },
-    "contact": { "h1": "Aloqa", "h2": "Biz bilan" },
-    "privacy": { "h1": "Maxfiylik", "h2": "Ma’lumotlar" },
-    "terms": { "h1": "Shartlar", "h2": "Qoidalar" },
-    "refund": { "h1": "Qaytarishlar", "h2": "Siyosat" }
+    "catalog": { "h1": "Kategoriyalar katalogi", "h2": "Dordoy ulgurji yo‘nalishlari", "intro": "Kategoriyani tanlang — keyingi versiyalarda mahsulot kartochkalari va yetkazib beruvchilar paydo bo‘ladi." },
+    "suppliers": { "h1": "Yetkazib beruvchilarga", "h2": "Mijozlar va onlayn vitrina", "body": "Katalogni joylashtiring va xaridorlar hamda buyerlardan arizalar oling. Platforma klassik marketpleyslardagi majburiy komissiyasiz vitrina vositalarini beradi — kelishuv shartlarini o‘zingiz belgilaysiz." },
+    "buyers": { "h1": "Xaridorlarga", "h2": "Sayohatsiz ulgurji", "body": "Dordoy kategoriyalari va yetkazib beruvchilarni qidiring, qatorlar bo‘yla sayohat va muzokaraga vaqt tejang. Arizalar va tuzilgan katalog orqali ishlang." },
+    "cargo": { "h1": "Kargo yetkazib berish", "h2": "Dordoy bozoridan shahringiz yoki mamlakatingizga", "body": "Katalog va arizalarda yetkazib berish yo‘nalishlari bo‘yicha yo‘riqnoma topishingiz mumkin (Qozog‘iston, Rossiya, O‘zbekiston, Tojikiston va boshqalar). Tashish shartlari va narxlarni kargo yoki yetkazib beruvchi bilan bevosita kelishasiz — xizmat axborot xarakteridagi." },
+    "buyerService": { "h1": "Buyerlarga", "h2": "Bitimni qo‘llab-quvvatlash", "body": "Mijozlarga mahsulot topish, sifat tekshirish va buyurtma yig‘ishda yordam bering — «qora quti» emas, ochiq vositachi sifatida." },
+    "about": { "h1": "Loyiha haqida", "h2": "Missiya", "body": "Dordoi.help — Dordoy bozori atrofidagi digital SaaS (Qirg‘iziston). Maqsad — ulgurji oqimini raqamlashtirish va MDH xaridorlari, yetkazib beruvchilari va buyerlarini bir tizimda bog‘lash." },
+    "help": { "h1": "Yordam", "h2": "Boshlash", "body": "Sarlavhada tilni tanlang, katalogga yoki rolingiz uchun bo‘limga o‘ting. Huquqiy jihatdan xizmat axborot xarakteridagi — kelishuvlar to‘g‘ridan-to‘g‘ri tomonlar o‘rtasida." },
+    "faq": { "h1": "TBS", "h2": "Qisqacha", "q1": "Bu Ozon kabi marketpleysmi?", "a1": "Yo‘q. Bu Dordoy ulgurji atrofidagi B2B platforma: kataloglar, rollar va arizalar, chakana marketpleys modelisiz.", "q2": "Bitimni kafolasizmi?", "a2": "Yo‘q. Biz axborot platformasimiz — sotuvchi emasmiz, to‘lov agenti emasmiz va kafolatchi emasmiz.", "q3": "Buyer kerakmi?", "a3": "Har doim emas. Sifat tekshirish yoki partiyani yig‘ish kerak bo‘lsa — buyer xavfni kamaytirishga yordam beradi." },
+    "contact": { "h1": "Aloqa", "h2": "Biz bilan", "body": "support@dordoi.help ga yozing — ish vaqtida javob beramiz." },
+    "privacy": { "h1": "Maxfiylik", "h2": "Ma’lumotlar", "body": "Ma’lumotlarni minimal darajada yig‘amiz va faqat xizmat va muloqot uchun ishlatamiz. To‘liq siyosatni mahsulot modullari ishga tushganda e’lon qilamiz." },
+    "terms": { "h1": "Shartlar", "h2": "Qoidalar", "body": "Dordoi.help dan foydalanish bilan platforma axborot xarakteridagi ekaniga rozilik bildirasiz. Bitimlar uchun javobgarlik tomonlarga tegishli." },
+    "refund": { "h1": "Qaytarishlar", "h2": "Siyosat", "body": "Qaytarishlar va nizolar xaridor va sotuvchi o‘z kelishuvi bo‘yicha hal qiladi. Dordoi.help to‘lovlarni qayta ishlamaydi." }
   },
   "catalogCategories": {
     "womens_clothing": "Ayollar kiyimi",

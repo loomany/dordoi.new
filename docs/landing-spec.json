@@ -3,30 +3,39 @@
   "hero": {
     "layout": "split",
     "mockupPosition": "right",
-    "ctaOrder": ["buyer", "supplier", "buyerAgent"],
     "messageKeys": {
       "title": "Pages.home.hero.title",
-      "subtitle": "Pages.home.hero.subtitle",
-      "ctas": {
-        "buyer": "Pages.home.hero.ctaBuyer",
-        "supplier": "Pages.home.hero.ctaSupplier",
-        "buyerAgent": "Pages.home.hero.ctaBuyerAgent"
-      }
+      "subtitle": "Pages.home.hero.subtitle"
     }
   },
   "sections": [
-    { "id": "valueProps", "variant": "three-columns" },
-    { "id": "audiences", "variant": "split-list" },
-    { "id": "howItWorks", "variant": "steps" },
-    { "id": "ecosystem", "variant": "highlight" },
-    { "id": "ctaBand", "variant": "conversion" }
+    {
+      "id": "audiences",
+      "variant": "split-list"
+    },
+    {
+      "id": "valueProps",
+      "variant": "three-columns"
+    },
+    {
+      "id": "howItWorks",
+      "variant": "steps"
+    },
+    {
+      "id": "serviceProviders",
+      "variant": "two-columns"
+    },
+    {
+      "id": "ctaBand",
+      "variant": "conversion"
+    }
   ],
   "mobileSectionOrder": [
     "hero",
-    "valueProps",
     "audiences",
+    "valueProps",
     "howItWorks",
-    "ecosystem",
+    "serviceProviders",
     "ctaBand"
   ],
   "typography": {

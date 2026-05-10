@@ -18,7 +18,7 @@
 
 ## Ограничения для генерации `landing-spec.json`
 
-- Секции приложения ожидают ids: `valueProps`, `audiences`, `howItWorks`, `ecosystem`, `ctaBand`.
+- Секции приложения ожидают ids: `valueProps`, `audiences`, `howItWorks`, `serviceProviders`, `ctaBand`.
 - Hero: `layout: "split"`, `mockupPosition` `left` | `right`, `ctaOrder` — перестановка трёх CTA: `buyer`, `supplier`, `buyerAgent`.
 - `messageKeys` в spec должны указывать на существующие ключи в `messages/ru.json` под `Pages.home.hero.*`.
 - Типографика и spacing — только токены вида `d-text-*`, `d-space-*`, `d-block-gap` (см. `styles/tokens.css` и текущий `docs/landing-spec.json`).

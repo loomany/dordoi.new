@@ -14,12 +14,12 @@
   --d-space-xs: 0.5rem;
   --d-space-sm: 0.75rem;
   --d-space-md: 1rem;
-  --d-space-lg: 1.5rem;
-  --d-space-xl: 2rem;
-  --d-space-2xl: 2.5rem;
-  --d-space-3xl: 3.5rem;
-  --d-space-section-y: 4.5rem;
-  --d-space-section-y-lg: 6rem;
+  --d-space-lg: 1.125rem;
+  --d-space-xl: 1.375rem;
+  --d-space-2xl: 2rem;
+  --d-space-3xl: 2.75rem;
+  --d-space-section-y: 2.75rem;
+  --d-space-section-y-lg: 3.75rem;
 
   /* Radius */
   --d-radius-card: 1rem;

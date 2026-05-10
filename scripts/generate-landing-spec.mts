@@ -3,7 +3,7 @@
  * Requires OPENAI_API_KEY and OPENAI_DESIGN_MODEL (default gpt-5.5-pro).
  * Fails loudly if the model is unavailable — no silent fallback.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import OpenAI from "openai";
@@ -11,6 +11,30 @@ import OpenAI from "openai";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outPath = join(root, "docs", "landing-spec.json");
 const briefPath = join(root, "docs", "design-from-ai.md");
+
+/** Load .env.local into process.env (same keys as Next.js local dev). */
+function loadEnvLocal() {
+  const envPath = join(root, ".env.local");
+  if (!existsSync(envPath)) return;
+  const raw = readFileSync(envPath, "utf8");
+  for (const line of raw.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let val = trimmed.slice(eq + 1).trim();
+    if (
+      (val.startsWith('"') && val.endsWith('"')) ||
+      (val.startsWith("'") && val.endsWith("'"))
+    ) {
+      val = val.slice(1, -1);
+    }
+    if (process.env[key] === undefined) process.env[key] = val;
+  }
+}
+
+loadEnvLocal();
 
 const apiKey = process.env.OPENAI_API_KEY;
 const model = process.env.OPENAI_DESIGN_MODEL ?? "gpt-5.5-pro";
@@ -27,13 +51,13 @@ const current = readFileSync(outPath, "utf8");
 const instructions =
   "You are a UI/UX architect and conversion copywriter for a B2B SaaS landing. " +
   "Output a single JSON object only (no markdown fences) that matches this TypeScript shape: " +
-  "{ version: number, hero: { layout: 'split', mockupPosition: 'left'|'right', ctaOrder: ['buyer','supplier','buyerAgent'], " +
-  "messageKeys: { title, subtitle, ctas: { buyer, supplier, buyerAgent } } (each value is a next-intl key path string starting with Pages.home.hero.) }, " +
+  "{ version: number, hero: { layout: 'split', mockupPosition: 'left'|'right', " +
+  "messageKeys: { title, subtitle } (each value is a next-intl key path string starting with Pages.home.hero.) }, " +
   "sections: Array<{ id: string, variant?: string }>, mobileSectionOrder: string[], typography: Record<string,string>, spacing: Record<string,string> }. " +
   "Use typography token names like d-text-5xl, d-text-xl, d-text-3xl, d-text-lg, d-text-base and spacing tokens d-space-section-y, d-space-section-y-lg, d-block-gap, d-space-lg.";
 
 const input =
-  `Product brief:\n${brief}\n\nCurrent landing-spec.json (improve while keeping section ids compatible with the app: valueProps, audiences, howItWorks, ecosystem, ctaBand):\n${current}`;
+  `Product brief:\n${brief}\n\nCurrent landing-spec.json (improve while keeping section ids compatible with the app: valueProps, audiences, howItWorks, serviceProviders, ctaBand):\n${current}`;
 
 const res = await client.responses.create({
   model,
