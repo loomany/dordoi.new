@@ -291,6 +291,38 @@ def _normalize_phone_manual_saas(raw: str) -> str | None:
     return d
 
 
+def _manual_phone_invalid_hint(raw: str) -> str:
+    """Пояснение при отказе: без «+», неверная длина и т.п. (совпадает с lib/phone.ts)."""
+    s = raw.strip()
+    tail = (
+        "Формат должен совпадать с входом по коду на сайте Dordoi.help "
+        "(те же цифры, что для SMS или WhatsApp)."
+    )
+    if not s.startswith("+"):
+        return (
+            "⚠️ Начните строку с символа «+», затем код страны и номер без других знаков, "
+            "например +7 778 816 6661 или +996 555 123456.\n\n" + tail
+        )
+    d = _phone_digits_for_storage(s)
+    if d.startswith("7") and len(d) != 11:
+        return (
+            "⚠️ Для кода +7 нужно ровно 11 цифр в номере целиком "
+            "(семёрка страны и ещё десять цифр абонента).\n\n"
+            f"Сейчас получилось {len(d)} цифр — чаще всего одна цифра лишняя или недостаёт. "
+            "Сверьтесь с номером в WhatsApp.\n\n" + tail
+        )
+    if any(d.startswith(p) for p in ("996", "998", "992")) and len(d) != 12:
+        return (
+            "⚠️ Для +996, +998 или +992 всего должно быть 12 цифр "
+            "(код страны три цифры и девять цифр номера).\n\n"
+            f"Сейчас получилось {len(d)} цифр.\n\n" + tail
+        )
+    return (
+        "⚠️ Номер не подходит под поддерживаемые страны (+7, +996, +998, +992) "
+        "или в нём ошибка.\n\n" + tail
+    )
+
+
 def create_router(settings: "Settings", repo: VendorRepository) -> Router:
     r = Router()
     bucket = settings.vendor_media_bucket
@@ -387,11 +419,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             return
         digits = _normalize_phone_manual_saas(message.text.strip())
         if not digits:
-            await message.answer(
-                "⚠️ Нужен международный номер с «+» в начале — как в телефонной книге "
-                "(например +7 778 816 6661 или +996 555 123456).\n\n"
-                "Без «+» мы не сохраним номер: так же устроен вход на сайте Dordoi.help.",
-            )
+            await message.answer(_manual_phone_invalid_hint(message.text.strip()))
             return
         await state.update_data(phone_number=digits)
         await state.set_state(VendorOnboarding.store_name)
