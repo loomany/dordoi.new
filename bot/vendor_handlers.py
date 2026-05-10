@@ -168,7 +168,7 @@ def _lang_kb() -> InlineKeyboardMarkup:
 def _add_store_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Добавить магазин", callback_data=CB_ADD_STORE)]
+            [InlineKeyboardButton(text="🏪 Добавить магазин", callback_data=CB_ADD_STORE)]
         ]
     )
 
@@ -304,15 +304,19 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             st = (existing.get("status") or "").strip()
             if st in ("pending_moderation", "approved"):
                 await message.answer(
-                    "У вас уже есть профиль продавца. "
-                    "Изменения через поддержку или админку."
+                    "✅ У вас уже есть заявка продавца в Dordoi.help.\n\n"
+                    "Чтобы что‑то изменить в данных магазина, напишите в поддержку "
+                    "или дождитесь доступа к личному кабинету после модерации."
                 )
                 return
 
         await state.clear()
         await state.set_state(VendorOnboarding.language)
         await message.answer(
-            "Добро пожаловать в Dordoi.help.\nВыберите язык:",
+            "👋 Добро пожаловать в Dordoi.help — онлайн-витрина для оптовиков рынка Дордой.\n\n"
+            "Сейчас мы соберём анкету вашего магазина прямо здесь, в Telegram: "
+            "фото, контакты, условия — всё увидит модератор перед публикацией.\n\n"
+            "🌐 Выберите язык интерфейса анкеты:",
             reply_markup=_lang_kb(),
         )
 
@@ -324,7 +328,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             _cat_locks.pop(uid, None)
         await state.clear()
         await message.answer(
-            "Опрос отменён. Начать снова: /start",
+            "🛑 Анкета остановлена. Чтобы начать заново, отправьте /start",
             reply_markup=ReplyKeyboardRemove(),
         )
 
@@ -338,7 +342,8 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.set_state(VendorOnboarding.add_store)
         await query.message.edit_reply_markup(reply_markup=None)
         await query.message.answer(
-            "Нажмите кнопку ниже, чтобы добавить магазин.",
+            "🏪 Шаг 1 из анкеты — добавим вашу торговую точку в каталог.\n\n"
+            "Нажмите кнопку ниже, когда будете готовы продолжить.",
             reply_markup=_add_store_kb(),
         )
 
@@ -350,12 +355,15 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.phone)
         await query.message.answer(
-            "Укажите номер WhatsApp — по нему вы входите в личный кабинет продавца "
-            "(тот же номер, на который завязан вход на сайте).\n\n"
-            "Напишите номер в международном формате и обязательно с «+» в начале, например:\n"
-            "+7 778 123 45 67 · +996 555 123456\n\n"
-            "Если Telegram и WhatsApp на разных телефонах — всё равно введите именно WhatsApp. "
-            "Либо отправьте контакт кнопкой ниже.",
+            "📱 Шаг 2 — номер для входа в кабинет продавца на сайте Dordoi.help\n\n"
+            "Это должен быть тот же номер, что привязан к вашему WhatsApp: "
+            "по нему вы позже получаете код входа (SMS/WhatsApp) на сайте.\n\n"
+            "✍️ Напишите номер одним сообщением в международном формате и "
+            "обязательно с символом «+» в начале, например:\n"
+            "• +7 778 123 45 67\n"
+            "• +996 555 123456\n\n"
+            "💡 Если Telegram на другом телефоне — всё равно укажите номер WhatsApp.\n"
+            "Либо нажмите «Поделиться контактом», если в профиле Telegram тот же номер.",
             reply_markup=_contact_kb(),
         )
 
@@ -365,20 +373,26 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             return
         phone = normalize_contact_phone(message.contact.phone_number)
         if not phone:
-            await message.answer("Не удалось прочитать номер. Попробуйте снова.")
+            await message.answer(
+                "⚠️ Не удалось прочитать номер из контакта. Введите номер вручную сообщением."
+            )
             return
         digits = _phone_digits_for_storage(phone)
         if not _digits_valid_saas_login(digits):
             await message.answer(
-                "Этот номер не подходит для входа на Dordoi.help. "
-                "Введите WhatsApp вручную строкой, начиная с + "
+                "⚠️ Этот номер не подходит для входа на Dordoi.help "
+                "(нужен формат как на сайте: страны +7, +996, +998, +992).\n\n"
+                "✍️ Введите номер WhatsApp вручную строкой, начиная с + "
                 "(например +7… или +996…).",
             )
             return
         await state.update_data(phone_number=digits)
         await state.set_state(VendorOnboarding.store_name)
         await message.answer(
-            "Название магазина:",
+            "✅ Номер сохранён.\n\n"
+            "🏷️ Шаг 3 — как покупатели увидят ваш магазин в каталоге\n\n"
+            "Напишите название торговой точки или бренда одним сообщением "
+            "(как на вывеске или в WhatsApp):",
             reply_markup=ReplyKeyboardRemove(),
         )
 
@@ -389,22 +403,26 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         digits = _normalize_phone_manual_saas(message.text.strip())
         if not digits:
             await message.answer(
-                "Нужен международный номер с «+» в начале, как в телефонной книге "
-                "(например +7 778 816 6661 или +996 555 123456). "
-                "Без «+» не принимаем — так мы совпадаем с входом на сайте.",
+                "⚠️ Нужен международный номер с «+» в начале — как в телефонной книге "
+                "(например +7 778 816 6661 или +996 555 123456).\n\n"
+                "Без «+» мы не сохраним номер: так же устроен вход на сайте Dordoi.help.",
             )
             return
         await state.update_data(phone_number=digits)
         await state.set_state(VendorOnboarding.store_name)
         await message.answer(
-            "Название магазина:",
+            "✅ Номер сохранён.\n\n"
+            "🏷️ Шаг 3 — как покупатели увидят ваш магазин в каталоге\n\n"
+            "Напишите название торговой точки или бренда одним сообщением "
+            "(как на вывеске или в WhatsApp):",
             reply_markup=ReplyKeyboardRemove(),
         )
 
     @r.message(StateFilter(VendorOnboarding.phone))
     async def step_phone_invalid(message: Message) -> None:
         await message.answer(
-            "Отправьте номер одним сообщением, начиная с +, или нажмите «Поделиться контактом».",
+            "⚠️ Отправьте номер текстом (с «+» в начале) или нажмите "
+            "«📱 Поделиться контактом» под полем ввода.",
         )
 
     @r.message(StateFilter(VendorOnboarding.store_name), F.text)
@@ -413,11 +431,19 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             return
         name = message.text.strip()
         if len(name) < 2 or len(name) > 500:
-            await message.answer("Название: от 2 до 500 символов.")
+            await message.answer(
+                "⚠️ Название слишком короткое или длинное.\n"
+                "Нужно от 2 до 500 символов — попробуйте ещё раз."
+            )
             return
         await state.update_data(store_name=name)
         await state.set_state(VendorOnboarding.location_row)
-        await message.answer("Торговый ряд (локация на рынке):")
+        await message.answer(
+            "📍 Шаг 4 — где вас искать на Дордое\n\n"
+            "Укажите торговый ряд / контейнер / ориентир на рынке "
+            "(покупателям это поможет найти точку вживую).\n\n"
+            "Например: «ряд X, контейнер Y» или как принято у вас:"
+        )
 
     @r.message(StateFilter(VendorOnboarding.location_row), F.text)
     async def step_location(message: Message, state: FSMContext) -> None:
@@ -425,11 +451,18 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             return
         loc = message.text.strip()
         if len(loc) < 1 or len(loc) > 500:
-            await message.answer("Укажите торговый ряд (до 500 символов).")
+            await message.answer(
+                "⚠️ Укажите локацию короче (до 500 символов) или чуть подробнее одним сообщением."
+            )
             return
         await state.update_data(location_row=loc)
         await state.set_state(VendorOnboarding.logo)
-        await message.answer("Загрузите логотип одним фото (JPG/PNG/WebP).")
+        await message.answer(
+            "🖼️ Шаг 5 — логотип для карточки магазина\n\n"
+            "Пришлите одно фото с логотипом или вывеской "
+            "(JPG, PNG или WebP с телефона).\n"
+            "Это фото покажем на витрине в каталоге."
+        )
 
     @r.message(StateFilter(VendorOnboarding.logo), F.photo)
     async def step_logo(message: Message, state: FSMContext, bot: Bot) -> None:
@@ -439,25 +472,37 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         try:
             body, mime = await _download_photo_jpeg(bot, message.photo[-1])
         except Exception:
-            await message.answer("Не удалось скачать фото. Попробуйте ещё раз.")
+            await message.answer(
+                "⚠️ Не удалось получить фото из Telegram. Отправьте картинку ещё раз."
+            )
             return
         if len(body) > 10 * 1024 * 1024:
-            await message.answer("Файл больше 10 МБ.")
+            await message.answer("⚠️ Файл больше 10 МБ — сожмите фото или пришлите другое.")
             return
         try:
             _, pub = repo.upload_public_image(
                 bucket, uid, body, "logo.jpg", mime
             )
         except Exception:
-            await message.answer("Ошибка загрузки в хранилище. Попробуйте позже.")
+            await message.answer(
+                "⚠️ Не удалось сохранить файл на сервере. Попробуйте через минуту или другое фото."
+            )
             return
         await state.update_data(logo_url=pub)
         await state.set_state(VendorOnboarding.description)
-        await message.answer("Описание торговой точки (для покупателей):")
+        await message.answer(
+            "📝 Шаг 6 — описание для покупателей\n\n"
+            "Расскажите своими словами, чем торгуете и кому удобно заказывать у вас "
+            "(ассортимент, форматы работы, без лишней воды — "
+            "этот текст попадёт в карточку магазина):"
+        )
 
     @r.message(StateFilter(VendorOnboarding.logo))
     async def step_logo_bad(message: Message) -> None:
-        await message.answer("Пришлите одно фото (не файл документа).")
+        await message.answer(
+            "⚠️ Нужно именно фото картинкой (не PDF и не файл документа). "
+            "Сделайте снимок или отправьте JPEG/PNG одним сообщением."
+        )
 
     @r.message(StateFilter(VendorOnboarding.description), F.text)
     async def step_description(message: Message, state: FSMContext) -> None:
@@ -465,12 +510,18 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             return
         desc = message.text.strip()
         if len(desc) < 5 or len(desc) > 4000:
-            await message.answer("Описание: от 5 до 4000 символов.")
+            await message.answer(
+                "⚠️ Описание должно быть от 5 до 4000 символов — добавьте пару предложений "
+                "или сократите текст."
+            )
             return
         await state.update_data(description=desc, cat_indices=[])
         await state.set_state(VendorOnboarding.categories)
         m = await message.answer(
-            "Выберите категории товаров (можно несколько), затем «Готово»:",
+            "🏷️ Шаг 7 — категории товаров\n\n"
+            "Выберите одну или несколько категорий кнопками ниже "
+            "(покупатели фильтруют каталог по ним).\n"
+            "Когда всё отметите — нажмите «Готово».",
             reply_markup=_category_kb([]),
         )
         await state.update_data(categories_msg_id=m.message_id)
@@ -518,7 +569,8 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         indices: list[int] = list(data.get("cat_indices") or [])
         if not indices:
             await query.answer(
-                "Выберите хотя бы одну категорию.", show_alert=True
+                "👉 Выберите хотя бы одну категорию — без этого заявку не собрать.",
+                show_alert=True,
             )
             return
         names = [VENDOR_CATEGORIES[i] for i in indices]
@@ -527,8 +579,11 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.set_state(VendorOnboarding.product_photos)
         await state.update_data(product_photo_urls=[])
         await query.message.answer(
-            "Отправьте фото товаров (до 15 штук). Можно отправлять по одному или альбомом.\n"
-            "Когда закончите — нажмите «Завершить загрузку фото».",
+            "📸 Шаг 8 — фото ассортимента\n\n"
+            "Пришлите до 15 фото товаров, которые хотите показывать байерам "
+            "(можно по одному или несколько в одном альбоме).\n\n"
+            "💡 Чем понятнее фото — тем проще покупателю решиться на контакт.\n"
+            "Когда загрузите всё нужное — нажмите «Завершить загрузку фото».",
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [
@@ -550,15 +605,20 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             data = await state.get_data()
             urls: list[str] = list(data.get("product_photo_urls") or [])
             if len(urls) >= 15:
-                await message.answer("Уже 15 фото. Нажмите «Завершить загрузку фото».")
+                await message.answer(
+                    "📎 Уже загружено максимум 15 фото.\n"
+                    "Нажмите «Завершить загрузку фото», чтобы перейти дальше."
+                )
                 return
             try:
                 body, mime = await _download_photo_jpeg(bot, message.photo[-1])
             except Exception:
-                await message.answer("Не удалось получить фото.")
+                await message.answer("⚠️ Не удалось получить фото из Telegram — отправьте ещё раз.")
                 return
             if len(body) > 10 * 1024 * 1024:
-                await message.answer("Фото больше 10 МБ, пропускаем.")
+                await message.answer(
+                    "⚠️ Это фото больше 10 МБ — пропускаем. Пришлите сжатое или другое."
+                )
                 return
             try:
                 _, pub = repo.upload_public_image(
@@ -569,11 +629,13 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
                     mime,
                 )
             except Exception:
-                await message.answer("Ошибка загрузки. Попробуйте другое фото.")
+                await message.answer(
+                    "⚠️ Не удалось сохранить фото на сервере. Попробуйте другое изображение."
+                )
                 return
             urls.append(pub)
             await state.update_data(product_photo_urls=urls)
-            await message.answer(f"Сохранено фото {len(urls)}/15.")
+            await message.answer(f"✅ Сохранено фото {len(urls)} из 15. Можете добавить ещё или завершить загрузку.")
 
     @r.callback_query(
         StateFilter(VendorOnboarding.product_photos), F.data == CB_PHOTOS_DONE
@@ -585,13 +647,17 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         urls: list[str] = list(data.get("product_photo_urls") or [])
         if len(urls) < 1:
             await query.answer(
-                "Добавьте хотя бы одно фото товара.", show_alert=True
+                "📷 Добавьте хотя бы одно фото товара — без этого шаг не завершить.",
+                show_alert=True,
             )
             return
         await query.answer()
         await state.set_state(VendorOnboarding.container_photo)
         await query.message.answer(
-            "Фото контейнера / места отгрузки (одно фото):"
+            "📦 Шаг 9 — где вы отгружаете заказ\n\n"
+            "Пришлите одно фото контейнера, точки или склада на рынке — "
+            "так байеру проще найти вас при первой поездке.\n\n"
+            "Одно фото в сообщении."
         )
 
     @r.message(StateFilter(VendorOnboarding.container_photo), F.photo)
@@ -601,25 +667,35 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         try:
             body, mime = await _download_photo_jpeg(bot, message.photo[-1])
         except Exception:
-            await message.answer("Не удалось скачать фото.")
+            await message.answer(
+                "⚠️ Не удалось получить фото. Отправьте изображение ещё раз."
+            )
             return
         if len(body) > 10 * 1024 * 1024:
-            await message.answer("Файл больше 10 МБ.")
+            await message.answer("⚠️ Файл больше 10 МБ — пришлите фото поменьше.")
             return
         try:
             _, pub = repo.upload_public_image(
                 bucket, message.chat.id, body, "container.jpg", mime
             )
         except Exception:
-            await message.answer("Ошибка загрузки. Повторите.")
+            await message.answer(
+                "⚠️ Ошибка сохранения фото. Попробуйте другое изображение или позже."
+            )
             return
         await state.update_data(container_photo_url=pub)
         await state.set_state(VendorOnboarding.min_batch)
-        await message.answer("Минимальная партия / условия отгрузки (текстом):")
+        await message.answer(
+            "📊 Шаг 10 — минимальный заказ и отгрузка\n\n"
+            "Опишите текстом минимальную партию и как вы отгружаете "
+            "(например: «от 50 шт», «короб», «под заказ 3 дня»):"
+        )
 
     @r.message(StateFilter(VendorOnboarding.container_photo))
     async def step_container_bad(message: Message) -> None:
-        await message.answer("Пришлите одно фото.")
+        await message.answer(
+            "⚠️ Нужно одно фото (не документ). Снимите контейнер или точку отгрузки."
+        )
 
     @r.message(StateFilter(VendorOnboarding.min_batch), F.text)
     async def step_min_batch(message: Message, state: FSMContext) -> None:
@@ -627,12 +703,15 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             return
         t = message.text.strip()
         if len(t) < 1 or len(t) > 500:
-            await message.answer("До 500 символов.")
+            await message.answer(
+                "⚠️ Текст до 500 символов — укоротите или разбейте на главное."
+            )
             return
         await state.update_data(min_batch=t)
         await state.set_state(VendorOnboarding.payment)
         await message.answer(
-            "Способ оплаты:",
+            "💳 Шаг 11 — как вы принимаете оплату\n\n"
+            "Выберите вариант кнопкой ниже (это увидят покупатели в карточке):",
             reply_markup=_payment_kb(),
         )
 
@@ -650,7 +729,10 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.delivery_help)
         await query.message.answer(
-            "Нужна помощь с доставкой?",
+            "🚚 Шаг 12 — доставка для покупателя\n\n"
+            "Помогаете ли вы организовать доставку до клиента или перевозчика "
+            "(консолидация, контакты транспорта и т.п.)?\n\n"
+            "Выберите «Да» или «Нет»:",
             reply_markup=_yes_no_kb(CB_DEL_Y, CB_DEL_N, "Да", "Нет"),
         )
 
@@ -667,7 +749,11 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.whatsapp_1)
         await query.message.answer(
-            "WhatsApp для связи №1 (поделитесь контактом):",
+            "💬 Шаг 13 — основной WhatsApp для покупателей\n\n"
+            "Это номер, по которому байеры и оптовики будут писать вам напрямую "
+            "из каталога.\n\n"
+            "Отправьте контакт кнопкой ниже или введите номер текстом "
+            "(можно тот же, что для входа в кабинет, если он же в WhatsApp):",
             reply_markup=_contact_kb(),
         )
 
@@ -677,16 +763,20 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             return
         phone = normalize_contact_phone(message.contact.phone_number)
         if not phone:
-            await message.answer("Некорректный контакт.")
+            await message.answer(
+                "⚠️ Не удалось прочитать контакт. Введите номер WhatsApp текстом "
+                "или отправьте контакт ещё раз."
+            )
             return
         await state.update_data(whatsapp_1=phone)
         await state.set_state(VendorOnboarding.whatsapp_2)
         await message.answer(
-            "WhatsApp №2 (необязательно):",
+            "📲 Дополнительный WhatsApp (необязательно)\n\n"
+            "Если есть второй номер для заказов — отправьте контакт или номер тем же способом.",
             reply_markup=_contact_kb(),
         )
         await message.answer(
-            "Или нажмите «Пропустить».",
+            "Или нажмите «Пропустить», если второго номера нет:",
             reply_markup=_skip_kb(CB_WA2_SKIP),
         )
 
@@ -694,19 +784,27 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
     async def step_wa1_text(message: Message, state: FSMContext) -> None:
         p = validate_phone(message.text or "")
         if not p:
-            await message.answer("Отправьте контакт кнопкой или введите номер в международном формате.")
+            await message.answer(
+                "⚠️ Нужен номер в международном виде или контакт кнопкой "
+                "(как в предыдущем шаге)."
+            )
             return
         await state.update_data(whatsapp_1=p)
         await state.set_state(VendorOnboarding.whatsapp_2)
         await message.answer(
-            "WhatsApp №2 (необязательно):",
+            "📲 Дополнительный WhatsApp (необязательно)",
             reply_markup=_contact_kb(),
         )
-        await message.answer("Или нажмите «Пропустить».", reply_markup=_skip_kb(CB_WA2_SKIP))
+        await message.answer(
+            "Или «Пропустить», если один номер:",
+            reply_markup=_skip_kb(CB_WA2_SKIP),
+        )
 
     @r.message(StateFilter(VendorOnboarding.whatsapp_1))
     async def step_wa1_bad(message: Message) -> None:
-        await message.answer("Отправьте контакт кнопкой или номер телефона текстом.")
+        await message.answer(
+            "⚠️ Отправьте контакт кнопкой или напишите номер текстом в международном формате."
+        )
 
     @r.callback_query(StateFilter(VendorOnboarding.whatsapp_2), F.data == CB_WA2_SKIP)
     async def cb_wa2_skip(query: CallbackQuery, state: FSMContext) -> None:
@@ -717,7 +815,10 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.instagram)
         await query.message.answer(
-            "Ссылка на Instagram (https://…):",
+            "📷 Instagram (необязательно)\n\n"
+            "Если ведёте витрину в Instagram — пришлите ссылку https://… "
+            "или ник @username. Это покажем в карточке.\n\n"
+            "Или нажмите «Пропустить»:",
             reply_markup=_skip_kb(CB_IG_SKIP),
         )
 
@@ -727,25 +828,35 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             return
         phone = normalize_contact_phone(message.contact.phone_number)
         if not phone:
-            await message.answer("Некорректный контакт.")
+            await message.answer(
+                "⚠️ Контакт не распознан. Введите второй WhatsApp текстом или пропустите шаг."
+            )
             return
         await state.update_data(whatsapp_2=phone)
         await state.set_state(VendorOnboarding.instagram)
         await message.answer(
-            "Ссылка на Instagram:",
+            "📷 Instagram — ссылка или @username (необязательно):",
             reply_markup=ReplyKeyboardRemove(),
         )
-        await message.answer("(или Пропустить)", reply_markup=_skip_kb(CB_IG_SKIP))
+        await message.answer(
+            "Или пропустите:",
+            reply_markup=_skip_kb(CB_IG_SKIP),
+        )
 
     @r.message(StateFilter(VendorOnboarding.whatsapp_2), F.text)
     async def step_wa2_text(message: Message, state: FSMContext) -> None:
         p = validate_phone(message.text or "")
         if not p:
-            await message.answer("Контакт кнопкой или номером, либо Пропустить.")
+            await message.answer(
+                "⚠️ Нужен номер текстом, контакт или «Пропустить» второй WhatsApp."
+            )
             return
         await state.update_data(whatsapp_2=p)
         await state.set_state(VendorOnboarding.instagram)
-        await message.answer("Ссылка на Instagram:", reply_markup=_skip_kb(CB_IG_SKIP))
+        await message.answer(
+            "📷 Instagram — ссылка или ник (необязательно):",
+            reply_markup=_skip_kb(CB_IG_SKIP),
+        )
 
     @r.callback_query(StateFilter(VendorOnboarding.instagram), F.data == CB_IG_SKIP)
     async def cb_ig_skip(query: CallbackQuery, state: FSMContext) -> None:
@@ -756,7 +867,9 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.telegram_channel)
         await query.message.answer(
-            "Ссылка на Telegram-канал или @username:",
+            "✈️ Telegram канал или чат (необязательно)\n\n"
+            "Укажите ссылку t.me/… или @username вашего канала/бота для заказов.\n\n"
+            "Или пропустите:",
             reply_markup=_skip_kb(CB_TG_SKIP),
         )
 
@@ -764,12 +877,14 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
     async def step_instagram(message: Message, state: FSMContext) -> None:
         raw = (message.text or "").strip()
         if not _url_ok(raw):
-            await message.answer("Нужна ссылка https://… или @username")
+            await message.answer(
+                "⚠️ Нужна корректная ссылка https://… или ник вида @username"
+            )
             return
         await state.update_data(instagram_url=raw)
         await state.set_state(VendorOnboarding.telegram_channel)
         await message.answer(
-            "Ссылка на Telegram-канал или бота:",
+            "✈️ Telegram для заказов — ссылка или @username (необязательно):",
             reply_markup=_skip_kb(CB_TG_SKIP),
         )
 
@@ -782,7 +897,9 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.samples)
         await query.message.answer(
-            "Можно ли заказать образцы?",
+            "🧵 Образцы перед крупным заказом\n\n"
+            "Отправляете ли вы образцы ткани/товара до большой партии?\n\n"
+            "Выберите «Да» или «Нет»:",
             reply_markup=_yes_no_kb(CB_SMP_Y, CB_SMP_N, "Да", "Нет"),
         )
 
@@ -790,12 +907,14 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
     async def step_tg_ch(message: Message, state: FSMContext) -> None:
         raw = (message.text or "").strip()
         if len(raw) < 3 or len(raw) > 500:
-            await message.answer("Укажите ссылку или @username (до 500 символов).")
+            await message.answer(
+                "⚠️ Введите от 3 до 500 символов: ссылку на t.me или @username."
+            )
             return
         await state.update_data(telegram_url=raw)
         await state.set_state(VendorOnboarding.samples)
         await message.answer(
-            "Можно ли заказать образцы?",
+            "🧵 Образцы перед крупным заказом — да или нет?",
             reply_markup=_yes_no_kb(CB_SMP_Y, CB_SMP_N, "Да", "Нет"),
         )
 
@@ -811,7 +930,10 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.returns)
         await query.message.answer(
-            "Есть ли возврат брака?",
+            "↩️ Возврат брака и пересорт\n\n"
+            "Укажите, работаете ли вы с возвратом некондиции и на каких условиях "
+            "(это важно оптовикам).\n\n"
+            "Выберите вариант кнопкой или опишите текстом условия:",
             reply_markup=_returns_kb(),
         )
 
@@ -835,7 +957,8 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.returns_conditions)
         await query.message.answer(
-            "Опишите условия возврата брака текстом:"
+            "✍️ Опишите условия возврата брака своими словами "
+            "(например: пересорт в течение 24 ч, частичный возврат и т.д.):"
         )
 
     @r.message(StateFilter(VendorOnboarding.returns_conditions), F.text)
@@ -844,7 +967,9 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             return
         t = message.text.strip()
         if len(t) < 3 or len(t) > 2000:
-            await message.answer("От 3 до 2000 символов.")
+            await message.answer(
+                "⚠️ Нужно от 3 до 2000 символов — опишите условия чуть подробнее или короче."
+            )
             return
         await state.update_data(returns_policy=t)
         await _finalize(message, state, settings, repo)
@@ -876,12 +1001,16 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             if k == "returns_policy":
                 continue
             if data.get(k) is None:
-                await message.answer(f"Не хватает данных ({k}). Начните с /start")
+                await message.answer(
+                    f"⚠️ Анкета неполная (не заполнено: {k}). Начните снова с команды /start"
+                )
                 await state.clear()
                 return
         rp = data.get("returns_policy")
         if rp is None or (isinstance(rp, str) and not rp.strip()):
-            await message.answer("Не хватает условий возврата. /start")
+            await message.answer(
+                "⚠️ Не указаны условия возврата. Начните анкету заново: /start"
+            )
             await state.clear()
             return
 
@@ -913,10 +1042,13 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             err = str(e).lower()
             if "unique" in err or "duplicate" in err:
                 await message.answer(
-                    "Этот телефон или аккаунт уже зарегистрирован. Обратитесь в поддержку."
+                    "⚠️ Этот номер или профиль уже есть в базе Dordoi.help.\n"
+                    "Если это ошибка — напишите в поддержку."
                 )
             else:
-                await message.answer("Ошибка сохранения. Попробуйте позже.")
+                await message.answer(
+                    "⚠️ Не удалось сохранить заявку. Попробуйте позже или напишите в поддержку."
+                )
             return
 
         saved_row = saved if isinstance(saved, dict) else row
@@ -938,9 +1070,9 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         except Exception:
             _log.exception("MarkdownV2 seller message failed, sending plain text")
             await message.answer(
-                "Ваша заявка принята! Ожидает модерации.\n"
-                f"Ваш логин для входа: {phone_login}\n"
-                f"Ссылка на кабинет: {st.vendor_login_url}",
+                "✅ Заявка принята и отправлена на модерацию.\n\n"
+                f"Логин для входа на сайт: {phone_login}\n"
+                f"Личный кабинет: {st.vendor_login_url}",
                 reply_markup=ReplyKeyboardRemove(),
             )
 
