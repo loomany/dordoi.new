@@ -706,9 +706,8 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.set_state(VendorOnboarding.container_photo)
         await query.message.answer(
             "📦 Шаг 8 — где вы отгружаете заказ\n\n"
-            "Пришлите одно фото контейнера, точки или склада на рынке — "
-            "так покупателю проще найти вас при первой поездке.\n\n"
-            "Одно фото в сообщении."
+            "Пришлите одно фото контейнера, точки или склада на рынке (одно сообщение — одно фото) — "
+            "чтобы покупателю было проще найти вас при первой поездке."
         )
 
     @r.message(StateFilter(VendorOnboarding.container_photo), F.photo)
