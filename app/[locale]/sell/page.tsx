@@ -1,5 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
-import { ServiceHeroPage } from "@/components/content/ServiceHeroPage";
+import { SellVendorLanding } from "@/components/sell/SellVendorLanding";
 import { buildSeoMetadata } from "@/lib/build-seo";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -12,5 +12,5 @@ export async function generateMetadata({ params }: Props) {
 export default async function SellPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <ServiceHeroPage namespace="sell" />;
+  return <SellVendorLanding />;
 }

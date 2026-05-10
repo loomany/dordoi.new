@@ -1,10 +1,14 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { FaqAccordion } from "@/components/ui/faq-accordion";
 import { ProviderSidebar } from "@/components/provider/ProviderSidebar";
 import { ProviderTermsGrid } from "@/components/provider/ProviderTermsGrid";
 import type { ProviderSlug } from "@/data/provider-registry";
 import { providerContactBySlug } from "@/data/provider-registry";
+import {
+  formatListingUpdatedToday,
+  formatProviderAddedDate,
+} from "@/lib/provider-dates";
 
 type Props = {
   slug: ProviderSlug;
@@ -12,8 +16,10 @@ type Props = {
 
 export async function ProviderProfileView({ slug }: Props) {
   const t = await getTranslations("Pages.providerProfile");
+  const locale = await getLocale();
   const p = (key: string) => t(`slugs.${slug}.${key}`);
   const contact = providerContactBySlug[slug];
+  const listedNow = new Date();
 
   const faqItems = [0, 1, 2, 3].map((i) => ({
     question: p(`faq.${i}.q`),
@@ -68,6 +74,18 @@ export async function ProviderProfileView({ slug }: Props) {
                 <span className="rounded-full bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-800">
                   {p("trustCis")}
                 </span>
+              </div>
+              <div className="mt-4 flex flex-col gap-0.5 border-t border-gray-100 pt-4 text-xs text-gray-400 sm:flex-row sm:items-center sm:gap-6">
+                <p>
+                  {t("listingAdded", {
+                    date: formatProviderAddedDate(listedNow.toISOString(), locale),
+                  })}
+                </p>
+                <p>
+                  {t("listingUpdated", {
+                    relative: formatListingUpdatedToday(locale),
+                  })}
+                </p>
               </div>
             </header>
 

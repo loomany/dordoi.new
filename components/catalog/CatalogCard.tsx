@@ -7,6 +7,9 @@ export type CatalogCardProps = {
   viewProfileLabel: string;
   /** When set, the whole card links to the provider profile (no nested button). */
   href?: string;
+  /** Pre-formatted “added / updated” lines from registry + i18n. */
+  addedLine?: string;
+  updatedLine?: string;
   className?: string;
 };
 
@@ -19,14 +22,27 @@ export function CatalogCard({
   description,
   viewProfileLabel,
   href,
+  addedLine,
+  updatedLine,
   className,
 }: CatalogCardProps) {
+  const showMeta = Boolean(addedLine || updatedLine);
+
   const inner = (
     <>
       <h2 className="mb-2 text-lg font-bold text-gray-900">{title}</h2>
-      <p className="line-clamp-3 text-sm text-gray-500">{description}</p>
+      <p className="line-clamp-3 min-h-0 flex-1 text-sm text-gray-500">
+        {description}
+      </p>
 
-      <div className="mt-auto pt-6">
+      {showMeta ? (
+        <div className="mt-4 space-y-0.5 border-t border-gray-100 pt-4 text-xs text-gray-400">
+          {addedLine ? <p>{addedLine}</p> : null}
+          {updatedLine ? <p>{updatedLine}</p> : null}
+        </div>
+      ) : null}
+
+      <div className={showMeta ? "mt-4" : "mt-auto pt-6"}>
         <span className={ctaClassName}>{viewProfileLabel}</span>
       </div>
     </>

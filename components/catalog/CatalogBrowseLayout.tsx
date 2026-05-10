@@ -1,14 +1,19 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { ChevronDown, LayoutGrid, Search } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { CatalogCard } from "@/components/catalog/CatalogCard";
+import type { ProviderSlug } from "@/data/provider-registry";
+import {
+  formatListingUpdatedToday,
+  formatProviderAddedDate,
+} from "@/lib/provider-dates";
 
 const SAMPLE_IDS = ["0", "1", "2", "3", "4", "5"] as const;
 
-/** Optional profile deep-links — first cards match `data/provider-registry`. */
-const SAMPLE_PROFILE_HREFS: (string | undefined)[] = [
-  "/catalog/container-04-12",
-  "/catalog/tkani-dordoi",
+/** Profile slugs for sample rows — aligns with `data/provider-registry`. */
+const SAMPLE_PROFILE_SLUGS: (ProviderSlug | undefined)[] = [
+  "container-04-12",
+  "tkani-dordoi",
   undefined,
   undefined,
   undefined,
@@ -18,13 +23,35 @@ const SAMPLE_PROFILE_HREFS: (string | undefined)[] = [
 /** Full catalog browse chrome: header, filters, responsive card grid. */
 export async function CatalogBrowseLayout() {
   const t = await getTranslations("Pages.catalogBrowse");
+  const locale = await getLocale();
+  const listedNow = new Date();
+  const addedLine = t("listingAdded", {
+    date: formatProviderAddedDate(listedNow.toISOString(), locale),
+  });
+  const updatedLine = t("listingUpdated", {
+    relative: formatListingUpdatedToday(locale),
+  });
 
-  const cards = SAMPLE_IDS.map((id, index) => ({
-    id,
-    href: SAMPLE_PROFILE_HREFS[index],
-    title: t(`samples.${id}.title`),
-    description: t(`samples.${id}.description`),
-  }));
+  const cards = SAMPLE_IDS.map((id, index) => {
+    const slug = SAMPLE_PROFILE_SLUGS[index];
+
+    return {
+      id,
+      href: slug ? `/catalog/${slug}` : undefined,
+      title: t(`samples.${id}.title`),
+      description: t(`samples.${id}.description`),
+      addedLine,
+      updatedLine,
+    };
+  });
+
+  const cardCount = cards.length;
+  const nf = new Intl.NumberFormat(locale);
+  const statsLine = t("stats", {
+    from: nf.format(cardCount > 0 ? 1 : 0),
+    to: nf.format(cardCount),
+    total: nf.format(cardCount),
+  });
 
   return (
     <div className="bg-gray-50/80 pb-16 pt-10 sm:pt-12">
@@ -47,9 +74,7 @@ export async function CatalogBrowseLayout() {
             <header>
               <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">{t("title")}</h1>
               <p className="mt-3 max-w-3xl text-gray-500">{t("subtitle")}</p>
-              <p className="mt-4 text-sm text-gray-400">
-                {t("stats", { from: 1, to: 8, total: "5,214" })}
-              </p>
+              <p className="mt-4 text-sm text-gray-400">{statsLine}</p>
             </header>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -89,6 +114,8 @@ export async function CatalogBrowseLayout() {
               href={c.href}
               title={c.title}
               description={c.description}
+              addedLine={c.addedLine}
+              updatedLine={c.updatedLine}
               viewProfileLabel={t("viewProfile")}
             />
           ))}
