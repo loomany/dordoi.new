@@ -72,9 +72,8 @@ def load_settings() -> Settings:
             "VENDOR_LOGIN_URL в .env / .env.local — иначе в боте не будет корректной ссылки на вход."
         )
 
-    notify = os.getenv("ADMIN_NOTIFY_CHAT", "@loomany").strip()
-    if not notify:
-        notify = "@loomany"
+    # Опционально: @username или numeric chat id. Если не задано — только ADMIN_TELEGRAM_IDS / TELEGRAM_ADMIN_IDS.
+    notify = os.getenv("ADMIN_NOTIFY_CHAT", "").strip()
 
     bucket = os.getenv("VENDOR_MEDIA_BUCKET", "vendor-media").strip()
     if not bucket:

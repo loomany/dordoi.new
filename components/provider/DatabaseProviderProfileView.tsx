@@ -387,13 +387,13 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                     <div className="mt-5">
                       <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         <ImageIcon className="size-4" aria-hidden />
-                        Фото товаров
+                        {t("productPhotosCaption")}
                       </p>
                       <VendorPhotoBatchFeed
                         vendorId={vendor.id}
                         initialBatches={initialPhotoBatches}
                         pageSize={PHOTO_FEED_PAGE_SIZE}
-                        altBase={`${title}: фото товаров`}
+                        altBase={t("productPhotosAltBase", { title })}
                         locale={locale}
                       />
                     </div>
@@ -408,7 +408,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                   <div className="flex size-[120px] items-center justify-center overflow-hidden rounded-full border border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-white shadow-sm">
                     <MediaImage
                       src={vendor.logo_url}
-                      alt={`Логотип ${title}`}
+                      alt={t("logoAlt", { title })}
                       className="size-full object-cover"
                     />
                   </div>

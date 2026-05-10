@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import html
 import io
 import logging
 import re
@@ -21,6 +22,7 @@ from aiogram.types import (
     ReplyKeyboardRemove,
 )
 
+from bot.admin_notify import html_user_line, notify_admins_html
 from bot.photo_batch_handlers import (
     ADD_PHOTOS_BUTTON_TEXT as PHOTO_BATCH_BUTTON_TEXT,
 )
@@ -452,6 +454,17 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
 
         await state.clear()
         await state.set_state(VendorOnboarding.language)
+        if message.from_user:
+            try:
+                await notify_admins_html(
+                    message.bot,
+                    settings,
+                    "<b>🚀 Старт анкеты</b> (/start)\n\n"
+                    + html_user_line(message.from_user)
+                    + f"\nЧат: <code>{tid}</code>",
+                )
+            except Exception:
+                _log.exception("admin notify on /start failed")
         await message.answer(
             "👋 Добро пожаловать в Dordoi.help — онлайн-витрина для оптовиков рынка Дордой.\n\n"
             "Сейчас мы соберём анкету вашего магазина прямо здесь, в Telegram: "
@@ -1332,6 +1345,22 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
 
         saved_row = saved if isinstance(saved, dict) else row
         phone_login = str(saved_row.get("phone_number") or row["phone_number"])
+        try:
+            store_nm = html.escape(str(row.get("store_name") or ""))
+            phone_e = html.escape(str(row.get("phone_number") or ""))
+            lang_e = html.escape(str(row.get("language") or ""))
+            await notify_admins_html(
+                message.bot,
+                st,
+                "<b>✅ Анкета заполнена и сохранена</b>\n\n"
+                f"Магазин: <b>{store_nm}</b>\n"
+                f"Телефон (логин): <code>{phone_e}</code>\n"
+                f"Язык анкеты: <code>{lang_e}</code>\n"
+                f"Telegram чат: <code>{uid}</code>\n"
+                "Статус: <code>pending_moderation</code>",
+            )
+        except Exception:
+            _log.exception("admin notify on application submit failed")
         seller_text = build_seller_confirmation_md2(phone_login, st.vendor_login_url)
 
         try:

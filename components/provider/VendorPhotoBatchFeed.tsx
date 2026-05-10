@@ -1,6 +1,7 @@
 "use client";
 
 import { Calendar } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
@@ -31,6 +32,7 @@ export function VendorPhotoBatchFeed({
   altBase,
   locale,
 }: Props) {
+  const t = useTranslations("Pages.providerProfile");
   const [batches, setBatches] = useState<Batch[]>(initialBatches);
   const [hasMore, setHasMore] = useState(initialBatches.length >= pageSize);
   const [loading, setLoading] = useState(false);
@@ -121,7 +123,9 @@ export function VendorPhotoBatchFeed({
               aria-hidden
             />
             <time dateTime={batch.createdAt}>
-              Добавлено {dateFormatter.format(new Date(batch.createdAt))}
+              {t("listingAdded", {
+                date: dateFormatter.format(new Date(batch.createdAt)),
+              })}
             </time>
           </div>
           <div className="mx-auto w-full max-w-sm">
@@ -138,7 +142,7 @@ export function VendorPhotoBatchFeed({
           className="flex h-12 items-center justify-center text-xs text-muted-foreground"
           aria-hidden
         >
-          {loading ? "Загружаем ещё фото…" : ""}
+          {loading ? t("photoFeedLoadingMore") : ""}
         </div>
       ) : null}
     </div>
