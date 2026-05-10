@@ -102,9 +102,18 @@ def md2_escape(text: str) -> str:
     return "".join(("\\" + c if c in _MD2_SPECIAL else c) for c in text)
 
 
+def _login_display_e164(raw: str) -> str:
+    """Логин для экрана продавца: в БД только цифры — показываем как телефон с «+»."""
+    s = (raw or "").strip()
+    if s.startswith("+"):
+        return s
+    digits = re.sub(r"\D", "", s)
+    return f"+{digits}" if digits else s
+
+
 def build_seller_confirmation_md2(phone: str, cabinet_url: str) -> str:
     """Итоговое сообщение продавцу (MarkdownV2)."""
-    p = md2_escape(phone.strip())
+    p = md2_escape(_login_display_e164(phone))
     u = md2_escape(cabinet_url.strip().rstrip("/"))
     link_title = md2_escape("Открыть кабинет")
     return (
@@ -1068,7 +1077,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             _log.exception("MarkdownV2 seller message failed, sending plain text")
             await message.answer(
                 "✅ Заявка принята и отправлена на модерацию.\n\n"
-                f"Логин для входа на сайт: {phone_login}\n"
+                f"Логин для входа на сайт: {_login_display_e164(phone_login)}\n"
                 f"Личный кабинет: {st.vendor_login_url}",
                 reply_markup=ReplyKeyboardRemove(),
             )
