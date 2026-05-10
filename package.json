@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node scripts/start.mjs",
     "lint": "eslint",
     "check:i18n": "node scripts/check-i18n-keys.mjs",
     "generate:landing-spec": "tsx scripts/generate-landing-spec.mts",
