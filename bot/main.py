@@ -38,7 +38,7 @@ async def main() -> None:
     await bot.delete_webhook(drop_pending_updates=False)
     log.info(
         "Webhook cleared for polling (vendor onboarding FSM). "
-        "TelegramConflictError = same TELEGRAM_BOT_TOKEN in another process (e.g. Railway) — stop the extra instance."
+        "TelegramConflictError = same TELEGRAM_BOT_TOKEN in another process (e.g. Railway); stop the extra instance."
     )
     await dp.start_polling(bot)
 
