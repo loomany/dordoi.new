@@ -27,7 +27,9 @@ async def main() -> None:
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(create_router(settings, repo))
 
-    log.info("Polling started (vendor onboarding FSM)")
+    # Иначе webhook (если когда-то включали) забирает апдейты — long polling пустой.
+    await bot.delete_webhook(drop_pending_updates=False)
+    log.info("Webhook cleared for polling (vendor onboarding FSM)")
     await dp.start_polling(bot)
 
 
