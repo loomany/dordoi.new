@@ -24,9 +24,9 @@ type Props = {
 };
 
 /**
- * Двухколоночная сетка каталога: сворачивание синхронизируется по **ряду**
- * (`index 0–1`, `2–3`, …). На `md+` ячейки ряда тянутся по высоте (`items-stretch`),
- * карточки — `h-full`, чтобы соседи всегда совпадали по высоте.
+ * Синхрон сворачивания только там, где карточки стоят **в одном ряду сетки**:
+ * на `md+` это пары (0–1), (2–3), … — общая высота ряда.
+ * На мобилке (`grid-cols-1`) у каждой карточки свой «ряд» — состояние **не общее** с соседом сверху/снизу.
  */
 export function CatalogBrowseCardGrid({
   cards,
@@ -44,21 +44,29 @@ export function CatalogBrowseCardGrid({
 
   const [rowCollapsed, setRowCollapsed] = useState<Record<number, boolean>>({});
 
+  const collapseRowKey = useCallback(
+    (index: number) => (isMobile ? index : Math.floor(index / 2)),
+    [isMobile],
+  );
+
   const collapsedForIndex = useCallback(
     (index: number) => {
-      const row = Math.floor(index / 2);
+      const row = collapseRowKey(index);
       if (Object.prototype.hasOwnProperty.call(rowCollapsed, row)) {
         return rowCollapsed[row]!;
       }
       return isMobile ? index >= 1 : index >= 2;
     },
-    [rowCollapsed, isMobile],
+    [rowCollapsed, isMobile, collapseRowKey],
   );
 
-  const setCollapsedForRowOfIndex = useCallback((index: number, next: boolean) => {
-    const row = Math.floor(index / 2);
-    setRowCollapsed((prev) => ({ ...prev, [row]: next }));
-  }, []);
+  const setCollapsedForRowOfIndex = useCallback(
+    (index: number, next: boolean) => {
+      const row = collapseRowKey(index);
+      setRowCollapsed((prev) => ({ ...prev, [row]: next }));
+    },
+    [collapseRowKey],
+  );
 
   return (
     <section
