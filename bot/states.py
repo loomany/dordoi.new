@@ -3,7 +3,6 @@ from aiogram.fsm.state import State, StatesGroup
 
 class VendorOnboarding(StatesGroup):
     language = State()
-    add_store = State()
     phone = State()
     store_name = State()
     location_row = State()

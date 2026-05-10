@@ -44,7 +44,6 @@ VENDOR_CATEGORIES: list[str] = [
 
 CB_LANG_RU = "vo:l:ru"
 CB_LANG_KG = "vo:l:kg"
-CB_ADD_STORE = "vo:add"
 CB_CAT_PREFIX = "vo:g:"
 CB_CAT_DONE = "vo:cat_done"
 CB_PHOTOS_DONE = "vo:photos_done"
@@ -171,14 +170,6 @@ def _lang_kb() -> InlineKeyboardMarkup:
                 InlineKeyboardButton(text="Русский", callback_data=CB_LANG_RU),
                 InlineKeyboardButton(text="Кыргызча", callback_data=CB_LANG_KG),
             ]
-        ]
-    )
-
-
-def _add_store_kb() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="🏪 Добавить магазин", callback_data=CB_ADD_STORE)]
         ]
     )
 
@@ -349,23 +340,10 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             return
         lang = "ru" if query.data == CB_LANG_RU else "kg"
         await state.update_data(lang=lang)
-        await state.set_state(VendorOnboarding.add_store)
-        await query.message.edit_reply_markup(reply_markup=None)
-        await query.message.answer(
-            "🏪 Шаг 1 из анкеты — добавим вашу торговую точку в каталог.\n\n"
-            "Нажмите кнопку ниже, когда будете готовы продолжить.",
-            reply_markup=_add_store_kb(),
-        )
-
-    @r.callback_query(StateFilter(VendorOnboarding.add_store), F.data == CB_ADD_STORE)
-    async def cb_add_store(query: CallbackQuery, state: FSMContext) -> None:
-        await query.answer()
-        if not query.message:
-            return
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.phone)
         await query.message.answer(
-            "📱 Шаг 2 — номер для входа в кабинет продавца на сайте Dordoi.help\n\n"
+            "📱 Шаг 1 — номер для входа в кабинет продавца на сайте Dordoi.help\n\n"
             "Это должен быть тот же номер, что привязан к вашему WhatsApp: "
             "по нему вы позже получаете код входа (SMS/WhatsApp) на сайте.\n\n"
             "✍️ Напишите номер одним сообщением в международном формате и "
@@ -443,7 +421,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(store_name=name)
         await state.set_state(VendorOnboarding.location_row)
         await message.answer(
-            "📍 Шаг 4 — где вас искать на Дордое\n\n"
+            "📍 Шаг 3 — где вас искать на Дордое\n\n"
             "Укажите торговый ряд / контейнер / ориентир на рынке "
             "(покупателям это поможет найти точку вживую).\n\n"
             "Например: «ряд X, контейнер Y» или как принято у вас:"
@@ -469,7 +447,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(location_row=loc)
         await state.set_state(VendorOnboarding.logo)
         await message.answer(
-            "🖼️ Шаг 5 — логотип для карточки магазина\n\n"
+            "🖼️ Шаг 4 — логотип для карточки магазина\n\n"
             "Пришлите одно фото с логотипом или вывеской "
             "(JPG, PNG или WebP с телефона).\n"
             "Это фото покажем на витрине в каталоге."
@@ -502,7 +480,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(logo_url=pub)
         await state.set_state(VendorOnboarding.description)
         await message.answer(
-            "📝 Шаг 6 — описание для покупателей\n\n"
+            "📝 Шаг 5 — описание для покупателей\n\n"
             "Расскажите своими словами, чем торгуете и кому удобно заказывать у вас "
             "(ассортимент, форматы работы, без лишней воды — "
             "этот текст попадёт в карточку магазина):"
@@ -529,7 +507,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(description=desc, cat_indices=[])
         await state.set_state(VendorOnboarding.categories)
         m = await message.answer(
-            "🏷️ Шаг 7 — категории товаров\n\n"
+            "🏷️ Шаг 6 — категории товаров\n\n"
             "Выберите одну или несколько категорий кнопками ниже "
             "(покупатели фильтруют каталог по ним).\n"
             "Когда всё отметите — нажмите «Готово».",
@@ -590,7 +568,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.set_state(VendorOnboarding.product_photos)
         await state.update_data(product_photo_urls=[])
         await query.message.answer(
-            "📸 Шаг 8 — фото ассортимента\n\n"
+            "📸 Шаг 7 — фото ассортимента\n\n"
             "Пришлите до 15 фото товаров, которые хотите показывать байерам "
             "(можно по одному или несколько в одном альбоме).\n\n"
             "💡 Чем понятнее фото — тем проще покупателю решиться на контакт.\n"
@@ -665,7 +643,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.answer()
         await state.set_state(VendorOnboarding.container_photo)
         await query.message.answer(
-            "📦 Шаг 9 — где вы отгружаете заказ\n\n"
+            "📦 Шаг 8 — где вы отгружаете заказ\n\n"
             "Пришлите одно фото контейнера, точки или склада на рынке — "
             "так байеру проще найти вас при первой поездке.\n\n"
             "Одно фото в сообщении."
@@ -697,7 +675,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(container_photo_url=pub)
         await state.set_state(VendorOnboarding.min_batch)
         await message.answer(
-            "📊 Шаг 10 — минимальный заказ и отгрузка\n\n"
+            "📊 Шаг 9 — минимальный заказ и отгрузка\n\n"
             "Опишите текстом минимальную партию и как вы отгружаете "
             "(например: «от 50 шт», «короб», «под заказ 3 дня»):"
         )
@@ -721,7 +699,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(min_batch=t)
         await state.set_state(VendorOnboarding.payment)
         await message.answer(
-            "💳 Шаг 11 — как вы принимаете оплату\n\n"
+            "💳 Шаг 10 — как вы принимаете оплату\n\n"
             "Выберите вариант кнопкой ниже (это увидят покупатели в карточке):",
             reply_markup=_payment_kb(),
         )
@@ -740,7 +718,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.delivery_help)
         await query.message.answer(
-            "🚚 Шаг 12 — доставка для покупателя\n\n"
+            "🚚 Шаг 11 — доставка для покупателя\n\n"
             "Помогаете ли вы организовать доставку до клиента или перевозчика "
             "(консолидация, контакты транспорта и т.п.)?\n\n"
             "Выберите «Да» или «Нет»:",
@@ -760,7 +738,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.whatsapp_1)
         await query.message.answer(
-            "💬 Шаг 13 — основной WhatsApp для покупателей\n\n"
+            "💬 Шаг 12 — основной WhatsApp для покупателей\n\n"
             "Это номер, по которому байеры и оптовики будут писать вам напрямую "
             "из каталога.\n\n"
             "Отправьте контакт кнопкой ниже или введите номер текстом "
