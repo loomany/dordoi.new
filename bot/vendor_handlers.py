@@ -271,28 +271,21 @@ def _phone_digits_for_storage(raw: str) -> str:
     return re.sub(r"\D", "", raw)
 
 
-def _normalize_login_phone_ru_kz(raw: str) -> str | None:
-    """RU/KZ мобильный: ровно 11 цифр, начинается с 7 (ввод +7 / 8 / 7 и 10 цифр).
+# Должен совпадать с `INTL_MOBILE` в `lib/phone.ts` (вход по OTP на сайте).
+_SAAS_MOBILE_DIGITS = re.compile(r"^(?:7\d{10}|996\d{9}|998\d{9}|992\d{9})$")
 
-    Примеры: +7 778 816 6661 → 77788166661; 8 778 … → 7778…; 7778… (10 цифр после первой 7) → дополняем до 11.
-    Не принимаем номера, которые после нормализации не дают 7XXXXXXXXXX.
-    """
-    d = re.sub(r"\D", "", raw.strip())
-    if not d:
+
+def _digits_valid_saas_login(digits: str) -> bool:
+    return bool(_SAAS_MOBILE_DIGITS.match(digits))
+
+
+def _normalize_phone_manual_saas(raw: str) -> str | None:
+    """Ручной ввод: только международный вид с «+» в начале → цифры как на сайте."""
+    s = raw.strip()
+    if not s.startswith("+"):
         return None
-    if len(d) == 11:
-        if d[0] == "8":
-            d = "7" + d[1:]
-        elif d[0] != "7":
-            return None
-    elif len(d) == 10:
-        if d[0] == "7":
-            d = "7" + d
-        else:
-            return None
-    else:
-        return None
-    if len(d) != 11 or d[0] != "7":
+    d = _phone_digits_for_storage(s)
+    if not _digits_valid_saas_login(d):
         return None
     return d
 
@@ -357,14 +350,12 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.phone)
         await query.message.answer(
-            "Этот номер WhatsApp будет логином для входа в админ-панель — там вы управляете "
-            "витриной магазина после модерации.\n\n"
-            "Если WhatsApp на другом телефоне, чем Telegram, введите номер вручную одним сообщением.\n\n"
-            "Формат только для России и Казахстана:\n"
-            "• начните с +7, или с 8, или с 7 и ещё 10 цифр номера;\n"
-            "• без кода страны в этом виде номер не принимаем — нужен именно формат с «семёркой» "
-            "(итого 11 цифр в международном виде: 7 и десять цифр).\n\n"
-            "Либо нажмите «Поделиться контактом», если в Telegram уже указан ваш WhatsApp.",
+            "Укажите номер WhatsApp — по нему вы входите в личный кабинет продавца "
+            "(тот же номер, на который завязан вход на сайте).\n\n"
+            "Напишите номер в международном формате и обязательно с «+» в начале, например:\n"
+            "+7 778 123 45 67 · +996 555 123456\n\n"
+            "Если Telegram и WhatsApp на разных телефонах — всё равно введите именно WhatsApp. "
+            "Либо отправьте контакт кнопкой ниже.",
             reply_markup=_contact_kb(),
         )
 
@@ -376,11 +367,12 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         if not phone:
             await message.answer("Не удалось прочитать номер. Попробуйте снова.")
             return
-        digits = _normalize_login_phone_ru_kz(_phone_digits_for_storage(phone))
-        if not digits:
+        digits = _phone_digits_for_storage(phone)
+        if not _digits_valid_saas_login(digits):
             await message.answer(
-                "Нужен номер РФ/КЗ в формате +7 / 8 / 7 и 10 цифр. "
-                "Введите номер WhatsApp вручную тем же форматом.",
+                "Этот номер не подходит для входа на Dordoi.help. "
+                "Введите WhatsApp вручную строкой, начиная с + "
+                "(например +7… или +996…).",
             )
             return
         await state.update_data(phone_number=digits)
@@ -394,13 +386,12 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
     async def step_phone_text(message: Message, state: FSMContext) -> None:
         if not message.text:
             return
-        digits = _normalize_login_phone_ru_kz(message.text.strip())
+        digits = _normalize_phone_manual_saas(message.text.strip())
         if not digits:
             await message.answer(
-                "Неверный формат. Нужен номер России или Казахстана:\n"
-                "• +7 и 10 цифр, например +7 778 816 6661\n"
-                "• или начните с 8 или с 7 и укажите все цифры.\n"
-                "Без кода в этом виде (+7 / 8 / 7) не принимаем.",
+                "Нужен международный номер с «+» в начале, как в телефонной книге "
+                "(например +7 778 816 6661 или +996 555 123456). "
+                "Без «+» не принимаем — так мы совпадаем с входом на сайте.",
             )
             return
         await state.update_data(phone_number=digits)
@@ -413,7 +404,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
     @r.message(StateFilter(VendorOnboarding.phone))
     async def step_phone_invalid(message: Message) -> None:
         await message.answer(
-            "Отправьте номер текстом или нажмите «Поделиться контактом».",
+            "Отправьте номер одним сообщением, начиная с +, или нажмите «Поделиться контактом».",
         )
 
     @r.message(StateFilter(VendorOnboarding.store_name), F.text)
