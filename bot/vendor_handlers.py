@@ -62,6 +62,16 @@ CB_RET_Y = "vo:ret:y"
 CB_RET_N = "vo:ret:n"
 CB_RET_COND = "vo:ret:cond"
 
+_STORE_NAME_STEP_PROMPT = (
+    "Номер сохранён.\n\n"
+    "Название магазина:\n\n"
+    "Это заголовок вашей карточки в каталоге Dordoi.help: его увидят оптовики в списке магазинов "
+    "и по нему вас будут искать до модерации и после публикации.\n\n"
+    "Отправьте одним сообщением — так, как на вывеске, визитке или в названии чата WhatsApp "
+    "(можно кириллица и латиница вместе).\n\n"
+    "Если у точки несколько формулировок, напишите основную, под которой вас узнают покупатели."
+)
+
 _photo_locks: dict[int, asyncio.Lock] = {}
 _cat_locks: dict[int, asyncio.Lock] = {}
 _log = logging.getLogger(__name__)
@@ -389,10 +399,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(phone_number=digits)
         await state.set_state(VendorOnboarding.store_name)
         await message.answer(
-            "✅ Номер сохранён.\n\n"
-            "🏷️ Шаг 3 — как покупатели увидят ваш магазин в каталоге\n\n"
-            "Напишите название торговой точки или бренда одним сообщением "
-            "(как на вывеске или в WhatsApp):",
+            _STORE_NAME_STEP_PROMPT,
             reply_markup=ReplyKeyboardRemove(),
         )
 
@@ -411,10 +418,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(phone_number=digits)
         await state.set_state(VendorOnboarding.store_name)
         await message.answer(
-            "✅ Номер сохранён.\n\n"
-            "🏷️ Шаг 3 — как покупатели увидят ваш магазин в каталоге\n\n"
-            "Напишите название торговой точки или бренда одним сообщением "
-            "(как на вывеске или в WhatsApp):",
+            _STORE_NAME_STEP_PROMPT,
             reply_markup=ReplyKeyboardRemove(),
         )
 
@@ -432,8 +436,8 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         name = message.text.strip()
         if len(name) < 2 or len(name) > 500:
             await message.answer(
-                "⚠️ Название слишком короткое или длинное.\n"
-                "Нужно от 2 до 500 символов — попробуйте ещё раз."
+                "Название слишком короткое или длинное.\n"
+                "Нужно от 2 до 500 символов — отправьте название ещё раз одной строкой."
             )
             return
         await state.update_data(store_name=name)
@@ -448,8 +452,8 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
     @r.message(StateFilter(VendorOnboarding.store_name), ~F.text)
     async def step_store_name_not_text(message: Message) -> None:
         await message.answer(
-            "⚠️ На этом шаге нужно одно текстовое сообщение с названием магазина "
-            "(не фото и не стикер). Напишите название строкой — как на вывеске."
+            "На этом шаге нужно текстовое сообщение с названием магазина, без фото и стикеров. "
+            "Одной строкой, как на вывеске."
         )
 
     @r.message(StateFilter(VendorOnboarding.location_row), F.text)
