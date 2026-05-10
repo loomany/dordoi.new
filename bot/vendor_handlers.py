@@ -82,6 +82,14 @@ _SAMPLES_STEP_PROMPT = (
     "«Да» — если такую опцию предлагаете; «Нет» — если работаете только от полной партии."
 )
 
+_RETURNS_STEP_PROMPT = (
+    "↩️ Как вы работаете с браком\n\n"
+    "После отгрузки: принимаете ли претензии по браку и некондиции и что делаете в таких случаях "
+    "(замена, возврат, срок обращения). Это покажем покупателям в карточке магазина.\n\n"
+    "«Да» — работаете с браком по понятным правилам; «Нет» — претензии по браку не принимаете; "
+    "«Условия (текстом)» — распишите политику одним сообщением."
+)
+
 _photo_locks: dict[int, asyncio.Lock] = {}
 _cat_locks: dict[int, asyncio.Lock] = {}
 _log = logging.getLogger(__name__)
@@ -989,10 +997,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.returns)
         await query.message.answer(
-            "↩️ Возврат брака и пересорт\n\n"
-            "Укажите, работаете ли вы с возвратом некондиции и на каких условиях "
-            "(это важно оптовикам).\n\n"
-            "Выберите вариант кнопкой или опишите текстом условия:",
+            _RETURNS_STEP_PROMPT,
             reply_markup=_returns_kb(),
         )
 
@@ -1016,8 +1021,8 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.returns_conditions)
         await query.message.answer(
-            "✍️ Опишите условия возврата брака своими словами "
-            "(например: пересорт в течение 24 ч, частичный возврат и т.д.):"
+            "✍️ Опишите своими словами политику по браку: замена, возврат средств, срок, "
+            "в каких случаях принимаете претензию после отгрузки."
         )
 
     @r.message(StateFilter(VendorOnboarding.returns_conditions), F.text)
