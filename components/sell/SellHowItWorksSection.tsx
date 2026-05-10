@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { landingBlueCtaClassName } from "@/lib/landing-cta";
+import { vendorOnboardingTelegramHref } from "@/lib/vendor-onboarding-telegram";
 import { cn } from "@/lib/utils";
 
 /** Matches hero primary CTA on `/sell`. */
@@ -56,7 +57,12 @@ export async function SellHowItWorksSection({ className }: Props) {
         ))}
       </div>
       <div className="mt-12 flex justify-center sm:mt-14">
-        <a href="#sell-how-it-works" className={primaryCta}>
+        <a
+          href={vendorOnboardingTelegramHref()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={primaryCta}
+        >
           {tSell("hero.ctaPrimary")}
         </a>
       </div>

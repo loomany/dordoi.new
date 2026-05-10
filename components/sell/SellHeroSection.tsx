@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { landingBlueCtaClassName } from "@/lib/landing-cta";
+import { vendorOnboardingTelegramHref } from "@/lib/vendor-onboarding-telegram";
 import { cn } from "@/lib/utils";
 
 const primaryBtn = cn(
@@ -29,7 +30,12 @@ export async function SellHeroSection({ className }: Props) {
         {t("subtext")}
       </p>
       <div className="mt-8 flex justify-center">
-        <a href="#sell-how-it-works" className={primaryBtn}>
+        <a
+          href={vendorOnboardingTelegramHref()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={primaryBtn}
+        >
           {t("hero.ctaPrimary")}
         </a>
       </div>

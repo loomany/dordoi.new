@@ -14,6 +14,7 @@ import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { landingBlueCtaClassName } from "@/lib/landing-cta";
+import { vendorOnboardingTelegramHref } from "@/lib/vendor-onboarding-telegram";
 import { cn } from "@/lib/utils";
 import { getLandingSpec, spacingClass, typographyClass } from "@/lib/landing-spec";
 
@@ -198,15 +199,17 @@ async function AudiencesBlock({
         })}
       </div>
       <div className="mt-6 flex justify-center">
-        <Link
-          href="/sell"
+        <a
+          href={vendorOnboardingTelegramHref()}
+          target="_blank"
+          rel="noopener noreferrer"
           className={cn(
             landingBlueCtaClassName,
             "w-full max-w-lg rounded-full px-8 py-4 text-center md:w-auto md:min-w-[min(100%,20rem)]",
           )}
         >
           {t("cta")}
-        </Link>
+        </a>
       </div>
     </div>
   );
@@ -343,11 +346,18 @@ async function CtaBandBlock({
   blockGap: string;
 }) {
   const t = await getTranslations("Pages.home.sections.ctaBand");
+  const tg = vendorOnboardingTelegramHref();
   const roles = [
-    { href: "/catalog" as const, Icon: ShoppingBag, key: "0" as const },
-    { href: "/sell" as const, Icon: Store, key: "1" as const },
-    { href: "/buyers" as const, Icon: ShieldCheck, key: "2" as const },
+    { href: "/catalog" as const, Icon: ShoppingBag, key: "0" as const, external: false },
+    { href: tg, Icon: Store, key: "1" as const, external: true },
+    { href: "/buyers" as const, Icon: ShieldCheck, key: "2" as const, external: false },
   ];
+
+  const roleCardClass = cn(
+    "group flex cursor-pointer items-center gap-3 rounded-xl border border-border/70 bg-background p-4 shadow-sm outline-none transition-all",
+    "hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-md",
+    "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+  );
 
   return (
     <div className={`mx-auto max-w-6xl px-4 sm:px-6 ${blockGap}`}>
@@ -357,25 +367,28 @@ async function CtaBandBlock({
           <p className={leadClass}>{t("lead")}</p>
         </div>
         <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
-          {roles.map(({ href, Icon, key }) => (
-            <Link
-              key={key}
-              href={href}
-              className={cn(
-                "group flex cursor-pointer items-center gap-3 rounded-xl border border-border/70 bg-background p-4 shadow-sm outline-none transition-all",
-                "hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-md",
-                "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-              )}
-            >
-              <Icon className="size-7 shrink-0 text-primary" strokeWidth={1.75} aria-hidden />
-              <div className="min-w-0 flex-1 space-y-1">
-                <p className="font-semibold leading-snug">{t(`roles.${key}.title`)}</p>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {t(`roles.${key}.subtitle`)}
-                </p>
-              </div>
-            </Link>
-          ))}
+          {roles.map(({ href, Icon, key, external }) => {
+            const body = (
+              <>
+                <Icon className="size-7 shrink-0 text-primary" strokeWidth={1.75} aria-hidden />
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="font-semibold leading-snug">{t(`roles.${key}.title`)}</p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {t(`roles.${key}.subtitle`)}
+                  </p>
+                </div>
+              </>
+            );
+            return external ? (
+              <a key={key} href={href} target="_blank" rel="noopener noreferrer" className={roleCardClass}>
+                {body}
+              </a>
+            ) : (
+              <Link key={key} href={href} className={roleCardClass}>
+                {body}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
