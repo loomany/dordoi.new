@@ -75,6 +75,13 @@ _TELEGRAM_CHANNEL_STEP_PROMPT = (
     "магазина в Dordoi.help и сможет посмотреть витрину и новинки до того, как напишет вам."
 )
 
+_SAMPLES_STEP_PROMPT = (
+    "🧵 Минимальный заказ или образцы для проверки качества\n\n"
+    "Даёте ли покупателю возможность оформить небольшую пробную партию или взять образцы до крупного "
+    "заказа — чтобы проверить качество, цвет, размеры или условия отгрузки?\n\n"
+    "«Да» — если такую опцию предлагаете; «Нет» — если работаете только от полной партии."
+)
+
 _photo_locks: dict[int, asyncio.Lock] = {}
 _cat_locks: dict[int, asyncio.Lock] = {}
 _log = logging.getLogger(__name__)
@@ -951,9 +958,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.samples)
         await query.message.answer(
-            "🧵 Образцы перед крупным заказом\n\n"
-            "Отправляете ли вы образцы ткани/товара до большой партии?\n\n"
-            "Выберите «Да» или «Нет»:",
+            _SAMPLES_STEP_PROMPT,
             reply_markup=_yes_no_kb(CB_SMP_Y, CB_SMP_N, "Да", "Нет"),
         )
 
@@ -968,7 +973,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(telegram_url=raw)
         await state.set_state(VendorOnboarding.samples)
         await message.answer(
-            "🧵 Образцы перед крупным заказом — да или нет?",
+            _SAMPLES_STEP_PROMPT,
             reply_markup=_yes_no_kb(CB_SMP_Y, CB_SMP_N, "Да", "Нет"),
         )
 
