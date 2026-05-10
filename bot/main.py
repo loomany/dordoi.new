@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from urllib.parse import urlparse
 
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -19,6 +20,12 @@ log = logging.getLogger(__name__)
 
 async def main() -> None:
     settings = load_settings()
+    host = urlparse(settings.supabase_url).netloc or "?"
+    log.info(
+        "Settings loaded (env ok): supabase=%s admin_ids=%s",
+        host,
+        len(settings.admin_telegram_ids),
+    )
     repo = VendorRepository(
         settings.supabase_url,
         settings.supabase_service_role_key,
@@ -29,7 +36,10 @@ async def main() -> None:
 
     # Иначе webhook (если когда-то включали) забирает апдейты — long polling пустой.
     await bot.delete_webhook(drop_pending_updates=False)
-    log.info("Webhook cleared for polling (vendor onboarding FSM)")
+    log.info(
+        "Webhook cleared for polling (vendor onboarding FSM). "
+        "TelegramConflictError = same TELEGRAM_BOT_TOKEN in another process (e.g. Railway) — stop the extra instance."
+    )
     await dp.start_polling(bot)
 
 

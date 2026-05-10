@@ -445,6 +445,13 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             "Например: «ряд X, контейнер Y» или как принято у вас:"
         )
 
+    @r.message(StateFilter(VendorOnboarding.store_name), ~F.text)
+    async def step_store_name_not_text(message: Message) -> None:
+        await message.answer(
+            "⚠️ На этом шаге нужно одно текстовое сообщение с названием магазина "
+            "(не фото и не стикер). Напишите название строкой — как на вывеске."
+        )
+
     @r.message(StateFilter(VendorOnboarding.location_row), F.text)
     async def step_location(message: Message, state: FSMContext) -> None:
         if not message.text:
