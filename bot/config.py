@@ -32,9 +32,9 @@ class Settings:
     supabase_url: str
     supabase_service_role_key: str
     admin_telegram_ids: list[int]
-    vendor_media_bucket: str = "vendor-media"
     vendor_login_url: str
     admin_notify_chat: str
+    vendor_media_bucket: str = "vendor-media"
 
 
 def load_settings() -> Settings:
