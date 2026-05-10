@@ -43,11 +43,11 @@
 | Механика | Где |
 |----------|-----|
 | **Canonical** на текущую локаль и путь | [`lib/seo.ts`](../lib/seo.ts) → `buildPageMetadata` → `alternates.canonical` |
-| **hreflang / alternate** для всех локалей | `alternates.languages` + [`app/sitemap.ts`](../app/sitemap.ts) `alternates.languages` на каждой записи |
+| **hreflang / alternate** для всех локалей | `alternates.languages` + [`lib/sitemap-xml-body.ts`](../lib/sitemap-xml-body.ts) (генерация `/sitemap.xml`) |
 | **title / description** на языке страницы | `generateMetadata` на страницах через [`lib/build-seo.ts`](../lib/build-seo.ts) + ключи `Seo.*` в `messages` |
 | **H1 / H2** на языке страницы | ключи `Pages.*.h1` / `h2` (и hero как `h1`/`h2` на главной) |
 | **OpenGraph / Twitter** | `buildPageMetadata` |
-| **Sitemap** | [`app/sitemap.ts`](../app/sitemap.ts) — все маршруты из [`lib/seo.ts`](../lib/seo.ts) `publicRoutes` × локали |
+| **Sitemap** | [`app/sitemap.xml/route.ts`](../app/sitemap.xml/route.ts) + [`lib/sitemap-xml-body.ts`](../lib/sitemap-xml-body.ts) — маршруты из [`lib/seo.ts`](../lib/seo.ts) `publicRoutes` × локали |
 | **robots** | [`app/robots.ts`](../app/robots.ts) |
 | Базовый URL | `NEXT_PUBLIC_APP_URL` (см. [`.env.example`](../.env.example)) |
 
