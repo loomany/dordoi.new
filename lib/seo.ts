@@ -71,6 +71,7 @@ export function buildPageMetadata(opts: {
 export const publicRoutes = [
   "/",
   "/catalog",
+  "/sell",
   "/suppliers",
   "/buyers",
   "/cargo",

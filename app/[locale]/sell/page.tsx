@@ -6,11 +6,11 @@ type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { locale } = await params;
-  return buildSeoMetadata(locale, "/buyers", "Seo.buyers");
+  return buildSeoMetadata(locale, "/sell", "Seo.sell");
 }
 
-export default async function BuyersPage({ params }: Props) {
+export default async function SellPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <ServiceHeroPage namespace="buyers" />;
+  return <ServiceHeroPage namespace="sell" />;
 }

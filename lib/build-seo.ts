@@ -7,6 +7,7 @@ export async function buildSeoMetadata(
   seoNamespace:
     | "Seo.home"
     | "Seo.catalog"
+    | "Seo.sell"
     | "Seo.suppliers"
     | "Seo.buyers"
     | "Seo.cargo"

@@ -161,7 +161,7 @@ async function AudiencesBlock({
       </div>
       <div className="mt-6 flex justify-center">
         <Link
-          href="/suppliers"
+          href="/sell"
           className={cn(
             buttonVariants({ size: "lg" }),
             "w-full max-w-lg rounded-full px-8 text-center text-base font-semibold shadow-sm md:w-auto md:min-w-[min(100%,20rem)]",
@@ -295,8 +295,8 @@ async function CtaBandBlock({
   const t = await getTranslations("Pages.home.sections.ctaBand");
   const roles = [
     { href: "/catalog" as const, Icon: ShoppingBag, key: "0" as const },
-    { href: "/suppliers" as const, Icon: Store, key: "1" as const },
-    { href: "/buyer-service" as const, Icon: ShieldCheck, key: "2" as const },
+    { href: "/sell" as const, Icon: Store, key: "1" as const },
+    { href: "/buyers" as const, Icon: ShieldCheck, key: "2" as const },
     { href: "/cargo" as const, Icon: Truck, key: "3" as const },
   ];
 

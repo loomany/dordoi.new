@@ -117,9 +117,9 @@ export function SiteHeader() {
 
   const nav = [
     { href: "/catalog", labelKey: "catalog" as const },
-    { href: "/suppliers", labelKey: "suppliers" as const },
+    { href: "/sell", labelKey: "sell" as const },
     { href: "/cargo", labelKey: "cargo" as const },
-    { href: "/buyer-service", labelKey: "buyerService" as const },
+    { href: "/buyers", labelKey: "buyers" as const },
   ];
 
   return (

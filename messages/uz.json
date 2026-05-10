@@ -2,9 +2,9 @@
   "brand": { "name": "Dordoi.help" },
   "Nav": {
     "catalog": "Katalog",
-    "suppliers": "Optom sotish",
+    "sell": "Optom sotish",
     "cargo": "Kargo yetkazib berish",
-    "buyerService": "Buyerni topish",
+    "buyers": "Buyerni topish",
     "help": "Yordam"
   },
   "Header": { "ctaStart": "Kirish", "openMenu": "Menyuni ochish", "closeMenu": "Yopish", "langSwitcher": "Til: {locale}", "langNav": "Interfeys tilini almashtirish", "langExpand": "Tillarni ko‘rsatish", "langCollapse": "Tillarni yashirish", "mainNav": "Asosiy navigatsiya", "closeSheet": "Panelni yopish" },
@@ -25,8 +25,9 @@
   "Seo": {
     "home": { "title": "Dordoi.help — Dordoy bozori uchun ulgurji platforma", "description": "Tovarlar, yetkazib beruvchilar va buyerlar bir joyda. MDH B2B vositasi." },
     "catalog": { "title": "Kategoriyalar katalogi — Dordoi.help", "description": "Dordoy ulgurji tovarlari: kiyim, poyabzal, matolar." },
+    "sell": { "title": "Optom sotish — Dordoi.help", "description": "Dordoy bozoridan ulgurji savdo: vitrina, arizalar va xaridor kontaktlari qatorlarni kezmasdan." },
     "suppliers": { "title": "Yetkazib beruvchilarga — Dordoi.help", "description": "Onlayn vitrina va arizalar Dordoy sotuvchilari uchun." },
-    "buyers": { "title": "Xaridorlarga — Dordoi.help", "description": "Dordoy yetkazib beruvchilarini topish va bozorga ortiqcha sayohatsiz ulgurji." },
+    "buyers": { "title": "Dordoyda buyerni topish — Dordoi.help", "description": "Dordoy buyerlari: sotib olish, sifat tekshirish va partiya yig‘ish — ortiqcha sayohatsiz." },
     "cargo": { "title": "Kargo yetkazib berish — Dordoi.help", "description": "Dordoy bozoridan shahringiz yoki mamlakatingizga yetkazib berish: kargo va kontaktlar bo‘yicha yo‘nalishlar." },
     "buyerService": { "title": "Buyerlarga — Dordoi.help", "description": "Tovar tanlash, sifat tekshirish va buyurtmalarni yig‘ish." },
     "about": { "title": "Loyiha haqida — Dordoi.help", "description": "MDH ulgurji oqimi uchun Dordoy ekotizimi." },
@@ -38,6 +39,10 @@
     "refund": { "title": "Qaytarish siyosati — Dordoi.help", "description": "Qaytarishlar haqida ma’lumot." }
   },
   "Pages": {
+    "common": {
+      "underDevelopment": "Bo‘lim ishlab chiqilmoqda",
+      "underDevelopmentAria": "Asosiy kontent tez orada paydo bo‘ladi"
+    },
     "home": {
       "h1": "Dordoy bozorining yetkazib beruvchilari, buyerlari va kargosi bitta katalogda",
       "h2": "Dordoyda kerakli kontaktlarni tez toping: yetkazib beruvchilar, buyerlar, kargo",
@@ -70,10 +75,11 @@
         "ctaBand": { "title": "Dordoi.help jamiyatiga qo‘shiling", "lead": "Katalogga o‘tish yoki xizmatlaringizni joylashtirish uchun rolingizni tanlang.", "roles": { "0": { "title": "Men mahsulot qidiryapman", "subtitle": "Yetkazib beruvchilar katalogini ko‘rish" }, "1": { "title": "Men sotuvchiman", "subtitle": "Konteyneringizni qo‘shish" }, "2": { "title": "Men buyerlik qilaman", "subtitle": "Ulgurji mijozlarni topish" }, "3": { "title": "Men kargoman", "subtitle": "Jo‘natish uchun yuklar olish" } } }
       }
     },
-    "catalog": { "h1": "Kategoriyalar katalogi", "h2": "Dordoy ulgurji yo‘nalishlari", "intro": "Kategoriyani tanlang — keyingi versiyalarda mahsulot kartochkalari va yetkazib beruvchilar paydo bo‘ladi." },
+    "catalog": { "h1": "Katalog", "subtext": "Dordoy bozorining ulgurji kategoriyalari va yetkazib beruvchilari bir joyda. Bu yerda mahsulot kartochkalari, filtrlar va sotuvchilarning bevosita kontaktlari bo‘ladi." },
+    "sell": { "h1": "Optom sotish", "subtext": "Vitrina joylashtiring va ulgurji xaridorlar hamda buyerlardan arizalar oling. Bitim shartlari va narxlarni o‘zingiz belgilaysiz — platforma axborot xususiyatida qoladi." },
     "suppliers": { "h1": "Yetkazib beruvchilarga", "h2": "Mijozlar va onlayn vitrina", "body": "Katalogni joylashtiring va xaridorlar hamda buyerlardan arizalar oling. Platforma klassik marketpleyslardagi majburiy komissiyasiz vitrina vositalarini beradi — kelishuv shartlarini o‘zingiz belgilaysiz." },
-    "buyers": { "h1": "Xaridorlarga", "h2": "Sayohatsiz ulgurji", "body": "Dordoy kategoriyalari va yetkazib beruvchilarni qidiring, qatorlar bo‘yla sayohat va muzokaraga vaqt tejang. Arizalar va tuzilgan katalog orqali ishlang." },
-    "cargo": { "h1": "Kargo yetkazib berish", "h2": "Dordoy bozoridan shahringiz yoki mamlakatingizga", "body": "Katalog va arizalarda yetkazib berish yo‘nalishlari bo‘yicha yo‘riqnoma topishingiz mumkin (Qozog‘iston, Rossiya, O‘zbekiston, Tojikiston va boshqalar). Tashish shartlari va narxlarni kargo yoki yetkazib beruvchi bilan bevosita kelishasiz — xizmat axborot xarakteridagi." },
+    "buyers": { "h1": "Buyerni topish", "subtext": "Shaxsan kela olmasangiz, sotib olish, foto-hisobot va partiyani tekshirish uchun Dordoyda buyer tanlang." },
+    "cargo": { "h1": "Kargo yetkazib berish", "subtext": "Dordoy bozoridan shahringiz yoki mamlakatingizga yuk yetkazish. Yo‘nalishlar va kargo kontaktlari shu yerda tanlanadi; tashish shartlari bevosita kelishiladi." },
     "buyerService": { "h1": "Buyerlarga", "h2": "Bitimni qo‘llab-quvvatlash", "body": "Mijozlarga mahsulot topish, sifat tekshirish va buyurtma yig‘ishda yordam bering — «qora quti» emas, ochiq vositachi sifatida." },
     "about": { "h1": "Loyiha haqida", "h2": "Missiya", "body": "Dordoi.help — Dordoy bozori atrofidagi digital SaaS (Qirg‘iziston). Maqsad — ulgurji oqimini raqamlashtirish va MDH xaridorlari, yetkazib beruvchilari va buyerlarini bir tizimda bog‘lash." },
     "help": { "h1": "Yordam", "h2": "Boshlash", "body": "Sarlavhada tilni tanlang, katalogga yoki rolingiz uchun bo‘limga o‘ting. Huquqiy jihatdan xizmat axborot xarakteridagi — kelishuvlar to‘g‘ridan-to‘g‘ri tomonlar o‘rtasida." },
