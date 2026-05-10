@@ -39,7 +39,7 @@ export async function SellHowItWorksSection({ className }: Props) {
           >
             <div className="flex items-center gap-4">
               <span
-                className="select-none text-5xl font-bold leading-none tabular-nums text-primary/25 sm:text-6xl"
+                className="select-none text-5xl font-bold leading-none tabular-nums text-blue-600/25 dark:text-blue-400/30 sm:text-6xl"
                 aria-hidden
               >
                 {i + 1}

@@ -35,6 +35,11 @@ export function assertValidPhoneDigits(digits: string): void {
   }
 }
 
+/** Тот же допуск, что для входа по OTP и анкеты в Telegram. */
+export function isIntlMobileDigits(digits: string): boolean {
+  return INTL_MOBILE.test(digits);
+}
+
 export class PhoneValidationError extends Error {
   readonly code = "INVALID_PHONE";
   constructor(message: string) {

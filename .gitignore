@@ -48,3 +48,7 @@ supabase/.temp/
 bot/.venv/
 bot/__pycache__/
 *.py[cod]
+
+# Telethon E2E (scripts/e2e_vendor_onboarding_telethon.py)
+scripts/.e2e_telegram.session
+scripts/.e2e_telegram.session-journal

@@ -1,5 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { BuyerFavoritesSection } from "@/components/cabinet/BuyerFavoritesSection";
+import { getSessionProfile } from "@/lib/auth/session-profile";
+import { fetchBuyerFavoriteKeysOrdered } from "@/lib/favorites/buyer-favorites";
 import { buildPageMetadata } from "@/lib/seo";
 
 type Props = {
@@ -24,15 +27,15 @@ export default async function BuyerCabinetPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "Cabinet.buyer" });
+  const profile = await getSessionProfile();
+  const favoriteKeys = profile
+    ? await fetchBuyerFavoriteKeysOrdered(profile.userId)
+    : [];
 
   return (
-    <section className="flex flex-col gap-3">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-        {t("title")}
-      </h1>
-      <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-        {t("lead")}
-      </p>
-    </section>
+    <div className="pb-4">
+      <h1 className="sr-only">{t("title")}</h1>
+      <BuyerFavoritesSection locale={locale} listingKeys={favoriteKeys} />
+    </div>
   );
 }

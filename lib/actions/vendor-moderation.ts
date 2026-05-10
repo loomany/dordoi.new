@@ -13,6 +13,11 @@ import type { VendorApplicationRecord } from "@/lib/vendor/vendor-application";
 import { VENDOR_PENDING_STATUS } from "@/lib/vendor/status";
 import { normalizePhone } from "@/lib/phone";
 import { routing } from "@/i18n/routing";
+import {
+  buildVendorSlug,
+  buildVendorSlugWithIdSuffix,
+} from "@/lib/catalog/vendor-slug";
+import { notifyVendorApplicationApproved } from "@/lib/telegram/notify-vendor-approved";
 
 export type ModerationActionState =
   | { ok: true }
@@ -22,7 +27,71 @@ function revalidateCabinetAfterModeration(): void {
   for (const locale of routing.locales) {
     revalidatePath(`/${locale}/cabinet/admin`, "page");
     revalidatePath(`/${locale}/cabinet/vendor`, "page");
+    revalidatePath(`/${locale}/catalog`, "page");
   }
+}
+
+type VendorSlugRow = {
+  id: string;
+  slug: string | null;
+  store_name: string | null;
+};
+
+/**
+ * Гарантирует наличие SEO-slug у одобренного продавца.
+ * Если slug уже есть — не меняем (стабильный URL для индексации).
+ * Если занят базовый — добавляем короткий ID-суффикс. На повторные коллизии
+ * возвращаем самый «детерминированный» fallback `store-{id8}`.
+ */
+async function ensureVendorSlug(
+  admin: ReturnType<typeof createAdminClient>,
+  vendor: VendorSlugRow,
+): Promise<string | null> {
+  if (vendor.slug && vendor.slug.trim().length > 0) {
+    return vendor.slug.trim();
+  }
+
+  const candidates = [
+    buildVendorSlug({ storeName: vendor.store_name, vendorId: vendor.id }),
+    buildVendorSlugWithIdSuffix({
+      storeName: vendor.store_name,
+      vendorId: vendor.id,
+    }),
+    `store-${vendor.id.replace(/-/g, "").slice(0, 8)}`,
+  ];
+
+  for (const candidate of candidates) {
+    const { data: clash, error: clashErr } = await admin
+      .from("vendors")
+      .select("id")
+      .eq("slug", candidate)
+      .neq("id", vendor.id)
+      .limit(1);
+
+    if (clashErr) {
+      console.error("[ensureVendorSlug] clash check", clashErr);
+      return null;
+    }
+
+    if (clash && clash.length > 0) {
+      continue;
+    }
+
+    const { error: writeErr } = await admin
+      .from("vendors")
+      .update({ slug: candidate })
+      .eq("id", vendor.id)
+      .is("slug", null);
+
+    if (writeErr) {
+      console.error("[ensureVendorSlug] write", writeErr);
+      return null;
+    }
+
+    return candidate;
+  }
+
+  return null;
 }
 
 /**
@@ -69,7 +138,9 @@ export async function updateVendorStatus(
 
   const { data: vendor, error: fetchErr } = await admin
     .from("vendors")
-    .select("id, phone_number")
+    .select(
+      "id, phone_number, telegram_chat_id, store_name, language, slug",
+    )
     .eq("id", vendorId)
     .maybeSingle();
 
@@ -89,6 +160,14 @@ export async function updateVendorStatus(
   }
 
   if (status === "approved") {
+    // SEO-slug фиксируем при первом approve: стабильный URL во всех локалях.
+    const finalSlug = await ensureVendorSlug(admin, {
+      id: String(vendor.id),
+      slug: typeof vendor.slug === "string" ? vendor.slug : null,
+      store_name:
+        typeof vendor.store_name === "string" ? vendor.store_name : null,
+    });
+
     const phoneDigits = normalizePhone(String(vendor.phone_number ?? ""));
     if (phoneDigits.length >= 8) {
       const { error: profileErr } = await admin
@@ -101,6 +180,20 @@ export async function updateVendorStatus(
         console.error("[updateVendorStatus] profile role", profileErr);
         /* статус в vendors уже approved; профиль можно поправить вручную */
       }
+    }
+
+    const chatId = vendor.telegram_chat_id;
+    if (typeof chatId === "number" && Number.isFinite(chatId)) {
+      void notifyVendorApplicationApproved({
+        telegramChatId: chatId,
+        storeName:
+          typeof vendor.store_name === "string" ? vendor.store_name : null,
+        language:
+          typeof vendor.language === "string" ? vendor.language : null,
+        slug: finalSlug,
+      }).catch((e) =>
+        console.error("[updateVendorStatus] telegram notify", e),
+      );
     }
   }
 

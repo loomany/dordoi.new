@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   CreditCard,
   ImageIcon,
+  Layers,
   MapPin,
   Package,
   Phone,
@@ -16,12 +17,14 @@ import {
 } from "lucide-react";
 import { useTransition } from "react";
 
+import { ProductPhotosSwipeCarousel } from "@/components/cabinet/ProductPhotosSwipeCarousel";
 import { updateVendorStatus } from "@/lib/actions/vendor-moderation";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type { VendorApplicationRecord } from "@/lib/vendor/vendor-application";
 import { VENDOR_PENDING_STATUS } from "@/lib/vendor/status";
 import { digitsOnly } from "@/lib/phone";
+import { useVendorEditSeenIds } from "@/hooks/use-vendor-edit-seen";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -34,6 +37,7 @@ export function VendorModerationView({ vendors, filter }: Props) {
   const locale = useLocale();
   const router = useRouter();
   const [actionPending, startTransition] = useTransition();
+  const vendorEditSeenIds = useVendorEditSeenIds();
 
   function moderate(id: string, status: "approved" | "rejected") {
     startTransition(async () => {
@@ -51,29 +55,41 @@ export function VendorModerationView({ vendors, filter }: Props) {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href="/cabinet/admin"
+      <div className="flex justify-center px-1">
+        <div
           className={cn(
-            "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-            filter === "pending"
-              ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-100"
-              : "text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-900",
+            "flex max-w-full flex-nowrap items-center gap-2.5 rounded-xl border border-zinc-200 bg-zinc-50/90 px-3 py-2 shadow-sm",
+            "dark:border-zinc-700 dark:bg-zinc-900/55",
           )}
         >
-          {t("filterPending")}
-        </Link>
-        <Link
-          href="/cabinet/admin?filter=all"
-          className={cn(
-            "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-            filter === "all"
-              ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-100"
-              : "text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-900",
-          )}
-        >
-          {t("filterAll")}
-        </Link>
+          <h2 className="shrink-0 text-sm font-semibold tracking-tight text-zinc-900 sm:text-base dark:text-zinc-50">
+            {t("moderationTitle")}
+          </h2>
+          <div className="flex shrink-0 gap-1 border-l border-zinc-200 pl-2.5 dark:border-zinc-600">
+            <Link
+              href="/cabinet/admin"
+              className={cn(
+                "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors sm:px-3 sm:text-sm",
+                filter === "pending"
+                  ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-100"
+                  : "text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-900",
+              )}
+            >
+              {t("filterPending")}
+            </Link>
+            <Link
+              href="/cabinet/admin?filter=all"
+              className={cn(
+                "rounded-lg px-2.5 py-1 text-xs font-medium transition-colors sm:px-3 sm:text-sm",
+                filter === "all"
+                  ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-100"
+                  : "text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-900",
+              )}
+            >
+              {t("filterAll")}
+            </Link>
+          </div>
+        </div>
       </div>
 
       {emptyPending ? (
@@ -87,6 +103,7 @@ export function VendorModerationView({ vendors, filter }: Props) {
               key={v.id}
               vendor={v}
               locale={locale}
+              vendorEditSeen={vendorEditSeenIds.has(v.id)}
               showActions={v.status === VENDOR_PENDING_STATUS}
               actionPending={actionPending}
               onApprove={() => moderate(v.id, "approved")}
@@ -124,6 +141,7 @@ function EmptyPendingIllustration() {
 function VendorApplicationCard({
   vendor: v,
   locale,
+  vendorEditSeen,
   showActions,
   actionPending,
   onApprove,
@@ -131,6 +149,7 @@ function VendorApplicationCard({
 }: {
   vendor: VendorApplicationRecord;
   locale: string;
+  vendorEditSeen: boolean;
   showActions: boolean;
   actionPending: boolean;
   onApprove: () => void;
@@ -158,27 +177,84 @@ function VendorApplicationCard({
               </p>
             ) : null}
           </div>
-          {v.status !== VENDOR_PENDING_STATUS ? (
-            <span
-              className={cn(
-                "shrink-0 rounded-full px-2.5 py-1 text-xs font-medium",
-                v.status === "approved" &&
-                  "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100",
-                v.status === "rejected" &&
-                  "bg-red-100 text-red-900 dark:bg-red-950/50 dark:text-red-100",
-              )}
-            >
-              {v.status === "approved"
-                ? t("statusApproved")
-                : t("statusRejected")}
-            </span>
-          ) : null}
+          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+            {vendorEditSeen ? (
+              <span
+                className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold tabular-nums text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100"
+                title={v.id}
+              >
+                {t("reviewBadgeApplicationNo", {
+                  no: String(v.telegram_chat_id),
+                })}
+              </span>
+            ) : (
+              <>
+                <span className="rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-950 dark:border-amber-700 dark:bg-amber-950/45 dark:text-amber-100">
+                  {t("reviewBadgeNew")}
+                </span>
+                <span
+                  className="rounded-full border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-xs font-semibold tabular-nums text-zinc-800 dark:border-zinc-600 dark:bg-zinc-900/70 dark:text-zinc-200"
+                  title={v.id}
+                >
+                  {t("reviewBadgeApplicationNo", {
+                    no: String(v.telegram_chat_id),
+                  })}
+                </span>
+              </>
+            )}
+            {v.status !== VENDOR_PENDING_STATUS ? (
+              <span
+                className={cn(
+                  "rounded-full px-2.5 py-1 text-xs font-medium",
+                  v.status === "approved" &&
+                    "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100",
+                  v.status === "rejected" &&
+                    "bg-red-100 text-red-900 dark:bg-red-950/50 dark:text-red-100",
+                )}
+              >
+                {v.status === "approved"
+                  ? t("statusApproved")
+                  : t("statusRejected")}
+              </span>
+            ) : null}
+          </div>
         </div>
         <p className="text-xs text-muted-foreground">
           {t("cardSubmitted")}{" "}
           {formatDate(v.created_at, locale)} · {v.language.toUpperCase()}
         </p>
       </header>
+
+      {v.description?.trim() || v.description_detail?.trim() ? (
+        <section className="flex flex-col gap-2">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("cardDescription")}
+          </h4>
+          <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+            {[v.description?.trim(), v.description_detail?.trim()]
+              .filter(Boolean)
+              .join("\n\n")}
+          </p>
+        </section>
+      ) : null}
+
+      {v.categories.length > 0 ? (
+        <section className="flex flex-col gap-2">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("cardCategories")}
+          </h4>
+          <ul className="flex flex-wrap gap-2">
+            {v.categories.map((cat, i) => (
+              <li
+                key={`${i}-${cat}`}
+                className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-800 dark:border-zinc-700 dark:bg-zinc-900/60 dark:text-zinc-200"
+              >
+                {cat}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section className="flex flex-col gap-2">
         <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -270,6 +346,21 @@ function VendorApplicationCard({
           }
         />
         <div className="flex gap-3 text-sm">
+          <Layers className="mt-0.5 size-4 shrink-0 text-zinc-500" />
+          <div className="min-w-0 flex-1">
+            <p className="font-medium text-zinc-800 dark:text-zinc-200">
+              {t("cardSamples")}
+            </p>
+            <p className="mt-1 whitespace-pre-wrap break-words text-muted-foreground">
+              {v.samples_note?.trim()
+                ? v.samples_note.trim()
+                : v.samples_available
+                  ? t("cardSamplesYes")
+                  : t("cardSamplesNo")}
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-3 text-sm">
           <RotateCcw className="mt-0.5 size-4 shrink-0 text-zinc-500" />
           <div className="min-w-0 flex-1">
             <p className="font-medium text-zinc-800 dark:text-zinc-200">
@@ -304,44 +395,43 @@ function VendorApplicationCard({
             <p className="mb-2 text-xs font-medium text-muted-foreground">
               {t("cardProductGallery")}
             </p>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {photos.map((url, i) => (
-                <div
-                  key={`${url}-${i}`}
-                  className="relative aspect-square overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element -- публичные URL из Storage, без оптимизации */}
-                  <img
-                    src={url}
-                    alt=""
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-              ))}
-            </div>
+            <ProductPhotosSwipeCarousel
+              urls={photos}
+              ariaLabel={t("cardProductGallery")}
+              getAlt={(i) => t("cardProductPhotoAlt", { n: i + 1 })}
+              openLabel={t("photoViewerOpen")}
+              closeLabel={t("photoViewerClose")}
+            />
           </div>
         ) : null}
       </section>
 
       {showActions ? (
-        <div className="flex flex-wrap gap-3 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+        <div className="flex flex-nowrap items-stretch gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+          <Link
+            href={`/cabinet/admin/vendor/${v.id}/edit`}
+            className={cn(
+              buttonVariants({ variant: "outline", size: "sm" }),
+              "min-w-0 shrink flex-1 justify-center",
+            )}
+          >
+            {t("editVendor")}
+          </Link>
           <Button
             type="button"
-            size="lg"
+            size="sm"
             disabled={actionPending}
-            className="min-w-[140px] bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+            className="min-w-0 shrink flex-1 bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500"
             onClick={onApprove}
           >
             {t("approve")}
           </Button>
           <Button
             type="button"
-            size="lg"
+            size="sm"
             variant="destructive"
             disabled={actionPending}
-            className="min-w-[140px]"
+            className="min-w-0 shrink flex-1"
             onClick={onReject}
           >
             {t("reject")}

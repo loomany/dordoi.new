@@ -3,8 +3,12 @@ import { Link } from "@/i18n/navigation";
 import { FaqAccordion } from "@/components/ui/faq-accordion";
 import { ProviderSidebar } from "@/components/provider/ProviderSidebar";
 import { ProviderTermsGrid } from "@/components/provider/ProviderTermsGrid";
+import { CatalogFavoriteButton } from "@/components/favorites/CatalogFavoriteButton";
 import type { ProviderSlug } from "@/data/provider-registry";
 import { providerContactBySlug } from "@/data/provider-registry";
+import { catalogListingKeyFromSlug } from "@/lib/catalog/listing-key";
+import { getSessionProfile } from "@/lib/auth/session-profile";
+import { fetchBuyerFavoriteKeySet } from "@/lib/favorites/buyer-favorites";
 import {
   formatListingUpdatedToday,
   formatProviderAddedDate,
@@ -20,6 +24,12 @@ export async function ProviderProfileView({ slug }: Props) {
   const p = (key: string) => t(`slugs.${slug}.${key}`);
   const contact = providerContactBySlug[slug];
   const listedNow = new Date();
+  const profile = await getSessionProfile();
+  const favoriteKeys = profile
+    ? await fetchBuyerFavoriteKeySet(profile.userId)
+    : new Set<string>();
+  const listingKey = catalogListingKeyFromSlug(slug);
+  const initialFavorite = favoriteKeys.has(listingKey);
 
   const faqItems = [0, 1, 2, 3].map((i) => ({
     question: p(`faq.${i}.q`),
@@ -123,7 +133,14 @@ export async function ProviderProfileView({ slug }: Props) {
               statusOfflineLabel={t("statusOffline")}
               online={contact.online}
               contactWhatsAppLabel={t("ctaWhatsApp")}
-              saveLabel={t("ctaSave")}
+              favorite={
+                <CatalogFavoriteButton
+                  key={`${listingKey}:${initialFavorite}`}
+                  listingKey={listingKey}
+                  initialFavorite={initialFavorite}
+                  variant="sidebar"
+                />
+              }
               responseLabel={p("quickResponse")}
               deliveryLabel={p("quickDelivery")}
               whatsappHref={whatsappHref}

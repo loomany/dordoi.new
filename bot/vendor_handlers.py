@@ -21,30 +21,28 @@ from aiogram.types import (
     ReplyKeyboardRemove,
 )
 
+from bot.photo_batch_handlers import (
+    ADD_PHOTOS_BUTTON_TEXT as PHOTO_BATCH_BUTTON_TEXT,
+)
 from bot.repository import VendorRepository, normalize_contact_phone, validate_phone
 from bot.states import VendorOnboarding
+from bot.vendor_limits import (
+    CATEGORY_LABEL_MAX_CHARS,
+    DESCRIPTION_CARD_MAX_CHARS,
+    DESCRIPTION_CARD_RECOMMENDED_CHARS,
+    DESCRIPTION_DETAIL_MAX_CHARS,
+    MAX_VENDOR_CATEGORIES,
+    STORE_NAME_MAX_CHARS,
+)
 
 if TYPE_CHECKING:
     from bot.config import Settings
 
 # --- Константы UI ---
 
-VENDOR_CATEGORIES: list[str] = [
-    "Одежда",
-    "Обувь",
-    "Текстиль",
-    "Аксессуары",
-    "Электроника",
-    "Бытовая техника",
-    "Продукты питания",
-    "Упаковка",
-    "Сырьё",
-    "Другое",
-]
-
 CB_LANG_RU = "vo:l:ru"
 CB_LANG_KG = "vo:l:kg"
-CB_CAT_PREFIX = "vo:g:"
+CB_CAT_ANOTHER = "vo:cat:another"
 CB_CAT_DONE = "vo:cat_done"
 CB_PHOTOS_DONE = "vo:photos_done"
 CB_PHOTOS_MORE = "vo:photos_more"
@@ -58,15 +56,26 @@ CB_IG_SKIP = "vo:ig:skip"
 CB_TG_SKIP = "vo:tg:skip"
 CB_SMP_Y = "vo:smp:y"
 CB_SMP_N = "vo:smp:n"
+CB_SMP_CUSTOM = "vo:smp:custom"
 CB_RET_Y = "vo:ret:y"
 CB_RET_N = "vo:ret:n"
 CB_RET_COND = "vo:ret:cond"
+CB_DESC_DETAIL_SKIP = "vo:desc2:skip"
 
 _STORE_NAME_STEP_PROMPT = (
     "Номер сохранён.\n\n"
-    "Название для каталога — одним сообщением.\n\n"
-    "Напишите так же, как на вывеске или в WhatsApp: это заголовок вашей карточки на Dordoi.help "
-    "и им будут пользоваться оптовики."
+    "🔤 Название для каталога — одним сообщением.\n\n"
+    f"Не больше {STORE_NAME_MAX_CHARS} символов (пробелы считаются). "
+    "Так название лучше помещается в шапку карточки в каталоге (обычно 1–2 строки на экране компьютера).\n\n"
+    "Напишите как на вывеске или в WhatsApp: это название вашей карточки на Dordoi.help."
+)
+
+_DESCRIPTION_DETAIL_STEP_PROMPT = (
+    "📄 Шаг 6 — продолжение описания (по желанию)\n\n"
+    "Можно дописать текст так, будто это продолжение предыдущего сообщения "
+    "(без нового заголовка «о нас»). Эту часть покажем только внутри вашего профиля на сайте — "
+    "не в маленькой карточке в общем каталоге.\n\n"
+    f"До {DESCRIPTION_DETAIL_MAX_CHARS} символов. Если продолжение не нужно — нажмите кнопку ниже."
 )
 
 _TELEGRAM_CHANNEL_STEP_PROMPT = (
@@ -76,10 +85,11 @@ _TELEGRAM_CHANNEL_STEP_PROMPT = (
 )
 
 _SAMPLES_STEP_PROMPT = (
-    "🧵 Минимальный заказ или образцы для проверки качества\n\n"
-    "Даёте ли покупателю возможность оформить небольшую пробную партию или взять образцы до крупного "
-    "заказа — чтобы проверить качество, цвет, размеры или условия отгрузки?\n\n"
-    "«Да» — если такую опцию предлагаете; «Нет» — если работаете только от полной партии."
+    "🧵 Минимальный заказ или пробная закупка\n\n"
+    "Даёте ли покупателю возможность оформить небольшую оплачиваемую партию или мелкий тестовый заказ "
+    "до крупного — чтобы проверить качество, цвет, размеры или условия отгрузки?\n\n"
+    "«Да» — если такую опцию предлагаете; «Нет» — если работаете только от полной партии; "
+    "«Свой вариант» — распишите условия одним сообщением."
 )
 
 _RETURNS_STEP_PROMPT = (
@@ -91,7 +101,6 @@ _RETURNS_STEP_PROMPT = (
 )
 
 _photo_locks: dict[int, asyncio.Lock] = {}
-_cat_locks: dict[int, asyncio.Lock] = {}
 _log = logging.getLogger(__name__)
 
 # MarkdownV2: символы, которые нужно экранировать в тексте сущности
@@ -174,27 +183,21 @@ def _product_photos_kb(saved_count: int) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
-def _category_kb(indices: list[int]) -> InlineKeyboardMarkup:
-    picked = set(indices)
-    rows: list[list[InlineKeyboardButton]] = []
-    row: list[InlineKeyboardButton] = []
-    for i, name in enumerate(VENDOR_CATEGORIES):
-        mark = "✓ " if i in picked else "○ "
-        row.append(
-            InlineKeyboardButton(
-                text=f"{mark}{name}",
-                callback_data=f"{CB_CAT_PREFIX}{i}",
-            )
-        )
-        if len(row) == 2:
-            rows.append(row)
-            row = []
-    if row:
-        rows.append(row)
-    rows.append(
-        [InlineKeyboardButton(text="Готово", callback_data=CB_CAT_DONE)]
+def _categories_more_kb() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="➕ Ещё одну категорию",
+                    callback_data=CB_CAT_ANOTHER,
+                ),
+                InlineKeyboardButton(
+                    text="✅ Продолжить к фото",
+                    callback_data=CB_CAT_DONE,
+                ),
+            ],
+        ]
     )
-    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 def _payment_kb() -> InlineKeyboardMarkup:
@@ -216,6 +219,23 @@ def _yes_no_kb(prefix_y: str, prefix_n: str, y_text: str, n_text: str) -> Inline
                 InlineKeyboardButton(text=y_text, callback_data=prefix_y),
                 InlineKeyboardButton(text=n_text, callback_data=prefix_n),
             ]
+        ]
+    )
+
+
+def _samples_kb() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="Да", callback_data=CB_SMP_Y),
+                InlineKeyboardButton(text="Нет", callback_data=CB_SMP_N),
+            ],
+            [
+                InlineKeyboardButton(
+                    text="Свой вариант (текстом)",
+                    callback_data=CB_SMP_CUSTOM,
+                )
+            ],
         ]
     )
 
@@ -255,6 +275,88 @@ async def _download_photo_jpeg(bot: Bot, photo) -> tuple[bytes, str]:
     await bot.download(photo, destination=buf)
     body = buf.getvalue()
     return body, "image/jpeg"
+
+
+async def _advance_vendor_to_product_photos(message: Message, state: FSMContext) -> None:
+    """После категорий — шаг загрузки фото товаров."""
+    await state.set_state(VendorOnboarding.product_photos)
+    await state.update_data(product_photo_urls=[])
+    await message.answer(
+        "📸 Шаг 8 — фото ассортимента\n\n"
+        "Пришлите до 15 фото товаров, которые хотите показывать покупателям "
+        "(можно по одному или несколько в одном альбоме).\n\n"
+        "💡 Чем понятнее фото — тем проще покупателю решиться на контакт.\n"
+        "Когда загрузите всё нужное — нажмите «Завершить загрузку фото».",
+        reply_markup=_product_photos_kb(0),
+    )
+
+
+async def _prompt_vendor_categories(message: Message, state: FSMContext) -> None:
+    """Переход к вводу категорий после описания / продолжения описания."""
+    await state.update_data(categories_list=[])
+    await state.set_state(VendorOnboarding.categories)
+    lim = CATEGORY_LABEL_MAX_CHARS
+    await message.answer(
+        "🏷️ Шаг 7 — категории товаров\n\n"
+        "Список **придумываете вы сами** — так его увидят покупатели в карточке магазина "
+        "(первая строка списка часто показывается под названием в каталоге).\n\n"
+        "**Как заполнить, по шагам:**\n"
+        f"1️⃣ Отправьте **одно название категории одним сообщением** — без фото и файлов, "
+        f"просто текст. Длина одной строки — **от 1 до {lim} символов** "
+        "(пробелы считаются; лучше коротко и по делу).\n"
+        "2️⃣ Я сохраню строку и покажу, что уже в списке. Дальше можно:\n"
+        "   • отправить **ещё одно сообщение** с названием следующей категории, **или**\n"
+        "   • нажать кнопку **«➕ Ещё одну категорию»** — если так удобнее, а потом тоже прислать текст;\n"
+        "   • нажать **«✅ Продолжить к фото»**, когда категорий достаточно.\n"
+        f"3️⃣ Всего можно добавить **не больше {MAX_VENDOR_CATEGORIES} категорий**.\n\n"
+        "**Важно:** не перечисляйте несколько категорий в одном сообщении через запятую — "
+        "так легко ошибиться. Пишите **по одной строке за раз** — я каждую сохраню отдельно.\n\n"
+        "👉 **Сейчас пришлите первую категорию** одним сообщением (пример: «Женская одежда опт»)."
+    )
+
+
+async def _complete_vendor_logo_step(
+    message: Message,
+    state: FSMContext,
+    repo: VendorRepository,
+    bucket: str,
+    body: bytes,
+    mime: str,
+    filename_hint: str,
+) -> None:
+    """Сохраняет логотип в Storage и переводит на шаг описания; при ошибке отвечает в чат."""
+    uid = message.chat.id
+    if len(body) > 10 * 1024 * 1024:
+        await message.answer("⚠️ Файл больше 10 МБ — сожмите фото или пришлите другое.")
+        return
+    try:
+        _, pub = repo.upload_public_image(
+            bucket, uid, body, filename_hint, mime
+        )
+    except Exception:
+        _log.exception(
+            "vendor logo upload failed chat_id=%s filename=%s mime=%s bytes=%s",
+            uid,
+            filename_hint,
+            mime,
+            len(body),
+        )
+        await message.answer(
+            "⚠️ Не удалось сохранить файл на сервере. Попробуйте через минуту или другое фото."
+        )
+        return
+    await state.update_data(logo_url=pub)
+    await state.set_state(VendorOnboarding.description)
+    await message.answer(
+        "📝 Шаг 5 — описание для каталога\n\n"
+        "Этот текст покажем в карточке магазина в общем каталоге — то, что покупатель видит "
+        "снаружи, до перехода к полному профилю.\n\n"
+        f"От 5 до {DESCRIPTION_CARD_MAX_CHARS} символов. Ориентир для аккуратного макета карточки — "
+        f"до ~{DESCRIPTION_CARD_RECOMMENDED_CHARS} символов; длиннее текст на сайте может сильнее "
+        "обрезаться в превью каталога.\n\n"
+        "Пишите просто: чем торгуете, для кого, без лишней воды.\n\n"
+        "Следующим шагом можно добавить продолжение — оно будет только внутри профиля на сайте."
+    )
 
 
 def _phone_digits_for_storage(raw: str) -> str:
@@ -325,11 +427,26 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         existing = repo.get_vendor_by_telegram(tid)
         if existing:
             st = (existing.get("status") or "").strip()
-            if st in ("pending_moderation", "approved"):
+            if st == "approved":
                 await message.answer(
-                    "✅ У вас уже есть заявка продавца в Dordoi.help.\n\n"
-                    "Чтобы что‑то изменить в данных магазина, напишите в поддержку "
-                    "или дождитесь доступа к личному кабинету после модерации."
+                    "✅ Ваша карточка опубликована в Dordoi.help.\n\n"
+                    "Чтобы добавить новые фото товаров — нажмите кнопку ниже. "
+                    "Партия пройдёт модерацию и появится в карточке отдельным "
+                    "блоком с датой загрузки.",
+                    reply_markup=ReplyKeyboardMarkup(
+                        keyboard=[[KeyboardButton(text=PHOTO_BATCH_BUTTON_TEXT)]],
+                        resize_keyboard=True,
+                        is_persistent=True,
+                        input_field_placeholder=(
+                            "Нажмите «Добавить фото товаров» или /start"
+                        ),
+                    ),
+                )
+                return
+            if st == "pending_moderation":
+                await message.answer(
+                    "⏳ Анкета на модерации. Когда админ её опубликует, мы пришлём сюда "
+                    "уведомление и дадим кнопку «📸 Добавить фото товаров»."
                 )
                 return
 
@@ -348,7 +465,6 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         uid = message.from_user.id if message.from_user else None
         if uid is not None:
             _photo_locks.pop(uid, None)
-            _cat_locks.pop(uid, None)
         await state.clear()
         await message.answer(
             "🛑 Анкета остановлена. Чтобы начать заново, отправьте /start",
@@ -430,10 +546,11 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         if not message.text:
             return
         name = message.text.strip()
-        if len(name) < 2 or len(name) > 500:
+        if len(name) < 2 or len(name) > STORE_NAME_MAX_CHARS:
             await message.answer(
-                "Название слишком короткое или длинное.\n"
-                "Нужно от 2 до 500 символов — отправьте название ещё раз одной строкой."
+                f"⚠️ Название должно быть от 2 до {STORE_NAME_MAX_CHARS} символов "
+                "(шапка карточки в каталоге). "
+                "Отправьте название ещё раз одной строкой."
             )
             return
         await state.update_data(store_name=name)
@@ -479,36 +596,61 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         try:
             body, mime = await _download_photo_jpeg(bot, message.photo[-1])
         except Exception:
+            _log.exception("telegram photo download failed chat_id=%s", uid)
             await message.answer(
                 "⚠️ Не удалось получить фото из Telegram. Отправьте картинку ещё раз."
             )
             return
-        if len(body) > 10 * 1024 * 1024:
+        await _complete_vendor_logo_step(
+            message, state, repo, bucket, body, mime, "logo.jpg"
+        )
+
+    @r.message(StateFilter(VendorOnboarding.logo), F.document)
+    async def step_logo_document(message: Message, state: FSMContext, bot: Bot) -> None:
+        """Фото как «файл» (document) без сжатия — у многих клиентов так уходит в Telegram."""
+        if not message.from_user or not message.document:
+            return
+        doc = message.document
+        if doc.file_size and doc.file_size > 10 * 1024 * 1024:
             await message.answer("⚠️ Файл больше 10 МБ — сожмите фото или пришлите другое.")
             return
-        try:
-            _, pub = repo.upload_public_image(
-                bucket, uid, body, "logo.jpg", mime
-            )
-        except Exception:
+        mime = (doc.mime_type or "").strip().lower()
+        if not mime.startswith("image/"):
             await message.answer(
-                "⚠️ Не удалось сохранить файл на сервере. Попробуйте через минуту или другое фото."
+                "⚠️ Нужна картинка (JPG, PNG или WebP). PDF и другие типы файлов на этом шаге не принимаем."
             )
             return
-        await state.update_data(logo_url=pub)
-        await state.set_state(VendorOnboarding.description)
-        await message.answer(
-            "📝 Шаг 5 — описание для покупателей\n\n"
-            "Расскажите своими словами, чем торгуете и кому удобно заказывать у вас "
-            "(ассортимент, форматы работы, без лишней воды — "
-            "этот текст попадёт в карточку магазина):"
+        uid = message.chat.id
+        try:
+            buf = io.BytesIO()
+            await bot.download(doc, destination=buf)
+            body = buf.getvalue()
+        except Exception:
+            _log.exception("telegram document download failed chat_id=%s", uid)
+            await message.answer(
+                "⚠️ Не удалось получить файл из Telegram. Отправьте картинку ещё раз."
+            )
+            return
+        ext = "jpg"
+        if "png" in mime:
+            ext = "png"
+        elif "webp" in mime:
+            ext = "webp"
+        await _complete_vendor_logo_step(
+            message,
+            state,
+            repo,
+            bucket,
+            body,
+            doc.mime_type or "image/jpeg",
+            f"logo.{ext}",
         )
 
     @r.message(StateFilter(VendorOnboarding.logo))
     async def step_logo_bad(message: Message) -> None:
         await message.answer(
-            "⚠️ Нужно именно фото картинкой (не PDF и не файл документа). "
-            "Сделайте снимок или отправьте JPEG/PNG одним сообщением."
+            "⚠️ Пришлите логотип как фото (камера/галерея) или как файл-картинку JPG/PNG/WebP. "
+            "Если Telegram отправляет только как файл — так тоже можно (мы принимаем и документ с типом image/*)."
         )
 
     @r.message(StateFilter(VendorOnboarding.description), F.text)
@@ -516,54 +658,91 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         if not message.text:
             return
         desc = message.text.strip()
-        if len(desc) < 5 or len(desc) > 4000:
+        if len(desc) < 5 or len(desc) > DESCRIPTION_CARD_MAX_CHARS:
             await message.answer(
-                "⚠️ Описание должно быть от 5 до 4000 символов — добавьте пару предложений "
-                "или сократите текст."
+                f"⚠️ Это описание должно быть от 5 до {DESCRIPTION_CARD_MAX_CHARS} символов "
+                "(оно идёт в карточку каталога). Добавьте пару предложений или сократите текст."
             )
             return
-        await state.update_data(description=desc, cat_indices=[])
-        await state.set_state(VendorOnboarding.categories)
-        m = await message.answer(
-            "🏷️ Шаг 6 — категории товаров\n\n"
-            "Выберите одну или несколько категорий кнопками ниже "
-            "(покупатели фильтруют каталог по ним).\n"
-            "Когда всё отметите — нажмите «Готово».",
-            reply_markup=_category_kb([]),
+        await state.update_data(description=desc)
+        await state.set_state(VendorOnboarding.description_detail)
+        await message.answer(
+            _DESCRIPTION_DETAIL_STEP_PROMPT,
+            reply_markup=InlineKeyboardMarkup(
+                inline_keyboard=[
+                    [
+                        InlineKeyboardButton(
+                            text="Без продолжения — дальше",
+                            callback_data=CB_DESC_DETAIL_SKIP,
+                        )
+                    ]
+                ]
+            ),
         )
-        await state.update_data(categories_msg_id=m.message_id)
+
+    @r.message(StateFilter(VendorOnboarding.description), ~F.text)
+    async def step_description_bad(message: Message) -> None:
+        await message.answer(
+            "⚠️ На этом шаге нужно текстовое описание одним сообщением, без фото и стикеров."
+        )
+
+    @r.callback_query(
+        StateFilter(VendorOnboarding.description_detail),
+        F.data == CB_DESC_DETAIL_SKIP,
+    )
+    async def cb_description_detail_skip(query: CallbackQuery, state: FSMContext) -> None:
+        await query.answer()
+        if not query.message:
+            return
+        try:
+            await query.message.edit_reply_markup(reply_markup=None)
+        except Exception:
+            pass
+        await state.update_data(description_detail=None)
+        await _prompt_vendor_categories(query.message, state)
+
+    @r.message(StateFilter(VendorOnboarding.description_detail), F.text)
+    async def step_description_detail(message: Message, state: FSMContext) -> None:
+        if not message.text:
+            return
+        extra = message.text.strip()
+        if len(extra) < 5:
+            await message.answer(
+                "⚠️ Продолжение — хотя бы 5 символов, или нажмите «Без продолжения — дальше»."
+            )
+            return
+        if len(extra) > DESCRIPTION_DETAIL_MAX_CHARS:
+            await message.answer(
+                f"⚠️ Слишком длинно — максимум {DESCRIPTION_DETAIL_MAX_CHARS} символов. "
+                "Сократите или разделите мысль."
+            )
+            return
+        await state.update_data(description_detail=extra)
+        await _prompt_vendor_categories(message, state)
+
+    @r.message(StateFilter(VendorOnboarding.description_detail))
+    async def step_description_detail_bad(message: Message) -> None:
+        await message.answer(
+            "⚠️ Отправьте продолжение текстом или нажмите «Без продолжения — дальше»."
+        )
 
     @r.callback_query(
         StateFilter(VendorOnboarding.categories),
-        F.data.startswith(CB_CAT_PREFIX),
+        F.data == CB_CAT_ANOTHER,
     )
-    async def cb_cat_toggle(query: CallbackQuery, state: FSMContext) -> None:
-        if not query.from_user or not query.message:
-            return
+    async def cb_cat_another(query: CallbackQuery, state: FSMContext) -> None:
         await query.answer()
-        idx_s = query.data.replace(CB_CAT_PREFIX, "")
+        if not query.message:
+            return
         try:
-            idx = int(idx_s)
-        except ValueError:
-            return
-        if idx < 0 or idx >= len(VENDOR_CATEGORIES):
-            return
-        uid = query.from_user.id
-        async with _lock(_cat_locks, uid):
-            data = await state.get_data()
-            cur: list[int] = list(data.get("cat_indices") or [])
-            if idx in cur:
-                cur.remove(idx)
-            else:
-                cur.append(idx)
-            cur.sort()
-            await state.update_data(cat_indices=cur)
-            try:
-                await query.message.edit_reply_markup(
-                    reply_markup=_category_kb(cur)
-                )
-            except Exception:
-                pass
+            await query.message.edit_reply_markup(reply_markup=None)
+        except Exception:
+            pass
+        lim = CATEGORY_LABEL_MAX_CHARS
+        await query.message.answer(
+            f"Хорошо. Пришлите **следующую категорию** одним сообщением "
+            f"(до {lim} символов)."
+        )
 
     @r.callback_query(
         StateFilter(VendorOnboarding.categories), F.data == CB_CAT_DONE
@@ -571,27 +750,72 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
     async def cb_cat_done(query: CallbackQuery, state: FSMContext) -> None:
         if not query.message:
             return
-        await query.answer()
         data = await state.get_data()
-        indices: list[int] = list(data.get("cat_indices") or [])
-        if not indices:
+        cats: list[str] = list(data.get("categories_list") or [])
+        if not cats:
             await query.answer(
-                "👉 Выберите хотя бы одну категорию — без этого заявку не собрать.",
+                "Нужна хотя бы одна категория. Напишите название одним сообщением.",
                 show_alert=True,
             )
             return
-        names = [VENDOR_CATEGORIES[i] for i in indices]
-        await state.update_data(categories_list=names)
-        await query.message.edit_reply_markup(reply_markup=None)
-        await state.set_state(VendorOnboarding.product_photos)
-        await state.update_data(product_photo_urls=[])
-        await query.message.answer(
-            "📸 Шаг 7 — фото ассортимента\n\n"
-            "Пришлите до 15 фото товаров, которые хотите показывать покупателям "
-            "(можно по одному или несколько в одном альбоме).\n\n"
-            "💡 Чем понятнее фото — тем проще покупателю решиться на контакт.\n"
-            "Когда загрузите всё нужное — нажмите «Завершить загрузку фото».",
-            reply_markup=_product_photos_kb(0),
+        await query.answer()
+        try:
+            await query.message.edit_reply_markup(reply_markup=None)
+        except Exception:
+            pass
+        await _advance_vendor_to_product_photos(query.message, state)
+
+    @r.message(StateFilter(VendorOnboarding.categories), F.text)
+    async def step_categories_text(message: Message, state: FSMContext) -> None:
+        if not message.text:
+            return
+        line = " ".join(message.text.split()).strip()
+        if not line:
+            await message.answer(
+                "⚠️ Пустое сообщение. Напишите **название категории** одной строкой."
+            )
+            return
+        if len(line) > CATEGORY_LABEL_MAX_CHARS:
+            await message.answer(
+                f"⚠️ Слишком длинно для одной категории (максимум {CATEGORY_LABEL_MAX_CHARS} символов). "
+                "Сократите или разбейте на две категории — **вторым сообщением**."
+            )
+            return
+        data = await state.get_data()
+        cats: list[str] = list(data.get("categories_list") or [])
+        if len(cats) >= MAX_VENDOR_CATEGORIES:
+            await message.answer(
+                f"📌 Уже сохранено максимум {MAX_VENDOR_CATEGORIES} категорий. "
+                "Нажмите **«Продолжить к фото»**, чтобы перейти к следующему шагу.",
+                reply_markup=_categories_more_kb(),
+            )
+            return
+        cats.append(line)
+        await state.update_data(categories_list=cats)
+        numbered = "\n".join(f"  {i + 1}) {c}" for i, c in enumerate(cats))
+        if len(cats) >= MAX_VENDOR_CATEGORIES:
+            await message.answer(
+                f"✅ Сохранено: «{line}»\n\n"
+                f"Список полный (**{MAX_VENDOR_CATEGORIES}** из {MAX_VENDOR_CATEGORIES}):\n{numbered}\n\n"
+                "Переходим к загрузке фото товаров."
+            )
+            await _advance_vendor_to_product_photos(message, state)
+            return
+        await message.answer(
+            f"✅ Сохранено: «{line}»\n\n"
+            f"Сейчас в списке **{len(cats)}** из {MAX_VENDOR_CATEGORIES}:\n{numbered}\n\n"
+            "**Что дальше?**\n"
+            "• Нужна ещё одна категория — отправьте **ещё одно сообщение** с названием "
+            "(или нажмите **«Ещё одну категорию»** — и потом пришлите текст).\n"
+            "• Категорий достаточно — нажмите **«Продолжить к фото»**.",
+            reply_markup=_categories_more_kb(),
+        )
+
+    @r.message(StateFilter(VendorOnboarding.categories))
+    async def step_categories_bad(message: Message) -> None:
+        await message.answer(
+            "⚠️ На этом шаге пришлите **название категории текстом** — одним сообщением, "
+            "без фото, стикеров и файлов."
         )
 
     @r.message(StateFilter(VendorOnboarding.product_photos), F.photo)
@@ -674,7 +898,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.answer()
         await state.set_state(VendorOnboarding.container_photo)
         await query.message.answer(
-            "📦 Шаг 8 — где вы отгружаете заказ\n\n"
+            "📦 Шаг 9 — где вы отгружаете заказ\n\n"
             "Пришлите одно фото контейнера, точки или склада на рынке (одно сообщение — одно фото) — "
             "чтобы покупателю было проще найти вас при первой поездке."
         )
@@ -705,7 +929,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(container_photo_url=pub)
         await state.set_state(VendorOnboarding.min_batch)
         await message.answer(
-            "📊 Шаг 9 — минимальный заказ и отгрузка\n\n"
+            "📊 Шаг 10 — минимальный заказ и отгрузка\n\n"
             "Опишите текстом минимальную партию и как вы отгружаете "
             "(например: «от 50 шт», «короб», «под заказ 3 дня»):"
         )
@@ -729,7 +953,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.update_data(min_batch=t)
         await state.set_state(VendorOnboarding.payment)
         await message.answer(
-            "💳 Шаг 10 — как вы принимаете оплату\n\n"
+            "💳 Шаг 11 — как вы принимаете оплату\n\n"
             "Выберите вариант кнопкой ниже (это увидят покупатели в карточке):",
             reply_markup=_payment_kb(),
         )
@@ -748,7 +972,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.delivery_help)
         await query.message.answer(
-            "🚚 Шаг 11 — доставка для покупателя\n\n"
+            "🚚 Шаг 12 — доставка для покупателя\n\n"
             "Помогаете ли вы организовать доставку до клиента или перевозчика "
             "(консолидация, контакты транспорта и т.п.)?\n\n"
             "Выберите «Да» или «Нет»:",
@@ -768,7 +992,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.whatsapp_1)
         await query.message.answer(
-            "💬 Шаг 12 — основной WhatsApp для покупателей\n\n"
+            "💬 Шаг 13 — основной WhatsApp для покупателей\n\n"
             "Это номер, по которому покупатели и оптовики будут писать вам напрямую "
             "из каталога.\n\n"
             "Отправьте контакт кнопкой ниже или введите номер текстом "
@@ -915,7 +1139,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.set_state(VendorOnboarding.samples)
         await query.message.answer(
             _SAMPLES_STEP_PROMPT,
-            reply_markup=_yes_no_kb(CB_SMP_Y, CB_SMP_N, "Да", "Нет"),
+            reply_markup=_samples_kb(),
         )
 
     @r.message(StateFilter(VendorOnboarding.telegram_channel), F.text)
@@ -930,7 +1154,19 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.set_state(VendorOnboarding.samples)
         await message.answer(
             _SAMPLES_STEP_PROMPT,
-            reply_markup=_yes_no_kb(CB_SMP_Y, CB_SMP_N, "Да", "Нет"),
+            reply_markup=_samples_kb(),
+        )
+
+    @r.callback_query(StateFilter(VendorOnboarding.samples), F.data == CB_SMP_CUSTOM)
+    async def cb_samples_custom_start(query: CallbackQuery, state: FSMContext) -> None:
+        await query.answer()
+        if not query.message:
+            return
+        await query.message.edit_reply_markup(reply_markup=None)
+        await state.set_state(VendorOnboarding.samples_custom)
+        await query.message.answer(
+            "✍️ Опишите своими словами: даёте ли мелкую оплачиваемую партию для проверки и на каких "
+            "условиях (или почему нет) — одним сообщением, до 500 символов."
         )
 
     @r.callback_query(
@@ -941,13 +1177,34 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         if not query.message:
             return
         sa = query.data == CB_SMP_Y
-        await state.update_data(samples_available=sa)
+        await state.update_data(samples_available=sa, samples_note=None)
         await query.message.edit_reply_markup(reply_markup=None)
         await state.set_state(VendorOnboarding.returns)
         await query.message.answer(
             _RETURNS_STEP_PROMPT,
             reply_markup=_returns_kb(),
         )
+
+    @r.message(StateFilter(VendorOnboarding.samples_custom), F.text)
+    async def step_samples_custom(message: Message, state: FSMContext) -> None:
+        if not message.text:
+            return
+        t = message.text.strip()
+        if len(t) < 3 or len(t) > 500:
+            await message.answer(
+                "⚠️ Нужно от 3 до 500 символов — чуть подробнее или короче одним сообщением."
+            )
+            return
+        await state.update_data(samples_available=True, samples_note=t)
+        await state.set_state(VendorOnboarding.returns)
+        await message.answer(
+            _RETURNS_STEP_PROMPT,
+            reply_markup=_returns_kb(),
+        )
+
+    @r.message(StateFilter(VendorOnboarding.samples_custom))
+    async def step_samples_custom_bad(message: Message) -> None:
+        await message.answer("⚠️ Нужен текст одним сообщением (не фото и не стикер).")
 
     @r.callback_query(
         StateFilter(VendorOnboarding.returns), F.data.in_({CB_RET_Y, CB_RET_N})
@@ -1026,6 +1283,14 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             await state.clear()
             return
 
+        cats_list = data.get("categories_list")
+        if not isinstance(cats_list, list) or len(cats_list) == 0:
+            await message.answer(
+                "⚠️ Не указаны категории товаров. Начните анкету заново: /start"
+            )
+            await state.clear()
+            return
+
         row = {
             "telegram_chat_id": uid,
             "language": data["lang"],
@@ -1034,6 +1299,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             "location_row": data["location_row"],
             "logo_url": data["logo_url"],
             "description": data["description"],
+            "description_detail": data.get("description_detail"),
             "categories": data["categories_list"],
             "product_photos": data["product_photo_urls"],
             "container_photo_url": data["container_photo_url"],
@@ -1045,6 +1311,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             "instagram_url": data.get("instagram_url"),
             "telegram_url": data.get("telegram_url"),
             "samples_available": bool(data.get("samples_available")),
+            "samples_note": data.get("samples_note"),
             "returns_policy": data["returns_policy"],
             "status": "pending_moderation",
         }
@@ -1083,7 +1350,6 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
             )
 
         _photo_locks.pop(uid, None)
-        _cat_locks.pop(uid, None)
         await state.clear()
 
     return r

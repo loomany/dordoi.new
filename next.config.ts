@@ -36,6 +36,24 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: supabaseStorageRemotePatterns(),
   },
+  experimental: {
+    // Включаем экспериментальные `unauthorized()` / `forbidden()` —
+    // их используют наши server actions модерации (vendor-moderation,
+    // vendor-photo-batch-moderation), чтобы корректно прерывать RSC при
+    // отсутствии админской сессии.
+    authInterrupts: true,
+    // Подстраховка от ошибки Next 16 «x-forwarded-host does not match origin»
+    // в dev/прокси-окружениях: разрешаем явно тот же hostname, на котором
+    // мы слушаем локально и в проде.
+    serverActions: {
+      allowedOrigins: [
+        "localhost:3000",
+        "127.0.0.1:3000",
+        "dordoi.help",
+        "www.dordoi.help",
+      ],
+    },
+  },
 };
 
 export default withNextIntl(nextConfig);

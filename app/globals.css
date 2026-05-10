@@ -1,5 +1,6 @@
 @import "../styles/tokens.css";
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -59,15 +60,15 @@
   --primary: var(--d-accent);
   --primary-foreground: var(--d-accent-foreground);
   --secondary: var(--d-accent-muted);
-  --secondary-foreground: oklch(0.25 0.06 250);
-  --muted: oklch(0.97 0.01 250);
-  --muted-foreground: oklch(0.45 0.02 250);
+  --secondary-foreground: oklch(0.266 0.065 152.934);
+  --muted: oklch(0.97 0.012 165);
+  --muted-foreground: oklch(0.45 0.025 165);
   --accent: oklch(0.96 0.03 165);
   --accent-foreground: oklch(0.25 0.06 165);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.55 0.1 250);
+  --ring: oklch(0.508 0.118 165.612);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -91,10 +92,10 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.65 0.12 250);
+  --primary: oklch(0.765 0.177 163.223);
   --primary-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.25 0.035 165);
+  --secondary-foreground: oklch(0.95 0.052 163.051);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
@@ -102,7 +103,7 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.765 0.177 163.223);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -110,7 +111,7 @@
   --chart-5: oklch(0.269 0 0);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary: oklch(0.765 0.177 163.223);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
@@ -127,5 +128,48 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* Hero landing — slow mesh drift (respects reduced motion below). */
+@keyframes d-hero-blob-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  45% {
+    transform: translate(3%, -4%) scale(1.04);
+  }
+  70% {
+    transform: translate(-4%, 3%) scale(0.96);
+  }
+}
+
+@keyframes d-hero-blob-drift-reverse {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  40% {
+    transform: translate(-3%, 2%) scale(1.03);
+  }
+  75% {
+    transform: translate(4%, -3%) scale(0.97);
+  }
+}
+
+@layer utilities {
+  .d-hero-blob-a {
+    animation: d-hero-blob-drift 24s ease-in-out infinite;
+  }
+  .d-hero-blob-b {
+    animation: d-hero-blob-drift-reverse 32s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .d-hero-blob-a,
+  .d-hero-blob-b {
+    animation: none;
   }
 }

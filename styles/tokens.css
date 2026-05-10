@@ -3,12 +3,15 @@
  * Map landing-spec.json spacing/typography hints to these variables in components.
  */
 :root {
-  /* Accent — blue / green SaaS */
-  --d-accent: oklch(0.55 0.14 250);
+  /* Accent — brand green from the `.help` part of the logo (Tailwind emerald-700). */
+  --d-accent: oklch(0.508 0.118 165.612);
   --d-accent-foreground: oklch(0.99 0 0);
-  --d-accent-muted: oklch(0.94 0.04 250);
-  --d-green: oklch(0.55 0.12 165);
+  --d-accent-muted: oklch(0.95 0.052 163.051);
+  --d-green: var(--d-accent);
   --d-green-foreground: oklch(0.99 0 0);
+
+  /* Catalog card outline — blue, kept independent from `--primary` brand green. */
+  --d-card-accent: oklch(0.55 0.14 250);
 
   /* Spacing scale (rem) */
   --d-space-xs: 0.5rem;

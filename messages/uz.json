@@ -1,5 +1,7 @@
 {
-  "brand": { "name": "Dordoi.help" },
+  "brand": {
+    "name": "Dordoi.help"
+  },
   "Nav": {
     "catalog": "Katalog",
     "sell": "Optom sotish",
@@ -39,9 +41,26 @@
     "errorComplete": "Roʻyxatdan oʻtishni yakunlab boʻlmadi",
     "errorConflict": "Bu raqam yoki email band",
     "errorNotConfigured": "Kirish vaqtincha mavjud emas",
-    "errorRegistrationSecret": "Ro‘yxatdan o‘tish serverda sozlanmagan (AUTH_REGISTRATION_SECRET). Administrator bilan bog‘laning."
+    "errorRegistrationSecret": "Ro‘yxatdan o‘tish serverda sozlanmagan (AUTH_REGISTRATION_SECRET). Administrator bilan bog‘laning.",
+    "errorSignInFailed": "Kodni tekshirgandan so‘ng tizimga kira olmadi (sessiya yaratilmagan). Loyihada telefon orqali kirish yoqilganligini va raqam hisobingiz bilan mos kelishini tekshiring. Keyinroq qaytadan urinib ko‘ring.",
+    "errorAuthUpdateFailed": "Kirish ma'lumotlarini yangilash mumkin emas. Keyinroq qaytadan urinib ko‘ring.",
+    "errorProfileLookupFailed": "Profilni tekshirish mumkin emas. Keyinroq qaytadan urinib ko‘ring.",
+    "errorOtpFetchFailed": "Kodni serverda tekshirish mumkin emas. Yangi kodni so‘rang.",
+    "errorServerInternal": "Serverda xatolik. Keyinroq qaytadan urinib ko‘ring.",
+    "errorRegistrationExpired": "Ro‘yxatdan o‘tkazish sessiyasi muddati o‘tdi. Yana kodni so‘rang."
   },
-  "Header": { "ctaStart": "Kirish", "ctaAccount": "Hisob", "openMenu": "Menyuni ochish", "closeMenu": "Yopish", "langSwitcher": "Til: {locale}", "langNav": "Interfeys tilini almashtirish", "langExpand": "Tillarni ko‘rsatish", "langCollapse": "Tillarni yashirish", "mainNav": "Asosiy navigatsiya", "closeSheet": "Panelni yopish" },
+  "Header": {
+    "ctaStart": "Kirish",
+    "ctaAccount": "Hisob",
+    "openMenu": "Menyuni ochish",
+    "closeMenu": "Yopish",
+    "langSwitcher": "Til: {locale}",
+    "langNav": "Interfeys tilini almashtirish",
+    "langExpand": "Tillarni ko‘rsatish",
+    "langCollapse": "Tillarni yashirish",
+    "mainNav": "Asosiy navigatsiya",
+    "closeSheet": "Panelni yopish"
+  },
   "Footer": {
     "links": {
       "about": "Loyiha haqida",
@@ -57,19 +76,58 @@
     "short": "Dordoi.help — axborot platformasi. Xizmat sotuvchi, yetkazib beruvchi, to'lov agenti yoki bitim kafilligi emas."
   },
   "Seo": {
-    "home": { "title": "Dordoi.help — Dordoy bozori uchun ulgurji platforma", "description": "Tovarlar, yetkazib beruvchilar va buyerlar bir joyda. MDH B2B vositasi." },
-    "catalog": { "title": "Kategoriyalar katalogi — Dordoi.help", "description": "Dordoy ulgurji tovarlari: kiyim, poyabzal, matolar." },
-    "sell": { "title": "Optom sotish — Dordoi.help", "description": "Dordoy bozoridan ulgurji savdo: vitrina, arizalar va xaridor kontaktlari qatorlarni kezmasdan." },
-    "suppliers": { "title": "Yetkazib beruvchilarga — Dordoi.help", "description": "Onlayn vitrina va arizalar Dordoy sotuvchilari uchun." },
-    "buyers": { "title": "Dordoyda buyerni topish — Dordoi.help", "description": "Dordoy buyerlari: sotib olish, sifat tekshirish va partiya yig‘ish — ortiqcha sayohatsiz." },
-    "buyerService": { "title": "Buyerlarga — Dordoi.help", "description": "Tovar tanlash, sifat tekshirish va buyurtmalarni yig‘ish." },
-    "about": { "title": "Loyiha haqida — Dordoi.help", "description": "MDH ulgurji oqimi uchun Dordoy ekotizimi." },
-    "help": { "title": "Yordam — Dordoi.help", "description": "Dordoi.help dan foydalanish." },
-    "faq": { "title": "Tez-tez beriladigan savollar — Dordoi.help", "description": "Dordoi.help bo‘yicha savollar." },
-    "contact": { "title": "Aloqa — Dordoi.help", "description": "Dordoi.help jamoasi bilan bog‘laning." },
-    "privacy": { "title": "Maxfiylik siyosati — Dordoi.help", "description": "Ma’lumotlarni qayta ishlash." },
-    "terms": { "title": "Foydalanish shartlari — Dordoi.help", "description": "Xizmat qoidalari." },
-    "refund": { "title": "Qaytarish siyosati — Dordoi.help", "description": "Qaytarishlar haqida ma’lumot." }
+    "home": {
+      "title": "Dordoi.help — Dordoy bozori uchun ulgurji platforma",
+      "description": "Tovarlar, yetkazib beruvchilar va buyerlar bir joyda. MDH B2B vositasi."
+    },
+    "catalog": {
+      "title": "Kategoriyalar katalogi — Dordoi.help",
+      "description": "Dordoy ulgurji tovarlari: kiyim, poyabzal, matolar."
+    },
+    "sell": {
+      "title": "Optom sotish — Dordoi.help",
+      "description": "Dordoy bozoridan ulgurji savdo: vitrina, arizalar va xaridor kontaktlari qatorlarni kezmasdan."
+    },
+    "suppliers": {
+      "title": "Yetkazib beruvchilarga — Dordoi.help",
+      "description": "Onlayn vitrina va arizalar Dordoy sotuvchilari uchun."
+    },
+    "buyers": {
+      "title": "Dordoyda buyerni topish — Dordoi.help",
+      "description": "Dordoy buyerlari: sotib olish, sifat tekshirish va partiya yig‘ish — ortiqcha sayohatsiz."
+    },
+    "buyerService": {
+      "title": "Buyerlarga — Dordoi.help",
+      "description": "Tovar tanlash, sifat tekshirish va buyurtmalarni yig‘ish."
+    },
+    "about": {
+      "title": "Loyiha haqida — Dordoi.help",
+      "description": "MDH ulgurji oqimi uchun Dordoy ekotizimi."
+    },
+    "help": {
+      "title": "Yordam — Dordoi.help",
+      "description": "Dordoi.help dan foydalanish."
+    },
+    "faq": {
+      "title": "Tez-tez beriladigan savollar — Dordoi.help",
+      "description": "Dordoi.help bo‘yicha savollar."
+    },
+    "contact": {
+      "title": "Aloqa — Dordoi.help",
+      "description": "Dordoi.help jamoasi bilan bog‘laning."
+    },
+    "privacy": {
+      "title": "Maxfiylik siyosati — Dordoi.help",
+      "description": "Ma’lumotlarni qayta ishlash."
+    },
+    "terms": {
+      "title": "Foydalanish shartlari — Dordoi.help",
+      "description": "Xizmat qoidalari."
+    },
+    "refund": {
+      "title": "Qaytarish siyosati — Dordoi.help",
+      "description": "Qaytarishlar haqida ma’lumot."
+    }
   },
   "Pages": {
     "common": {
@@ -80,43 +138,569 @@
       "h1": "Dordoy bozorining yetkazib beruvchilari, buyerlari va kargosi bitta katalogda",
       "h2": "Dordoyda kerakli kontaktlarni tez toping: yetkazib beruvchilar, buyerlar, kargo",
       "hero": {
-        "badge": "Dordoi.help · Dordoy bozorining B2B katalogi",
         "title": "Dordoy bozorining yetkazib beruvchilari, buyerlari va kargosi bitta katalogda",
         "subtitle": "Dordoi.help Dordoyda kerakli kontaktlarni tez topishga yordam beradi: ulgurji yetkazib beruvchilar, joydagi buyerlar va shahringiz yoki mamlakatingizga yetkazib berish uchun kargo.",
         "ctaCatalog": "Katalogni ko‘rish"
       },
-      "mockup": {
-        "statusLabel": "Holat",
-        "suppliersTitle": "Yetkazib beruvchilar",
-        "suppliersMeta": "Kiyim · poyabzal · mato",
-        "suppliersStatus": "Profillar va kontaktlar",
-        "cargoTitle": "Kargo",
-        "cargoMeta": "Qozog‘iston · Rossiya · O‘zbekiston · Tojikiston",
-        "cargoStatus": "Bozordan yetkazib berish",
-        "leadTitle": "Kimga murojaat qilishni bilmayapsizmi?",
-        "leadBody": "Ariza qoldiring — kontakt tanlashda yordam beramiz.",
-        "leadCta": "Ariza qoldirish"
-      },
       "sections": {
-        "valueProps": { "title": "Xarid uchun hammasi bir joyda", "lead": "Qatorlarni kezishga kunlarni sarflamang. Yetkazib beruvchilarni, buyerlarni va kargoni bir necha bosishda toping.", "items": { "0": { "title": "To‘g‘ridan-to‘g‘ri sotuvchi kontaktlari", "body": "Yashirin ustama va qayta sotuvchilar yo‘q. Kategoriyani tanlang va konteyner egalariga bevosita yozing." }, "1": { "title": "Buyerlar yordamga tayyor", "body": "Shaxsan kelish imkoni yo‘qmi? Katalogdan buyer toping: sotib olish, foto-hisobot va partiyani tekshirish uchun." }, "2": { "title": "Logistika va kargo", "body": "Xarid qildingiz, lekin yukni qanday jo‘natishni bilmaysizmi? Qo‘llanmada transport kompaniyalari kontaktlari bor — butun MDH bo‘ylab yetkazib berish." } } },
-        "audiences": { "title": "Dordoyda nuqtangiz bormi?", "lead": "Do‘koningizni Dordoi.help bazasiga qo‘shing — yangi ulgurji xaridorlar siz bilan bevosita bog‘lana olsin.", "items": { "0": { "title": "To‘g‘ridan-to‘g‘ri kontaktlar", "body": "Qayta sotuvchilar yo‘q. Xaridor vitrangizni ko‘radi va bevosita yozadi — barcha kelishuvlar faqat o‘rtangizda." }, "1": { "title": "Telegramda arizalar", "body": "Murakkab shaxsiy kabinetlarni unuting. Xaridorlar so‘rovlari to‘g‘ridan-to‘g‘ri odatdagi Telegramingizga keladi." }, "2": { "title": "Raqamli vitrina", "body": "Konteyner profilingizni 2 daqiqada yarating. Qator va kategoriyani ko‘rsating va mashhur mahsulotlarning fotosini qo‘shing." } }, "cta": "Nuqtani katalogga qo‘shish" },
-        "howItWorks": { "title": "Mijozlarni qanday olasiz", "lead": "Murakkab shaxsiy kabinetlar yo‘q — barcha arizalar to‘g‘ridan-to‘g‘ri telefoningizga keladi.", "steps": { "0": { "title": "1. Nuqtani qo‘shasiz", "body": "Konteyner raqami, qator, mahsulot kategoriyasi va kontaktlarni ko‘rsatasiz. Onlayn vitrangiz tayyor." }, "1": { "title": "2. Xaridor mahsulot topadi", "body": "Ulgurji xaridor katalogga kiradi, kategoriyangizni tanlaydi, assortimentni ko‘radi va «Aloqa» tugmasini bosadi." }, "2": { "title": "3. Ariza Telegramga tushadi", "body": "Bot mijozdan so‘rovni darhol yuboradi. Keyin xarid bo‘yicha bevosita kelishasiz." } } },
-        "serviceProviders": { "title": "Dordoyda xizmat ko‘rsatasizmi?", "lead": "Xarid va yetkazib berishda yordam kerak bo‘lgan issiq mijozlarni oling.", "items": { "0": { "title": "Buyerlar: doimiy buyurtmalar", "body": "Anketangizni qo‘llanmada joylashtiring. Boshqa mamlakatlardan ulgurji xaridorlar buyurtma yig‘ish, brak tekshiruvi va partiyani sotib olish uchun sizga bevosita yozadi." }, "1": { "title": "Kargo: jo‘natish oqimi", "body": "MDH bo‘ylab yo‘nalishlaringizni ko‘rsating. Saytimiz orqali mahsulot topgan xaridorlar ishonchli yuk jo‘natish uchun sizga murojaat qiladi." } }, "cta": "Xizmatlaringizni joylashtirish" },
-        "ctaBand": { "title": "Dordoi.help jamiyatiga qo‘shiling", "lead": "Katalogga o‘tish yoki xizmatlaringizni joylashtirish uchun rolingizni tanlang.", "roles": { "0": { "title": "Men mahsulot qidiryapman", "subtitle": "Yetkazib beruvchilar katalogini ko‘rish" }, "1": { "title": "Men sotuvchiman", "subtitle": "Konteyneringizni qo‘shish" }, "2": { "title": "Men buyerlik qilaman", "subtitle": "Ulgurji mijozlarni topish" } } }
+        "valueProps": {
+          "title": "Xarid uchun hammasi bir joyda",
+          "lead": "Qatorlarni kezishga kunlarni sarflamang. Yetkazib beruvchilarni, buyerlarni va kargoni bir necha bosishda toping.",
+          "items": {
+            "0": {
+              "title": "To‘g‘ridan-to‘g‘ri sotuvchi kontaktlari",
+              "body": "Yashirin ustama va qayta sotuvchilar yo‘q. Kategoriyani tanlang va konteyner egalariga bevosita yozing."
+            },
+            "1": {
+              "title": "Buyerlar yordamga tayyor",
+              "body": "Shaxsan kelish imkoni yo‘qmi? Katalogdan buyer toping: sotib olish, foto-hisobot va partiyani tekshirish uchun."
+            },
+            "2": {
+              "title": "Logistika va kargo",
+              "body": "Xarid qildingiz, lekin yukni qanday jo‘natishni bilmaysizmi? Qo‘llanmada transport kompaniyalari kontaktlari bor — butun MDH bo‘ylab yetkazib berish."
+            }
+          }
+        },
+        "audiences": {
+          "title": "Dordoyda nuqtangiz bormi?",
+          "lead": "Do‘koningizni Dordoi.help bazasiga qo‘shing — yangi ulgurji xaridorlar siz bilan bevosita bog‘lana olsin.",
+          "items": {
+            "0": {
+              "title": "To‘g‘ridan-to‘g‘ri kontaktlar",
+              "body": "Qayta sotuvchilar yo‘q. Xaridor vitrangizni ko‘radi va bevosita yozadi — barcha kelishuvlar faqat o‘rtangizda."
+            },
+            "1": {
+              "title": "Telegramda arizalar",
+              "body": "Murakkab shaxsiy kabinetlarni unuting. Xaridorlar so‘rovlari to‘g‘ridan-to‘g‘ri odatdagi Telegramingizga keladi."
+            },
+            "2": {
+              "title": "Raqamli vitrina",
+              "body": "Konteyner profilingizni 2 daqiqada yarating. Qator va kategoriyani ko‘rsating va mashhur mahsulotlarning fotosini qo‘shing."
+            }
+          },
+          "cta": "Nuqtani katalogga qo‘shish"
+        },
+        "howItWorks": {
+          "title": "Mijozlarni qanday olasiz",
+          "lead": "Murakkab shaxsiy kabinetlar yo‘q — barcha arizalar to‘g‘ridan-to‘g‘ri telefoningizga keladi.",
+          "steps": {
+            "0": {
+              "title": "1. Nuqtani qo‘shasiz",
+              "body": "Konteyner raqami, qator, mahsulot kategoriyasi va kontaktlarni ko‘rsatasiz. Onlayn vitrangiz tayyor."
+            },
+            "1": {
+              "title": "2. Xaridor mahsulot topadi",
+              "body": "Ulgurji xaridor katalogga kiradi, kategoriyangizni tanlaydi, assortimentni ko‘radi va «Aloqa» tugmasini bosadi."
+            },
+            "2": {
+              "title": "3. Ariza Telegramga tushadi",
+              "body": "Bot mijozdan so‘rovni darhol yuboradi. Keyin xarid bo‘yicha bevosita kelishasiz."
+            }
+          }
+        },
+        "serviceProviders": {
+          "title": "Dordoyda xizmat ko‘rsatasizmi?",
+          "lead": "Xarid va yetkazib berishda yordam kerak bo‘lgan issiq mijozlarni oling.",
+          "items": {
+            "0": {
+              "title": "Buyerlar: doimiy buyurtmalar",
+              "body": "Anketangizni qo‘llanmada joylashtiring. Boshqa mamlakatlardan ulgurji xaridorlar buyurtma yig‘ish, brak tekshiruvi va partiyani sotib olish uchun sizga bevosita yozadi."
+            },
+            "1": {
+              "title": "Kargo: jo‘natish oqimi",
+              "body": "MDH bo‘ylab yo‘nalishlaringizni ko‘rsating. Saytimiz orqali mahsulot topgan xaridorlar ishonchli yuk jo‘natish uchun sizga murojaat qiladi."
+            }
+          },
+          "cta": "Xizmatlaringizni joylashtirish"
+        },
+        "ctaBand": {
+          "title": "Dordoi.help jamiyatiga qo‘shiling",
+          "lead": "Katalogga o‘tish yoki xizmatlaringizni joylashtirish uchun rolingizni tanlang.",
+          "roles": {
+            "0": {
+              "title": "Men mahsulot qidiryapman",
+              "subtitle": "Yetkazib beruvchilar katalogini ko‘rish"
+            },
+            "1": {
+              "title": "Men sotuvchiman",
+              "subtitle": "Konteyneringizni qo‘shish"
+            },
+            "2": {
+              "title": "Men buyerlik qilaman",
+              "subtitle": "Ulgurji mijozlarni topish"
+            }
+          }
+        }
       }
     },
-    "catalog": { "h1": "Katalog", "subtext": "Dordoy bozorining ulgurji kategoriyalari va yetkazib beruvchilari bir joyda. Bu yerda mahsulot kartochkalari, filtrlar va sotuvchilarning bevosita kontaktlari bo‘ladi." },
-    "sell": { "h1": "Optom sotish", "subtext": "Vitrina joylashtiring va ulgurji xaridorlar hamda buyerlardan arizalar oling. Bitim shartlari va narxlarni o‘zingiz belgilaysiz — platforma axborot xususiyatida qoladi." },
-    "suppliers": { "h1": "Yetkazib beruvchilarga", "h2": "Mijozlar va onlayn vitrina", "body": "Katalogni joylashtiring va xaridorlar hamda buyerlardan arizalar oling. Platforma klassik marketpleyslardagi majburiy komissiyasiz vitrina vositalarini beradi — kelishuv shartlarini o‘zingiz belgilaysiz." },
-    "buyers": { "h1": "Buyerni topish", "subtext": "Shaxsan kela olmasangiz, sotib olish, foto-hisobot va partiyani tekshirish uchun Dordoyda buyer tanlang." },
-    "buyerService": { "h1": "Buyerlarga", "h2": "Bitimni qo‘llab-quvvatlash", "body": "Mijozlarga mahsulot topish, sifat tekshirish va buyurtma yig‘ishda yordam bering — «qora quti» emas, ochiq vositachi sifatida." },
-    "about": { "h1": "Loyiha haqida", "h2": "Missiya", "body": "Dordoi.help — Dordoy bozori atrofidagi digital SaaS (Qirg‘iziston). Maqsad — ulgurji oqimini raqamlashtirish va MDH xaridorlari, yetkazib beruvchilari va buyerlarini bir tizimda bog‘lash." },
-    "help": { "h1": "Yordam", "h2": "Boshlash", "body": "Sarlavhada tilni tanlang, katalogga yoki rolingiz uchun bo‘limga o‘ting. Huquqiy jihatdan xizmat axborot xarakteridagi — kelishuvlar to‘g‘ridan-to‘g‘ri tomonlar o‘rtasida." },
-    "faq": { "h1": "TBS", "h2": "Qisqacha", "q1": "Bu Ozon kabi marketpleysmi?", "a1": "Yo‘q. Bu Dordoy ulgurji atrofidagi B2B platforma: kataloglar, rollar va arizalar, chakana marketpleys modelisiz.", "q2": "Bitimni kafolasizmi?", "a2": "Yo‘q. Biz axborot platformasimiz — sotuvchi emasmiz, to‘lov agenti emasmiz va kafolatchi emasmiz.", "q3": "Buyer kerakmi?", "a3": "Har doim emas. Sifat tekshirish yoki partiyani yig‘ish kerak bo‘lsa — buyer xavfni kamaytirishga yordam beradi." },
-    "contact": { "h1": "Aloqa", "h2": "Biz bilan", "body": "support@dordoi.help ga yozing — ish vaqtida javob beramiz." },
-    "privacy": { "h1": "Maxfiylik", "h2": "Ma’lumotlar", "body": "Ma’lumotlarni minimal darajada yig‘amiz va faqat xizmat va muloqot uchun ishlatamiz. To‘liq siyosatni mahsulot modullari ishga tushganda e’lon qilamiz." },
-    "terms": { "h1": "Shartlar", "h2": "Qoidalar", "body": "Dordoi.help dan foydalanish bilan platforma axborot xarakteridagi ekaniga rozilik bildirasiz. Bitimlar uchun javobgarlik tomonlarga tegishli." },
-    "refund": { "h1": "Qaytarishlar", "h2": "Siyosat", "body": "Qaytarishlar va nizolar xaridor va sotuvchi o‘z kelishuvi bo‘yicha hal qiladi. Dordoi.help to‘lovlarni qayta ishlamaydi." }
+    "catalog": {
+      "h1": "Katalog",
+      "subtext": "Dordoy bozorining ulgurji kategoriyalari va yetkazib beruvchilari bir joyda. Bu yerda mahsulot kartochkalari, filtrlar va sotuvchilarning bevosita kontaktlari bo‘ladi."
+    },
+    "sell": {
+      "h1": "Optom sotish",
+      "subtext": "Vitrina joylashtiring va ulgurji xaridorlar hamda buyerlardan arizalar oling. Bitim shartlari va narxlarni o‘zingiz belgilaysiz — platforma axborot xususiyatida qoladi.",
+      "hero": {
+        "ctaPrimary": "Onlayn bepul o'tish"
+      },
+      "features": {
+        "sectionTitle": "Vitrinangizni joylashtirganda nima olasiz?",
+        "items": {
+          "0": {
+            "title": "Ishonch omili",
+            "body": "Katalogdagi rasmiy profil sizning nuqtangiz haqiqatan mavjudligini tasdiqlaydi. MDHdan yangi xaridorlar uchun bu ishonchlilikning asosiy belgisi bo'lib, ularning birinchi shartnomasini aynan siz bilan qabul qilishlariga yordam beradi."
+          },
+          "1": {
+            "title": "Qidiruvda o'sish",
+            "body": "Veb-sayt avtomatik ravishda vitrinangizni kalit so'zlarga optimallashtiradi: \"Dordoyda kiyim optikasi\", \"Bishkekda kargo\" va boshqa. Sizning Google va Yandex qidiruvidagi ishtirokingiz organik ravishda o'sadi, 5 ta MDH mamlakatidan mijozlarni o'ziga jalb qiladi, reklama xarajatlari bo'lmasdan."
+          },
+          "2": {
+            "title": "WhatsApp’da issiq arizalar",
+            "body": "Biz barcha marketingni o'z zimmamizga olamiz: ijtimoiy tarmoqlarda maqsadli reklama, Google va Yandexda kontekstli reklama va platforma bo'yicha sharhlar uchun ommaviy shaxslarni jalb etamiz. Siz o'zingizni reklama qilishga bir tiyin ham ulagichisiz, to'g'ridan-to'g'ri telefoningizga tayyor mijozlarni olasiz."
+          }
+        }
+      },
+      "howItWorks": {
+        "sectionTitle": "Qanday qilib arizalarni olishni boshlaysiz?",
+        "steps": {
+          "0": {
+            "title": "Ro'yxatdan o'tish",
+            "body": "Konteyner va ishlash shartlari haqida ma'lumotlarni to'ldiring."
+          },
+          "1": {
+            "title": "Rasmiylashtirish",
+            "body": "Vitrinangiz va narxda ro'yxatdan o'tish fotosuratlarini yuklang."
+          },
+          "2": {
+            "title": "Ishga tushirish",
+            "body": "Ulgurji sotuvchilardan bevosita issiq leadlarni oling."
+          }
+        }
+      }
+    },
+    "suppliers": {
+      "h1": "Yetkazib beruvchilarga",
+      "h2": "Mijozlar va onlayn vitrina",
+      "body": "Katalogni joylashtiring va xaridorlar hamda buyerlardan arizalar oling. Platforma klassik marketpleyslardagi majburiy komissiyasiz vitrina vositalarini beradi — kelishuv shartlarini o‘zingiz belgilaysiz."
+    },
+    "buyers": {
+      "h1": "Buyerni topish",
+      "subtitle": "Shaxsan kela olmasangiz, sotib olish, foto-hisobot va partiyani tekshirish uchun Dordoyda buyer tanlang.",
+      "breadcrumbNav": "Bo'lim bo'yicha navigatsiya",
+      "breadcrumbHome": "Bosh sahifa",
+      "breadcrumbCurrent": "Bayerlar",
+      "searchLabel": "Bayerlarni qidirish",
+      "searchPlaceholder": "Ism, ixtisoslashuv yoki xizmat…",
+      "specializationLabel": "Ixtisoslashuv",
+      "filterAll": "Barcha yo'nalishlar",
+      "filterOptions": {
+        "mens": "Erkaklar kiyimlari · kargo",
+        "textile": "To'qimachilik · nuqsonlarni tekshirish",
+        "electronics": "Elektronika · ulgurji"
+      },
+      "gridAria": "Bayerlar katalogi",
+      "verifiedBadgeAria": "Tasdiqlangan profil",
+      "experience": "Tajriba: {years} yil",
+      "orders": "Bajarilgan buyurtmalar: {count}",
+      "ctaContact": "Bayer bilan bog'lanish",
+      "ctaTelegram": "Telegram",
+      "ctaInstagram": "Instagram",
+      "buyerSpotModal": {
+        "title": "Saytda bayer sifatida tasdiqlash — 3 oy uchun $400",
+        "line1": "Har bir kategoriya bo'yicha faqat 3 joyni olamiz.",
+        "line2": "Tasdiqlashdan o'tgan birinchi shaxslarga.",
+        "telegramLabel": "Telegram:"
+      },
+      "noResults": "Hech kim filtrga mos kelmaydi — iltimos, so'rovingizni yoki ixtisoslashuvni o'zgartirib ko'ring.",
+      "cards": {
+        "arman-saparov": {
+          "name": "Arman Saparov",
+          "specialization": "Erkak kiyimlari va Kargo Qozog'istonda",
+          "description": "Erkaklar assortimenti va Almati hamda Astana shaharlariga tez yetkazib berishga ixtisoslashganman. Sifatli tikuvchilik joylarini yaxshi bilaman.",
+          "services": {
+            "0": "Qatorlar va konteynerlar bo'yicha foto hisobot",
+            "1": "Partiyani xarid qilish va rezervlash",
+            "2": "Yuborishdan oldin konsolidatsiya",
+            "3": "Qozog'istonga Kargo (Almati, Astana)"
+          }
+        },
+        "aisuluu-bakytova": {
+          "name": "Aysulu Bakytova",
+          "specialization": "Ayollar matolari va Kamchiligi tekshirish",
+          "description": "Kiyimlar va kesmalar bo'yicha ekspert. Har bir partiyani yuborishdan oldin batafsil tekshiraman. Katta tikuv sexlari bilan ishlayman.",
+          "services": {
+            "0": "Matolar va aksessuarlarni tekshirish",
+            "1": "O'lchov varaqalari bilan foto va video hisobot",
+            "2": "Partiyani xarid qilish va kuzatish",
+            "3": "Yuklab olinishidan oldin kamchiliklarni nazorat qilish"
+          }
+        },
+        "daniyar-isakov": {
+          "name": "Daniya Isakov",
+          "specialization": "Elektronika va Xitoydan Opt",
+          "description": "Djunhaeda gadjetlar, aksessuarlar va elektronika qidiraman. Dordoy orqali Guanchjouda yetkazib beruvchilar bilan to'g'ridan-to'g'ri aloqalarim bor.",
+          "services": {
+            "0": "So'rovga mos yetkazib beruvchilarni tanlash",
+            "1": "Pechat va kichik/katta opt bo'yicha muzokaralar va xarid qilish",
+            "2": "Bozorda partiyani tekshirish",
+            "3": "Bishkekdan konsolidatsiya va kargo"
+          }
+        }
+      }
+    },
+    "buyerService": {
+      "h1": "Buyerlarga",
+      "h2": "Bitimni qo‘llab-quvvatlash",
+      "body": "Mijozlarga mahsulot topish, sifat tekshirish va buyurtma yig‘ishda yordam bering — «qora quti» emas, ochiq vositachi sifatida."
+    },
+    "about": {
+      "h1": "Loyiha haqida",
+      "h2": "Missiya",
+      "p1": "Salom! Men uzoq vaqt davomida ulgurji xaridlar bilan shug'ullanganman, shuning uchun bu loyiha shaxsiy ehtiyojimdan o'sdi.",
+      "p2": "Bir payt kelganda, men soatlab o'nlab telegram-kanallarni ko'rishdan, Instagram'da normal yetkazib beruvchilarni izlashdan va Dordoy bozoridagi cheksiz qatormalarni bosib o'tishdan charchadim. Ishonchli hamkorni topish uchun ko'p vaqt va kuch ketadigan edi.",
+      "p3": "Shuning uchun men o'zim xohlagan qulay sayt qilishga qaror qildim.",
+      "p4": "Dordoi.help — bu fabrikaning, tikuvchilik ustaxonalarining va to'g'ridan-to'g'ri savdo nuqtalarining oddiy va tushunarli katalogi. Men ushbu bazani yig'yapman, shuning uchun men kabi ulgurji xaridorlar tinch ishlashlari mumkin, kunlarni izlashga sarflamasliklari uchun. Bu yerda yashirin belgilari bo'lmagan sotuvchilar yo'q — faqat ishlab chiqaruvchilar bilan to'g'ridan-to'g'ri aloqalar.",
+      "p5": "Keling, kerakli kategoriya tanlang va sotuvchilar bilan to'g'ridan-to'g'ri bog'laning. Hammasi oddiy!"
+    },
+    "help": {
+      "h1": "Yordam",
+      "h2": "Boshlash",
+      "buyersTitle": "Ulgurji xaridorlar uchun",
+      "buyersQ1": "Kerakli yetkazib beruvchini qanday topish mumkin?",
+      "buyersA1": "Katalogning asosiy sahifasidagi qidiruv satridan yoki kategoriyalar bo'yicha filtrlarni foydalaning. Siz mahsulot nomi, kategoriya yoki Dordoy bozoridagi qatordan raqami bilan qidirishingiz mumkin.",
+      "buyersQ2": "Sotuvchi bilan qanday bog'lanish va buyurtma berish mumkin?",
+      "buyersA2": "Har bir yetkazib beruvchi kartasida uning to'g'ridan-to'g'ri kontaktlari (WhatsApp, Telegram, Instagram) ko'rsatilgan. Ular bilan to'g'ridan-to'g'ri bog'laning — biz komissiya olmaymiz.",
+      "buyersQ3": "To'lov va yetkazib berish qanday amalga oshiriladi?",
+      "buyersA3": "To'lov, minimal partiya va yetkazib berish shartlarini siz bevosita sotuvchi bilan muhokama qilasiz. Dordoi.help — bu axborot katalogi, biz sayt orqali to'lov olmaymiz.",
+      "suppliersTitle": "Yetkazib beruvchilar va sotuvchilar uchun",
+      "suppliersQ1": "O'z do'koningizni katalogga qanday qo'shish mumkin?",
+      "suppliersA1Before": "O'ting ",
+      "suppliersA1Link": "bizning Telegram-botimizga",
+      "suppliersA1After": " va Start tugmasini bosing. Bot sizning do'koningiz haqida ma'lumot to'playdi.",
+      "suppliersQ2": "Tekshiruv qanday vaqtni oladi?",
+      "suppliersA2": "Odatda, biz yangi arizalarni 1–2 ish kunida tekshiramiz. Sizning do'koningiz saytda paydo bo'lgach, xabarnoma olasiz.",
+      "suppliersQ3": "O'z mahsulotlaringizni yoki profilni qanday tahrirlash mumkin?",
+      "suppliersA3": "Ariza tasdiqlangandan so'ng, siz telefon raqamingiz orqali saytga kirishingiz va shaxsiy hisobingizga o'tishingiz mumkin.",
+      "supportTitle": "Texnik yordam",
+      "supportIntro": "Agar siz saytga xato topdingiz yoki hamkorlik bo'yicha takliflaringiz bo'lsa, bizga yozing!",
+      "supportTelegramLabel": "Telegram:",
+      "supportTelegram": "@loomany",
+      "supportEmailLabel": "Email:",
+      "supportEmail": "support@dordoi.help"
+    },
+    "faq": {
+      "h1": "TBS",
+      "h2": "Qisqacha",
+      "q1": "Bu Ozon kabi marketpleysmi?",
+      "a1": "Yo‘q. Bu Dordoy ulgurji atrofidagi B2B platforma: kataloglar, rollar va arizalar, chakana marketpleys modelisiz.",
+      "q2": "Bitimni kafolasizmi?",
+      "a2": "Yo‘q. Biz axborot platformasimiz — sotuvchi emasmiz, to‘lov agenti emasmiz va kafolatchi emasmiz.",
+      "q3": "Buyer kerakmi?",
+      "a3": "Har doim emas. Sifat tekshirish yoki partiyani yig‘ish kerak bo‘lsa — buyer xavfni kamaytirishga yordam beradi."
+    },
+    "contact": {
+      "h1": "Aloqa",
+      "h2": "Biz bilan",
+      "attentionAria": "Muhim ogohlantirish",
+      "attentionTitle": "Muhim:",
+      "attentionBody": "Biz — katalog ma'muriyati. Mahsulotlarni sotmaymiz, logistika bilan shug'ullanmaymiz va to'lovlarni qabul qilmaymiz. Agar sizda ma'lum bir mahsulot, buyurtma yoki qaytarish bo'yicha savol bo'lsa, bevosita sotuvchi bilan aloqaga chiqing, uning profili orqali ko'rsatilgan ma'lumotlar asosida.",
+      "topicsHeading": "Bizga qaysi masalalarda yozishingiz mumkin:",
+      "topic1": "Saytda texnik xato yuzaga keldi.",
+      "topic2": "Siz sotuvchi bo'lsangiz va do'koningizni ro'yxatdan o'tkazish yoki moderatsiya bo'yicha savolingiz bo'lsa.",
+      "topic3": "Platformani yaxshilash, hamkorlik yoki reklama bo'yicha takliflar.",
+      "contactsHeading": "Bizning aloqa ma'lumotlarimiz:",
+      "contactTelegramLead": "Telegram (eng tez javob):",
+      "contactTelegram": "@loomany",
+      "contactEmailLabel": "Email:",
+      "contactEmail": "support@dordoi.help",
+      "contactHoursLabel": "Yordam xizmatining ishlash soatlari:",
+      "contactHours": "Dushanba – Juma, 09:00 – 18:00 (Bishkek vaqti bilan)"
+    },
+    "privacy": {
+      "h1": "Maxfiylik",
+      "s1Title": "1. Umumiy qoidalar",
+      "s1p1": "1.1. Ushbu Maxfiylik Siyosati Dordoi.help platformasi (keyingi o'rinda — «Platforma») qanday qilib foydalanuvchilarning shaxsiy ma'lumotlarini yig'adi, ishlatadi, saqlaydi va himoya qiladi, haqida ma'lumot beradi.",
+      "s1p2": "1.2. Platformadan foydalanish foydalanuvchining ushbu Siyosat va shaxsiy ma'lumotlarni qayta ishlash shartlariga to'liq roziligini anglatadi, bu esa Qirg'iz Respublikasining «Shaxsiy ma'lumotlar to'g'risida» 14.04.2008 yildagi 58-sonli Qonuniga muvofiq.",
+      "s2Title": "2. Qanday ma'lumotlar to'playmiz",
+      "s2p1": "2.1. Barcha avtorizatsiyadan o'tgan foydalanuvchilardan: mobil telefon raqami (bir martalik parollar bilan saytga kirish uchun ishlatiladi) va texnik ma'lumotlar (IP-manzil, cookie-fayllar, brauzer turi).",
+      "s2p2": "2.2. Sotuvchilar/ta'minotchilardan: jamoatchilikka taqdim etilishi uchun zarur bo'lgan ma'lumotlar — do'kon/ustaxona nomi, savdo nuqtasi manzili, mahsulot fotosuratlari, bog'lanish ma'lumotlari (WhatsApp, ijtimoiy tarmoqlardagi havolalar).",
+      "s3Title": "3. Ochiq manbalardan ma'lumot yig'ish",
+      "s3p1": "3.1. Platforma ta'minotchilar va savdo nuqtalari haqidagi ma'lumotlarni yig'ish va ochiq katalogda joylashtirish huquqiga ega, bu ma'lumotlar ilgari ular tomonidan jamoatchilikka taqdim etilgan (ochiq Telegram-kanallarda, jamoat Instagram hisoblarida, ma'lumotnomalarda va boshqa ochiq internet manbalarida e'lon qilingan).",
+      "s3p2": "3.2. Ochiq ma'lumotlarni yig'ish faqat ulkan xaridorlar uchun qulaylik yaratish maqsadida amalga oshiriladi.",
+      "s3p3": "3.3. Agar siz ochiq manbalardan olingan ma'lumotlar qo'shilgan savdo nuqtasi egasi bo'lsangiz va o'z biznesingiz haqidagi ma'lumotni o'chirish, yashirish yoki o'zgartirishni xohlasangiz, har qanday vaqtda profildan tez o'chirish uchun yordam xizmatiga murojaat etishingiz mumkin.",
+      "s4Title": "4. Shaxsiy ma'lumotlarni yig'ish maqsadlari",
+      "s4Intro": "Platforma yig'ilgan ma'lumotlardan foydalanadi:",
+      "s4li1": "Foydalanuvchini aniqlash va Shaxsiy hisobga kirishni ta'minlash.",
+      "s4li2": "Sotuvchining ma'lumotlarini ochiq katalogda e'lon qilish.",
+      "s4li3": "Xaridor va sotuvchi o'rtasida to'g'ridan-to'g'ri aloqa o'rnatishni ta'minlash.",
+      "s4li4": "Platforma ishlash sifatini yaxshilash.",
+      "s5Title": "5. Sotuvchilar ma'lumotlarining ochiqligi",
+      "s5p1": "5.1. Sotuvchi sifatida ro'yxatdan o'tishda foydalanuvchi o'z aloqa ma'lumotlari va savdo nuqtasi haqidagi ma'lumotlarning Platforma tashrif buyuruvchilari uchun ochiq bo'lishiga rozilik bildiradi.",
+      "s6Title": "6. Ma'lumotlarni himoya qilish va uzatish",
+      "s6p1": "6.1. Platforma ma'lumotlarni vorisdan himoya qilish uchun zaruriy texnik chora-tadbirlarni ko'radi.",
+      "s6p2": "6.2. Biz foydalanuvchilarning shaxsiy ma'lumotlarini (masalan, oddiy xaridorlarning telefon raqamlari) uchinchi shaxslarga yoki reklama tarmoqlariga sotmaymiz va o'tkazmaymiz.",
+      "s7Title": "7. Foydalanuvchilarning huquqlari",
+      "s7before": "Foydalanuvchi istalgan vaqtda ma'lumotlarni qayta ishlashga roziligini qaytarib olish va o'z akkauntini va profilini katalogdan o'chirishni talab qilish huquqiga ega. Buning uchun yordamchi xizmatga so'rov yuborish kerak: ",
+      "s7between": " yoki Telegram orqali ",
+      "s7after": ".",
+      "supportEmail": "support@dordoi.help",
+      "supportTelegram": "@loomany"
+    },
+    "terms": {
+      "h1": "Shartlar",
+      "s1Title": "1. Umumiy qoidalar",
+      "s1h3_1": "1.1. Ushbu Foydalanuvchi kelishuvi Dordoi.help platformasi (keyingi o'rinlarda — «Platforma») va Internet tarmog'i foydalanuvchilari (keyingi o'rinlarda — «Foydalanuvchi») o'rtasidagi munosabatlarni tartibga soladi.",
+      "s1h3_2": "1.2. Platforma axborot agregatori (katalog) bo'lib, foydalanuvchilar o'rtasida amalga oshirilayotgan bitimning tomonlaridan biri emas, jismoniy mahsulotlarni sotmaydi va logistika xizmatlarini ko'rsatmaydi.",
+      "s2Title": "2. Tariflar va pullik xizmatlar",
+      "s2Intro": "Platformaning asosiy funktsiyasidan foydalanish bepuldir. Pullik funksiyalar obuna, belgilangan davr uchun to'lov yoki bitta to'lov modeli bo'yicha taqdim etiladi:",
+      "s2h3_1": "2.1. Sotuvchilar (Taminotchilar) uchun: Savdo nuqtasini katalogga qo'shish, tovarlarni yuklash va asosiy joylashtirish mutlaqo bepul taqdim etiladi.",
+      "s2h3_2": "2.2. Optovchilar uchun obuna: Sotuvchilarning to'liq kartochkasini, to'g'ridan-to'g'ri aloqa ma'lumotlarini (WhatsApp, ijtimoiy tarmoqlar) va yashirin shartlarni ko'rish imkoniyati oyiga $10 obuna asosida taqdim etiladi.",
+      "s2h3_3": "2.3. Xaridorlar bazasida ro'yxatdan o'tish: Mutaxassis xaridor (Xaridor/Agent) profilingizni Platformaning maxsus katalogida joylashtirish har bir to'langan 3 (uch) oylik davr uchun $400 turadi.",
+      "s2h3_4": "2.4. Platforma tariflarni o'zgartirish huquqini o'zida saqlaydi. O'zgarishlar allaqachon to'langan obuna davrlari va xaridor profilining katalogda joylashtirilgan davrlarga ta'sir qilmaydi.",
+      "s3Title": "3. To'lov, Obunalar va Qaytarish siyosati (Refund Policy)",
+      "s3h3_1": "3.1. Obunalarni boshqarish: Foydalanuvchi o'zining Shaxsiy kabinetida istalgan vaqtda pullik obunani ($10/oy) bekor qilishi mumkin. Bekor qilinganidan keyin yopiq ma'lumotlarga kirish to'langan hisoblash davrining oxirigacha saqlanadi.",
+      "s3h3_2": "3.2. Qaytarish (Refunds): Platforma raqamli ma'lumotlarga kirishni taqdim qilgani uchun, allaqachon to'langan va boshlangan obuna davri yoki xaridor profilini katalogda joylashtirish ($400 uchun 3 oy) uchun mablag' qaytarilmaydi. Barcha raqamli xizmatlar savdosi oxirgi hisoblanadi.",
+      "s4Title": "4. Mas'uliyatni cheklash",
+      "s4h3_1": "4.1. Platforma Sotuvchilar tomonidan joylashtirilgan ma'lumotlarning to'g'riligi, tovarlar sifatini, etkazib berish muddatini yoki foydalanuvchilar o'rtasidagi moliyaviy hisob-kitoblarni mas'uliyatga olmaydi.",
+      "s4h3_2": "4.2. Platforma har qanday foydalanuvchining hisobini cheklash huquqini o'zida saqlaydi, agar firibgarlik harakati, spam yoki qonunlarni buzish hollari aniqlansa.",
+      "s5Title": "5. To'lov provayderi va Soliqlar (Merchant of Record)",
+      "s5h3_1": "5.1. To'lovlarni qayta ishlash: Bank kartalari bilan ishlash jarayoni va Platformaga barcha to'lovlarni qabul qilish rasmiy hamkorimiz (Merchant of Record) — Lemon Squeezy, LLC orqali amalga oshiriladi.",
+      "s5h3_2": "5.2. Soliqlar: Sizning rezidentligingizga qarab, xizmatlar qiymatiga ($10 oyiga optovchi obuna yoki $400 xaridor profilini joylashtirish davri) mahalliy qo'shilgan qiymat solig'i (VAT/GST) yoki savdo solig'i (Sales Tax) avtomatik tarzda qo'shilishi mumkin. Soliqlarni hisoblash, yig'ish va davlat organlariga o'tkazish to'lov provayderi Lemon Squeezy tomonidan amalga oshiriladi. Dordoi.help platformasi soliq qonunchiligiga qat'iy rioya qiladi, ammo oxirgi foydalanuvchi uchun to'g'ridan-to'g'ri soliq agenti sifatida harakat qilmaydi."
+    },
+    "refund": {
+      "h1": "Qaytarishlar",
+      "s1Title": "1. Platforma raqamli xizmatlari uchun mablag' qaytarish",
+      "s1Intro": "Dordoi.help raqamli ma'lumotlarga (ta'minotchilar katalogi) va profilni joylashtirish xizmatlariga kirishni taqdim etadi. Raqamli tovarlarni sotishda xalqaro amaliyotga muvofiq:",
+      "s1p1": "1.1. Optovchi obuna ($10/oy): Obunaga to'lov sotuvchilarning yashirin aloqa ma'lumotlariga darhol kirish imkoniyatini beradi. Shunga muvofiq, barcha sotuvlar oxirgi hisoblanadi. Allaqachon to'langan va boshlanayotgan hisoblash davri (oy) uchun mablag' qaytarilmaydi, siz Platformadan bu davrda foydalanganingizdan qat'i nazar.",
+      "s1p2": "1.2. Xaridor profilingizni joylashtirish ($400 uchun 3 oy): to'lov, profili olingan uch oylik davrda maxsus katalogda ko'rsatilishini taqdim etadi. Profil saytga joylashtirilgandan keyin mablag' qaytarilmaydi, shuningdek, allaqachon boshlanayotgan to'langan joylashtirish davri uchun.",
+      "s2Title": "2. Jismoniy tovarlar uchun mablag' qaytarish (Kiyim, yuklar)",
+      "s2AlertAria": "Jismoniy tovarlar bo'yicha muhim ogohlantirish",
+      "s2AlertTitle": "E'tibor",
+      "s2AlertBody": "Dordoi.help platformasi internet-do'kon emas. Biz jismoniy tovarlarni sotmaymiz, ularga to'lov qabul qilmaymiz va etkazib bermaymiz.",
+      "s2p1": "2.1. Har qanday moliyaviy operatsiyalar optik tovarlarni xarid qilish bilan bog'liq bo'lib, siz va Taminotchi o'rtasida to'g'ridan-to'g'ri amalga oshiriladi.",
+      "s2p2": "2.2. Platforma shikoyatlarni ko'rib chiqmaydi, zararlarni qoplamaydi va quyidagi holatlar uchun mablag’ qaytarmaydi: nosoz tovarlar, burilish, yetarli yuk chiqarmaslik, etkazib berish kechikishi yoki qarz beruvchilar tomonidan firibgarlik harakati.",
+      "s2p3": "2.3. Jismoniy tovarlarni qaytarish yoki almashtirish bo'yicha barcha talablar faqat siz bitim imzolagan Taminotchiga yuborilishi kerak.",
+      "s3Title": "3. Obunani bekor qilish",
+      "s3p1": "3.1. Siz o'z Shaxsiy kabinetingizda yoki to'lov hamkorimiz Lemon Squeezy boshqaruv paneli orqali pullik obunani avtomatik ravishda uzaytirishni istalgan vaqtda bekor qilishingiz mumkin.",
+      "s3p2": "3.2. Obunani bekor qilgandan keyin pullik funksiyalarga kirish to'langan hisoblash davrining oxirigacha saqlanadi. Keyingi to'lovlar amalga oshirilmaydi.",
+      "s4Title": "4. Xato to'lovlar",
+      "s4before": "Ushbu siyosatdan chiqarish - tasdiqlangan texnik xatolar (masalan, bir xil operatsiya uchun ikki barobar to'lov). Bunday holatda, iltimos, bizning qo'llab-quvvatlash xizmatimiz bilan bog'laning ",
+      "s4after": " 14 kun ichida xato to'lov sodir bo'lgan kundan boshlab, chekkani ilova qilib, biz Lemon Squeezy orqali xato to'langan summani qaytarish jarayonini boshlaymiz.",
+      "supportEmail": "support@dordoi.help"
+    },
+    "catalogBrowse": {
+      "breadcrumbNav": "Bo'lim bo'yicha navigatsiya",
+      "breadcrumbHome": "Asosiy",
+      "breadcrumbCatalog": "Katalog",
+      "title": "To'g'ridan-to'g'ri ulgurji etkazib beruvchilar",
+      "subtitle": "Ishonchli fabrikalar, ustaxonalar va Dordoy bozoridagi savdo nuqtalarini toping. Sotuvchilar bilan to'g'ridan-to'g'ri bog'laning, qo'shimcha narx va vositachilarsiz.",
+      "stats": "{from}–{to} dan {total} ta etkazib beruvchilar ko'rsatilmoqda",
+      "searchLabel": "Nom, kategoriya yoki qator bo'yicha qidirish",
+      "searchPlaceholder": "Nom, kategoriya yoki qator bo'yicha qidirish...",
+      "categories": "Kategoriyalar",
+      "categoriesWithCount": "Kategoriyalar ({count})",
+      "categoryFilterApply": "Qo'llash",
+      "categoryFilterReset": "Tozalash",
+      "categoryFilterShowResults": "Natijalarni ko'rsatish",
+      "categoryFilterSearchPlaceholder": "Pastki kategoriyalar bo'yicha tez qidiruv…",
+      "categoryFilterMainCategoriesNav": "Asosiy kategoriyalar",
+      "categoryFilterNoMatches": "Mos kelish yo'q",
+      "gridAria": "Etkazib beruvchilar katalogi",
+      "listingAdded": "Qo'shilgan sana {date}",
+      "listingUpdated": "Yangilandi {relative}",
+      "viewProfile": "Do'kon profili",
+      "storeMetaTitleTemplate": "{title} — ulgurji etkazib beruvchi | Dordoi.help",
+      "storeMetaDescriptionFallback": "{title} — Dordoi.help ulgurji etkazib beruvchilar katalogi",
+      "cardAboutStore": "Etkazib beruvchi haqida ma'lumot",
+      "cardCategoryOne": "Kategoriyasi",
+      "cardCategoriesMany": "Kategoriyalar",
+      "catalogPhotoPrev": "Oldingi foto",
+      "catalogPhotoNext": "Keyingi foto",
+      "favoriteAddAria": "Sevimlilarga qo'shish",
+      "favoriteAddLabel": "Sevimlilarga qo'shish",
+      "favoriteSavedLabel": "Sevimlilar",
+      "favoriteRemoveAria": "Sevimlilardan olib tashlash",
+      "cardCollapse": "Kartani yopish",
+      "cardExpand": "Kartani kengaytirish",
+      "cardCollapsedHint": "Karta yopilgan",
+      "favoriteLoginHint": "Etkazib beruvchilarni sevimlilar ro'yxatiga saqlash uchun hisobingizga kiring.",
+      "showcaseVendors": {
+        "dordoi-showcase-example-1-clothing": {
+          "title": "Dordoi.help | Namuna #1",
+          "description": "🔥 MDH boʻylab ulgurji xaridorlar uchun: 21 mayda katalog ochilishi va xaridorlar uchun katta reklama boshlanadi. Kiyim sotuvchisi toʻliq kartochkasi — ayollar, erkaklar va bolalar, asosiy modellardan tashqi kiyimgacha. 9:16 formatidagi yorqin vertikal suratlar va fasl hamda oʻlcham qatori ulgurji javobni oshiradi.",
+          "category0": "Ayollar kiyimi",
+          "category1": "Erkaklar kiyimi",
+          "category2": "Bolalar kiyimi",
+          "category3": "Tashqi kiyim",
+          "locationRow": "Dordoi yarmarkasi, namuna joylashuvi",
+          "descriptionDetail": "",
+          "minBatch": "Kelishilgan holda",
+          "paymentMethods": "Naqd, bank oʻtkazmasi, toʻlov tizimlari",
+          "returnsPolicy": "Sotuvchidan soʻrang",
+          "termShippingValue": "Yetkazib berishda yordam beramiz",
+          "termSamplesValue": "Namunalar mavjud"
+        },
+        "dordoi-showcase-example-2-shoes": {
+          "title": "Dordoi.help | Namuna #2",
+          "description": "🚀 Ulgurji xaridorlar uchun: 21 mayda platformaga MDHdan xaridorlar keladi. Poyabzal, ichki kiyim, paypoq, sumka va aksessuarlar uchun namuna kartochka. Qaytish, yetkazib berish va minimal partiyani halol yozing — shunda ulgurji tezroq yopiladi. Model surati va dolzarb kontaktlar vaqtni tejaydi. Ulgurji narxlarni koʻrsating.",
+          "category0": "Poyabzal",
+          "category1": "Ichki kiyim",
+          "category2": "Paypoq va trikotaj",
+          "category3": "Sumkalar va aksessuarlar",
+          "locationRow": "Dordoi yarmarkasi, namuna joylashuvi",
+          "descriptionDetail": "",
+          "minBatch": "Kelishilgan holda",
+          "paymentMethods": "Naqd, bank oʻtkazmasi, toʻlov tizimlari",
+          "returnsPolicy": "Sotuvchidan soʻrang",
+          "termShippingValue": "Yetkazib berishda yordam beramiz",
+          "termSamplesValue": "Namunalar mavjud"
+        }
+      },
+      "featured": {
+        "badge": "SEVIMLILAR",
+        "mark": "IQ",
+        "title": "Sizning xarid qilish senariyingizga mos etkazib beruvchilarni tanlang",
+        "description": "Qisqa so'rov sizning tanlovingizni qisqartirishga yordam beradi: mahsulot turi, hajmi, xaridor kerakmi va qaysi yuklarni afzal ko'rasiz.",
+        "footerLabel": "Baho berish",
+        "footerCta": "IQ sinovini boshlash →"
+      },
+      "samples": {
+        "0": {
+          "title": "Savdo nuqtasi 'Konteyner 04-12', qator A",
+          "description": "Ayol va bolalar kiyimlari ulgurji, har hafta yangi kolleksiyalar. Namuna so'roviga asoslangan jo'natma, xaridorlar va yuklar bilan ishlash."
+        },
+        "1": {
+          "title": "Ulgurji ombor 'Dordoy To'qimalari'",
+          "description": "Tikuv ustaxonalar uchun to'qimalar va aksessuarlar. Katta partiyalar, buyurtma asosida rezerv, chiqish uchun bojxona hujjatlari."
+        },
+        "2": {
+          "title": "Obuv ulgurji — import va bozor ombori",
+          "description": "Erkak va ayol poyabzallari, o'lchov qatorlari mavjud. Sifatni joyida tekshirishga yordam berish hamkor xaridorlar orqali."
+        },
+        "3": {
+          "title": "Yuk xizmati 'SNG Ekspress'",
+          "description": "Dordoydan yuk olib ketish, konsolidatsiya va sizning shahringizdagi omborga yetkazib berish. Shaffof tariflar va kuzatish."
+        },
+        "4": {
+          "title": "Sumkalar va aksessuarlar ulgurji",
+          "description": "Savdo uchun keng assortimenti sumkalar va ryukzaklar. Bir qutidan kichik ulgurji, har bir partiya uchun foto va video."
+        },
+        "5": {
+          "title": "Bayer-xizmat «Partiyani tekshirish»",
+          "description": "Uylab olingan partiyaning nazorati, kamchiliklarni ko'rish va masofaviy xaridorlar uchun bozor hisobi. Xizmat uchun belgilangan tariff, platforma tomonidan yashirin komissiyalarsiz."
+        }
+      },
+      "fallbackStoreTitle": "Do'kon"
+    },
+    "providerProfile": {
+      "listingAdded": "{date} da qo'shildi",
+      "listingUpdated": "{relative} da yangilandi",
+      "breadcrumbNav": "Profil bo'yicha navigatsiya",
+      "breadcrumbHome": "Bosh sahifa",
+      "breadcrumbCatalog": "Katalog",
+      "aboutTitle": "Taqdimot haqidagi ma'lumot",
+      "termsTitle": "Savdo shartlari",
+      "termLabels": {
+        "moq": "Min. partiya",
+        "payment": "To'lov",
+        "shipping": "Yetkazib berish",
+        "samples": "Namunalar",
+        "returnsBrak": "Kamchiliklarni qaytarish"
+      },
+      "termValueDeliveryYes": "Yetkazib berishda yordam beramiz",
+      "termValueDeliveryNo": "Kelishilgan holda",
+      "termValueSamplesYes": "Namunalar mavjud",
+      "termValueSamplesAsk": "Sotuvchidan so'rang",
+      "termReturnsFallback": "Sotuvchidan so'rang",
+      "listingBlurbFallback": "{title} — Dordoi.help katalogida",
+      "mediaSectionTitle": "Media",
+      "containerLocationCaption": "Sotuvchi qayerda joylashgan",
+      "containerLocationAlt": "Sotuvchi joylashuvi: {title}",
+      "faqTitle": "Savollar va javoblar",
+      "ctaWhatsApp": "WhatsApp orqali yozing",
+      "ctaWhatsApp2": "WhatsApp 2",
+      "ctaTelegram": "Telegram",
+      "ctaInstagram": "Instagram",
+      "ctaCall": "Qo'ng'iroq qilish",
+      "contactModalTitle": "Bu qanday ishlaydi",
+      "contactModalBody": "Xaridor ushbu tugmani bossa, sotuvchiga Telegramda uning raqami va nimani qidirayotgani qisqacha keladi.",
+      "contactModalClose": "Yopish",
+      "ctaSave": "Sevimlilarga qo'shish",
+      "ctaSaved": "Sevimlilarda",
+      "quickInfoTitle": "Qisqacha",
+      "statusOnline": "Onlayn",
+      "statusOffline": "Offline",
+      "slugs": {
+        "container-04-12": {
+          "metaTitle": "Savdo nuqtasi «Konteyner 04-12», qatorda A — ulgurji ta'minotchisi | Dordoi.help",
+          "metaDescription": "Ayollar va bolalar kiyimlari ulgurji savdosi Dordoida: konteyner 04-12, qatorda A. MOQ, to'lov, yetkazib berish MDH bo'ylab. WhatsApp orqali aloqada bo'ling.",
+          "h1": "Savdo nuqtasi «Konteyner 04-12», qatorda A",
+          "breadcrumbCategory": "Ayollar kiyimlari",
+          "breadcrumbLeaf": "Konteyner 04-12",
+          "trustVerified": "Tekshirilgan",
+          "trustCis": "MDH bo'ylab yetkazib berish",
+          "about": "Biz Dordoida bozorida 8 yildan ortiq ishlaymiz va ayollar va bolalar kiyimlariga ulgurji savdoga ixtisoslashganmiz. Har hafta kolleksiyalarimiz yangilanadi, katta partiya oldidan namuna buyurtma berish imkoniyati mavjud. Biz xaridorlar va tovarlarni olib keluvchi kompaniyalar bilan Qozog'iston, Rossiya, O'zbekiston va Tojikistonda hamkorlik qilamiz. Yuklash va to'lov shartlari individual kelishuv orqali muhokama qilinadi.",
+          "termMoq": "30 dona dan, o'lchamlar bo'yicha aralashishga ruxsat beriladi",
+          "termPayment": "bozorda naqd, bank o'tkazmasi, rezerv uchun qisman oldindan to'lov",
+          "termShipping": "o'z olib ketish, MDH bo'ylab yuk olib ketuvchilar, yuklarni rasmiylashtirishda yordam",
+          "vendorShortName": "Konteyner 04-12",
+          "quickResponse": "Ish vaqti ichida o'rtacha 15 daqiqada javob beradi",
+          "quickDelivery": "To'lov tasdiqlangandan so'ng 1–3 ish kunida yuk jo'natish",
+          "faq": {
+            "0": {
+              "q": "Ulgurji partiyadan oldin namuna buyurtma berish mumkinmi?",
+              "a": "Ha. Namunalar yozishma orqali muhokama qilinadi: kichik partiyani jo'natish yoki xaridor orqali foto/video tekshirish."
+            },
+            "1": {
+              "q": "Siz masofaviy xaridorlar bilan ishlaysizmi?",
+              "a": "Ha, siz tanlagan yuk olib ketuvchi orqali yoki bizning hamkorimiz orqali jo'natamiz. Yukni sug'urtalash shartlari alohida muhokama qilinadi."
+            },
+            "2": {
+              "q": "Kamchiliklarni qaytarish bormi?",
+              "a": "Ulgurji xarid qilishda qaytish shartlari yuklanishdan oldin aniqlanadi. Partiya tarkibi va sifatini yozishma orqali aniqlashni tavsiya qilamiz."
+            },
+            "3": {
+              "q": "Dordoi.help bitimda ishtirok etadimi?",
+              "a": "Yo'q. Platforma axborot: aloqa va profil. Shartnoma va to'lov - bevosita siz bilan ta'minotchi o'rtasida."
+            }
+          }
+        },
+        "tkani-dordoi": {
+          "metaTitle": "\"Tkani Dordoi\" ulgurji ombori - to'qimachilik ta'minotchisi | Dordoi.help",
+          "metaDescription": "Dordoydan tikuv ustaxonalari uchun to'qimachilik va aksessuarlar. Katta ulgurji, rezerv, eksport uchun hujjatlar. WhatsApp orqali bog'laning.",
+          "h1": "\"Tkani Dordoi\" ulgurji ombori",
+          "breadcrumbCategory": "To'qimachilik",
+          "breadcrumbLeaf": "Tkani Dordoi",
+          "trustVerified": "Tekshirilgan",
+          "trustCis": "MDHga yuborish",
+          "about": "Dordoyda to'qimachilik va aksessuarlar bilan keng tanlovdagi ombor. Katta partiyalar bilan ishlaymiz, buyurtma asosida rezerv mavjud. Eksport uchun bojxona hujjatlari to'plami bo'yicha yordam beramiz. Buyurtma berishdan avval tarkib va metraj bo'yicha maslahat.",
+          "termMoq": "1 rulondan mashhur pozitsiyalar uchun, katta ulgurji 500 metr uzinlikdan",
+          "termPayment": "oldindan to'lov / yuk tashishdan so'ng shartnoma bo'yicha doimiy mijozlar uchun",
+          "termShipping": "Bishkekda yetkazib berish, mintaqalarga va MDH davlatlariga kargo",
+          "vendorShortName": "Tkani Dordoi",
+          "quickResponse": "Bozor ish kunlarida 30–60 daqiqada javob",
+          "quickDelivery": "Kargo orqali yuk tashish 2–5 ish kunida hajmga qarab",
+          "faq": {
+            "0": {
+              "q": "Rulonlarni sotib olishdan oldin zaxiralash mumkinmi?",
+              "a": "Ha, doimiy mijozlar uchun qisman oldindan to'lov bilan belgilangan muddatga rezerv mavjud."
+            },
+            "1": {
+              "q": "To'qimachilik uchun sertifikatlar mavjudmi?",
+              "a": "Sertifikatlarning mavjudligi partiya va ta'minotchiga bog'liq - buyurtma berishdan oldin artikillarni aniqlang."
+            },
+            "2": {
+              "q": "Qirg'iziston tashqarisiga yuborasizmi?",
+              "a": "Ha, kargo hamkorlari orqali. Qadoqlash va belgilash haqida to'lovdan oldin muhokama qilinadi."
+            },
+            "3": {
+              "q": "Qabul qilishda sifat uchun kim javob beradi?",
+              "a": "Qabul qilishda rulonlarni terminal yoki xaridor oldida tekshiring. Boshqa shikoyat shartlari jo'natishdan oldin yozishmalar orqali belgilanadi."
+            }
+          }
+        }
+      }
+    }
   },
   "catalogCategories": {
     "womens_clothing": "Ayollar kiyimi",
@@ -128,5 +712,280 @@
     "cosmetics": "Kosmetika",
     "electronics": "Elektronika",
     "home_goods": "Uy-ro‘zg‘or buyumlari"
+  },
+  "Cabinet": {
+    "navTitle": "Shaxsiy kabinet",
+    "navBuyer": "Xaridor",
+    "navVendor": "Sotuvchi",
+    "navAdmin": "Administratsiya",
+    "roleBadgeBuyer": "Xaridor",
+    "roleBadgeVendor": "Sotuvchi",
+    "roleBadgeBuyerAgent": "Bayer",
+    "roleBadgeAdmin": "Administratsiya",
+    "signedInAs": "Siz {phone} raqami bilan tizimga kirdingiz",
+    "signOut": "Chiqish",
+    "buyer": {
+      "metaTitle": "Xaridor kabineti — Dordoi.help",
+      "metaDescription": "Xaridorlar uchun buyurtmalar va sevimlilar.",
+      "title": "Xaridor kabineti",
+      "favoritesTitle": "Mening sevimlilarim",
+      "favoritesEmpty": "Katalogni oching va kartochkada yoki profilga «Sevimlilar» tugmasini bosing.",
+      "favoritesOpenCatalog": "Katalogga o‘ting",
+      "favoritesOpenProfile": "Do‘kon profili"
+    },
+    "buyerAgent": {
+      "metaTitle": "Bayer kabineti — Dordoi.help",
+      "metaDescription": "Dordoi bozoridagi bayerlar uchun arizalar va vositalar.",
+      "title": "Bayer kabineti",
+      "lead": "Bayerlar uchun bo‘lim: bu yerda keyinchalik mijozlarning arizalari va bozorni boshqarish ssenariylar bo‘ladi."
+    },
+    "vendor": {
+      "metaTitle": "Sotuvchi kabineti — Dordoi.help",
+      "metaDescription": "Sotuvchi vitrinasi va arizalarini boshqarish.",
+      "title": "Sotuvchi kabineti",
+      "lead": "Telegramdan olingan anketa bu raqam bilan hisobga bog‘langan. Quyida arizaning moderatsiya holati.",
+      "noVendorRecord": "Ushbu hisob uchun sotuvchi anketa topilmadi. Agar siz Telegram orqali onboardingdan o‘tsangiz, raqamni kirish raqami bilan mos kelishini tekshiring.",
+      "pendingFullscreenMessage": "Sizning arizangiz administrator tomonidan ko‘rib chiqilmoqda. U tasdiqlanganida sizga xabar beramiz.",
+      "pendingReviewBanner": "Moderatsiyada — bu administrator ko‘rayotgan narsadir. Tasdiqlangandan so‘ng, bu yerda vitrina vositalari paydo bo‘ladi.",
+      "pendingReviewLead": "Quyida sizning Telegramdan olingan anketa nusxasi: matn va yuklangan barcha rasmlar.",
+      "pendingNoSelfEdit": "Anketa matni va shartlarini bu bosqichda faqat administrator moderatsiya panelida tahrir qilishi mumkin.",
+      "pendingEyebrow": "Moderatsiyada",
+      "pendingSubmittedAt": "Yuborilgan: {date}",
+      "pendingContactWhatsApp": "WhatsApp",
+      "pendingContactWhatsAppExtra": "Qo‘shimcha WhatsApp",
+      "pendingContactInstagram": "Instagram",
+      "pendingContactTelegram": "Telegram",
+      "pendingSectionAbout": "Magazin haqida",
+      "pendingAboutShowAll": "Hammasini ko'rsatish",
+      "pendingAboutClose": "Yopish",
+      "pendingSectionCategories": "Kategoriya",
+      "pendingSectionPhotos": "Assortiment fotosi",
+      "pendingLogoCaption": "Logo",
+      "pendingSectionSpot": "Bozor nuqtasi",
+      "pendingSectionTerms": "Ish shartlari",
+      "pendingSectionContacts": "Mijozlar uchun aloqalar",
+      "pendingLabelLocation": "Manzil / bozor joylashuvi",
+      "pendingLabelMinBatch": "Min. partiya / jo'natish",
+      "pendingLabelPayment": "To'lov",
+      "pendingLabelDelivery": "Yetkazib berish bilan yordam",
+      "pendingLabelSamples": "Namunalar / sinov partiyasi",
+      "pendingLabelReturns": "Buzilgan va qaytarish",
+      "pendingYes": "Ha",
+      "pendingNo": "Yo'q",
+      "pendingEmpty": "—",
+      "pendingPhotoAlt": "Foto {n}",
+      "photoViewerOpen": "To'liq ekran rejimida ochish",
+      "photoViewerClose": "Yopish",
+      "pendingSpotAlt": "Bozor nuqtasi fotosi",
+      "pendingLoginPhone": "Anketa raqami",
+      "rejectedNotice": "Afsuski, sizning arizangiz rad etildi. Tafsilotlarni aniqlash uchun qo'llab-quvvatlash bilan bog'laning.",
+      "storeHeaderFallback": "Do'kon",
+      "approvedLogoAlt": "Do'kon logotipi",
+      "cardProductsSoon": "Mening mahsulotlarim (tez orada)",
+      "cardOrdersSoon": "Buyurtmalar (tez orada)",
+      "cardSettingsSoon": "Profil sozlamalari",
+      "edit": {
+        "metaTitle": "Anketani tahrirlash — Dordoi.help",
+        "metaDescription": "Savdogar arizalarini moderatsiyadan oldin tahrir qilish.",
+        "title": "Anketani tahrirlash",
+        "lead": "Ariza hali moderatsiyada: bu yerda matn va aloqalarni yangilashingiz mumkin. Foto (logotip, ko'rgazma, bozorga joylashuvi) hozir faqat Telegram-bot yoki qo'llab-quvvatlash orqali o'zgarishi mumkin.",
+        "photosHint": "Logo, mahsulotlar fotosi va bozor joylashuvi fotosi hozirda faqat Telegram-bot yoki qo'llab-quvvatlash orqali o'zgarishi mumkin.",
+        "back": "Arizaga qaytish",
+        "save": "Saqlash",
+        "saving": "Saqlanmoqda…",
+        "sectionIdentity": "Nomi va ta'rifi",
+        "storeName": "Katalog uchun nom",
+        "storeNameHint": "{max} belgidan oshmasligi kerak — katalog kartochkasidagi sarlavha (odatda kompyuter ekranida 1-2 qator).",
+        "location": "Sizni Dordoi da qayerdan topishimiz mumkin",
+        "description": "Katalog uchun tavsif",
+        "descriptionHint": "{max} belgidan oshmasligi kerak (qattiq cheklov). Katalogda tartibli ko'rinish uchun tavsiya etilgan — ~{recommended} belgi.",
+        "descriptionDetail": "Tavsifni davom ettirish",
+        "descriptionDetailHint": "Majburiy emas. {max} belgigacha — faqat profil ichida ko'rsatiladi, katalogning kichik kartochkasida emas.",
+        "categories": "Mahsulotlar kategoriyalari",
+        "categoriesHint": "Birinchi bo'sh bo'lmagan qator — katalog kartochkasida nom ostida. {maxCount} kategoriya, har biri {max} belgi (Telegramda ro'yxatdan o'tish kabi).",
+        "categoryRowLabel": "Kategoriya {n}",
+        "categoryPlaceholder": "Masalan: ayollar kiyimi ulgurji",
+        "sectionTerms": "Ish shartlari",
+        "minBatch": "Min. partiya / jo'natish",
+        "payment": "To'lov",
+        "deliveryHelp": "Buyurtmachiga yetkazib berishda yordam beramiz",
+        "samplesAvailable": "Sinov / kichik to'lovli partiya mavjud",
+        "samplesNote": "Sinov partiyasi bo'yicha izoh",
+        "returns": "Nuqson va qaytarish",
+        "sectionContacts": "Buyurtmachilar uchun aloqalar",
+        "loginPhoneReadonly": "Anketadan olingan raqam (saytga kirish). Bu yerda o'zgartirilmaydi.",
+        "whatsapp1": "Asosiy WhatsApp",
+        "whatsapp2": "Qo'shimcha WhatsApp (bo'sh qoldirish mumkin)",
+        "instagram": "Instagram",
+        "telegram": "Telegram yoki kanal"
+      }
+    },
+    "admin": {
+      "metaTitle": "Admin paneli — Dordoi.help",
+      "metaDescription": "Platformani boshqarish.",
+      "moderationTitle": "Sotuvchilar arizalari",
+      "filterPending": "Hal etilishni kutayotganlar",
+      "filterAll": "Barcha arizalar",
+      "moderationEmpty": "Ushbu ro'yxatda arizalar yo'q.",
+      "colStore": "Do'kon",
+      "colPhone": "Telefon",
+      "colLanguage": "Til",
+      "colStatus": "Holat",
+      "colCreated": "Berilgan",
+      "colActions": "Harakatlar",
+      "approve": "Tasdiqlash",
+      "reject": "Rad etish",
+      "editVendor": "Tahrirlash",
+      "reviewBadgeNew": "YANGI",
+      "reviewBadgeApplicationNo": "№ {no}",
+      "vendorSavedBanner": "O'zgartirishlar saqlanmoqda.",
+      "vendorEditMetaTitle": "Sotuvchi arizasini tahrirlash — Dordoi.help",
+      "vendorEditMetaDescription": "Ariza matni va kontaktlarini tahrirlash davom etmoqda.",
+      "vendorEditTitle": "Ariza: {store}",
+      "vendorEditLead": "Moderatsiyada ariza: Sotuvchi nomidan matn, kategoriyalar, kontaktlar va shartlarni yangilashingiz mumkin. Rasm esa Telegram bot yoki yordam orqali o'zgartirilishi mumkin.",
+      "vendorEditPhotosHint": "Logotip, mahsulotlar fotosi va savdo nuqtasi fotosini hozirda faqat Telegram bot yoki yordam orqali o'zgartirish mumkin.",
+      "vendorEditBack": "Moderatsiyaga qaytish",
+      "statusPending": "Moderatsiyada",
+      "statusApproved": "Ma'qullandi",
+      "statusRejected": "Rad etildi",
+      "statusUnknown": "Ma'lum emas",
+      "emptyPendingTitle": "Yangi arizalar yo'q. Hamma narsani tekshirdingiz!",
+      "emptyPendingHint": "Sotuvchi yangi ariza yuborganida, bu ro'yxatda paydo bo'ladi.",
+      "cardUntitledStore": "Nom berilmagan",
+      "cardSubmitted": "Yuborilgan:",
+      "cardDescription": "Do'konga oid ma'lumot",
+      "cardCategories": "Kategoriyalar",
+      "cardContacts": "Kontaktlar",
+      "cardMinBatch": "Min. partiya",
+      "cardPayment": "To'lov",
+      "cardDelivery": "Yetkazib berish",
+      "cardDeliveryYes": "Yetkazib berishda yordam beramiz",
+      "cardDeliveryNo": "Yetkazib berishni xaridor tashkil etadi",
+      "cardSamples": "Sinov / kichik xarid",
+      "cardSamplesYes": "Ha, tekshirish uchun kichik to'langan partiya mavjud",
+      "cardSamplesNo": "Yo'q, faqat to'liq partiya",
+      "cardReturns": "Niqobni qaytarish",
+      "cardMedia": "Media",
+      "cardLogo": "Logotip",
+      "cardContainer": "Konteyner fotosi",
+      "cardProductGallery": "Mahsulot fotosuratlari",
+      "cardProductPhotoAlt": "Mahsulot fotosi {n}",
+      "photoViewerOpen": "To'liq ekran rejimida ochish",
+      "photoViewerClose": "Yopish",
+      "cardLogoAlt": "Do'kon logotipi",
+      "cardContainerAlt": "Konteyner fotosi",
+      "cardNoImage": "Rasm mavjud emas"
+    }
+  },
+  "catalogCategoryTree": {
+    "main": {
+      "womens": "Ayollar kiyimlari",
+      "mens": "Erkaklar kiyimlari",
+      "kids": "Bolalar kiyimlari",
+      "underwear-swim": "Ichki kiyim va suzish kiyimlari",
+      "footwear": "Poyabzal",
+      "bags-leather": "Sumkalar va teri buyumlari",
+      "accessories": "Aksessuarlar",
+      "fabrics-notions": "To'qimalar va tikuvchilik buyumlari",
+      "home-textiles": "Uy tekstili",
+      "beauty": "Kosmetika, parfyumeriya va g'amxo'rlik",
+      "toys-children": "O'yinchoqlar va bolalar mahsulotlari",
+      "electronics": "Elektronika va mobil aksessuarlar",
+      "packaging-retail": "Qadoqlash va savdo uskunalari",
+      "household": "Uy faoliyati uchun mahsulotlar",
+      "sports-outdoors": "Sport, sayohat va dam olish"
+    },
+    "sub": {
+      "women-outerwear": "Tashqi kiyimlar (ko'ylaklar, palto, puffi, manto)",
+      "women-dresses": "Ko'ylaklar va sarafonlar",
+      "women-blouses": "Bluzkalar, ko'ylaklar, tunikalar",
+      "women-sweaters": "Sviterlar, kardiganlar, yengil sviterlar",
+      "women-pants-shorts": "Shimlar, jinsilar, shortilar",
+      "women-skirts": "Yupkalar",
+      "women-tracksuits": "Sport kostyumlari",
+      "women-loungewear": "Uy kiyimlari (pijamalar, xalatlar)",
+      "women-plus-size": "Katta o'lchamdagi kiyimlar (Plus Size)",
+      "women-muslim": "Musulmon kiyimlari (abaya, hijoblar)",
+      "men-outerwear": "Tashqi kiyimlar (ko'ylaklar, shamollatkichlar, palto)",
+      "men-suits": "Klassik kostyumlar va paltolar",
+      "men-shirts": "Ko'ylaklar (klassik va casual)",
+      "men-hoodies": "Hoodiylar, sweatshirtlar",
+      "men-pants-jeans": "Jinsilar va shimlar",
+      "men-sportswear": "Sport kiyimlari",
+      "men-tshirts-polo": "Tishirtlar va polo",
+      "kids-newborn": "Yangi tug'ilganlar uchun kiyimlar (1 yoshgacha)",
+      "kids-girls": "Qizlar kiyimlari",
+      "kids-boys": "O'g'il bolalar kiyimlari",
+      "kids-school-uniform": "Maktab formasi",
+      "kids-teens": "O'smirlar kiyimlari",
+      "kids-outerwear": "Bolalar tashqi kiyimlari",
+      "uw-women": "Ayollar ichki kiyimlari (komplektlar, brassiler, ichki kiyimlar)",
+      "uw-men": "Erkak ichki kiyim",
+      "uw-kids": "Bolalar ichki kiyimi",
+      "uw-swimwear": "Suvda kiyimlar va qisqa shimlar",
+      "uw-hosiery": "Piyoz va paypoqlar (paypoq, kolgotka, sok)",
+      "uw-shape-thermal": "Shakl beruvchi va termik ichki kiyim",
+      "shoes-women": "Ayollar uchun poyabzal (poyafzal, botinkalar, sandallar)",
+      "shoes-men": "Erkaklar uchun poyabzal (botinkalar, poyafzal, mokasinlar)",
+      "shoes-kids": "Bolalar uchun poyabzal",
+      "shoes-sports": "Sport poyabzali (krossovkalar, kedy)",
+      "shoes-home-beach": "Uy va plyaj poyabzali (tayoq, slanets)",
+      "shoes-special": "Maxsus poyabzal va taktik poyabzal",
+      "bags-women": "Ayollar uchun sumkalar va clutchlar",
+      "bags-men": "Erkaklar uchun sumkalar va portfel",
+      "bags-backpacks": "Rukzaklar (shahar, maktab, sport)",
+      "bags-wallets": "Hamyonlar, portmone, vizitkartalar",
+      "bags-belts": "Kamar va belbog'lar",
+      "bags-travel": "Safar sumkalari va chamadonlar",
+      "acc-headwear": "Bosh kiyimlar (shlyapalar, kepkalar, panamalar)",
+      "acc-scarves": "Sharf, to'plar, palantinlar",
+      "acc-gloves": "Qo'lqop va qopqoq",
+      "acc-sunglasses": "Quyoshdan saqlovchi va imij gözlük",
+      "acc-hair-jewelry": "Zargarlik va sochlar uchun bezaklar",
+      "acc-watches": "Soatlar",
+      "fab-fabrics": "Matolar (ro‘valarda va kesimda)",
+      "fab-yarn-thread": "Ip va iplar",
+      "fab-notions": "Tikuv asboblari (tugmalar, zıplamalar, elastiklar, to‘qima)",
+      "fab-patches": "Termoapplikatsiyalar va yamoq",
+      "fab-workshop-equipment": "Tikuv ustaxonasi uchun uskunalar",
+      "ht-bedding": "Yotoq to‘qimalari",
+      "ht-towels": "Sochiqlar (tüyli, oshxona)",
+      "ht-blankets": "Pledlar, to'siqlar, ko‘rpa",
+      "ht-curtains": "Perdalar, tul, portyerlar",
+      "ht-pillows-mattresses": "Yostiq va matraslar",
+      "ht-rugs": "Gilamlar va kichik gilamlar",
+      "beauty-skincare": "Kozmetik parvarish",
+      "beauty-makeup": "Dekorativ kosmetika",
+      "beauty-fragrance": "Parfyumeriya (original va analoglar)",
+      "beauty-nails": "Manikyur va pedikyur mahsulotlari",
+      "beauty-salon-equipment": "Go'zallik salonlari uchun uskunalar",
+      "beauty-soap": "Uy va qadoq sabun",
+      "toys-soft": "Yumshoq o'yinchoqlar",
+      "toys-educational": "Rivojlantiruvchi o'yinchoqlar va konstruktivlar",
+      "toys-rc": "Uzi boshqariladigan modellari",
+      "toys-board-games": "Nastol o'yinlar va puzzlelar",
+      "toys-strollers-seats": "Bolalar aravalari, yurishlar, avtomobil kreslolar",
+      "toys-stationery-school": "Kanselyariya tovarlari va maktab mollari",
+      "elec-phone-cases": "Telefon qopqog'i va himoya shisha",
+      "elec-chargers": "Zaryadlovchilar va kabellar",
+      "elec-audio": "Quloqchinlar va portativ kolonka",
+      "elec-wearables": "Smart soatlar va sport bilaguzuklari",
+      "elec-small-appliances": "Kichik uy jihozlari",
+      "pack-bags": "Paketlar (PVD, PND, mayka, kraft)",
+      "pack-zip-marketplace": "Zip-paketlar (Zip-lock) va bozorlarga mo'ljallangan qadoqlash",
+      "pack-boxes": "Qog'oz qutilar",
+      "pack-mannequins-hangers": "Manekyurlar va osmalar (yelkalar)",
+      "pack-shelving": "Savdo stendlar va vitrinlar",
+      "pack-tags-labels": "Yopishtiruvchi, etiketchalar, narx teglari",
+      "hh-kitchenware": "Ovqat pishirish va oshxona jihozlari",
+      "hh-cleaning-tools": "Uy yumshoq asboblari (moplar, chelaklar, gubkalar)",
+      "hh-chemicals": "Uy kimyoviy moddalar",
+      "hh-bathroom": "Vanna xonasi mollari",
+      "hh-plasticware": "Plastik mahsulotlar (konteynerlar, tawlar)",
+      "spo-sports-gear": "Sport asboblari (dumbbellar, matlar, to'p)",
+      "spo-camping": "Turistik jihozlar (palatkalar, yotqizgichlar)",
+      "spo-fishing-hunting": "Baliq ovlash va ovchilik mollari",
+      "spo-tactical": "Taktil jihozlar"
+    }
   }
 }

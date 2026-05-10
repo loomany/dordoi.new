@@ -1,9 +1,12 @@
+import type { ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type FaqItem = {
   question: string;
-  answer: string;
+  /** Plain-text answer (default). Ignored if `answerNode` is set. */
+  answer?: string;
+  answerNode?: ReactNode;
 };
 
 type Props = {
@@ -28,7 +31,9 @@ export function FaqAccordion({ items, className, ariaLabel }: Props) {
               />
             </summary>
             <div className="border-t border-gray-100 px-4 pb-4 pt-0">
-              <p className="text-sm leading-relaxed text-gray-600">{item.answer}</p>
+              {item.answerNode ?? (
+                <p className="text-sm leading-relaxed text-gray-600">{item.answer}</p>
+              )}
             </div>
           </details>
         ))}

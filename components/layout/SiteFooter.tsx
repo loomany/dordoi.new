@@ -17,9 +17,9 @@ export async function SiteFooter() {
   ];
 
   return (
-    <footer className="border-t border-border/40 bg-background">
-      <div className="mx-auto flex max-w-6xl justify-center px-4 py-8 sm:px-6 sm:py-8">
-        <div className="flex flex-col items-center justify-center gap-5 text-center sm:flex-row sm:gap-6 sm:text-left">
+    <footer className="bg-background">
+      <div className="mx-auto flex max-w-6xl justify-center px-4 py-3 sm:px-6 sm:py-4">
+        <div className="flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:gap-6 sm:text-left">
           <Link href="/" className="inline-flex shrink-0" aria-label={tb("name")}>
             <BrandLogo name={tb("name")} size="md" />
           </Link>

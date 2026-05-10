@@ -1,6 +1,10 @@
 from aiogram.fsm.state import State, StatesGroup
 
 
+class VendorPhotoBatch(StatesGroup):
+    collecting = State()
+
+
 class VendorOnboarding(StatesGroup):
     language = State()
     phone = State()
@@ -8,6 +12,7 @@ class VendorOnboarding(StatesGroup):
     location_row = State()
     logo = State()
     description = State()
+    description_detail = State()
     categories = State()
     product_photos = State()
     container_photo = State()
@@ -19,5 +24,6 @@ class VendorOnboarding(StatesGroup):
     instagram = State()
     telegram_channel = State()
     samples = State()
+    samples_custom = State()
     returns = State()
     returns_conditions = State()

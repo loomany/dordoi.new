@@ -12,6 +12,7 @@ export type VendorRowSelf = {
   location_row: string | null;
   logo_url: string | null;
   description: string | null;
+  description_detail: string | null;
   categories: string[] | null;
   product_photos: string[] | null;
   container_photo_url: string | null;
@@ -23,6 +24,7 @@ export type VendorRowSelf = {
   instagram_url: string | null;
   telegram_url: string | null;
   samples_available: boolean;
+  samples_note: string | null;
   returns_policy: string | null;
   status: string;
   language: string;
@@ -72,6 +74,7 @@ export async function fetchVendorRowForAuthenticatedUser(
         "location_row",
         "logo_url",
         "description",
+        "description_detail",
         "categories",
         "product_photos",
         "container_photo_url",
@@ -83,6 +86,7 @@ export async function fetchVendorRowForAuthenticatedUser(
         "instagram_url",
         "telegram_url",
         "samples_available",
+        "samples_note",
         "returns_policy",
         "status",
         "language",

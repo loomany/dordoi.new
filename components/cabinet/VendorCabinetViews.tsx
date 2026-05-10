@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
+import { ProductPhotosSwipeCarousel } from "@/components/cabinet/ProductPhotosSwipeCarousel";
 import { VendorAboutExpandable } from "@/components/cabinet/VendorAboutExpandable";
 import { cabinetShell } from "@/components/cabinet/cabinet-tokens";
 import { formatPhoneDisplay } from "@/lib/phone";
@@ -101,14 +102,19 @@ export async function VendorPendingReviewDashboard({
             <p className="text-sm leading-relaxed text-muted-foreground">
               {t("pendingReviewLead")}
             </p>
+            <p className="text-sm leading-relaxed text-muted-foreground">{t("pendingNoSelfEdit")}</p>
           </div>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <PendingSection title={t("pendingSectionAbout")}>
-          {shop.description?.trim() ? (
-            <VendorAboutExpandable description={shop.description.trim()} />
+          {shop.description?.trim() || shop.description_detail?.trim() ? (
+            <VendorAboutExpandable
+              description={[shop.description?.trim(), shop.description_detail?.trim()]
+                .filter(Boolean)
+                .join("\n\n")}
+            />
           ) : (
             <p className="text-sm italic text-muted-foreground">{empty}</p>
           )}
@@ -133,16 +139,16 @@ export async function VendorPendingReviewDashboard({
         {!shop.logo_url && shop.product_photos.length === 0 ? (
           <p className="text-sm italic text-muted-foreground">{empty}</p>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="flex flex-col gap-4">
             {shop.logo_url ? (
-              <div className="flex flex-col gap-1.5">
+              <div className="mx-auto flex w-full max-w-xs flex-col gap-1.5 sm:mx-0">
                 <div className="relative aspect-square overflow-hidden rounded-2xl border border-zinc-200/95 bg-zinc-50 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
                   <Image
                     src={shop.logo_url}
                     alt={t("approvedLogoAlt")}
                     fill
                     className="object-cover"
-                    sizes="(max-width:640px) 50vw, 33vw"
+                    sizes="(max-width:640px) 90vw, 320px"
                     unoptimized={imgUnoptimized(shop.logo_url)}
                   />
                 </div>
@@ -151,21 +157,17 @@ export async function VendorPendingReviewDashboard({
                 </p>
               </div>
             ) : null}
-            {shop.product_photos.map((url, i) => (
-              <div
-                key={`${url}-${i}`}
-                className="relative aspect-square overflow-hidden rounded-2xl border border-zinc-200/95 bg-zinc-50 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-              >
-                <Image
-                  src={url}
-                  alt={t("pendingPhotoAlt", { n: i + 1 })}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width:640px) 50vw, 33vw"
-                  unoptimized={imgUnoptimized(url)}
-                />
-              </div>
-            ))}
+            {shop.product_photos.length > 0 ? (
+              <ProductPhotosSwipeCarousel
+                urls={shop.product_photos}
+                ariaLabel={t("pendingSectionPhotos")}
+                getAlt={(i) => t("pendingPhotoAlt", { n: i + 1 })}
+                openLabel={t("photoViewerOpen")}
+                closeLabel={t("photoViewerClose")}
+                unoptimized={imgUnoptimized}
+                innerClassName="rounded-2xl border-zinc-200/95 bg-zinc-50 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+              />
+            ) : null}
           </div>
         )}
       </PendingSection>
@@ -214,7 +216,11 @@ export async function VendorPendingReviewDashboard({
           <PendingTerm
             label={t("pendingLabelSamples")}
             value={
-              shop.samples_available ? t("pendingYes") : t("pendingNo")
+              shop.samples_note?.trim()
+                ? shop.samples_note.trim()
+                : shop.samples_available
+                  ? t("pendingYes")
+                  : t("pendingNo")
             }
           />
         </div>

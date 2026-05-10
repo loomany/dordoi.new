@@ -1,0 +1,4 @@
+# Зависимости для scripts/e2e_vendor_onboarding_telethon.py
+# Установка: pip install -r scripts/requirements-e2e-telegram.txt
+telethon>=1.34,<2
+python-dotenv>=1.0

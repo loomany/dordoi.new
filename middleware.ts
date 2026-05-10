@@ -9,8 +9,15 @@ const intlMiddleware = createMiddleware(routing);
  * Railway forwards x-forwarded-port equal to the container bind port (PORT).
  * next-intl builds locale redirects from forwarded headers → Location includes :8080.
  * Strip that internal port so browsers only see https://dordoi.help/... on the default HTTPS port.
+ *
+ * В dev `next dev` сам выставляет process.env.PORT=3000 и тогда мы бы срезали `:3000`
+ * из `x-forwarded-host`, из-за чего Next.js 16 валит Server Actions с ошибкой
+ * `x-forwarded-host does not match origin`. На локалке нет внешнего прокси —
+ * заголовок не трогаем.
  */
 function withoutInternalForwardedPort(request: NextRequest): NextRequest {
+  if (process.env.NODE_ENV !== "production") return request;
+
   const listenPort = process.env.PORT;
   if (!listenPort) return request;
 

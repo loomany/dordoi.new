@@ -1,0 +1,438 @@
+import { getLocale, getTranslations } from "next-intl/server";
+import {
+  CreditCard,
+  ImageIcon,
+  MapPin,
+  Package,
+  Phone,
+  RotateCcw,
+  Tag,
+  Truck,
+} from "lucide-react";
+
+import { CatalogFavoriteButton } from "@/components/favorites/CatalogFavoriteButton";
+import { VendorContactActions } from "@/components/provider/VendorContactActions";
+import { VendorPhotoBatchFeed } from "@/components/provider/VendorPhotoBatchFeed";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { Link } from "@/i18n/navigation";
+import { catalogListingKeyFromSlug } from "@/lib/catalog/listing-key";
+import {
+  fetchApprovedVendorPhotoBatches,
+  type PublishedVendorRow,
+} from "@/lib/catalog/published-vendors";
+import { getSessionProfile } from "@/lib/auth/session-profile";
+import { fetchBuyerFavoriteKeySet } from "@/lib/favorites/buyer-favorites";
+import { digitsOnly, formatPhoneDisplay } from "@/lib/phone";
+import {
+  formatListingUpdatedToday,
+  formatProviderAddedDate,
+} from "@/lib/provider-dates";
+import { mapVendorCategoryLabelsForLocale } from "@/lib/catalog/map-vendor-category-labels";
+import { getShowcaseProfileFields } from "@/lib/catalog/showcase-vendor-i18n";
+import { baseUrl } from "@/lib/site";
+
+type Props = {
+  vendor: PublishedVendorRow;
+};
+
+function ensureHttp(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+}
+
+function telegramHref(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("@")) {
+    return `https://t.me/${trimmed.slice(1)}`;
+  }
+  if (trimmed.startsWith("t.me/")) {
+    return `https://${trimmed}`;
+  }
+  return ensureHttp(trimmed);
+}
+
+function whatsappHref(raw: string | null | undefined): string | null {
+  const digits = digitsOnly(raw ?? "");
+  return digits ? `https://wa.me/${digits}` : null;
+}
+
+function optionalText(value: string | null | undefined, fallback = "—"): string {
+  const trimmed = value?.trim();
+  return trimmed || fallback;
+}
+
+function MediaImage({
+  src,
+  alt,
+  className,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element -- Supabase Storage public URLs; plain img avoids remotePatterns churn.
+    <img src={src} alt={alt} className={className} loading="lazy" />
+  );
+}
+
+export async function DatabaseProviderProfileView({ vendor }: Props) {
+  const t = await getTranslations("Pages.providerProfile");
+  const tCatalog = await getTranslations("catalogCategories");
+  const tBrowse = await getTranslations("Pages.catalogBrowse");
+  const locale = await getLocale();
+  const profile = await getSessionProfile();
+  const favoriteKeys = profile
+    ? await fetchBuyerFavoriteKeySet(profile.userId)
+    : new Set<string>();
+
+  const showcase = getShowcaseProfileFields(vendor.slug, tBrowse);
+  const title =
+    showcase?.title ??
+    vendor.store_name?.trim() ??
+    tBrowse("fallbackStoreTitle");
+  const categoryLabels = showcase
+    ? showcase.categories
+    : mapVendorCategoryLabelsForLocale(vendor.categories, (key) =>
+        tCatalog(key),
+      );
+  const displayLocationRow = showcase?.locationRow ?? vendor.location_row;
+  const listingKey = catalogListingKeyFromSlug(vendor.slug);
+  const initialFavorite = favoriteKeys.has(listingKey);
+  const primaryWhatsapp = whatsappHref(vendor.whatsapp_1) ?? whatsappHref(vendor.phone_number);
+  const secondaryWhatsapp = whatsappHref(vendor.whatsapp_2);
+  const telegramHrefResolved = vendor.telegram_url
+    ? telegramHref(vendor.telegram_url)
+    : null;
+  const instagramHrefResolved = vendor.instagram_url
+    ? ensureHttp(vendor.instagram_url)
+    : null;
+  const telHrefResolved = vendor.phone_number
+    ? `tel:${digitsOnly(vendor.phone_number)}`
+    : null;
+  const canonical = `${baseUrl()}/${locale}/catalog/${vendor.slug}`;
+  const PHOTO_FEED_PAGE_SIZE = 4;
+  const initialPhotoBatches = await fetchApprovedVendorPhotoBatches({
+    vendorId: vendor.id,
+    limit: PHOTO_FEED_PAGE_SIZE,
+  });
+  const description =
+    showcase?.description.trim() ||
+    vendor.description?.trim() ||
+    vendor.description_detail?.trim() ||
+    t("listingBlurbFallback", { title });
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: title,
+    description,
+    url: canonical,
+    telephone: vendor.phone_number ? formatPhoneDisplay(vendor.phone_number) : undefined,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: displayLocationRow ?? undefined,
+      addressLocality: "Bishkek",
+      addressCountry: "KG",
+    },
+    image: vendor.logo_url ?? vendor.product_photos[0] ?? undefined,
+  };
+
+  const terms = showcase
+    ? [
+        {
+          Icon: Package,
+          label: t("termLabels.moq"),
+          value: optionalText(showcase.terms.minBatch),
+        },
+        {
+          Icon: CreditCard,
+          label: t("termLabels.payment"),
+          value: optionalText(showcase.terms.paymentMethods),
+        },
+        {
+          Icon: Truck,
+          label: t("termLabels.shipping"),
+          value: optionalText(showcase.terms.shippingValue),
+        },
+        {
+          Icon: Package,
+          label: t("termLabels.samples"),
+          value: optionalText(showcase.terms.samplesValue),
+        },
+        {
+          Icon: RotateCcw,
+          label: t("termLabels.returnsBrak"),
+          value: optionalText(
+            showcase.terms.returnsPolicy,
+            t("termReturnsFallback"),
+          ),
+        },
+      ]
+    : [
+        {
+          Icon: Package,
+          label: t("termLabels.moq"),
+          value: optionalText(vendor.min_batch),
+        },
+        {
+          Icon: CreditCard,
+          label: t("termLabels.payment"),
+          value: optionalText(vendor.payment_methods),
+        },
+        {
+          Icon: Truck,
+          label: t("termLabels.shipping"),
+          value: vendor.delivery_help
+            ? t("termValueDeliveryYes")
+            : t("termValueDeliveryNo"),
+        },
+        {
+          Icon: Package,
+          label: t("termLabels.samples"),
+          value: vendor.samples_note?.trim()
+            ? vendor.samples_note.trim()
+            : vendor.samples_available
+              ? t("termValueSamplesYes")
+              : t("termValueSamplesAsk"),
+        },
+        {
+          Icon: RotateCcw,
+          label: t("termLabels.returnsBrak"),
+          value: optionalText(vendor.returns_policy, t("termReturnsFallback")),
+        },
+      ];
+
+  return (
+    <>
+      <JsonLd data={jsonLd} />
+      <div className="bg-[#FAFAF8] pb-16 pt-6 sm:pt-8">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <nav aria-label={t("breadcrumbNav")} className="text-xs text-gray-400">
+            <ol className="flex flex-wrap items-center gap-1.5">
+              <li>
+                <Link href="/" className="hover:text-gray-600">
+                  {t("breadcrumbHome")}
+                </Link>
+              </li>
+              <li className="text-gray-300" aria-hidden>
+                /
+              </li>
+              <li>
+                <Link href="/catalog" className="hover:text-gray-600">
+                  {t("breadcrumbCatalog")}
+                </Link>
+              </li>
+              <li className="text-gray-300" aria-hidden>
+                /
+              </li>
+              <li className="font-medium text-gray-600" aria-current="page">
+                {title}
+              </li>
+            </ol>
+          </nav>
+
+          <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+            <main className="order-2 min-w-0 rounded-[var(--d-radius-2xl)] border border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-card p-5 shadow-[var(--d-shadow-soft)] sm:p-6 lg:order-none">
+              <header className="relative grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-start sm:gap-x-3">
+                <div className="pointer-events-none hidden min-w-0 sm:block" aria-hidden />
+                <div className="min-w-0 pr-12 sm:col-start-2 sm:w-full sm:px-0 sm:text-center">
+                  <h1 className="sr-only text-3xl font-extrabold tracking-tight text-card-foreground sm:not-sr-only sm:text-5xl lg:text-6xl">
+                    {title}
+                  </h1>
+                  <div className="mt-0 flex flex-wrap items-center gap-2 text-sm text-muted-foreground sm:mt-3 sm:justify-center">
+                    {displayLocationRow ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <MapPin className="size-4 text-[var(--d-card-accent)]" aria-hidden />
+                        {displayLocationRow}
+                      </span>
+                    ) : null}
+                    <span>
+                      {t("listingAdded", {
+                        date: formatProviderAddedDate(vendor.created_at, locale),
+                      })}
+                    </span>
+                    <span>{t("listingUpdated", { relative: formatListingUpdatedToday(locale) })}</span>
+                  </div>
+                </div>
+                <CatalogFavoriteButton
+                  key={`${listingKey}:${initialFavorite}`}
+                  listingKey={listingKey}
+                  initialFavorite={initialFavorite}
+                  variant="card"
+                  showCardLabel={false}
+                  className="absolute right-0 top-0 z-10 shrink-0 sm:static sm:col-start-3 sm:row-start-1 sm:justify-self-end sm:self-start sm:right-auto sm:top-auto sm:z-auto"
+                />
+              </header>
+
+              {categoryLabels.length > 0 ? (
+                <section className="mt-6">
+                  <dl className="overflow-hidden rounded-xl border border-border/70 bg-white shadow-sm">
+                    <div
+                      className={
+                        categoryLabels.length === 1
+                          ? "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0 px-4 py-4 sm:grid-cols-[14rem_1fr] sm:items-start sm:gap-x-4 sm:gap-y-0 sm:px-5"
+                          : "flex flex-col gap-2 px-4 py-4 sm:grid sm:grid-cols-[14rem_1fr] sm:items-start sm:gap-4 sm:px-5"
+                      }
+                    >
+                      <dt className="flex min-w-0 items-center gap-2.5">
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_oklch,var(--d-card-accent)_8%,transparent)] text-[var(--d-card-accent)]">
+                          <Tag className="size-4" aria-hidden />
+                        </span>
+                        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          {tBrowse("cardCategoriesMany")}
+                        </span>
+                      </dt>
+                      <dd
+                        className={
+                          categoryLabels.length === 1
+                            ? "flex shrink-0 items-center justify-end sm:block sm:pt-1"
+                            : "sm:pt-1"
+                        }
+                      >
+                        <ul
+                          className={
+                            categoryLabels.length === 1
+                              ? "flex flex-wrap items-center justify-end gap-2 sm:justify-start"
+                              : "flex flex-wrap gap-2"
+                          }
+                        >
+                          {categoryLabels.map((cat, i) => (
+                            <li
+                              key={`${cat}:${i}`}
+                              className="inline-flex items-center rounded-full border border-[color-mix(in_oklch,var(--d-card-accent)_25%,transparent)] bg-[color-mix(in_oklch,var(--d-card-accent)_4%,white)] px-3 py-1.5 text-xs font-semibold text-card-foreground sm:text-sm"
+                            >
+                              {cat}
+                            </li>
+                          ))}
+                        </ul>
+                      </dd>
+                    </div>
+                  </dl>
+                </section>
+              ) : null}
+
+              <section className="mt-8 border-t border-border/70 pt-6">
+                <h2 className="text-lg font-semibold text-card-foreground">{t("aboutTitle")}</h2>
+                <div className="mt-3 space-y-4 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+                  {showcase ? (
+                    <>
+                      <p>{showcase.description}</p>
+                      {showcase.descriptionDetail ? (
+                        <p>{showcase.descriptionDetail}</p>
+                      ) : null}
+                    </>
+                  ) : (
+                    <>
+                      {vendor.description ? (
+                        <p>{vendor.description.trim()}</p>
+                      ) : null}
+                      {vendor.description_detail ? (
+                        <p>{vendor.description_detail.trim()}</p>
+                      ) : null}
+                    </>
+                  )}
+                </div>
+              </section>
+
+              <section className="mt-8">
+                <h2 className="text-lg font-semibold text-card-foreground">{t("termsTitle")}</h2>
+                <dl className="mt-4 overflow-hidden rounded-xl border border-border/70 bg-white shadow-sm">
+                  {terms.map(({ Icon, label, value }, index) => (
+                    <div
+                      key={label}
+                      className={`flex flex-col gap-2 px-4 py-4 sm:grid sm:grid-cols-[14rem_1fr] sm:items-start sm:gap-4 sm:px-5 ${
+                        index > 0 ? "border-t border-border/60" : ""
+                      }`}
+                    >
+                      <dt className="flex items-center gap-2.5">
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_oklch,var(--d-card-accent)_8%,transparent)] text-[var(--d-card-accent)]">
+                          <Icon className="size-4" aria-hidden />
+                        </span>
+                        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          {label}
+                        </span>
+                      </dt>
+                      <dd className="whitespace-pre-line text-sm font-medium text-card-foreground sm:pt-1">
+                        {value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </section>
+
+              {vendor.container_photo_url || initialPhotoBatches.length > 0 ? (
+                <section className="mt-8">
+                  <h2 className="text-lg font-semibold text-card-foreground">
+                    {t("mediaSectionTitle")}
+                  </h2>
+                  {vendor.container_photo_url ? (
+                    <div className="mt-4">
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        {t("containerLocationCaption")}
+                      </p>
+                      <div className="overflow-hidden rounded-xl border border-border/70 bg-muted">
+                        <MediaImage
+                          src={vendor.container_photo_url}
+                          alt={t("containerLocationAlt", { title })}
+                          className="aspect-video w-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  ) : null}
+                  {initialPhotoBatches.length > 0 ? (
+                    <div className="mt-5">
+                      <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        <ImageIcon className="size-4" aria-hidden />
+                        Фото товаров
+                      </p>
+                      <VendorPhotoBatchFeed
+                        vendorId={vendor.id}
+                        initialBatches={initialPhotoBatches}
+                        pageSize={PHOTO_FEED_PAGE_SIZE}
+                        altBase={`${title}: фото товаров`}
+                        locale={locale}
+                      />
+                    </div>
+                  ) : null}
+                </section>
+              ) : null}
+            </main>
+
+            <aside className="order-1 rounded-[var(--d-radius-2xl)] border border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-card p-5 shadow-[var(--d-shadow-soft)] lg:sticky lg:top-24 lg:order-none">
+              <div className="flex flex-col items-center text-center">
+                {vendor.logo_url ? (
+                  <div className="flex size-[120px] items-center justify-center overflow-hidden rounded-full border border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-white shadow-sm">
+                    <MediaImage
+                      src={vendor.logo_url}
+                      alt={`Логотип ${title}`}
+                      className="size-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex size-[120px] items-center justify-center rounded-full border border-border/70 bg-muted text-[var(--d-card-accent)]">
+                    <Phone className="size-11" aria-hidden />
+                  </div>
+                )}
+                <h2 className="mt-6 text-lg font-bold text-card-foreground lg:hidden">{title}</h2>
+              </div>
+
+              <VendorContactActions
+                listingKey={listingKey}
+                initialFavorite={initialFavorite}
+                primaryWhatsapp={primaryWhatsapp}
+                secondaryWhatsapp={secondaryWhatsapp}
+                telegramHref={telegramHrefResolved}
+                instagramHref={instagramHrefResolved}
+                telHref={telHrefResolved}
+              />
+            </aside>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

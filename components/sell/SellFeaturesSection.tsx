@@ -30,7 +30,7 @@ export async function SellFeaturesSection({ className }: Props) {
         {icons.map((Icon, i) => (
           <div key={i} className={cardShell}>
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
                 <Icon className="size-6" strokeWidth={1.75} aria-hidden />
               </div>
               <h3 className="min-w-0 flex-1 text-lg font-semibold leading-snug text-gray-900">

@@ -8,8 +8,13 @@
     "start": "node scripts/start.mjs",
     "lint": "eslint",
     "check:i18n": "node scripts/check-i18n-keys.mjs",
+    "report:missing-i18n": "node scripts/report-missing-messages.mjs",
+    "report:i18n-identical-to-ru": "node scripts/list-overlay-identical-to-ru.mjs",
     "generate:landing-spec": "tsx scripts/generate-landing-spec.mts",
     "translate:messages": "tsx scripts/translate-messages.mts",
+    "translate:messages:all": "tsx scripts/translate-messages.mts --locale=all --align",
+    "seed:showcase-ai": "tsx scripts/seed-showcase-ai.mts",
+    "seed:showcase-restore-media": "tsx scripts/seed-showcase-ai.mts --reuse-storage",
     "bot": "python -m bot"
   },
   "dependencies": {
@@ -18,10 +23,12 @@
     "@supabase/supabase-js": "^2.105.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "framer-motion": "^12.38.0",
     "jose": "^6.2.3",
     "lucide-react": "^1.14.0",
     "next": "16.2.6",
     "next-intl": "^4.11.1",
+    "nuqs": "^2.8.9",
     "openai": "^6.37.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -34,12 +41,15 @@
     "@swc/helpers": "0.5.21"
   },
   "devDependencies": {
+    "@fal-ai/client": "^1.10.1",
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.19",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"

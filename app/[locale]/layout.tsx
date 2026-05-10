@@ -27,9 +27,9 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider messages={messages}>
       <DocumentLang />
-      <div className="flex min-h-full flex-col">
+      <div className="flex min-h-dvh flex-1 flex-col">
         <SiteHeader />
-        <main className="flex-1">{children}</main>
+        <main className="min-h-0 flex-1">{children}</main>
         <SiteFooter />
       </div>
     </NextIntlClientProvider>

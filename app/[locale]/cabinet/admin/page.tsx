@@ -1,13 +1,15 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { PhotoBatchModerationView } from "@/components/cabinet/PhotoBatchModerationView";
 import { VendorModerationView } from "@/components/cabinet/VendorModerationView";
+import { getPendingPhotoBatches } from "@/lib/actions/vendor-photo-batch-moderation";
 import { getPendingVendors } from "@/lib/actions/vendor-moderation";
 import { buildPageMetadata } from "@/lib/seo";
 import { fetchVendorsForModeration } from "@/lib/vendor/admin-queue";
 
 type Props = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ filter?: string }>;
+  searchParams: Promise<{ filter?: string; updated?: string }>;
 };
 
 export async function generateMetadata({ params }: Props) {
@@ -28,28 +30,27 @@ export default async function AdminCabinetPage({ params, searchParams }: Props) 
   const filter = sp.filter === "all" ? "all" : "pending";
 
   const t = await getTranslations({ locale, namespace: "Cabinet.admin" });
-  const vendors =
+  const [vendors, pendingPhotoBatches] = await Promise.all([
     filter === "pending"
-      ? await getPendingVendors()
-      : await fetchVendorsForModeration({ filter: "all" });
+      ? getPendingVendors()
+      : fetchVendorsForModeration({ filter: "all" }),
+    getPendingPhotoBatches(),
+  ]);
 
   return (
     <section className="flex flex-col gap-8">
-      <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-          {t("title")}
-        </h1>
-        <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
-          {t("lead")}
-        </p>
-      </header>
+      {sp.updated === "1" ? (
+        <div
+          className="rounded-xl border border-emerald-200/90 bg-emerald-50 px-4 py-3 text-sm text-emerald-950 dark:border-emerald-900/40 dark:bg-emerald-950/35 dark:text-emerald-50"
+          role="status"
+        >
+          {t("vendorSavedBanner")}
+        </div>
+      ) : null}
 
-      <div className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-          {t("moderationTitle")}
-        </h2>
-        <VendorModerationView vendors={vendors} filter={filter} />
-      </div>
+      <PhotoBatchModerationView items={pendingPhotoBatches} locale={locale} />
+
+      <VendorModerationView vendors={vendors} filter={filter} />
     </section>
   );
 }

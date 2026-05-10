@@ -9,6 +9,12 @@ from supabase import Client, create_client
 
 _PHONE_RE = re.compile(r"^\+?\d[\d\s\-()]{7,}$")
 
+# Совпадают с supabase/migrations/20250511120000_showcase_vendors.sql — без реального Telegram.
+_SHOWCASE_VENDOR_IDS = frozenset({
+    "10000000-0000-4000-8000-000000000001",
+    "10000000-0000-4000-8000-000000000002",
+})
+
 
 def validate_phone(raw: str) -> str | None:
     s = " ".join(raw.split())
@@ -59,7 +65,7 @@ class VendorRepository:
     def get_vendor_by_telegram(self, telegram_chat_id: int) -> dict[str, Any] | None:
         res = (
             self._client.table("vendors")
-            .select("id,status,telegram_chat_id")
+            .select("id,status,telegram_chat_id,store_name,language,slug,approved_at")
             .eq("telegram_chat_id", telegram_chat_id)
             .limit(1)
             .execute()
@@ -77,3 +83,89 @@ class VendorRepository:
         if isinstance(data, dict):
             return data
         raise RuntimeError("Unexpected Supabase insert response")
+
+    # --- vendor_photo_batches ---------------------------------------------
+
+    def create_pending_photo_batch(self, vendor_id: str) -> str:
+        """Создаёт новую pending-партию фото для approved-продавца. Возвращает её id."""
+        res = (
+            self._client.table("vendor_photo_batches")
+            .insert({"vendor_id": vendor_id, "status": "pending_moderation"})
+            .execute()
+        )
+        data = res.data
+        if isinstance(data, list) and data and isinstance(data[0], dict):
+            row = data[0]
+        elif isinstance(data, dict):
+            row = data
+        else:
+            raise RuntimeError("Unexpected create_pending_photo_batch response")
+        batch_id = row.get("id")
+        if not isinstance(batch_id, str):
+            raise RuntimeError("create_pending_photo_batch: missing id")
+        return batch_id
+
+    def append_photo_batch_item(
+        self,
+        batch_id: str,
+        photo_url: str,
+        position: int,
+    ) -> None:
+        self._client.table("vendor_photo_batch_items").insert(
+            {
+                "batch_id": batch_id,
+                "photo_url": photo_url,
+                "position": position,
+            }
+        ).execute()
+
+    def delete_photo_batch(self, batch_id: str) -> None:
+        self._client.table("vendor_photo_batches").delete().eq("id", batch_id).execute()
+
+    def list_vendors_due_for_photo_reminder(
+        self,
+        cutoff_iso: str,
+    ) -> list[dict[str, Any]]:
+        """
+        Approved-продавцы, которые «проседают» по свежести:
+          last_photo_reminder_at либо NULL, либо < cutoff_iso.
+        Финальный фильтр по «последней активности» (approved_at vs последняя approved-партия)
+        делаем уже в Python, потому что у Supabase сложно сравнивать с подзапросом.
+        """
+        res = (
+            self._client.table("vendors")
+            .select("id,telegram_chat_id,store_name,language,slug,approved_at,last_photo_reminder_at")
+            .eq("status", "approved")
+            .or_(
+                f"last_photo_reminder_at.is.null,last_photo_reminder_at.lt.{cutoff_iso}"
+            )
+            .execute()
+        )
+        rows = res.data if isinstance(res.data, list) else []
+        return [
+            r
+            for r in rows
+            if isinstance(r, dict) and r.get("id") not in _SHOWCASE_VENDOR_IDS
+        ]
+
+    def latest_approved_photo_batch_at(self, vendor_id: str) -> str | None:
+        res = (
+            self._client.table("vendor_photo_batches")
+            .select("created_at")
+            .eq("vendor_id", vendor_id)
+            .eq("status", "approved")
+            .order("created_at", desc=True)
+            .limit(1)
+            .execute()
+        )
+        data = res.data if isinstance(res.data, list) else []
+        if data and isinstance(data[0], dict):
+            v = data[0].get("created_at")
+            if isinstance(v, str):
+                return v
+        return None
+
+    def mark_photo_reminder_sent(self, vendor_id: str, sent_iso: str) -> None:
+        self._client.table("vendors").update(
+            {"last_photo_reminder_at": sent_iso}
+        ).eq("id", vendor_id).execute()

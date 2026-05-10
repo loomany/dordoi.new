@@ -14,6 +14,7 @@ export type VendorShopSelf = {
   location_row: string | null;
   logo_url: string | null;
   description: string | null;
+  description_detail: string | null;
   categories: string[];
   product_photos: string[];
   container_photo_url: string | null;
@@ -25,6 +26,7 @@ export type VendorShopSelf = {
   instagram_url: string | null;
   telegram_url: string | null;
   samples_available: boolean;
+  samples_note: string | null;
   returns_policy: string | null;
   phone_number: string | null;
   status: VendorModerationStatus;
@@ -41,6 +43,7 @@ function mapRow(row: VendorRowSelf): Omit<VendorShopSelf, "status"> & {
     location_row: row.location_row,
     logo_url: row.logo_url,
     description: row.description,
+    description_detail: row.description_detail,
     categories: Array.isArray(row.categories) ? row.categories : [],
     product_photos: Array.isArray(row.product_photos) ? row.product_photos : [],
     container_photo_url: row.container_photo_url,
@@ -52,6 +55,7 @@ function mapRow(row: VendorRowSelf): Omit<VendorShopSelf, "status"> & {
     instagram_url: row.instagram_url,
     telegram_url: row.telegram_url,
     samples_available: Boolean(row.samples_available),
+    samples_note: row.samples_note,
     returns_policy: row.returns_policy,
     phone_number: row.phone_number,
     language: row.language,

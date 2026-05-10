@@ -1,4 +1,5 @@
-import { Building2, Heart } from "lucide-react";
+import type { ReactNode } from "react";
+import { Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -7,7 +8,7 @@ type Props = {
   statusOfflineLabel: string;
   online: boolean;
   contactWhatsAppLabel: string;
-  saveLabel: string;
+  favorite: ReactNode;
   responseLabel: string;
   deliveryLabel: string;
   whatsappHref: string;
@@ -20,7 +21,7 @@ export function ProviderSidebar({
   statusOfflineLabel,
   online,
   contactWhatsAppLabel,
-  saveLabel,
+  favorite,
   responseLabel,
   deliveryLabel,
   whatsappHref,
@@ -55,13 +56,7 @@ export function ProviderSidebar({
         >
           {contactWhatsAppLabel}
         </a>
-        <button
-          type="button"
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 py-3 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-50"
-        >
-          <Heart className="size-4 text-gray-500" aria-hidden />
-          {saveLabel}
-        </button>
+        {favorite}
       </div>
 
       <div className="mt-8 border-t border-gray-100 pt-6 text-left">
