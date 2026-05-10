@@ -12,6 +12,12 @@
 
   /* Catalog card outline — blue, kept independent from `--primary` brand green. */
   --d-card-accent: oklch(0.55 0.14 250);
+  /** Сплошной цвет рамки (без `color-mix`) — Safari/iOS рисует чётче на Retina. */
+  --d-catalog-card-border: oklch(0.91 0.022 252);
+  --d-catalog-card-border-hover: oklch(0.84 0.045 252);
+  /** На узком экране без «длинного» размытия — иначе тень выглядит как растянутая обводка. */
+  --d-catalog-card-shadow-mobile: 0 1px 2px oklch(0.2 0.02 250 / 0.06),
+    0 1px 3px oklch(0.2 0.02 250 / 0.04);
 
   /* Spacing scale (rem) */
   --d-space-xs: 0.5rem;
