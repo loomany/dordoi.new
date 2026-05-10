@@ -312,7 +312,7 @@ def create_router(settings: "Settings", repo: VendorRepository) -> Router:
         await state.clear()
         await state.set_state(VendorOnboarding.language)
         await message.answer(
-            "Добро пожаловать в Dordoi.\nВыберите язык:",
+            "Добро пожаловать в Dordoi.help.\nВыберите язык:",
             reply_markup=_lang_kb(),
         )
 
