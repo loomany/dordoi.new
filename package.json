@@ -15,6 +15,9 @@
     "translate:messages:all": "tsx scripts/translate-messages.mts --locale=all --align",
     "seed:showcase-ai": "tsx scripts/seed-showcase-ai.mts",
     "seed:showcase-restore-media": "tsx scripts/seed-showcase-ai.mts --reuse-storage",
+    "places:dordoi": "tsx scripts/google-places/fetch-dordoi-filtered-places.ts",
+    "places:import-admin": "tsx scripts/google-places/import-google-places-to-admin.ts",
+    "seed:2gis": "tsx scripts/seed-from-2gis.ts",
     "bot": "python -m bot"
   },
   "dependencies": {

@@ -61,6 +61,11 @@ export function VendorProfileEditForm({
     <form action={formAction} className="flex flex-col gap-8 pb-10">
       <input type="hidden" name="vendor_id" value={shop.id} />
       <input type="hidden" name="locale" value={locale} />
+      <input
+        type="hidden"
+        name="vendor_application_source"
+        value={shop.application_source ?? "telegram"}
+      />
 
       {state?.ok === false ? (
         <div

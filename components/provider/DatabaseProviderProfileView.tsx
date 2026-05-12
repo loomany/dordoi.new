@@ -28,6 +28,10 @@ import {
   formatProviderAddedDate,
 } from "@/lib/provider-dates";
 import { mapVendorCategoryLabelsForLocale } from "@/lib/catalog/map-vendor-category-labels";
+import {
+  ensureHttpUrl,
+  resolveGoogleMapsHref,
+} from "@/lib/catalog/vendor-map-links";
 import { getShowcaseProfileFields } from "@/lib/catalog/showcase-vendor-i18n";
 import { baseUrl } from "@/lib/site";
 
@@ -113,6 +117,12 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
   const telHrefResolved = vendor.phone_number
     ? `tel:${digitsOnly(vendor.phone_number)}`
     : null;
+  const googleMapsPublicHref = resolveGoogleMapsHref(
+    vendor.google_maps_uri,
+    vendor.google_place_id,
+  );
+  const twoGisPublicHref = ensureHttpUrl(vendor.two_gis_uri);
+  const yandexMapsPublicHref = ensureHttpUrl(vendor.yandex_maps_uri);
   const canonical = `${baseUrl()}/${locale}/catalog/${vendor.slug}`;
   const PHOTO_FEED_PAGE_SIZE = 4;
   const initialPhotoBatches = await fetchApprovedVendorPhotoBatches({
@@ -428,6 +438,9 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                 telegramHref={telegramHrefResolved}
                 instagramHref={instagramHrefResolved}
                 telHref={telHrefResolved}
+                googleMapsHref={googleMapsPublicHref}
+                twoGisHref={twoGisPublicHref}
+                yandexMapsHref={yandexMapsPublicHref}
               />
             </aside>
           </div>

@@ -70,7 +70,7 @@ export type VendorProfileDbPatch = {
   min_batch: string;
   payment_methods: string;
   delivery_help: boolean;
-  whatsapp_1: string;
+  whatsapp_1: string | null;
   whatsapp_2: string | null;
   instagram_url: string | null;
   telegram_url: string | null;
@@ -121,6 +121,50 @@ export function parseVendorProfileFormData(formData: FormData): ParsedVendorProf
   }
 
   const wa1 = normWa(v.whatsapp_1);
+  const appSource = String(formData.get("vendor_application_source") ?? "telegram").trim();
+
+  if (appSource === "google_places") {
+    const wa2 = normWa(v.whatsapp_2);
+    let whatsapp_2: string | null = null;
+    if (wa2.length > 0) {
+      if (!isIntlMobileDigits(wa2)) {
+        return {
+          ok: false,
+          message:
+            "Дополнительный WhatsApp: номер не распознан — исправьте или оставьте поле пустым.",
+        };
+      }
+      whatsapp_2 = wa2;
+    }
+
+    const ig = v.instagram_url.trim();
+    const tg = v.telegram_url.trim();
+    const samplesNote = v.samples_note.trim();
+    const descDetail = v.description_detail.trim();
+
+    return {
+      ok: true,
+      locale: v.locale,
+      patch: {
+        store_name: v.store_name,
+        location_row: v.location_row,
+        description: v.description,
+        description_detail: descDetail.length > 0 ? descDetail : null,
+        categories: v.categories,
+        min_batch: v.min_batch,
+        payment_methods: v.payment_methods,
+        delivery_help: v.delivery_help,
+        whatsapp_1: wa1.length > 0 && isIntlMobileDigits(wa1) ? wa1 : null,
+        whatsapp_2,
+        instagram_url: ig.length > 0 ? ig : null,
+        telegram_url: tg.length > 0 ? tg : null,
+        samples_available: v.samples_available,
+        samples_note: samplesNote.length > 0 ? samplesNote : null,
+        returns_policy: v.returns_policy,
+      },
+    };
+  }
+
   if (!isIntlMobileDigits(wa1)) {
     return {
       ok: false,

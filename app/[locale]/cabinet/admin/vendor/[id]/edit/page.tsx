@@ -8,7 +8,7 @@ import { buildPageMetadata } from "@/lib/seo";
 import { fetchVendorApplicationByIdForAdmin } from "@/lib/vendor/admin-queue";
 import type { VendorProfileEditShop } from "@/lib/vendor/vendor-profile-edit-shop";
 import type { VendorApplicationRecord } from "@/lib/vendor/vendor-application";
-import { VENDOR_PENDING_STATUS } from "@/lib/vendor/status";
+import { isVendorPendingQueueStatus } from "@/lib/vendor/status";
 
 type Props = {
   params: Promise<{ locale: string; id: string }>;
@@ -32,7 +32,8 @@ function toProfileEditShop(v: VendorApplicationRecord): VendorProfileEditShop {
     samples_available: v.samples_available,
     samples_note: v.samples_note,
     returns_policy: v.returns_policy,
-    phone_number: v.phone_number.trim() ? v.phone_number.trim() : null,
+    phone_number: v.phone_number?.trim() ? v.phone_number.trim() : null,
+    application_source: v.application_source,
   };
 }
 
@@ -59,7 +60,7 @@ export default async function AdminVendorPendingEditPage({ params }: Props) {
   const t = await getTranslations({ locale, namespace: "Cabinet.admin" });
   const row = await fetchVendorApplicationByIdForAdmin(id);
 
-  if (!row || row.status !== VENDOR_PENDING_STATUS) {
+  if (!row || !isVendorPendingQueueStatus(row.status)) {
     redirect(`/${locale}/cabinet/admin`);
   }
 

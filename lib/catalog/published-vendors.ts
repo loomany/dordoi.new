@@ -25,6 +25,12 @@ export type PublishedVendorRow = {
   whatsapp_2?: string | null;
   instagram_url?: string | null;
   telegram_url?: string | null;
+  /** Ссылка из Google Places (импорт / ручное заполнение). */
+  google_maps_uri?: string | null;
+  google_place_id?: string | null;
+  /** Колонки в БД пока не добавлялись — поля для будущей миграции; в select не входят. */
+  two_gis_uri?: string | null;
+  yandex_maps_uri?: string | null;
   samples_available?: boolean;
   samples_note?: string | null;
   returns_policy?: string | null;
@@ -46,7 +52,7 @@ const PUBLISHED_VENDOR_SELECT_FIELDS =
   "id, slug, store_name, description, categories, logo_url, product_photos, location_row, created_at";
 
 const PUBLISHED_VENDOR_PROFILE_SELECT_FIELDS =
-  "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, samples_available, samples_note, returns_policy, created_at";
+  "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at";
 
 /**
  * Все опубликованные продавцы для публичного каталога.
@@ -154,6 +160,13 @@ function normalizePublishedVendorRow(row: unknown): PublishedVendorRow | null {
     instagram_url:
       typeof r.instagram_url === "string" ? r.instagram_url : null,
     telegram_url: typeof r.telegram_url === "string" ? r.telegram_url : null,
+    google_maps_uri:
+      typeof r.google_maps_uri === "string" ? r.google_maps_uri : null,
+    google_place_id:
+      typeof r.google_place_id === "string" ? r.google_place_id : null,
+    two_gis_uri: typeof r.two_gis_uri === "string" ? r.two_gis_uri : null,
+    yandex_maps_uri:
+      typeof r.yandex_maps_uri === "string" ? r.yandex_maps_uri : null,
     samples_available: Boolean(r.samples_available),
     samples_note: typeof r.samples_note === "string" ? r.samples_note : null,
     returns_policy:

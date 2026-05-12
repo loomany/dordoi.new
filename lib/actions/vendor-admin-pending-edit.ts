@@ -7,7 +7,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth/assert-admin";
 import { routing } from "@/i18n/routing";
 import { parseVendorProfileFormData } from "@/lib/vendor/vendor-profile-form-parse";
-import { VENDOR_PENDING_STATUS } from "@/lib/vendor/status";
+import { isVendorPendingQueueStatus } from "@/lib/vendor/status";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type VendorAdminPendingEditActionState =
@@ -43,10 +43,10 @@ export async function updatePendingVendorProfileAsAdminAction(
     return { ok: false, message: "Заявка не найдена." };
   }
 
-  if (row.status !== VENDOR_PENDING_STATUS) {
+  if (!isVendorPendingQueueStatus(String(row.status))) {
     return {
       ok: false,
-      message: "Редактировать можно только заявку со статусом «на модерации».",
+      message: "Редактировать можно только заявку со статусом «на модерации» или «на проверке».",
     };
   }
 

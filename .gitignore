@@ -52,3 +52,6 @@ bot/__pycache__/
 # Telethon E2E (scripts/e2e_vendor_onboarding_telethon.py)
 scripts/.e2e_telegram.session
 scripts/.e2e_telegram.session-journal
+
+# Google Places offline outputs (npm run places:dordoi)
+data/generated/

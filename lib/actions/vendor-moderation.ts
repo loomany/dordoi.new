@@ -10,7 +10,9 @@ import {
   VENDOR_APPLICATION_SELECT_FIELDS,
 } from "@/lib/vendor/admin-queue";
 import type { VendorApplicationRecord } from "@/lib/vendor/vendor-application";
-import { VENDOR_PENDING_STATUS } from "@/lib/vendor/status";
+import {
+  VENDOR_PENDING_QUEUE_STATUSES,
+} from "@/lib/vendor/status";
 import { normalizePhone } from "@/lib/phone";
 import { routing } from "@/i18n/routing";
 import {
@@ -109,7 +111,7 @@ export async function getPendingVendors(): Promise<VendorApplicationRecord[]> {
   const { data, error } = await admin
     .from("vendors")
     .select(VENDOR_APPLICATION_SELECT_FIELDS)
-    .eq("status", VENDOR_PENDING_STATUS)
+    .in("status", [...VENDOR_PENDING_QUEUE_STATUSES])
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -139,7 +141,7 @@ export async function updateVendorStatus(
   const { data: vendor, error: fetchErr } = await admin
     .from("vendors")
     .select(
-      "id, phone_number, telegram_chat_id, store_name, language, slug",
+      "id, phone_number, telegram_chat_id, store_name, language, slug, application_source",
     )
     .eq("id", vendorId)
     .maybeSingle();
@@ -160,41 +162,46 @@ export async function updateVendorStatus(
   }
 
   if (status === "approved") {
-    // SEO-slug фиксируем при первом approve: стабильный URL во всех локалях.
-    const finalSlug = await ensureVendorSlug(admin, {
-      id: String(vendor.id),
-      slug: typeof vendor.slug === "string" ? vendor.slug : null,
-      store_name:
-        typeof vendor.store_name === "string" ? vendor.store_name : null,
-    });
+    const isGooglePlaces = vendor.application_source === "google_places";
 
-    const phoneDigits = normalizePhone(String(vendor.phone_number ?? ""));
-    if (phoneDigits.length >= 8) {
-      const { error: profileErr } = await admin
-        .from("profiles")
-        .update({ role: "vendor" })
-        .eq("phone", phoneDigits)
-        .neq("role", "admin");
+    if (!isGooglePlaces) {
+      // SEO-slug фиксируем при первом approve: стабильный URL во всех локалях.
+      const finalSlug = await ensureVendorSlug(admin, {
+        id: String(vendor.id),
+        slug: typeof vendor.slug === "string" ? vendor.slug : null,
+        store_name:
+          typeof vendor.store_name === "string" ? vendor.store_name : null,
+      });
 
-      if (profileErr) {
-        console.error("[updateVendorStatus] profile role", profileErr);
-        /* статус в vendors уже approved; профиль можно поправить вручную */
+      const phoneDigits = normalizePhone(String(vendor.phone_number ?? ""));
+      if (phoneDigits.length >= 8) {
+        const { error: profileErr } = await admin
+          .from("profiles")
+          .update({ role: "vendor" })
+          .eq("phone", phoneDigits)
+          .neq("role", "admin");
+
+        if (profileErr) {
+          console.error("[updateVendorStatus] profile role", profileErr);
+          /* статус в vendors уже approved; профиль можно поправить вручную */
+        }
+      }
+
+      const chatId = vendor.telegram_chat_id;
+      if (typeof chatId === "number" && Number.isFinite(chatId)) {
+        void notifyVendorApplicationApproved({
+          telegramChatId: chatId,
+          storeName:
+            typeof vendor.store_name === "string" ? vendor.store_name : null,
+          language:
+            typeof vendor.language === "string" ? vendor.language : null,
+          slug: finalSlug,
+        }).catch((e) =>
+          console.error("[updateVendorStatus] telegram notify", e),
+        );
       }
     }
-
-    const chatId = vendor.telegram_chat_id;
-    if (typeof chatId === "number" && Number.isFinite(chatId)) {
-      void notifyVendorApplicationApproved({
-        telegramChatId: chatId,
-        storeName:
-          typeof vendor.store_name === "string" ? vendor.store_name : null,
-        language:
-          typeof vendor.language === "string" ? vendor.language : null,
-        slug: finalSlug,
-      }).catch((e) =>
-        console.error("[updateVendorStatus] telegram notify", e),
-      );
-    }
+    // google_places: без slug/профиля/Telegram — только смена статуса (ручная публикация позже).
   }
 
   revalidateCabinetAfterModeration();

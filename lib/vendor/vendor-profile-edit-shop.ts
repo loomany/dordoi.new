@@ -17,4 +17,6 @@ export type VendorProfileEditShop = {
   samples_note: string | null;
   returns_policy: string | null;
   phone_number: string | null;
+  /** Для ослабления валидации WhatsApp при сохранении кандидатов Google Places. */
+  application_source?: "telegram" | "google_places";
 };

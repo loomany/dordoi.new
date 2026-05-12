@@ -40,6 +40,10 @@ export type VendorContactActionsProps = {
   telegramHref: string | null;
   instagramHref: string | null;
   telHref: string | null;
+  /** Ссылки на карты; пустые не рендерятся. */
+  googleMapsHref?: string | null;
+  twoGisHref?: string | null;
+  yandexMapsHref?: string | null;
 };
 
 export function VendorContactActions({
@@ -50,6 +54,9 @@ export function VendorContactActions({
   telegramHref,
   instagramHref,
   telHref,
+  googleMapsHref,
+  twoGisHref,
+  yandexMapsHref,
 }: VendorContactActionsProps) {
   const t = useTranslations("Pages.providerProfile");
   const [open, setOpen] = useState(false);
@@ -109,6 +116,32 @@ export function VendorContactActions({
             {t("ctaCall")}
           </button>
         ) : null}
+        {(() => {
+          const mapItems = [
+            { href: googleMapsHref, label: t("openInGoogleMaps") },
+            { href: twoGisHref, label: t("openIn2Gis") },
+            { href: yandexMapsHref, label: t("openInYandexMaps") },
+          ].filter((x) => Boolean(x.href?.trim()));
+          if (mapItems.length === 0) return null;
+          return (
+            <div className="flex flex-col gap-2">
+              <p className="text-center text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                {t("openOnMap")}
+              </p>
+              {mapItems.map(({ href, label }) => (
+                <a
+                  key={href!.trim()}
+                  href={href!.trim()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={pillOutline}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          );
+        })()}
         <div className="lg:hidden">
           <CatalogFavoriteButton
             key={`sidebar:${listingKey}:${initialFavorite}`}

@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import {
   CheckCircle2,
   CreditCard,
+  ExternalLink,
   ImageIcon,
   Layers,
   MapPin,
@@ -22,7 +23,12 @@ import { updateVendorStatus } from "@/lib/actions/vendor-moderation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type { VendorApplicationRecord } from "@/lib/vendor/vendor-application";
-import { VENDOR_PENDING_STATUS } from "@/lib/vendor/status";
+import {
+  formatGooglePlacesIntroTwoLines,
+  parseGooglePlacesDescriptionForAdmin,
+  type GooglePlacesAdminParsedMeta,
+} from "@/lib/vendor/google-places-import-description";
+import { isVendorPendingQueueStatus } from "@/lib/vendor/status";
 import { digitsOnly } from "@/lib/phone";
 import { useVendorEditSeenIds } from "@/hooks/use-vendor-edit-seen";
 import { cn } from "@/lib/utils";
@@ -104,7 +110,7 @@ export function VendorModerationView({ vendors, filter }: Props) {
               vendor={v}
               locale={locale}
               vendorEditSeen={vendorEditSeenIds.has(v.id)}
-              showActions={v.status === VENDOR_PENDING_STATUS}
+              showActions={isVendorPendingQueueStatus(v.status)}
               actionPending={actionPending}
               onApprove={() => moderate(v.id, "approved")}
               onReject={() => moderate(v.id, "rejected")}
@@ -138,6 +144,16 @@ function EmptyPendingIllustration() {
   );
 }
 
+function googlePlacesFoundViaLabel(
+  kind: GooglePlacesAdminParsedMeta["foundViaKind"],
+  tr: (key: string) => string,
+): string | null {
+  if (kind === "nearby") return tr("googlePlacesFoundNearby");
+  if (kind === "text") return tr("googlePlacesFoundText");
+  if (kind === "both") return tr("googlePlacesFoundBoth");
+  return null;
+}
+
 function VendorApplicationCard({
   vendor: v,
   locale,
@@ -157,6 +173,41 @@ function VendorApplicationCard({
 }) {
   const t = useTranslations("Cabinet.admin");
   const photos = v.product_photos ?? [];
+  const isGooglePlaces = v.application_source === "google_places";
+  const hasAboutSection =
+    Boolean(v.description?.trim()) ||
+    Boolean(v.description_detail?.trim()) ||
+    Boolean(v.moderation_note?.trim());
+  const googleParse = isGooglePlaces
+    ? parseGooglePlacesDescriptionForAdmin(v.description)
+    : null;
+  const introRaw = (
+    googleParse?.introBeforeJson?.trim() ||
+    v.moderation_note?.trim() ||
+    ""
+  ).trim();
+  const introFormatted = introRaw
+    ? formatGooglePlacesIntroTwoLines(introRaw)
+    : "";
+  const hasJsonMarker = Boolean((v.description ?? "").includes("\n\n{"));
+  const googleMetaParseFailed =
+    Boolean(isGooglePlaces && hasJsonMarker && !googleParse?.meta);
+  const googleMeta = googleParse?.meta ?? null;
+  const foundViaText = googleMeta
+    ? googlePlacesFoundViaLabel(googleMeta.foundViaKind, t)
+    : null;
+  const showGoogleMetaCard =
+    Boolean(googleMeta) &&
+    Boolean(
+      googleMeta!.categoryDisplay ||
+        googleMeta!.primaryType ||
+        googleMeta!.typesCompact ||
+        foundViaText ||
+        googleMeta!.distanceMetersRounded != null ||
+        v.location_row?.trim() ||
+        googleMeta!.coordsFormatted ||
+        v.status === "pending_review",
+    );
 
   return (
     <article
@@ -178,13 +229,22 @@ function VendorApplicationCard({
             ) : null}
           </div>
           <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-            {vendorEditSeen ? (
+            {v.application_source === "google_places" ? (
+              <>
+                <span className="rounded-full border border-sky-300 bg-sky-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sky-950 dark:border-sky-700 dark:bg-sky-950/45 dark:text-sky-100">
+                  {t("reviewBadgeGooglePlaces")}
+                </span>
+                <span className="rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-950 dark:border-amber-700 dark:bg-amber-950/45 dark:text-amber-100">
+                  {t("reviewBadgeManualCheck")}
+                </span>
+              </>
+            ) : vendorEditSeen ? (
               <span
                 className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold tabular-nums text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-100"
                 title={v.id}
               >
                 {t("reviewBadgeApplicationNo", {
-                  no: String(v.telegram_chat_id),
+                  no: String(v.telegram_chat_id ?? ""),
                 })}
               </span>
             ) : (
@@ -197,12 +257,12 @@ function VendorApplicationCard({
                   title={v.id}
                 >
                   {t("reviewBadgeApplicationNo", {
-                    no: String(v.telegram_chat_id),
+                    no: String(v.telegram_chat_id ?? ""),
                   })}
                 </span>
               </>
             )}
-            {v.status !== VENDOR_PENDING_STATUS ? (
+            {v.status === "approved" || v.status === "rejected" ? (
               <span
                 className={cn(
                   "rounded-full px-2.5 py-1 text-xs font-medium",
@@ -216,6 +276,10 @@ function VendorApplicationCard({
                   ? t("statusApproved")
                   : t("statusRejected")}
               </span>
+            ) : v.status === "pending_review" ? (
+              <span className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-900 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-100">
+                {t("statusPendingReview")}
+              </span>
             ) : null}
           </div>
         </div>
@@ -225,7 +289,138 @@ function VendorApplicationCard({
         </p>
       </header>
 
-      {v.description?.trim() || v.description_detail?.trim() ? (
+      {v.application_source === "google_places" ? (
+        <div className="rounded-xl border border-sky-200/90 bg-sky-50/80 px-4 py-3 text-sm leading-relaxed text-sky-950 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-50">
+          <p>{t("googlePlacesAutoFoundHint")}</p>
+          {googleMapsHref(v) ? (
+            <p className="mt-2">
+              <a
+                href={googleMapsHref(v)!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 font-medium text-sky-800 underline-offset-2 hover:underline dark:text-sky-200"
+              >
+                <ExternalLink className="size-4 shrink-0" aria-hidden />
+                {t("openInGoogleMaps")}
+              </a>
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {isGooglePlaces && hasAboutSection ? (
+        <section className="flex flex-col gap-2">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("cardDescription")}
+          </h4>
+          {introFormatted ? (
+            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+              {introFormatted}
+            </p>
+          ) : null}
+          {googleMetaParseFailed ? (
+            <p className="text-sm text-muted-foreground">
+              {t("googlePlacesMetaParseFailed")}
+            </p>
+          ) : null}
+          {showGoogleMetaCard && googleMeta ? (
+            <div className="rounded-lg border border-zinc-200/90 bg-zinc-50/90 px-3 py-3 dark:border-zinc-700 dark:bg-zinc-900/40">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {t("googlePlacesDataTitle")}
+              </p>
+              <dl className="mt-2 space-y-2 text-sm text-zinc-800 dark:text-zinc-200">
+                {googleMeta.categoryDisplay ? (
+                  <div className="grid gap-0.5 sm:grid-cols-[minmax(0,10.5rem)_1fr] sm:gap-x-2">
+                    <dt className="text-muted-foreground">
+                      {t("googlePlacesLabelCategory")}
+                    </dt>
+                    <dd className="min-w-0 font-medium break-words">
+                      {googleMeta.categoryDisplay}
+                    </dd>
+                  </div>
+                ) : null}
+                {googleMeta.primaryType ? (
+                  <div className="grid gap-0.5 sm:grid-cols-[minmax(0,10.5rem)_1fr] sm:gap-x-2">
+                    <dt className="text-muted-foreground">
+                      {t("googlePlacesLabelPrimaryType")}
+                    </dt>
+                    <dd className="min-w-0 font-medium break-words">
+                      {googleMeta.primaryType}
+                    </dd>
+                  </div>
+                ) : null}
+                {googleMeta.typesCompact ? (
+                  <div className="grid gap-0.5 sm:grid-cols-[minmax(0,10.5rem)_1fr] sm:gap-x-2">
+                    <dt className="text-muted-foreground">
+                      {t("googlePlacesLabelTypes")}
+                    </dt>
+                    <dd className="min-w-0 font-medium break-words">
+                      {googleMeta.typesCompact}
+                    </dd>
+                  </div>
+                ) : null}
+                {foundViaText ? (
+                  <div className="grid gap-0.5 sm:grid-cols-[minmax(0,10.5rem)_1fr] sm:gap-x-2">
+                    <dt className="text-muted-foreground">
+                      {t("googlePlacesLabelFoundVia")}
+                    </dt>
+                    <dd className="min-w-0 font-medium break-words">
+                      {foundViaText}
+                    </dd>
+                  </div>
+                ) : null}
+                {googleMeta.distanceMetersRounded != null ? (
+                  <div className="grid gap-0.5 sm:grid-cols-[minmax(0,10.5rem)_1fr] sm:gap-x-2">
+                    <dt className="text-muted-foreground">
+                      {t("googlePlacesLabelDistance")}
+                    </dt>
+                    <dd className="min-w-0 font-medium">
+                      {t("googlePlacesDistanceMeters", {
+                        meters: googleMeta.distanceMetersRounded,
+                      })}
+                    </dd>
+                  </div>
+                ) : null}
+                {v.location_row?.trim() ? (
+                  <div className="grid gap-0.5 sm:grid-cols-[minmax(0,10.5rem)_1fr] sm:gap-x-2">
+                    <dt className="text-muted-foreground">
+                      {t("googlePlacesLabelAddress")}
+                    </dt>
+                    <dd className="min-w-0 font-medium break-words">
+                      {v.location_row.trim()}
+                    </dd>
+                  </div>
+                ) : null}
+                {googleMeta.coordsFormatted ? (
+                  <div className="grid gap-0.5 sm:grid-cols-[minmax(0,10.5rem)_1fr] sm:gap-x-2">
+                    <dt className="text-muted-foreground">
+                      {t("googlePlacesLabelCoords")}
+                    </dt>
+                    <dd className="min-w-0 font-medium break-all">
+                      {googleMeta.coordsFormatted}
+                    </dd>
+                  </div>
+                ) : null}
+                {v.status === "pending_review" ? (
+                  <div className="grid gap-0.5 sm:grid-cols-[minmax(0,10.5rem)_1fr] sm:gap-x-2">
+                    <dt className="text-muted-foreground">
+                      {t("googlePlacesLabelStatus")}
+                    </dt>
+                    <dd className="min-w-0 font-medium">
+                      {t("googlePlacesStatusNeedsReview")}
+                    </dd>
+                  </div>
+                ) : null}
+              </dl>
+            </div>
+          ) : null}
+          {v.description_detail?.trim() ? (
+            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-zinc-800 dark:text-zinc-200">
+              {v.description_detail.trim()}
+            </p>
+          ) : null}
+        </section>
+      ) : v.description?.trim() || v.description_detail?.trim() ? (
         <section className="flex flex-col gap-2">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {t("cardDescription")}
@@ -261,15 +456,22 @@ function VendorApplicationCard({
           {t("cardContacts")}
         </h4>
         <ul className="flex flex-col gap-2 text-sm">
-          <li className="flex items-center gap-2">
-            <Phone className="size-4 shrink-0 text-zinc-400" />
-            <a
-              href={`tel:${digitsOnly(v.phone_number)}`}
-              className="font-medium text-emerald-700 underline-offset-2 hover:underline dark:text-emerald-400"
-            >
-              {v.phone_number}
-            </a>
-          </li>
+          {v.phone_number?.trim() ? (
+            <li className="flex items-center gap-2">
+              <Phone className="size-4 shrink-0 text-zinc-400" />
+              <a
+                href={`tel:${digitsOnly(v.phone_number)}`}
+                className="font-medium text-emerald-700 underline-offset-2 hover:underline dark:text-emerald-400"
+              >
+                {v.phone_number}
+              </a>
+            </li>
+          ) : v.application_source === "google_places" ? (
+            <li className="flex items-start gap-2 text-muted-foreground">
+              <Phone className="mt-0.5 size-4 shrink-0 text-zinc-400" />
+              <span>{t("googlePlacesNoPhoneYet")}</span>
+            </li>
+          ) : null}
           {v.whatsapp_1 ? (
             <li className="flex items-center gap-2">
               <span className="text-xs font-medium text-muted-foreground">
@@ -534,4 +736,14 @@ function formatDate(iso: string, localeTag: string): string {
   } catch {
     return iso;
   }
+}
+
+function googleMapsHref(v: VendorApplicationRecord): string | null {
+  const u = v.google_maps_uri?.trim();
+  if (u) return u;
+  const pid = v.google_place_id?.trim();
+  if (pid) {
+    return `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(pid)}`;
+  }
+  return null;
 }
