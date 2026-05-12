@@ -1,0 +1,16 @@
+# Nixpacks overlay for Railway **bot** service only.
+# Point Railway Bot service variable: NIXPACKS_CONFIG_FILE=bot/nixpacks.toml
+# Do NOT set on Site service — keeps Next.js build unchanged.
+#
+# Merges with auto-detected plan (Node from root package.json) via "..." so Python + pip are added.
+
+providers = ["...", "python"]
+
+[phases.setup]
+nixPkgs = ["...", "python311"]
+
+[phases.install]
+cmds = ["...", "pip install -r bot/requirements.txt"]
+
+[start]
+cmd = "python3 -m bot"
