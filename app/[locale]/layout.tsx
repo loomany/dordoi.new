@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { DocumentLang } from "@/components/layout/DocumentLang";
+import { DordoiAnalyticsTracker } from "@/components/dordoi/DordoiAnalyticsTracker";
+import type { DordoiLocale } from "@/lib/dordoi/analytics/types";
 import { routing } from "@/i18n/routing";
 
 type Props = {
@@ -27,6 +29,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider messages={messages}>
       <DocumentLang />
+      <DordoiAnalyticsTracker locale={locale as DordoiLocale} />
       <div className="flex min-h-dvh flex-1 flex-col">
         <SiteHeader />
         <main className="min-h-0 flex-1">{children}</main>
