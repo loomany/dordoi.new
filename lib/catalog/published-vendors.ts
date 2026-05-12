@@ -35,6 +35,10 @@ export type PublishedVendorRow = {
   samples_note?: string | null;
   returns_policy?: string | null;
   created_at: string;
+  /** Подписчики Instagram и др. */
+  followers_count?: number | null;
+  /** URL видео (Instagram Reels и др.), до 15. */
+  product_videos?: string[];
 };
 
 /** Публичный каталог не показывает эти витрины (нормализация: trim + lower case). */
@@ -52,7 +56,7 @@ const PUBLISHED_VENDOR_SELECT_FIELDS =
   "id, slug, store_name, description, categories, logo_url, product_photos, location_row, created_at";
 
 const PUBLISHED_VENDOR_PROFILE_SELECT_FIELDS =
-  "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at";
+  "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at, followers_count";
 
 /**
  * Все опубликованные продавцы для публичного каталога.
@@ -137,6 +141,9 @@ function normalizePublishedVendorRow(row: unknown): PublishedVendorRow | null {
   const photos = Array.isArray(r.product_photos)
     ? (r.product_photos as unknown[]).filter((x): x is string => typeof x === "string")
     : [];
+  const videos = Array.isArray(r.product_videos)
+    ? (r.product_videos as unknown[]).filter((x): x is string => typeof x === "string")
+    : [];
   return {
     id,
     slug,
@@ -149,6 +156,7 @@ function normalizePublishedVendorRow(row: unknown): PublishedVendorRow | null {
     container_photo_url:
       typeof r.container_photo_url === "string" ? r.container_photo_url : null,
     product_photos: photos,
+    product_videos: videos,
     location_row: typeof r.location_row === "string" ? r.location_row : null,
     phone_number: typeof r.phone_number === "string" ? r.phone_number : null,
     min_batch: typeof r.min_batch === "string" ? r.min_batch : null,
@@ -171,6 +179,10 @@ function normalizePublishedVendorRow(row: unknown): PublishedVendorRow | null {
     samples_note: typeof r.samples_note === "string" ? r.samples_note : null,
     returns_policy:
       typeof r.returns_policy === "string" ? r.returns_policy : null,
+    followers_count:
+      typeof r.followers_count === "number" && Number.isFinite(r.followers_count)
+        ? r.followers_count
+        : null,
     created_at:
       typeof r.created_at === "string" ? r.created_at : new Date().toISOString(),
   };

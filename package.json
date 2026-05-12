@@ -18,6 +18,7 @@
     "places:dordoi": "tsx scripts/google-places/fetch-dordoi-filtered-places.ts",
     "places:import-admin": "tsx scripts/google-places/import-google-places-to-admin.ts",
     "seed:2gis": "tsx scripts/seed-from-2gis.ts",
+    "sync:instagram": "tsx scripts/sync-instagram-profiles.ts",
     "bot": "python -m bot"
   },
   "dependencies": {

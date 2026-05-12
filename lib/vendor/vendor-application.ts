@@ -39,4 +39,8 @@ export type VendorApplicationRecord = {
   moderation_note: string | null;
   quality_flags: string[] | null;
   quality_note: string | null;
+  /** Подписчики Instagram (скрипт sync-instagram-profiles). */
+  followers_count?: number | null;
+  /** URL видео постов (до 15). */
+  product_videos?: string[] | null;
 };

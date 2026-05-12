@@ -12,7 +12,7 @@ export type AdminVendorRow = VendorApplicationRecord;
 
 /** Единый список полей для карточки модерации и списков. */
 export const VENDOR_APPLICATION_SELECT_FIELDS =
-  "id, store_name, phone_number, status, language, location_row, description, description_detail, categories, logo_url, container_photo_url, product_photos, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, whatsapp_1, whatsapp_2, instagram_url, telegram_url, created_at, telegram_chat_id, application_source, google_place_id, google_maps_uri, moderation_note, quality_flags, quality_note";
+  "id, store_name, phone_number, status, language, location_row, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, whatsapp_1, whatsapp_2, instagram_url, telegram_url, created_at, telegram_chat_id, application_source, google_place_id, google_maps_uri, moderation_note, quality_flags, quality_note, followers_count";
 
 export async function fetchVendorsForModeration(opts: {
   filter: "pending" | "all";
@@ -70,6 +70,7 @@ export function normalizeVendorRows(
   return data.map((row) => {
     const r = row as Record<string, unknown>;
     const photos = r.product_photos;
+    const videos = r.product_videos;
     const cats = r.categories;
     const desc = r.description;
     const descDetail = r.description_detail;
@@ -97,6 +98,11 @@ export function normalizeVendorRows(
         ? (cats as unknown[]).filter((x): x is string => typeof x === "string")
         : [],
       product_photos: Array.isArray(photos) ? (photos as string[]) : [],
+      product_videos: Array.isArray(videos) ? (videos as string[]) : [],
+      followers_count:
+        typeof r.followers_count === "number" && Number.isFinite(r.followers_count)
+          ? r.followers_count
+          : null,
       delivery_help: Boolean(r.delivery_help),
       samples_available: Boolean(r.samples_available),
     } as VendorApplicationRecord;
