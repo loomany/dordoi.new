@@ -31,6 +31,7 @@ import { mapVendorCategoryLabelsForLocale } from "@/lib/catalog/map-vendor-categ
 import {
   ensureHttpUrl,
   resolveGoogleMapsHref,
+  twoGisFirmPageUrlFromGooglePlaceId,
 } from "@/lib/catalog/vendor-map-links";
 import { getShowcaseProfileFields } from "@/lib/catalog/showcase-vendor-i18n";
 import { baseUrl } from "@/lib/site";
@@ -121,7 +122,9 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
     vendor.google_maps_uri,
     vendor.google_place_id,
   );
-  const twoGisPublicHref = ensureHttpUrl(vendor.two_gis_uri);
+  const twoGisPublicHref =
+    ensureHttpUrl(vendor.two_gis_uri) ??
+    twoGisFirmPageUrlFromGooglePlaceId(vendor.google_place_id);
   const yandexMapsPublicHref = ensureHttpUrl(vendor.yandex_maps_uri);
   const canonical = `${baseUrl()}/${locale}/catalog/${vendor.slug}`;
   const PHOTO_FEED_PAGE_SIZE = 4;

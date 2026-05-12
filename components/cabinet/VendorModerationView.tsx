@@ -32,6 +32,11 @@ import { isVendorPendingQueueStatus } from "@/lib/vendor/status";
 import { digitsOnly } from "@/lib/phone";
 import { useVendorEditSeenIds } from "@/hooks/use-vendor-edit-seen";
 import { cn } from "@/lib/utils";
+import {
+  parseTwoGisFirmIdFromGooglePlaceId,
+  resolveGoogleMapsHref,
+  twoGisFirmPageUrlFromGooglePlaceId,
+} from "@/lib/catalog/vendor-map-links";
 
 type Props = {
   vendors: VendorApplicationRecord[];
@@ -174,6 +179,7 @@ function VendorApplicationCard({
   const t = useTranslations("Cabinet.admin");
   const photos = v.product_photos ?? [];
   const isGooglePlaces = v.application_source === "google_places";
+  const isTwoGisImport = Boolean(parseTwoGisFirmIdFromGooglePlaceId(v.google_place_id));
   const hasAboutSection =
     Boolean(v.description?.trim()) ||
     Boolean(v.description_detail?.trim()) ||
@@ -231,8 +237,17 @@ function VendorApplicationCard({
           <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
             {v.application_source === "google_places" ? (
               <>
-                <span className="rounded-full border border-sky-300 bg-sky-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sky-950 dark:border-sky-700 dark:bg-sky-950/45 dark:text-sky-100">
-                  {t("reviewBadgeGooglePlaces")}
+                <span
+                  className={cn(
+                    "rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+                    isTwoGisImport
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-950 dark:border-emerald-700 dark:bg-emerald-950/45 dark:text-emerald-100"
+                      : "border-sky-300 bg-sky-50 text-sky-950 dark:border-sky-700 dark:bg-sky-950/45 dark:text-sky-100",
+                  )}
+                >
+                  {isTwoGisImport
+                    ? t("reviewBadgeTwoGis")
+                    : t("reviewBadgeGooglePlaces")}
                 </span>
                 <span className="rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-950 dark:border-amber-700 dark:bg-amber-950/45 dark:text-amber-100">
                   {t("reviewBadgeManualCheck")}
@@ -290,22 +305,7 @@ function VendorApplicationCard({
       </header>
 
       {v.application_source === "google_places" ? (
-        <div className="rounded-xl border border-sky-200/90 bg-sky-50/80 px-4 py-3 text-sm leading-relaxed text-sky-950 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-50">
-          <p>{t("googlePlacesAutoFoundHint")}</p>
-          {googleMapsHref(v) ? (
-            <p className="mt-2">
-              <a
-                href={googleMapsHref(v)!}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 font-medium text-sky-800 underline-offset-2 hover:underline dark:text-sky-200"
-              >
-                <ExternalLink className="size-4 shrink-0" aria-hidden />
-                {t("openInGoogleMaps")}
-              </a>
-            </p>
-          ) : null}
-        </div>
+        <GooglePlacesReviewHint v={v} t={t} />
       ) : null}
 
       {isGooglePlaces && hasAboutSection ? (
@@ -326,7 +326,11 @@ function VendorApplicationCard({
           {showGoogleMetaCard && googleMeta ? (
             <div className="rounded-lg border border-zinc-200/90 bg-zinc-50/90 px-3 py-3 dark:border-zinc-700 dark:bg-zinc-900/40">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {t("googlePlacesDataTitle")}
+                {t(
+                  isTwoGisImport
+                    ? "twoGisDataTitle"
+                    : "googlePlacesDataTitle",
+                )}
               </p>
               <dl className="mt-2 space-y-2 text-sm text-zinc-800 dark:text-zinc-200">
                 {googleMeta.categoryDisplay ? (
@@ -700,6 +704,39 @@ function MediaSlot({
   );
 }
 
+/** Подсказка для кандидатов из импорта (Google Places или 2GIS в том же `application_source`). */
+function GooglePlacesReviewHint({
+  v,
+  t,
+}: {
+  v: VendorApplicationRecord;
+  t: (key: string) => string;
+}) {
+  const twoGis = twoGisFirmPageUrlFromGooglePlaceId(v.google_place_id);
+  const google = resolveGoogleMapsHref(v.google_maps_uri, v.google_place_id);
+  const href = twoGis ?? google;
+  if (!href) return null;
+
+  return (
+    <div className="rounded-xl border border-sky-200/90 bg-sky-50/80 px-4 py-3 text-sm leading-relaxed text-sky-950 dark:border-sky-900/50 dark:bg-sky-950/30 dark:text-sky-50">
+      <p>
+        {twoGis ? t("twoGisAutoFoundHint") : t("googlePlacesAutoFoundHint")}
+      </p>
+      <p className="mt-2">
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 font-medium text-sky-800 underline-offset-2 hover:underline dark:text-sky-200"
+        >
+          <ExternalLink className="size-4 shrink-0" aria-hidden />
+          {twoGis ? t("openIn2Gis") : t("openInGoogleMaps")}
+        </a>
+      </p>
+    </div>
+  );
+}
+
 function waHref(raw: string): string {
   const d = digitsOnly(raw);
   return d ? `https://wa.me/${d}` : ensureHttp(raw);
@@ -736,14 +773,4 @@ function formatDate(iso: string, localeTag: string): string {
   } catch {
     return iso;
   }
-}
-
-function googleMapsHref(v: VendorApplicationRecord): string | null {
-  const u = v.google_maps_uri?.trim();
-  if (u) return u;
-  const pid = v.google_place_id?.trim();
-  if (pid) {
-    return `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(pid)}`;
-  }
-  return null;
 }
