@@ -204,6 +204,9 @@ export async function CatalogBrowseLayout({
                   {t("title")}
                 </h1>
                 <p className="mt-3 max-w-3xl text-gray-500">{t("subtitle")}</p>
+                <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-500">
+                  {t("intro")}
+                </p>
                 <p className="mt-4 text-sm text-gray-400">{statsLine}</p>
               </header>
 

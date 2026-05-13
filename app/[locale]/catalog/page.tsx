@@ -1,7 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { createLoader } from "nuqs/server";
 import { CatalogBrowseLayout } from "@/components/catalog/CatalogBrowseLayout";
-import { buildSeoMetadata } from "@/lib/build-seo";
+import { buildCatalogPageMetadata } from "@/lib/catalog/catalog-page-seo";
 import { normalizeCatalogCategorySlugs } from "@/lib/catalog/catalog-category-filter";
 import { catalogQueryParsers } from "@/lib/catalog/catalog-query-parsers";
 
@@ -15,9 +15,10 @@ type Props = {
   searchParams: Promise<{ page?: string; compare?: string; cat?: string }>;
 };
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params, searchParams }: Props) {
   const { locale } = await params;
-  return buildSeoMetadata(locale, "/catalog", "Seo.catalog");
+  const sp = await searchParams;
+  return buildCatalogPageMetadata(locale, sp);
 }
 
 export default async function CatalogPage({ params, searchParams }: Props) {

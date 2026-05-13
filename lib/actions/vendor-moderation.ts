@@ -40,6 +40,7 @@ type VendorSlugRow = {
   id: string;
   slug: string | null;
   store_name: string | null;
+  categories: string[] | null;
 };
 
 /**
@@ -57,10 +58,15 @@ async function ensureVendorSlug(
   }
 
   const candidates = [
-    buildVendorSlug({ storeName: vendor.store_name, vendorId: vendor.id }),
+    buildVendorSlug({
+      storeName: vendor.store_name,
+      vendorId: vendor.id,
+      categories: vendor.categories,
+    }),
     buildVendorSlugWithIdSuffix({
       storeName: vendor.store_name,
       vendorId: vendor.id,
+      categories: vendor.categories,
     }),
     `store-${vendor.id.replace(/-/g, "").slice(0, 8)}`,
   ];
@@ -174,6 +180,9 @@ export async function updateVendorStatus(
         slug: typeof vendor.slug === "string" ? vendor.slug : null,
         store_name:
           typeof vendor.store_name === "string" ? vendor.store_name : null,
+        categories: Array.isArray(vendor.categories)
+          ? vendor.categories.filter((c): c is string => typeof c === "string")
+          : null,
       });
 
       const phoneDigits = normalizePhone(String(vendor.phone_number ?? ""));

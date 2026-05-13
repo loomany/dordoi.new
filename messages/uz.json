@@ -81,16 +81,16 @@
       "description": "Tovarlar, yetkazib beruvchilar va buyerlar bir joyda. MDH B2B vositasi."
     },
     "catalog": {
-      "title": "Kategoriyalar katalogi — Dordoi.help",
-      "description": "Dordoy ulgurji tovarlari: kiyim, poyabzal, matolar."
+      "title": "Dordoy yetkazib beruvchilar katalogi — ulgurji sotuvchilar, filtrlar va qidiruv",
+      "description": "Dordoy bozori yetkazib beruvchilar katalogi: ulgurji kiyim, poyabzal, sumka va to‘qimachilik sotuvchilari. Bishkekdan tovar xarid qilish uchun yetkazib beruvchi, buyer yoki kargo toping."
     },
     "sell": {
       "title": "Optom sotish — Dordoi.help",
       "description": "Dordoy bozoridan ulgurji savdo: vitrina, arizalar va xaridor kontaktlari qatorlarni kezmasdan."
     },
     "suppliers": {
-      "title": "Yetkazib beruvchilarga — Dordoi.help",
-      "description": "Onlayn vitrina va arizalar Dordoy sotuvchilari uchun."
+      "title": "Dordoy yetkazib beruvchilari — bozor ulgurji sotuvchilari",
+      "description": "Dordoy bozori yetkazib beruvchilarini toping: ulgurji kiyim, poyabzal, sumka va to‘qimachilik. Katalog xaridorlarga yetkazib beruvchi, buyer yoki kargo topishga yordam beradi."
     },
     "buyers": {
       "title": "Dordoyda buyerni topish — Dordoi.help",
@@ -279,9 +279,28 @@
       }
     },
     "suppliers": {
-      "h1": "Yetkazib beruvchilarga",
-      "h2": "Mijozlar va onlayn vitrina",
-      "body": "Katalogni joylashtiring va xaridorlar hamda buyerlardan arizalar oling. Platforma klassik marketpleyslardagi majburiy komissiyasiz vitrina vositalarini beradi — kelishuv shartlarini o‘zingiz belgilaysiz."
+      "h1": "Dordoy bozori yetkazib beruvchilari — ulgurji sotuvchilar va kontaktlar",
+      "h2": "",
+      "body": "Dordoi.help-da Dordoy bozorining ulgurji sotuvchilari jamlangan: kiyim, poyabzal, sumka, to‘qimachilik va boshqa toifalar. MDH xaridorlari uchun toifa, qator va do‘kon nomi bo‘yicha qidirish qulay.",
+      "ctaCatalog": "Yetkazib beruvchilar katalogini ochish",
+      "sellerBlockTitle": "Ulgurji sotmoqchimisiz?",
+      "sellerBlockBody": "Dordoi.help-da vitrina joylashtiring va xaridorlar hamda buyerlardan arizalar oling.",
+      "ctaSell": "Sotuvchi bo‘lish",
+      "faqTitle": "Tez-tez so‘raladigan savollar",
+      "faq": {
+        "0": {
+          "question": "Dordoy bozorida yetkazib beruvchini qanday topish mumkin?",
+          "answer": "Katalogni oching, toifani tanlang yoki nom va qator bo‘yicha qidiring. Do‘kon profilida tavsif, foto va Dordoi.help orqali aloqa mavjud."
+        },
+        "1": {
+          "question": "Bishkekdan yetkazib berish mumkinmi?",
+          "answer": "Ko‘p sotuvchilar yuborishga yordam beradi, buyerlar bo‘limida xarid va yetkazib berishni tashkil qiluvchi agent topish mumkin."
+        },
+        "2": {
+          "question": "Men sotuvchiman — katalogga qanday kiraman?",
+          "answer": "«Ulgurji sotish» sahifasida vitrinani rasmiylashtiring: moderatsiyadan so‘ng do‘koningiz katalogda paydo bo‘ladi."
+        }
+      }
     },
     "buyers": {
       "h1": "Buyerni topish",
@@ -496,8 +515,9 @@
       "breadcrumbNav": "Bo'lim bo'yicha navigatsiya",
       "breadcrumbHome": "Asosiy",
       "breadcrumbCatalog": "Katalog",
-      "title": "To'g'ridan-to'g'ri ulgurji etkazib beruvchilar",
-      "subtitle": "Ishonchli fabrikalar, ustaxonalar va Dordoy bozoridagi savdo nuqtalarini toping. Sotuvchilar bilan to'g'ridan-to'g'ri bog'laning, qo'shimcha narx va vositachilarsiz.",
+      "title": "Dordoy bozori ulgurji yetkazib beruvchilar katalogi",
+      "subtitle": "Dordoy bozoridagi tekshirilgan fabrikalar, ustaxona va savdo nuqtalarini toping. Sotuvchilar bilan Dordoi.help xizmati orqali bog'laning.",
+      "intro": "Dordoi.help katalogi Bishkekdagi Dordoy bozorining ulgurji sotuvchilarini bir joyga jamlaydi: kiyim, poyabzal, sumka, to'qimachilik va boshqa toifalar. Yetkazib beruvchini nom, qator va toifa bo'yicha qidiring, vitrinalarni solishtiring va do'kon profilini oching.",
       "stats": "{from}–{to} dan {total} ta etkazib beruvchilar ko'rsatilmoqda",
       "featuredBuyerAria": "Katalogdagi bayer kartochkasi",
       "featuredBuyerBadge": "Bayer",
@@ -651,6 +671,7 @@
       "ctaTelegram": "Telegram",
       "ctaInstagram": "Instagram",
       "ctaCall": "Qo'ng'iroq qilish",
+      "contactLockedMessage": "Yetkazib beruvchi kontakti Dordoi.help xizmati orqali mavjud",
       "openOnMap": "Xaritada ochish",
       "openInGoogleMaps": "Google Maps",
       "openIn2Gis": "2GIS",

@@ -8,7 +8,6 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
 import type { CatalogLeadVideo } from "@/lib/catalog/catalog-lead-video";
-import { ensureHttpUrl } from "@/lib/catalog/vendor-map-links";
 import type { ParsedVendorCardData } from "@/lib/catalog/vendor-card-display";
 import { CATALOG_CARD_COLLAPSED_DESCRIPTION_MAX_CHARS } from "@/lib/vendor/vendor-field-limits";
 import { cn } from "@/lib/utils";
@@ -83,26 +82,6 @@ function truncateForCompact(text: string): string {
   return truncateAtChars(text, COMPACT_DESC_MAX);
 }
 
-/** Линейная иконка Instagram для компактной кнопки в карточке каталога. */
-function CatalogInstagramGlyph({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-    </svg>
-  );
-}
-
 /** Карточка поставщика в каталоге: компактный вид; при раскрытии — карусель фото под CTA. */
 export function CatalogCard({
   display,
@@ -132,8 +111,6 @@ export function CatalogCard({
 
   const isWholesaleSupplier =
     display.tradeType === "wholesale" || display.tradeType === "hybrid";
-
-  const instagramHref = ensureHttpUrl(display.instagramUrl ?? undefined);
 
   const canCollapse =
     hasMedia && Boolean(collapseLabel) && Boolean(expandLabel);
@@ -323,34 +300,7 @@ export function CatalogCard({
       </div>
     ) : null;
 
-  const instagramButton =
-    instagramHref !== null ? (
-      <button
-        type="button"
-        onPointerDown={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          if (href) {
-            router.push(href);
-          } else if (instagramHref) {
-            window.open(instagramHref, "_blank", "noopener,noreferrer");
-          }
-        }}
-        aria-label={href ? tCard("profileCtaAria") : tCard("instagramAria")}
-        title={href ? tCard("profileCtaAria") : tCard("instagramAria")}
-        className={cn(
-          "touch-manipulation shrink-0 rounded-full p-px shadow-sm outline-none transition-[transform,box-shadow]",
-          "bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af]",
-          "hover:shadow-md active:scale-[0.97]",
-          "focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-card",
-        )}
-      >
-        <span className="flex size-8 items-center justify-center rounded-full bg-card ring-1 ring-black/[0.04] dark:ring-white/[0.08]">
-          <CatalogInstagramGlyph className="size-[17px] text-[#E4405F]" />
-        </span>
-      </button>
-    ) : null;
+  const instagramButton = null;
 
   const footerBlock = (
     <div className="relative z-10 mt-auto flex w-full min-w-0 shrink-0 items-center justify-between gap-2 border-t border-border/50 pt-2.5 sm:pt-3">

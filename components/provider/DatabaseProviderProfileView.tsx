@@ -185,10 +185,10 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
     salesType: cardRow.display.tradeType,
     minOrder: vendor.min_batch,
     locationRow: vendor.location_row,
-    hasWhatsapp: Boolean(whatsappHref(vendor.whatsapp_1) || whatsappHref(vendor.whatsapp_2)),
-    hasPhone: Boolean(vendor.phone_number?.trim()),
-    hasInstagram: Boolean(vendor.instagram_url?.trim()),
-    hasTelegram: Boolean(vendor.telegram_url?.trim()),
+    hasWhatsapp: false,
+    hasPhone: false,
+    hasInstagram: false,
+    hasTelegram: false,
     hasRecommendedSellers: recommendedVendors.length > 0,
     deliveryHelp: vendor.delivery_help,
     samplesAvailable: vendor.samples_available,
@@ -204,7 +204,6 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
     name: pageTitle,
     description,
     url: canonical,
-    telephone: vendor.phone_number ? formatPhoneDisplay(vendor.phone_number) : undefined,
     address: {
       "@type": "PostalAddress",
       streetAddress: displayLocationRow ?? undefined,
@@ -503,11 +502,12 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
               <VendorContactActions
                 listingKey={listingKey}
                 initialFavorite={initialFavorite}
-                primaryWhatsapp={primaryWhatsapp}
-                secondaryWhatsapp={secondaryWhatsapp}
-                telegramHref={telegramHrefResolved}
-                instagramHref={instagramHrefResolved}
-                telHref={telHrefResolved}
+                contactsLocked
+                primaryWhatsapp={null}
+                secondaryWhatsapp={null}
+                telegramHref={null}
+                instagramHref={null}
+                telHref={null}
                 googleMapsHref={googleMapsPublicHref}
                 twoGisHref={twoGisPublicHref}
                 yandexMapsHref={yandexMapsPublicHref}

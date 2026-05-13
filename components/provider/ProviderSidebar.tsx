@@ -13,6 +13,7 @@ type Props = {
   deliveryLabel: string;
   whatsappHref: string;
   quickInfoTitle?: string;
+  contactsLocked?: boolean;
 };
 
 export function ProviderSidebar({
@@ -26,6 +27,7 @@ export function ProviderSidebar({
   deliveryLabel,
   whatsappHref,
   quickInfoTitle,
+  contactsLocked = false,
 }: Props) {
   return (
     <aside
@@ -48,14 +50,20 @@ export function ProviderSidebar({
       </div>
 
       <div className="mt-6 flex flex-col gap-3">
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full rounded-xl bg-green-500 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-green-600"
-        >
-          {contactWhatsAppLabel}
-        </a>
+        {contactsLocked ? (
+          <p className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-center text-sm text-gray-600">
+            {contactWhatsAppLabel}
+          </p>
+        ) : (
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full rounded-xl bg-green-500 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-green-600"
+          >
+            {contactWhatsAppLabel}
+          </a>
+        )}
         {favorite}
       </div>
 

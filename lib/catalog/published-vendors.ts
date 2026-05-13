@@ -106,11 +106,11 @@ function isBlockedPublicCatalogStoreName(
 }
 
 const PUBLISHED_VENDOR_SELECT_FIELDS =
-  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
+  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, parsed_ai_data";
 
 /** List query для пагинированного `/catalog` — с `parsed_ai_data` для текста ИИ на карточке. */
 const PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS =
-  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
+  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, parsed_ai_data";
 
 const PUBLISHED_VENDOR_PROFILE_SELECT_FIELDS =
   "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at, followers_count, parsed_ai_data";
@@ -757,7 +757,7 @@ export function vendorToCatalogCardSource(opts: {
     dbStoreName: vendor.store_name?.trim() ?? "",
     fallbackTitle,
     catalogBrandNameFromAi: ai?.catalogBrandName,
-    instagramProfileUrl: vendor.instagram_url,
+    instagramProfileUrl: null,
   });
   const subtitle = dedupeCatalogSubtitle(storeTitle, ai?.subtitle ?? null);
 
@@ -770,7 +770,7 @@ export function vendorToCatalogCardSource(opts: {
     commerce: ai ? ai.commerce : commerceCopyFromVendorRow(vendor),
     logoUrl: vendor.logo_url,
     categories: vendor.categories,
-    instagramUrl: vendor.instagram_url?.trim() || null,
+    instagramUrl: null,
   };
   return {
     id: vendor.id,

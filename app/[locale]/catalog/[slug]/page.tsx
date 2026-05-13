@@ -98,7 +98,6 @@ export default async function ProviderProfilePage({ params }: Props) {
     name,
     description,
     url: canonical,
-    telephone: contact.telephoneE164,
     address: {
       "@type": "PostalAddress",
       addressLocality: contact.addressLocality,

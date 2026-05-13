@@ -132,7 +132,7 @@ export async function ProviderProfileView({ slug }: Props) {
               statusOnlineLabel={t("statusOnline")}
               statusOfflineLabel={t("statusOffline")}
               online={contact.online}
-              contactWhatsAppLabel={t("ctaWhatsApp")}
+              contactWhatsAppLabel={t("contactLockedMessage")}
               favorite={
                 <CatalogFavoriteButton
                   key={`${listingKey}:${initialFavorite}`}
@@ -144,6 +144,7 @@ export async function ProviderProfileView({ slug }: Props) {
               responseLabel={p("quickResponse")}
               deliveryLabel={p("quickDelivery")}
               whatsappHref={whatsappHref}
+              contactsLocked
               quickInfoTitle={t("quickInfoTitle")}
             />
           </div>
