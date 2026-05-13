@@ -599,7 +599,9 @@
         "planQuarterlyLabel": "3 oy",
         "planQuarterlyPrice": "$300",
         "checkoutError": "To'lovni boshlab bo'lmadi. Hisobingizga kiring va qayta urinib ko'ring.",
-        "checkoutLoading": "To'lovga o'tilmoqda…"
+        "checkoutLoading": "To'lovga o'tilmoqda…",
+        "checkoutPreparing": "To'lov sahifasi tayyorlanmoqda…",
+        "checkoutPrepareFailed": "To'lovni ochib bo'lmadi. Katalogdan qayta urinib ko'ring."
       },
       "listingAdded": "Qo'shilgan sana {date}",
       "listingUpdated": "Yangilandi {relative}",

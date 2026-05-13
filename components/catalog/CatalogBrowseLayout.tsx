@@ -19,7 +19,16 @@ import {
   formatProviderAddedDate,
 } from "@/lib/provider-dates";
 import { filterPublishedVendorsBySubcategorySlugs } from "@/lib/catalog/catalog-category-filter";
-import { applyCatalogAccessToVendors } from "@/lib/catalog/catalog-vendor-access";
+import {
+  capCatalogTotalCountForFreeAccess,
+  catalogFreeVendorLimit,
+  catalogPageSizeForAccess,
+} from "@/lib/catalog/catalog-access-limits";
+import {
+  capCatalogTotalCountForFreeAccess,
+  catalogEffectivePage,
+  catalogPageSizeForAccess,
+} from "@/lib/catalog/catalog-access-limits";
 import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
 import {
   buildCatalogCardSourceRowForPublishedVendor,
@@ -121,10 +130,13 @@ export async function CatalogBrowseLayout({
       publishedVendors,
       categorySlugs,
     );
-    const accessibleVendors = applyCatalogAccessToVendors(
-      publishedVendorsFiltered,
-      { hasFullAccess: catalogAccessUnlocked, globalOffset: 0 },
-    );
+    const limitedVendors = catalogAccessUnlocked
+      ? publishedVendorsFiltered
+      : publishedVendorsFiltered.slice(0, catalogFreeVendorLimit());
+    const accessibleVendors = applyCatalogAccessToVendors(limitedVendors, {
+      hasFullAccess: catalogAccessUnlocked,
+      globalOffset: 0,
+    });
     const realCards: CatalogCardSourceRow[] = accessibleVendors.map((v) =>
       buildCatalogCardSourceRowForPublishedVendor(v, {
         tBrowse: t,
@@ -141,17 +153,28 @@ export async function CatalogBrowseLayout({
     visibleCards = cards.slice(pageStart, pageEnd);
   } else {
     const requestedPage = parsePositivePage(page);
+    const effectivePage = catalogEffectivePage(
+      requestedPage,
+      catalogAccessUnlocked,
+    );
+    const effectivePageSize = catalogPageSizeForAccess(catalogAccessUnlocked);
+
     let catalogPage = await fetchPublishedVendorsCatalogPage({
-      page: requestedPage,
-      pageSize: CATALOG_PAGE_SIZE,
+      page: effectivePage,
+      pageSize: effectivePageSize,
       subcategorySlugs: categorySlugs,
     });
 
-    cardCount = catalogPage.totalCount;
-    totalPages = Math.max(1, Math.ceil(cardCount / CATALOG_PAGE_SIZE));
-    currentPage = catalogPage.page;
+    cardCount = capCatalogTotalCountForFreeAccess(
+      catalogPage.totalCount,
+      catalogAccessUnlocked,
+    );
+    totalPages = catalogAccessUnlocked
+      ? Math.max(1, Math.ceil(cardCount / CATALOG_PAGE_SIZE))
+      : 1;
+    currentPage = catalogAccessUnlocked ? catalogPage.page : 1;
 
-    if (cardCount > 0 && requestedPage > totalPages) {
+    if (catalogAccessUnlocked && cardCount > 0 && requestedPage > totalPages) {
       catalogPage = await fetchPublishedVendorsCatalogPage({
         page: totalPages,
         pageSize: CATALOG_PAGE_SIZE,
@@ -194,7 +217,9 @@ export async function CatalogBrowseLayout({
   });
 
   return (
-    <div className="bg-[#FAFAF8] pb-12 pt-5 sm:pt-6">
+    <>
+      <CatalogCheckoutResume />
+      <div className="bg-[#FAFAF8] pb-12 pt-5 sm:pt-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="space-y-4">
           <nav aria-label={t("breadcrumbNav")} className="text-xs text-gray-400">
@@ -253,7 +278,6 @@ export async function CatalogBrowseLayout({
           </div>
         </div>
 
-        <CatalogCheckoutResume />
         <div className="mt-6">
           <CatalogBrowseCardGrid
             key={currentPage}
@@ -304,5 +328,6 @@ export async function CatalogBrowseLayout({
         </div>
       </div>
     </div>
+    </>
   );
 }

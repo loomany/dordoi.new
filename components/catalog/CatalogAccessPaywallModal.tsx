@@ -48,14 +48,11 @@ export function CatalogAccessPaywallModal({ open, onOpenChange, copy }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  function beginAuthThenCheckout(selectedPlan: SubscriptionPlan) {
-    savePendingCheckoutPlan(selectedPlan);
-    onOpenChange(false);
-    openAuthDialog();
-  }
-
   function handleCheckout() {
     setError(null);
+    savePendingCheckoutPlan(plan);
+    onOpenChange(false);
+
     startTransition(async () => {
       const supabase = createClient();
       const {
@@ -63,7 +60,7 @@ export function CatalogAccessPaywallModal({ open, onOpenChange, copy }: Props) {
       } = await supabase.auth.getSession();
 
       if (!session?.user) {
-        beginAuthThenCheckout(plan);
+        openAuthDialog();
         return;
       }
 
@@ -72,13 +69,16 @@ export function CatalogAccessPaywallModal({ open, onOpenChange, copy }: Props) {
 
       if (!result.ok) {
         if (result.error === "auth_required") {
-          beginAuthThenCheckout(plan);
+          openAuthDialog();
           return;
         }
+        clearPendingCheckoutPlan();
+        onOpenChange(true);
         setError(copy.checkoutError ?? "Checkout failed");
         return;
       }
 
+      clearPendingCheckoutPlan();
       window.location.assign(result.url);
     });
   }

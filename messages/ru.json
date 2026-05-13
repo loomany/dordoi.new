@@ -539,7 +539,9 @@
         "planQuarterlyLabel": "3 месяца",
         "planQuarterlyPrice": "$300",
         "checkoutError": "Не удалось начать оплату. Войдите в аккаунт и попробуйте снова.",
-        "checkoutLoading": "Переход к оплате…"
+        "checkoutLoading": "Переход к оплате…",
+        "checkoutPreparing": "Подготовка страницы оплаты…",
+        "checkoutPrepareFailed": "Не удалось открыть оплату. Попробуйте снова из каталога."
       },
       "listingAdded": "Добавлено {date}",
       "listingUpdated": "Обновлено {relative}",

@@ -47,7 +47,7 @@ export function CatalogBrowseCardGrid({
   collapseLabel,
   expandLabel,
   cardGlobalOffset = 0,
-  hasFullCatalogAccess = true,
+  hasFullCatalogAccess = false,
   guestFreeCardLimit = GUEST_FREE_CATALOG_CARDS,
   paywallCopy,
   lockedCardUnlockLabel,

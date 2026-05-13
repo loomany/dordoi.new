@@ -2,7 +2,7 @@ import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const ACCESS_STATUSES = new Set(["active", "on_trial", "past_due"]);
+const ACCESS_STATUSES = new Set(["active"]);
 
 type SubscriptionAccessRow = {
   status: string;
@@ -10,16 +10,8 @@ type SubscriptionAccessRow = {
 };
 
 function hasAccessFromRow(row: SubscriptionAccessRow): boolean {
-  if (ACCESS_STATUSES.has(row.status)) {
-    return true;
-  }
-  if (row.status === "cancelled" && row.renews_at) {
-    return new Date(row.renews_at).getTime() > Date.now();
-  }
-  return false;
+  return ACCESS_STATUSES.has(row.status);
 }
-
-/** Returns true when the user has an active paid catalog subscription. */
 export async function checkSubscriptionStatus(userId: string): Promise<boolean> {
   if (!userId) {
     return false;
