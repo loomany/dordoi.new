@@ -4,6 +4,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getAiCatalogDisplayOverlay,
 } from "@/lib/catalog/parsed-ai-catalog-overlay";
+import { leadVideoForAssoCorsets } from "@/lib/catalog/asso-corsets-lead-video";
+import type { CatalogLeadVideo } from "@/lib/catalog/asso-corsets-lead-video";
 
 export { getAiCatalogDisplayOverlay };
 import {
@@ -24,8 +26,18 @@ import {
   formatListingUpdatedToday,
   formatProviderAddedDate,
 } from "@/lib/provider-dates";
-import { isBuyerOnlyVendorSlug } from "@/lib/catalog/buyer-only-vendor-slugs";
-import { isShowcaseVendorSlug } from "@/lib/catalog/showcase-vendor-i18n";
+import {
+  BUYER_ONLY_VENDOR_SLUGS,
+  isBuyerOnlyVendorSlug,
+} from "@/lib/catalog/buyer-only-vendor-slugs";
+import {
+  catalogFilterSlugsToMainIds,
+  normalizeCatalogCategorySlugs,
+} from "@/lib/catalog/catalog-category-filter";
+import {
+  isShowcaseVendorSlug,
+  SHOWCASE_VENDOR_SLUGS,
+} from "@/lib/catalog/showcase-vendor-i18n";
 
 /**
  * Минимальный набор полей `vendors`, нужных для CatalogCard в /catalog.
@@ -90,6 +102,10 @@ function isBlockedPublicCatalogStoreName(
 }
 
 const PUBLISHED_VENDOR_SELECT_FIELDS =
+  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
+
+/** List query для пагинированного `/catalog` — с `parsed_ai_data` для текста ИИ на карточке. */
+const PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS =
   "id, slug, store_name, description, categories, logo_url, product_photos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
 
 const PUBLISHED_VENDOR_PROFILE_SELECT_FIELDS =
@@ -144,6 +160,11 @@ export async function fetchPublishedVendorsForCatalog(): Promise<PublishedVendor
             (x): x is string => typeof x === "string",
           )
         : [];
+      const videos = Array.isArray(r.product_videos)
+        ? (r.product_videos as unknown[]).filter(
+            (x): x is string => typeof x === "string",
+          )
+        : [];
       const storeName = typeof r.store_name === "string" ? r.store_name : null;
       if (isBlockedPublicCatalogStoreName(storeName)) {
         return null;
@@ -156,6 +177,7 @@ export async function fetchPublishedVendorsForCatalog(): Promise<PublishedVendor
         categories: cats,
         logo_url: typeof r.logo_url === "string" ? r.logo_url : null,
         product_photos: photos,
+        product_videos: videos,
         location_row:
           typeof r.location_row === "string" ? r.location_row : null,
         created_at:
@@ -176,6 +198,193 @@ export async function fetchPublishedVendorsForCatalog(): Promise<PublishedVendor
       };
     })
     .filter((x): x is PublishedVendorRow => x !== null);
+}
+
+/** Строка вендора для list view каталога (пагинация `/catalog`). */
+export type PublishedVendorCatalogListRow = Omit<
+  PublishedVendorRow,
+  | "description_detail"
+  | "container_photo_url"
+  | "phone_number"
+  | "whatsapp_1"
+  | "whatsapp_2"
+  | "telegram_url"
+  | "google_maps_uri"
+  | "google_place_id"
+  | "two_gis_uri"
+  | "yandex_maps_uri"
+  | "followers_count"
+  | "product_videos"
+>;
+
+export type FetchPublishedVendorsCatalogPageParams = {
+  page: number;
+  pageSize: number;
+  subcategorySlugs?: string[];
+};
+
+export type FetchPublishedVendorsCatalogPageResult = {
+  vendors: PublishedVendorCatalogListRow[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+};
+
+const HIDDEN_PUBLIC_CATALOG_SLUGS: readonly string[] = [
+  ...BUYER_ONLY_VENDOR_SLUGS,
+  ...SHOWCASE_VENDOR_SLUGS,
+];
+
+function parseCatalogPageNumber(page: number): number {
+  return Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+}
+
+function parseCatalogPageSize(pageSize: number): number {
+  if (!Number.isFinite(pageSize) || pageSize <= 0) {
+    return 12;
+  }
+  return Math.min(Math.max(1, Math.floor(pageSize)), 50);
+}
+
+/** Токены для PostgREST `categories` overlap (`?cat=` main + sub slug-и). */
+function catalogCategoryOverlapTokens(subcategorySlugs: string[]): string[] {
+  const normalized = normalizeCatalogCategorySlugs(subcategorySlugs);
+  if (normalized.length === 0) {
+    return [];
+  }
+  const mains = catalogFilterSlugsToMainIds(normalized);
+  return [...new Set([...normalized, ...mains])];
+}
+
+function mapPublishedVendorCatalogListRow(
+  row: unknown,
+): PublishedVendorCatalogListRow | null {
+  const r = row as Record<string, unknown>;
+  const slug = typeof r.slug === "string" ? r.slug.trim() : "";
+  if (!slug || isHiddenFromPublicCatalogSlug(slug)) {
+    return null;
+  }
+  const id =
+    typeof r.id === "string"
+      ? r.id
+      : typeof r.id === "number" && Number.isFinite(r.id)
+        ? String(r.id)
+        : "";
+  if (!id) {
+    return null;
+  }
+  const storeName = typeof r.store_name === "string" ? r.store_name : null;
+  if (isBlockedPublicCatalogStoreName(storeName)) {
+    return null;
+  }
+  const cats = Array.isArray(r.categories)
+    ? (r.categories as unknown[]).filter(
+        (x): x is string => typeof x === "string",
+      )
+    : [];
+  const photos = Array.isArray(r.product_photos)
+    ? (r.product_photos as unknown[]).filter(
+        (x): x is string => typeof x === "string",
+      )
+    : [];
+  return {
+    id,
+    slug,
+    store_name: storeName,
+    description: typeof r.description === "string" ? r.description : null,
+    categories: cats,
+    logo_url: typeof r.logo_url === "string" ? r.logo_url : null,
+    product_photos: photos,
+    location_row: typeof r.location_row === "string" ? r.location_row : null,
+    created_at:
+      typeof r.created_at === "string"
+        ? r.created_at
+        : new Date().toISOString(),
+    min_batch: typeof r.min_batch === "string" ? r.min_batch : null,
+    payment_methods:
+      typeof r.payment_methods === "string" ? r.payment_methods : null,
+    delivery_help: Boolean(r.delivery_help),
+    samples_available: Boolean(r.samples_available),
+    samples_note: typeof r.samples_note === "string" ? r.samples_note : null,
+    returns_policy:
+      typeof r.returns_policy === "string" ? r.returns_policy : null,
+    instagram_url:
+      typeof r.instagram_url === "string" ? r.instagram_url : null,
+    parsed_ai_data: r.parsed_ai_data,
+  };
+}
+
+/**
+ * Одна страница опубликованных вендоров для `/catalog`.
+ * `parsed_ai_data` в SELECT — на карточке только текст ИИ, не сырой `description`.
+ * Подключён в `CatalogBrowseLayout` (кроме debug `?compare=1`).
+ *
+ * Ограничения step 1:
+ * - `?cat=` фильтруется через `categories && tokens` (main/sub slug-и), без нормализации синонимов в БД.
+ * - `store_name` blocklist (`cosmos`, `123`) отсекается после SELECT — `totalCount` может быть чуть завышен.
+ */
+export async function fetchPublishedVendorsCatalogPage(
+  params: FetchPublishedVendorsCatalogPageParams,
+): Promise<FetchPublishedVendorsCatalogPageResult> {
+  const page = parseCatalogPageNumber(params.page);
+  const pageSize = parseCatalogPageSize(params.pageSize);
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const admin = createAdminClient();
+  // Supabase filter chain + `count: "exact"` — иначе TS2589 на reassignment.
+  let q = admin
+    .from("vendors")
+    .select(PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS, { count: "exact" })
+    .eq("status", "approved")
+    .not("slug", "is", null)
+    .order("created_at", { ascending: false }) as {
+    not: (
+      column: string,
+      operator: string,
+      value: string,
+    ) => typeof q;
+    overlaps: (column: string, value: string[]) => typeof q;
+    range: (
+      from: number,
+      to: number,
+    ) => PromiseLike<{
+      data: unknown[] | null;
+      error: { message: string } | null;
+      count: number | null;
+    }>;
+  };
+
+  if (HIDDEN_PUBLIC_CATALOG_SLUGS.length > 0) {
+    q = q.not(
+      "slug",
+      "in",
+      `(${HIDDEN_PUBLIC_CATALOG_SLUGS.map((s) => `"${s}"`).join(",")})`,
+    );
+  }
+
+  const categoryTokens = catalogCategoryOverlapTokens(params.subcategorySlugs ?? []);
+  if (categoryTokens.length > 0) {
+    q = q.overlaps("categories", categoryTokens);
+  }
+
+  const { data, error, count } = await q.range(from, to);
+
+  if (error) {
+    console.error("[fetchPublishedVendorsCatalogPage]", error);
+    return { vendors: [], totalCount: 0, page, pageSize };
+  }
+
+  const vendors = (Array.isArray(data) ? data : [])
+    .map((row) => mapPublishedVendorCatalogListRow(row))
+    .filter((x): x is PublishedVendorCatalogListRow => x !== null);
+
+  return {
+    vendors,
+    totalCount: typeof count === "number" && count >= 0 ? count : vendors.length,
+    page,
+    pageSize,
+  };
 }
 
 function normalizePublishedVendorRow(row: unknown): PublishedVendorRow | null {
@@ -366,6 +575,7 @@ export type CatalogCardSourceRow = {
   /** Нормализованные поля карточки (каталог / превью админки). */
   display: ParsedVendorCardData;
   photoUrls: string[] | undefined;
+  leadVideo?: CatalogLeadVideo;
   featured: boolean;
   /** Локализованная строка «Добавлено …» — рассчитывается в layout. */
   addedLine: string;
@@ -382,16 +592,20 @@ export type { ParsedVendorCardData, VendorCardCommerceCopy, VendorTradeType } fr
  * Логотип, категории, фото и ссылка Instagram — из колонок БД.
  */
 export function vendorToCatalogCardSource(opts: {
-  vendor: PublishedVendorRow;
+  vendor: PublishedVendorRow | PublishedVendorCatalogListRow;
   fallbackTitle: string;
   addedLine: string;
   updatedLine: string;
 }): CatalogCardSourceRow {
   const { vendor, fallbackTitle, addedLine, updatedLine } = opts;
   const ai = getAiCatalogDisplayOverlay(vendor.parsed_ai_data);
-  const descriptionFallback = vendor.description?.trim() ?? "";
   const photoUrls =
     vendor.product_photos.length > 0 ? vendor.product_photos : undefined;
+  const leadVideo = leadVideoForAssoCorsets({
+    slug: vendor.slug,
+    productVideos: "product_videos" in vendor ? vendor.product_videos : undefined,
+    posterUrl: vendor.product_photos[0],
+  });
 
   const { storeTitle, catalogBrandName } = resolveCatalogStoreTitleForCard({
     dbStoreName: vendor.store_name?.trim() ?? "",
@@ -405,7 +619,8 @@ export function vendorToCatalogCardSource(opts: {
     storeTitle,
     catalogBrandName,
     subtitle,
-    description: ai?.description ?? descriptionFallback,
+    description:
+      ai?.description?.trim() ?? vendor.description?.trim() ?? "",
     tradeType: ai?.tradeType ?? inferVendorTradeType(vendor),
     commerce: ai ? ai.commerce : commerceCopyFromVendorRow(vendor),
     logoUrl: vendor.logo_url,
@@ -418,6 +633,7 @@ export function vendorToCatalogCardSource(opts: {
     href: `/catalog/${vendor.slug}`,
     display,
     photoUrls,
+    leadVideo,
     featured: false,
     addedLine,
     updatedLine,
@@ -429,7 +645,7 @@ export function vendorToCatalogCardSource(opts: {
  * (ИИ `parsed_ai_data`, витринные slug-и, i18n категорий).
  */
 export function buildCatalogCardSourceRowForPublishedVendor(
-  vendor: PublishedVendorRow,
+  vendor: PublishedVendorRow | PublishedVendorCatalogListRow,
   opts: {
     tBrowse: CatalogBrowseT;
     tTreeCategory: (key: string) => string;
