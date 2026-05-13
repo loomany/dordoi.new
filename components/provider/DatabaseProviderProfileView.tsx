@@ -15,7 +15,6 @@ import { VendorContactActions } from "@/components/provider/VendorContactActions
 import { VendorPhotoBatchFeed } from "@/components/provider/VendorPhotoBatchFeed";
 import { VendorRecommendedSellers } from "@/components/provider/VendorRecommendedSellers";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
-import { JsonLd } from "@/components/seo/JsonLd";
 import { VendorFaqSection } from "@/components/vendors/VendorFaqSection";
 import { Link } from "@/i18n/navigation";
 import { catalogListingKeyFromSlug } from "@/lib/catalog/listing-key";
@@ -29,7 +28,6 @@ import {
 } from "@/lib/catalog/published-vendors";
 import { getSessionProfile } from "@/lib/auth/session-profile";
 import { fetchBuyerFavoriteKeySet } from "@/lib/favorites/buyer-favorites";
-import { digitsOnly, formatPhoneDisplay } from "@/lib/phone";
 import {
   formatListingUpdatedToday,
   formatProviderAddedDate,
@@ -46,37 +44,16 @@ import {
   seoCategoryPath,
 } from "@/lib/catalog/seo-category-routes";
 import { normalizeVendorCategoryMainSlugs } from "@/lib/catalog/vendor-category-normalize";
+import {
+  primaryVendorMainCategoryId,
+  vendorPublicListingNumber,
+} from "@/lib/catalog/vendor-public-seo";
 import type { RouteLocale } from "@/lib/seo/route-locale";
 import { buildVendorFaq } from "@/lib/dordoi/vendorFaq";
-import { baseUrl } from "@/lib/site";
 
 type Props = {
   vendor: PublishedVendorRow;
 };
-
-function ensureHttp(value: string): string {
-  const trimmed = value.trim();
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-    return trimmed;
-  }
-  return `https://${trimmed}`;
-}
-
-function telegramHref(raw: string): string {
-  const trimmed = raw.trim();
-  if (trimmed.startsWith("@")) {
-    return `https://t.me/${trimmed.slice(1)}`;
-  }
-  if (trimmed.startsWith("t.me/")) {
-    return `https://${trimmed}`;
-  }
-  return ensureHttp(trimmed);
-}
-
-function whatsappHref(raw: string | null | undefined): string | null {
-  const digits = digitsOnly(raw ?? "");
-  return digits ? `https://wa.me/${digits}` : null;
-}
 
 function optionalText(value: string | null | undefined, fallback = "—"): string {
   const trimmed = value?.trim();
@@ -137,9 +114,19 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
       .map((p) => stripPublicContactLeaksFromVendorText(p!))
       .filter((p) => p.length > 0);
   })();
-  const pageTitle =
-    cardRow.display.storeTitle.trim() || tBrowse("fallbackStoreTitle");
-  const primaryMainId = normalizeVendorCategoryMainSlugs(vendor.categories)[0];
+  const primaryMainId = primaryVendorMainCategoryId(vendor.categories);
+  const categoryPhrase = primaryMainId
+    ? t(`publicSeo.categories.${primaryMainId}`)
+    : null;
+  const publicH1 = categoryPhrase
+    ? t("publicSeo.h1WithCategory", { category: categoryPhrase })
+    : t("publicSeo.h1Fallback");
+  const visibleLabel = categoryPhrase
+    ? t("publicSeo.visibleLabelWithCategory", { category: categoryPhrase })
+    : t("publicSeo.visibleLabelNumbered", {
+        number: vendorPublicListingNumber(vendor.id),
+      });
+  const breadcrumbLeaf = t("publicSeo.breadcrumbLeaf");
   const seoCategoryRoute = primaryMainId
     ? resolveSeoCategoryForMainId(primaryMainId)
     : undefined;
@@ -155,17 +142,6 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
   const displayLocationRow = showcase?.locationRow ?? vendor.location_row;
   const listingKey = catalogListingKeyFromSlug(vendor.slug);
   const initialFavorite = favoriteKeys.has(listingKey);
-  const primaryWhatsapp = whatsappHref(vendor.whatsapp_1) ?? whatsappHref(vendor.phone_number);
-  const secondaryWhatsapp = whatsappHref(vendor.whatsapp_2);
-  const telegramHrefResolved = vendor.telegram_url
-    ? telegramHref(vendor.telegram_url)
-    : null;
-  const instagramHrefResolved = vendor.instagram_url
-    ? ensureHttp(vendor.instagram_url)
-    : null;
-  const telHrefResolved = vendor.phone_number
-    ? `tel:${digitsOnly(vendor.phone_number)}`
-    : null;
   const googleMapsPublicHref = resolveGoogleMapsHref(
     vendor.google_maps_uri,
     vendor.google_place_id,
@@ -174,7 +150,6 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
     ensureHttpUrl(vendor.two_gis_uri) ??
     twoGisFirmPageUrlFromGooglePlaceId(vendor.google_place_id);
   const yandexMapsPublicHref = ensureHttpUrl(vendor.yandex_maps_uri);
-  const canonical = `${baseUrl()}/${locale}/catalog/${vendor.slug}`;
   const PHOTO_FEED_PAGE_SIZE = 4;
   const initialPhotoBatches = await fetchApprovedVendorPhotoBatches({
     vendorId: vendor.id,
@@ -191,7 +166,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
   const aboutDescriptionText =
     aboutBodyParagraphs.length > 0 ? aboutBodyParagraphs.join(" ") : null;
   const faqItems = buildVendorFaq({
-    name: pageTitle,
+    name: publicH1,
     category: normalizeVendorCategoryMainSlugs(vendor.categories)[0] ?? null,
     categoryLabel: categoryLabels[0] ?? null,
     city: "Бишкек",
@@ -208,26 +183,6 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
     deliveryHelp: vendor.delivery_help,
     samplesAvailable: vendor.samples_available,
   });
-  const description =
-    cardRow.display.description.trim() ||
-    vendor.description_detail?.trim() ||
-    t("listingBlurbFallback", { title: pageTitle });
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: pageTitle,
-    description,
-    url: canonical,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: displayLocationRow ?? undefined,
-      addressLocality: "Bishkek",
-      addressCountry: "KG",
-    },
-    image: vendor.logo_url ?? vendor.product_photos[0] ?? undefined,
-  };
-
   const terms = showcase
     ? [
         {
@@ -307,7 +262,6 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
 
   return (
     <>
-      <JsonLd data={jsonLd} />
       <div className="bg-[#FAFAF8] pb-16 pt-6 sm:pt-8">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
@@ -349,7 +303,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                     /
                   </li>
                   <li className="font-medium text-muted-foreground" aria-current="page">
-                    {pageTitle}
+                    {breadcrumbLeaf}
                   </li>
                 </ol>
               </nav>
@@ -358,7 +312,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                 <div className="pointer-events-none hidden min-w-0 sm:block" aria-hidden />
                 <div className="min-w-0 pr-12 sm:col-start-2 sm:w-full sm:px-0 sm:text-center">
                   <h1 className="sr-only text-3xl font-extrabold tracking-tight text-card-foreground sm:not-sr-only sm:text-5xl lg:text-6xl">
-                    {pageTitle}
+                    {publicH1}
                   </h1>
                   <div className="mt-0 flex flex-wrap items-center gap-2 text-sm text-muted-foreground sm:mt-3 sm:justify-center">
                     {displayLocationRow ? (
@@ -468,7 +422,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                       <div className="overflow-hidden rounded-xl border border-border/70 bg-muted">
                         <MediaImage
                           src={vendor.container_photo_url}
-                          alt={t("containerLocationAlt", { title: pageTitle })}
+                          alt={t("containerLocationAlt", { title: visibleLabel })}
                           className="aspect-video w-full object-cover"
                         />
                       </div>
@@ -484,7 +438,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                         vendorId={vendor.id}
                         initialBatches={initialPhotoBatches}
                         pageSize={PHOTO_FEED_PAGE_SIZE}
-                        altBase={t("productPhotosAltBase", { title: pageTitle })}
+                        altBase={t("productPhotosAltBase", { title: visibleLabel })}
                         locale={locale}
                         productVideos={
                           vendor.product_videos && vendor.product_videos.length > 0
@@ -507,7 +461,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                 collapseLabel={tBrowse("cardCollapse")}
                 expandLabel={tBrowse("cardExpand")}
               />
-              <VendorFaqSection items={faqItems} vendorName={pageTitle} />
+              <VendorFaqSection items={faqItems} vendorName={publicH1} />
               <FaqJsonLd items={faqItems} />
             </main>
 
@@ -517,7 +471,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                   <div className="flex size-[120px] items-center justify-center overflow-hidden rounded-full border border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-white shadow-sm">
                     <MediaImage
                       src={vendor.logo_url}
-                      alt={t("logoAlt", { title: pageTitle })}
+                      alt={t("logoAlt", { title: visibleLabel })}
                       className="size-full object-cover"
                     />
                   </div>
@@ -526,7 +480,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                     <Phone className="size-11" aria-hidden />
                   </div>
                 )}
-                <h2 className="mt-6 text-lg font-bold text-card-foreground lg:hidden">{pageTitle}</h2>
+                <h2 className="mt-6 text-lg font-bold text-card-foreground lg:hidden">{visibleLabel}</h2>
               </div>
 
               <VendorContactActions

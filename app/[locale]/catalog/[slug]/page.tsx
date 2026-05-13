@@ -9,15 +9,24 @@ import {
   providerContactBySlug,
   PROVIDER_SLUGS,
 } from "@/data/provider-registry";
+import {
+  primaryVendorMainCategoryId,
+  vendorProfileRobotsPolicy,
+} from "@/lib/catalog/vendor-public-seo";
 import { buildPageMetadata } from "@/lib/seo";
 import { baseUrl } from "@/lib/site";
 import { routing } from "@/i18n/routing";
-import {
-  buildCatalogCardSourceRowForPublishedVendor,
-  fetchPublishedVendorBySlug,
-} from "@/lib/catalog/published-vendors";
+import { fetchPublishedVendorBySlug } from "@/lib/catalog/published-vendors";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
+
+function vendorCategoryPhrase(
+  t: (key: string) => string,
+  mainCategoryId: string | undefined,
+): string | null {
+  if (!mainCategoryId) return null;
+  return t(`publicSeo.categories.${mainCategoryId}`);
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -36,34 +45,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "404" };
   }
 
-  const tBrowse = await getTranslations({
-    locale,
-    namespace: "Pages.catalogBrowse",
-  });
-  const tTree = await getTranslations({
-    locale,
-    namespace: "catalogCategoryTree",
-  });
   const tProvider = await getTranslations({
     locale,
     namespace: "Pages.providerProfile",
   });
-  const cardRow = buildCatalogCardSourceRowForPublishedVendor(vendor, {
-    tBrowse,
-    tTreeCategory: (key) => tTree(key),
-    locale,
-  });
-  const title =
-    cardRow.display.storeTitle.trim() || tBrowse("fallbackStoreTitle");
-  const description =
-    cardRow.display.description.trim() ||
-    vendor.description_detail?.trim() ||
-    tProvider("listingBlurbFallback", { title });
+  const mainCategoryId = primaryVendorMainCategoryId(vendor.categories);
+  const categoryPhrase = vendorCategoryPhrase(tProvider, mainCategoryId);
+  const title = categoryPhrase
+    ? tProvider("publicSeo.metaTitleWithCategory", { category: categoryPhrase })
+    : tProvider("publicSeo.metaTitleFallback");
+  const description = categoryPhrase
+    ? tProvider("publicSeo.metaDescriptionWithCategory", { category: categoryPhrase })
+    : tProvider("publicSeo.metaDescriptionFallback");
+
   return buildPageMetadata({
     locale,
     pathWithoutLocale: `/catalog/${vendor.slug}`,
-    title: tBrowse("storeMetaTitleTemplate", { title }),
+    title,
     description,
+    robotsPolicy: vendorProfileRobotsPolicy(vendor.slug),
   });
 }
 

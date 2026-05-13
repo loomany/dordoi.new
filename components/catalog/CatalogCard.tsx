@@ -400,15 +400,60 @@ export function CatalogCard({
 
   const mainLinkOrStatic =
     href != null && href.length > 0 ? (
-      <Link
-        href={href}
-        className={cn(
-          "flex min-h-0 min-w-0 flex-1 flex-col gap-0 md:flex-none cursor-pointer text-left text-inherit no-underline outline-none",
-          "focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.14_250_/_0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-card",
-        )}
-      >
-        {headlineAndDescription}
-      </Link>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-0 md:flex-none">
+        <header className={cn("relative flex w-full min-w-0 gap-3", titleReserveRight)}>
+          <Link
+            href={href}
+            className={cn(
+              "shrink-0 pt-0.5 outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.14_250_/_0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-card",
+            )}
+          >
+            {avatar}
+          </Link>
+          <div className="min-w-0 flex-1">
+            <Link
+              href={href}
+              className="block min-w-0 text-inherit no-underline outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.14_250_/_0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+            >
+              <h2 className="text-[15px] font-semibold uppercase leading-[1.2] tracking-tight text-card-foreground sm:text-base">
+                {display.storeTitle}
+              </h2>
+            </Link>
+            {display.subtitle?.trim() ? (
+              categoryHref ? (
+                <Link
+                  href={categoryHref}
+                  className="mt-0.5 line-clamp-1 text-xs leading-snug text-muted-foreground/85 underline-offset-2 hover:text-primary hover:underline sm:text-[13px]"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {display.subtitle.trim()}
+                </Link>
+              ) : (
+                <p className="mt-0.5 line-clamp-1 text-xs leading-snug text-muted-foreground/85 sm:text-[13px]">
+                  {display.subtitle.trim()}
+                </p>
+              )
+            ) : (
+              <p className="mt-0.5 h-[1.125rem]" aria-hidden />
+            )}
+          </div>
+        </header>
+        {descTrim ? (
+          <Link
+            href={href}
+            className="block min-w-0 text-inherit no-underline outline-none focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.14_250_/_0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+          >
+            <section
+              aria-label={aboutStoreLabel?.trim() || undefined}
+              className="mt-2.5 min-w-0 flex-1 md:flex-none sm:mt-3"
+            >
+              <p className="line-clamp-3 text-[13px] leading-[1.5] text-muted-foreground/90 sm:text-sm sm:leading-snug">
+                {truncateForCompact(descTrim)}
+              </p>
+            </section>
+          </Link>
+        ) : null}
+      </div>
     ) : (
       <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-0 md:flex-none">
         {headlineAndDescription}

@@ -44,6 +44,27 @@ function defaultOgImages(): {
   };
 }
 
+function noindexFollowMetadata(): Pick<Metadata, "robots"> {
+  return {
+    robots: {
+      index: false,
+      follow: true,
+      googleBot: { index: false, follow: true },
+    },
+  };
+}
+
+function robotsMetadataFromPolicy(
+  policy: "index,follow" | "noindex,follow" | "noindex,nofollow" | undefined,
+  privateArea: boolean,
+): Pick<Metadata, "robots"> {
+  if (policy === "noindex,follow") return noindexFollowMetadata();
+  if (policy === "noindex,nofollow") return noindexMetadata();
+  if (policy === "index,follow") return indexFollowMetadata();
+  if (!siteIndexable() || privateArea) return noindexMetadata();
+  return indexFollowMetadata();
+}
+
 export function buildPageMetadata(opts: {
   locale: string;
   pathWithoutLocale: string;
@@ -51,6 +72,8 @@ export function buildPageMetadata(opts: {
   description: string;
   /** Cabinet and other non-public UI — never index even when the site is indexable. */
   privateArea?: boolean;
+  /** Override default robots for vendor profiles etc. */
+  robotsPolicy?: "index,follow" | "noindex,follow" | "noindex,nofollow";
 }): Metadata {
   const path =
     opts.pathWithoutLocale === "/" || opts.pathWithoutLocale === ""
@@ -66,7 +89,7 @@ export function buildPageMetadata(opts: {
   const { openGraphImages, twitterImages } = defaultOgImages();
 
   return {
-    ...(!siteIndexable() || opts.privateArea ? noindexMetadata() : indexFollowMetadata()),
+    ...robotsMetadataFromPolicy(opts.robotsPolicy, Boolean(opts.privateArea)),
     metadataBase: new URL(baseUrl()),
     title: opts.title,
     description: opts.description,
