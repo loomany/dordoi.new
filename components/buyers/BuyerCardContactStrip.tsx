@@ -45,6 +45,8 @@ export type BuyerSpotModalStrings = {
 
 export type BuyerCardContactStripStrings = {
   ctaContact: string;
+  ctaWhatsApp: string;
+  ctaCall: string;
   ctaTelegram: string;
   ctaInstagram: string;
   closeDialog: string;
@@ -66,44 +68,70 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
   const instagramHref = buyer.instagramUrl?.trim() || null;
 
   if (buyer.liveListing) {
+    const phoneDigits = buyer.phoneDigits?.trim() || "";
+    const showDualContact =
+      phoneDigits.length > 0 && Boolean(buyer.whatsappDigits?.trim());
+    const hasSocialRow = Boolean(telegramHref || instagramHref);
+
     return (
       <div className="mt-auto space-y-3 pt-7">
-        <a
-          href={whatsappHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={waBtn}
-        >
-          {strings.ctaContact}
-        </a>
-        <div
-          className={
-            telegramHref ? "grid grid-cols-2 gap-2" : "grid grid-cols-1 gap-2"
-          }
-        >
-          {telegramHref ? (
+        {showDualContact ? (
+          <div className="grid grid-cols-2 gap-2">
             <a
-              href={telegramHref}
+              href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className={socialBtn}
+              className={waBtn}
             >
-              <Send className="size-3.5 shrink-0 sm:size-4" strokeWidth={2.25} />
-              <span className="truncate">{strings.ctaTelegram}</span>
+              {strings.ctaWhatsApp}
             </a>
-          ) : null}
-          {instagramHref ? (
-            <a
-              href={instagramHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={socialBtn}
-            >
-              <InstagramGlyph className="size-3.5 shrink-0 sm:size-4" />
-              <span className="truncate">{strings.ctaInstagram}</span>
+            <a href={`tel:+${phoneDigits}`} className={socialBtn}>
+              {strings.ctaCall}
             </a>
-          ) : null}
-        </div>
+          </div>
+        ) : (
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={waBtn}
+          >
+            {strings.ctaContact}
+          </a>
+        )}
+        {hasSocialRow ? (
+          <div
+            className={
+              telegramHref ? "grid grid-cols-2 gap-2" : "grid grid-cols-1 gap-2"
+            }
+          >
+            {telegramHref ? (
+              <a
+                href={telegramHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialBtn}
+              >
+                <Send
+                  className="size-3.5 shrink-0 sm:size-4"
+                  strokeWidth={2.25}
+                />
+                <span className="truncate">{strings.ctaTelegram}</span>
+              </a>
+            ) : null}
+            {instagramHref ? (
+              <a
+                href={instagramHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={socialBtn}
+              >
+                <InstagramGlyph className="size-3.5 shrink-0 sm:size-4" />
+                <span className="truncate">{strings.ctaInstagram}</span>
+              </a>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     );
   }

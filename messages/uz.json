@@ -303,6 +303,8 @@
       "experience": "Tajriba: {years} yil",
       "orders": "Bajarilgan buyurtmalar: {count}",
       "ctaContact": "Bayer bilan bog'lanish",
+      "ctaWhatsApp": "WhatsApp yozish",
+      "ctaCall": "Qo'ng'iroq qilish",
       "ctaTelegram": "Telegram",
       "ctaInstagram": "Instagram",
       "buyerSpotModal": {
@@ -324,15 +326,15 @@
             "3": "WB va Ozon uchun tikuv va hamrohlik"
           }
         },
-        "aisuluu-bakytova": {
-          "name": "Aysulu Bakytova",
-          "specialization": "Ayollar matolari va Kamchiligi tekshirish",
-          "description": "Kiyimlar va kesmalar bo'yicha ekspert. Har bir partiyani yuborishdan oldin batafsil tekshiraman. Katta tikuv sexlari bilan ishlayman.",
+        "arailym": {
+          "name": "Arailym",
+          "specialization": "Erkak va ayol kiyimi · Dordoyda xarid",
+          "description": "Dordoy bozoridagi kiyim bo'yicha buyer: bazaviy assortimentdan kapsula kolleksiyalargacha. Byudjetingiz va savdo kanalingizga yetkazib beruvchini tanlayman, partiyani tekshiraman va RF, Qozog'iston hamda O'zbekistonga yuborishgacha hamrohlik qilaman.",
           "services": {
-            "0": "Matolar va aksessuarlarni tekshirish",
-            "1": "O'lchov varaqalari bilan foto va video hisobot",
-            "2": "Partiyani xarid qilish va kuzatish",
-            "3": "Yuklab olinishidan oldin kamchiliklarni nazorat qilish"
+            "0": "Dordoyda erkak va ayol kiyimini tanlash",
+            "1": "Xarid, rezerv va sifat nazorati",
+            "2": "Kiyinish va o'lchov jadvallari bilan foto/video hisobot",
+            "3": "RF, Qozog'iston va O'zbekistonga konsolidatsiya va yetkazish"
           }
         },
         "daniyar-isakov": {

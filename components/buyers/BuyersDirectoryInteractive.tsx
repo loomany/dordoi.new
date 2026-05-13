@@ -32,6 +32,8 @@ export function BuyersDirectoryInteractive() {
               experienceLine: t("experience", { years: b.experienceYears }),
               ordersLine: t("orders", { count: b.completedOrdersDisplay }),
               ctaContact: t("ctaContact"),
+              ctaWhatsApp: t("ctaWhatsApp"),
+              ctaCall: t("ctaCall"),
               ctaTelegram: t("ctaTelegram"),
               ctaInstagram: t("ctaInstagram"),
               closeDialog: tAuth("closeDialog"),

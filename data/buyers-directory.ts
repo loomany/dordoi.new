@@ -14,6 +14,8 @@ export type BuyerDirectoryRow = {
   completedOrdersDisplay: string;
   /** WhatsApp wa.me/{digits} — digits only */
   whatsappDigits: string;
+  /** tel:+{digits} — если задан, на live-карточке показываем «Позвонить» */
+  phoneDigits?: string;
   /** https://t.me/… — публичный канал или профиль */
   telegramUrl: string;
   /** Профиль или канал в Instagram */
@@ -45,14 +47,16 @@ export const BUYERS: BuyerDirectoryRow[] = [
     linkedVendorSlug: "dordoi-zakup-aiperi",
   },
   {
-    id: "aisuluu-bakytova",
+    id: "arailym",
     category: "textile",
-    experienceYears: 7,
-    completedOrdersDisplay: "350+",
-    whatsappDigits: "996555020202",
-    telegramUrl: "https://t.me/dordoi_buyers_aisulu",
-    instagramUrl: "https://www.instagram.com/dordoi.help/",
-    photoSrc: "/buyers/portrait-aisuluu.png",
+    experienceYears: 5,
+    completedOrdersDisplay: "200+",
+    whatsappDigits: "77029852503",
+    phoneDigits: "77029852503",
+    telegramUrl: "",
+    instagramUrl: "",
+    photoSrc: "/buyers/portrait-arailym.png",
+    liveListing: true,
   },
   {
     id: "daniyar-isakov",
