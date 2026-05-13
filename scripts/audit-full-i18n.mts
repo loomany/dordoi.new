@@ -13,9 +13,9 @@ import { fileURLToPath } from "node:url";
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-import type { RouteLocale } from "../lib/seo/route-locale.ts";
-import type { SeoCategoryRoute } from "../lib/catalog/seo-category-route-data.ts";
-import type { CoreSeoLanding } from "../lib/seo/core-seo-landings.ts";
+import type { RouteLocale } from "../lib/seo/route-locale";
+import type { SeoCategoryRoute } from "../lib/catalog/seo-category-route-data";
+import type { CoreSeoLanding } from "../lib/seo/core-seo-landings";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const TARGET_LOCALES = ["kk", "kg", "uz", "tj"] as const satisfies readonly RouteLocale[];
@@ -650,9 +650,9 @@ async function main(): Promise<void> {
   const warnOnly = hasFlag("warn-only");
   const issues: Issue[] = [];
 
-  const routeData = await import("../lib/catalog/seo-category-route-data.ts");
-  const categoryRoutes = await import("../lib/catalog/seo-category-routes.ts");
-  const coreLandings = await import("../lib/seo/core-seo-landings.ts");
+  const routeData = await import("../lib/catalog/seo-category-route-data");
+  const categoryRoutes = await import("../lib/catalog/seo-category-routes");
+  const coreLandings = await import("../lib/seo/core-seo-landings");
 
   const SEO_CATEGORY_ROUTES = routeData.SEO_CATEGORY_ROUTES;
   const CORE_SEO_LANDINGS = coreLandings.CORE_SEO_LANDINGS;

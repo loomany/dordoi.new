@@ -4,9 +4,9 @@
  *   npm run audit:seo-locales
  *   npm run audit:seo-locales -- --base=http://localhost:3000
  */
-import type { RouteLocale } from "../lib/seo/route-locale.ts";
-import type { SeoCategoryRoute } from "../lib/catalog/seo-category-route-data.ts";
-import type { CoreSeoLanding } from "../lib/seo/core-seo-landings.ts";
+import type { RouteLocale } from "../lib/seo/route-locale";
+import type { SeoCategoryRoute } from "../lib/catalog/seo-category-route-data";
+import type { CoreSeoLanding } from "../lib/seo/core-seo-landings";
 
 const DEFAULT_TARGET_LOCALES = ["uz", "tj"] as const satisfies readonly RouteLocale[];
 

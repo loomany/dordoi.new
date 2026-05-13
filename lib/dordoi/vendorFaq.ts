@@ -24,7 +24,7 @@ export type VendorFaqInput = {
 
 type VendorFaqT = (
   key: string,
-  values?: Record<string, string | number | boolean>,
+  values?: Record<string, string | number | Date>,
 ) => string;
 
 type FaqBucket =
