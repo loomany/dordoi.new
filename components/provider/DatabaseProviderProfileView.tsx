@@ -173,13 +173,15 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
       locale,
     }),
   );
+  const aboutDescriptionText =
+    aboutBodyParagraphs.length > 0 ? aboutBodyParagraphs.join(" ") : null;
   const faqItems = buildVendorFaq({
     name: pageTitle,
     category: normalizeVendorCategoryMainSlugs(vendor.categories)[0] ?? null,
     categoryLabel: categoryLabels[0] ?? null,
     city: "Бишкек",
     country: "Кыргызстан",
-    description: vendor.description_detail ?? vendor.description,
+    description: aboutDescriptionText,
     salesType: cardRow.display.tradeType,
     minOrder: vendor.min_batch,
     locationRow: vendor.location_row,
