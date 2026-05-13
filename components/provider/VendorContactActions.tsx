@@ -4,6 +4,7 @@ import { MessageCircle, PhoneCall, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { CatalogFavoriteButton } from "@/components/favorites/CatalogFavoriteButton";
+import { Link } from "@/i18n/navigation";
 
 function InstagramGlyph({ className }: { className?: string }) {
   return (
@@ -32,8 +33,6 @@ export type VendorContactActionsProps = {
   telegramHref: string | null;
   instagramHref: string | null;
   telHref: string | null;
-  /** When true, hide direct contact links and show service CTA copy only. */
-  contactsLocked?: boolean;
   /** Ссылки на карты; пустые не рендерятся. */
   googleMapsHref?: string | null;
   twoGisHref?: string | null;
@@ -56,27 +55,16 @@ export function VendorContactActions({
   googleMapsHref,
   twoGisHref,
   yandexMapsHref,
-  contactsLocked = false,
 }: VendorContactActionsProps) {
   const t = useTranslations("Pages.providerProfile");
 
-  if (contactsLocked) {
-    return (
-      <div className="mt-3 flex flex-col gap-3 lg:mt-6">
-        <p className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-center text-sm leading-relaxed text-muted-foreground">
-          {t("contactLockedMessage")}
-        </p>
-        <div className="lg:hidden">
-          <CatalogFavoriteButton
-            key={`sidebar:${listingKey}:${initialFavorite}`}
-            listingKey={listingKey}
-            initialFavorite={initialFavorite}
-            variant="sidebar"
-          />
-        </div>
-      </div>
-    );
-  }
+  const hasDirectContacts = Boolean(
+    primaryWhatsapp ||
+      secondaryWhatsapp ||
+      telegramHref ||
+      instagramHref ||
+      telHref,
+  );
 
   const pillOutline =
     "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-zinc-200/95 bg-white py-3.5 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-zinc-950/[0.04] transition-[border-color,background-color,box-shadow] hover:border-zinc-300 hover:bg-zinc-50";
@@ -84,8 +72,21 @@ export function VendorContactActions({
   const primaryPill =
     "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-[#128C7E] py-3.5 text-sm font-semibold text-white shadow-sm transition-[background-color,box-shadow] hover:bg-[#0f7a6f] hover:shadow-md";
 
+  const fallbackPrimaryPill =
+    "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-[var(--d-card-accent)] py-3.5 text-sm font-semibold text-white shadow-sm transition-[background-color,box-shadow] hover:opacity-95";
+
   return (
     <div className="mt-3 flex flex-col gap-3 lg:mt-6">
+      {hasDirectContacts ? (
+        <p className="text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {t("contactsSectionTitle")}
+        </p>
+      ) : (
+        <p className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-center text-sm leading-relaxed text-muted-foreground">
+          {t("contactLockedMessage")}
+        </p>
+      )}
+
       {primaryWhatsapp ? (
         <a href={primaryWhatsapp} className={primaryPill} {...externalLinkProps}>
           <MessageCircle className="size-4 shrink-0" aria-hidden />
@@ -116,6 +117,18 @@ export function VendorContactActions({
           {t("ctaCall")}
         </a>
       ) : null}
+
+      {!hasDirectContacts ? (
+        <>
+          <Link href="/contact" className={fallbackPrimaryPill}>
+            {t("ctaRequestContact")}
+          </Link>
+          <Link href="/buyers" className={pillOutline}>
+            {t("ctaFindBuyer")}
+          </Link>
+        </>
+      ) : null}
+
       {(() => {
         const mapItems = [
           { href: googleMapsHref, label: t("openInGoogleMaps") },
@@ -142,6 +155,7 @@ export function VendorContactActions({
           </div>
         );
       })()}
+
       <div className="lg:hidden">
         <CatalogFavoriteButton
           key={`sidebar:${listingKey}:${initialFavorite}`}

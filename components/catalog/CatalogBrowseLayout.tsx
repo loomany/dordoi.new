@@ -208,10 +208,11 @@ export async function CatalogBrowseLayout({
                 <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-500">
                   {t("intro")}
                 </p>
+                <p className="mt-2 max-w-3xl text-sm leading-relaxed text-gray-500">
+                  {t("introBuyers")}
+                </p>
                 <p className="mt-4 text-sm text-gray-400">{statsLine}</p>
               </header>
-
-              <CatalogPopularCategories />
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <label className="relative flex min-h-11 min-w-0 flex-1 items-center">
@@ -264,8 +265,13 @@ export async function CatalogBrowseLayout({
                 compareWithPreview={compareWithPreview}
                 locale={locale}
               />
+              <CatalogPopularCategories className="mt-8" />
             </div>
-          ) : null}
+          ) : (
+            <div className="mt-8 sm:mt-10">
+              <CatalogPopularCategories />
+            </div>
+          )}
         </div>
       </div>
     </div>

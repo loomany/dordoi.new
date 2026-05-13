@@ -62,23 +62,24 @@
     "closeSheet": "Panelni yopish"
   },
   "Footer": {
+    "seoNavAria": "Dordoy bo'limlari va toifalari",
     "seoDordoiTitle": "Dordoy",
     "seoCategoriesTitle": "Toifalar",
     "seoHub": {
-      "catalog": "Yetkazib beruvchilar katalogi",
-      "suppliers": "Dordoy yetkazib beruvchilari",
+      "catalog": "Katalog",
+      "suppliers": "Yetkazib beruvchilar",
       "market": "Dordoy bozori",
       "wholesale": "Dordoy ulgurji",
       "buyers": "Xaridorlar",
-      "cargo": "Dordoy kargo"
+      "cargo": "Kargo"
     },
     "seoCategories": {
-      "womens": "Ayollar kiyimi ulgurji",
+      "womens": "Ayollar kiyimi",
       "mens": "Erkaklar kiyimi ulgurji",
       "kids": "Bolalar kiyimi ulgurji",
-      "footwear": "Poyabzal ulgurji",
-      "bags-leather": "Sumkalar ulgurji",
-      "fabrics-notions": "Matolar ulgurji",
+      "footwear": "Poyabzal",
+      "bags-leather": "Sumkalar",
+      "fabrics-notions": "Matolar",
       "home-textiles": "Uy tekstili",
       "accessories": "Aksessuarlar ulgurji"
     },
@@ -556,7 +557,8 @@
       "breadcrumbCatalog": "Katalog",
       "title": "Dordoy bozori ulgurji yetkazib beruvchilar katalogi",
       "subtitle": "Dordoy bozoridagi tekshirilgan fabrikalar, ustaxona va savdo nuqtalarini toping. Sotuvchilar bilan Dordoi.help xizmati orqali bog'laning.",
-      "intro": "Dordoi.help katalogi Bishkekdagi Dordoy bozorining ulgurji sotuvchilarini bir joyga jamlaydi: kiyim, poyabzal, sumka, to'qimachilik va boshqa toifalar. Yetkazib beruvchini nom, qator va toifa bo'yicha qidiring, vitrinalarni solishtiring va do'kon profilini oching.",
+      "intro": "Dordoi.help katalogi Dordoy bozorining ulgurji yetkazib beruvchilarini topishga yordam beradi: kiyim, poyabzal, sumka, to'qimachilik va boshqa toifalar. Sotuvchilarni solishtiring, profillarni oching va xizmat orqali mos yetkazib beruvchini toping.",
+      "introBuyers": "Sotib olish, mahsulotni tekshirish va yetkazib berish uchun xaridorlar bo'limidan foydalanish mumkin.",
       "stats": "{from}–{to} dan {total} ta etkazib beruvchilar ko'rsatilmoqda",
       "popularCategories": {
         "title": "Dordoydagi mashhur toifalar",
@@ -725,6 +727,9 @@
       "ctaInstagram": "Instagram",
       "ctaCall": "Qo'ng'iroq qilish",
       "contactLockedMessage": "Yetkazib beruvchi kontakti Dordoi.help xizmati orqali mavjud",
+      "contactsSectionTitle": "Yetkazib beruvchi kontaktlari",
+      "ctaRequestContact": "Kontakt so'rash",
+      "ctaFindBuyer": "Xaridor topish",
       "publicSeo": {
         "h1WithCategory": "Dordoy bozorida {category} yetkazib beruvchi",
         "h1Fallback": "Dordoy bozori yetkazib beruvchisi",

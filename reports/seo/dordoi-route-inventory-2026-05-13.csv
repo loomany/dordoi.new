@@ -1,0 +1,35 @@
+url,locale,page_type,status_code,indexable,canonical,hreflang_count,title,h1,meta_description_present,notes
+https://dordoi.help/ru,ru,home,200,yes,https://dordoi.help/ru,6,Dordoi.help — оптовая платформа для рынка Дордой,Поставщики байеры и карго рынка Дордой в одном каталоге,yes,Strong brand intent; JSON-LD Organization+WebSite
+https://dordoi.help/kk,kk,home,200,yes,https://dordoi.help/kk,6,Dordoi.help — Дордой нарығына арналған көтерме платформа,(KK H1),yes,Translated Seo.home
+https://dordoi.help/kg,kg,home,200,yes,https://dordoi.help/kg,6,Dordoi.help — Дордой базары үчүн опт платформасы,(KY H1),yes,hreflang ky
+https://dordoi.help/uz,uz,home,200,yes,https://dordoi.help/uz,6,Dordoi.help — Dordoy bozori uchun ulgurji platforma,(UZ H1),yes,Latin script UZ
+https://dordoi.help/tj,tj,home,200,yes,https://dordoi.help/tj,6,Dordoi.help — платформаи бисёрфурӯшӣ барои бозори Дордой,(TJ H1),yes,hreflang tg
+https://dordoi.help/ru/catalog,ru,catalog_browse,200,yes,https://dordoi.help/ru/catalog,6,Каталог категорий — Dordoi.help,Прямые оптовые поставщики,yes,Main browse hub; H1 missing Дордой; ig signals in HTML (~13)
+https://dordoi.help/ru/catalog?page=2,ru,catalog_pagination,200,yes,https://dordoi.help/ru/catalog,6,Same as catalog,Прямые оптовые поставщики,yes,Duplicate canonical risk — recommend noindex
+https://dordoi.help/ru/catalog?cat=women-outerwear,ru,catalog_filter,200,yes,https://dordoi.help/ru/catalog,6,Same as catalog,Прямые оптовые поставщики,yes,Should canonical to /ru/categories/women-clothing when exists
+https://dordoi.help/ru/catalog?compare=1,ru,catalog_debug,200,yes,https://dordoi.help/ru/catalog,6,Same as catalog,Прямые оптовые поставщики,yes,Debug URL — recommend noindex nofollow
+https://dordoi.help/kk/catalog,kk,catalog_browse,200,yes,https://dordoi.help/kk/catalog,6,Санаттар каталогы — Dordoi.help,(KK H1),yes,Same grid as RU
+https://dordoi.help/kg/catalog,kg,catalog_browse,200,yes,https://dordoi.help/kg/catalog,6,Категориялар каталогу — Dordoi.help,(KY H1),yes,
+https://dordoi.help/uz/catalog,uz,catalog_browse,200,yes,https://dordoi.help/uz/catalog,6,Kategoriyalar katalogi — Dordoi.help,(UZ H1),yes,
+https://dordoi.help/tj/catalog,tj,catalog_browse,200,yes,https://dordoi.help/tj/catalog,6,Каталоги категорияҳо — Dordoi.help,(TJ H1),yes,
+https://dordoi.help/ru/suppliers,ru,suppliers_landing,200,yes,https://dordoi.help/ru/suppliers,6,Поставщикам — Dordoi.help,Поставщикам,yes,WRONG intent — seller page; needs buyer SEO rewrite
+https://dordoi.help/kk/suppliers,kk,suppliers_landing,200,yes,https://dordoi.help/kk/suppliers,6,Жеткізушілерге — Dordoi.help,Жеткізушілерге,yes,Same seller-intent issue
+https://dordoi.help/ru/sell,ru,sell_onboarding,200,yes,https://dordoi.help/ru/sell,6,Продать оптом — Dordoi.help,Рынок меняется. Будьте там где вас ищут.,yes,Correct seller intent URL
+https://dordoi.help/ru/buyers,ru,buyers_directory,200,yes,https://dordoi.help/ru/buyers,6,Проверенные байеры рынка Дордой,Найти проверенного байера,yes,wa/tel in HTML for buyer contacts
+https://dordoi.help/ru/buyer-service,ru,buyer_service,200,yes,https://dordoi.help/ru/buyer-service,6,Байерам — Dordoi.help,Байерам,yes,Thin ArticlePage
+https://dordoi.help/ru/about,ru,about,200,yes,https://dordoi.help/ru/about,6,От оптовика — для оптовиков,От оптовика — для оптовиков,yes,ArticlePage
+https://dordoi.help/ru/help,ru,help,200,yes,https://dordoi.help/ru/help,6,Помощь и инструкции,Помощь и инструкции,yes,
+https://dordoi.help/ru/faq,ru,faq,200,yes,https://dordoi.help/ru/faq,6,FAQ — Dordoi.help,Частые вопросы,yes,No FAQPage JSON-LD
+https://dordoi.help/ru/contact,ru,contact,200,yes,https://dordoi.help/ru/contact,6,Контакты — Dordoi.help,(contact H1),yes,In sitemap
+https://dordoi.help/ru/cargo,ru,cargo_landing,404,no,,0,,,no,Missing — SEO gap
+https://dordoi.help/ru/dordoi-market,ru,market_landing,404,no,,0,,,no,Missing — create
+https://dordoi.help/ru/wholesale,ru,wholesale_landing,404,no,,0,,,no,Missing — create
+https://dordoi.help/ru/categories/women-clothing,ru,category_landing,404,no,,0,,,no,Missing — replace ?cat= SEO
+https://dordoi.help/ru/providers,ru,legacy_route,404,no,,0,,,no,Use /suppliers + /catalog
+https://dordoi.help/ru/catalog/asso-corsets,ru,vendor_profile,200,yes,https://dordoi.help/ru/catalog/asso-corsets,6,Asso — оптовый поставщик,Asso,yes,PRIVACY: brand H1; wa/tel/ig/tme in HTML; telephone JSON-LD
+https://dordoi.help/ru/catalog/arusha-kg,ru,vendor_profile,200,yes,https://dordoi.help/ru/catalog/arusha-kg,6,Arusha — оптовый поставщик,Arusha,yes,Unsafe slug; full contacts public
+https://dordoi.help/ru/catalog/slavyana-moda,ru,vendor_profile,200,yes,https://dordoi.help/ru/catalog/slavyana-moda,6,Slavyana moda — оптовый поставщик,Slavyana moda,yes,Shop name in slug
+https://dordoi.help/ru/catalog/container-04-12,ru,vendor_profile_static,200,yes,https://dordoi.help/ru/catalog/container-04-12,6,Контейнер 04-12,Контейнер 04-12,yes,Showcase; wa in HTML; meta mentions WhatsApp
+https://dordoi.help/ru/catalog/nonexistent-slug-xyz,ru,vendor_404,404,no,,0,,,no,Returns 404 correctly
+https://dordoi.help/robots.txt,global,robots,200,n/a,,0,,,n/a,Allow /; disallow api admin cabinet
+https://dordoi.help/sitemap.xml,global,sitemap,200,n/a,,0,,,n/a,65 URLs; no vendor slugs; hreflang ky/tg

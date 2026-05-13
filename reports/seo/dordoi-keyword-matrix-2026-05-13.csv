@@ -1,0 +1,32 @@
+language,page_type,main_keyword,secondary_keywords,intent,recommended_url,priority,content_needed,index_now
+RU,home,дордой каталог,поставщики байеры карго Дордой; каталог Дордой,brand + product explanation,/ru,P1,hero + value props exist,yes
+RU,catalog_browse,каталог поставщиков Дордой,дордой каталог; каталог продавцов Дордой; оптовые поставщики,browse suppliers with filters,/ru/catalog,P0,H1+title+intro+footer; no duplicate with /suppliers,yes
+RU,suppliers_landing,поставщики Дордой,продавцы Дордой; оптовые поставщики Дордой; контакты поставщиков,informational commercial about suppliers,/ru/suppliers,P0,800-1200 words unique FAQ; CTA to catalog; seller block to /sell,no
+RU,market_landing,рынок Дордой Бишкек,дордой рынок; Dordoi market; рынок Дордой,general market info,/ru/dordoi-market,P1,unique long-form + FAQ,no
+RU,wholesale_landing,Дордой оптом,товары с Дордоя оптом; опт Бишкек; закуп на Дордое,wholesale buying guide,/ru/wholesale,P1,unique content + links to catalog/categories,no
+RU,cargo_landing,карго Дордой,доставка с Дордоя; доставка из Бишкека; карго Бишкек,delivery and cargo,/ru/cargo,P2,partners countries FAQ,no
+RU,category,женская одежда оптом Дордой,поставщики одежды Дордой; одежда оптом Бишкек,category suppliers,/ru/categories/women-clothing,P1,500+ words + teaser cards,no
+RU,category,обувь оптом Дордой,поставщики обуви Дордой,category suppliers,/ru/categories/shoes,P1,500+ words,no
+RU,category,сумки оптом Дордой,поставщики сумок,category suppliers,/ru/categories/bags,P2,500+ words,no
+RU,category,ткани оптом Дордой,поставщики тканей Дордой,category suppliers,/ru/categories/fabrics,P2,500+ words,no
+RU,buyers,байер Дордой,помощь с покупкой Дордой; посредник Дордой,buyer directory,/ru/buyers,P1,directory exists; expand SEO text,yes
+RU,sell,разместить магазин Дордой,продать оптом Дордой,seller onboarding,/ru/sell,P2,seller intent — keep separate,yes
+KK,home,Дордой каталогы,Дордой жеткізушілері; Дордой көтерме,brand KK,/kk,P1,translated,yes
+KK,catalog_browse,Дордой жеткізушілер каталогы,Дордой каталогы,browse,/kk/catalog,P1,mirror RU catalog SEO,cautious
+KK,suppliers_landing,Дордой жеткізушілері,Дордой сатушылары,suppliers info,/kk/suppliers,P1,rewrite from seller to buyer intent,no
+KK,wholesale,Дордой көтерме сауда,Дордойдан тауар,wholesale,/kk/wholesale,P2,create after RU,no
+KY,home,Дордой каталогу,Дордой жеткирүүчүлөр; Дордой дүң соода,brand KY,/kg,P1,manual review advised,cautious
+KY,catalog_browse,Дордой каталогу,Дордой жеткирүүчүлөр каталогу,browse,/kg/catalog,P1,,cautious
+KY,suppliers_landing,Дордой жеткирүүчүлөр,Дордой сатуучулары,suppliers,/kg/suppliers,P2,,no
+UZ,home,Dordoy katalog,Dordoy yetkazib beruvchilar; Dordoy ulgurji,brand UZ,/uz,P1,Latin UZ ok,yes
+UZ,catalog_browse,Dordoy katalogi,Dordoy yetkazib beruvchilar katalogi,browse,/uz/catalog,P1,,cautious
+UZ,suppliers_landing,Dordoy yetkazib beruvchilar,Dordoy sotuvchilari,suppliers,/uz/suppliers,P2,,no
+UZ,cargo,Dordoy kargo,Bishkekdan yetkazib berish,cargo,/uz/cargo,P3,,no
+TG,home,каталоги Дордой,таъминкунандагони Дордой; Дордой яклухт,brand TJ,/tj,P1,manual review,cautious
+TG,catalog_browse,каталоги таъминкунандагони Дордой,каталоги Дордой,browse,/tj/catalog,P2,,cautious
+TG,suppliers_landing,таъминкунандагони Дордой,фурӯшандагони Дордой,suppliers,/tj/suppliers,P2,,no
+RU,country,Kazakhstan buyers,купить с Дордоя из Казахстана; доставка в Казахстан,country buyer intent,/ru/for-buyers-from-kazakhstan,P3,800+ words,no
+RU,country,Uzbekistan buyers,байер Дордой Узбекистан,country intent,/ru/for-buyers-from-uzbekistan,P3,,no
+RU,country,Tajikistan buyers,карго Дордой Таджикистан,country intent,/ru/for-buyers-from-tajikistan,P3,,no
+RU,country,Kyrgyzstan buyers,заказ с Дордоя Кыргызстан,country intent,/ru/for-buyers-from-kyrgyzstan,P3,,no
+RU,country,Russia buyers,поставщики Дордой для России,country intent,/ru/for-buyers-from-russia,P3,,no

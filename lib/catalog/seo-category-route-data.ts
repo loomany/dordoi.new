@@ -15,7 +15,8 @@ export type SeoCategoryRoute = {
   descriptionByLocale: Record<RouteLocale, string>;
   h1ByLocale: Record<RouteLocale, string>;
   introByLocale: Record<RouteLocale, string>;
-  seoTextByLocale: Record<RouteLocale, string>;
+  categoryNameByLocale: Record<RouteLocale, string>;
+  seoTextByLocale: Record<RouteLocale, string[]>;
   faqByLocale: Record<RouteLocale, Array<{ question: string; answer: string }>>;
   relatedCategoryIds: string[];
   indexPolicy: "index" | "noindex_if_empty" | "noindex";
@@ -45,7 +46,8 @@ type CategorySeed = {
 
 function buildRouteFromSeed(seed: CategorySeed): SeoCategoryRoute {
   const introByLocale = {} as Record<RouteLocale, string>;
-  const seoTextByLocale = {} as Record<RouteLocale, string>;
+  const categoryNameByLocale = {} as Record<RouteLocale, string>;
+  const seoTextByLocale = {} as Record<RouteLocale, string[]>;
   const faqByLocale = {} as SeoCategoryRoute["faqByLocale"];
   const titleByLocale = {} as Record<RouteLocale, string>;
   const descriptionByLocale = {} as Record<RouteLocale, string>;
@@ -56,6 +58,7 @@ function buildRouteFromSeed(seed: CategorySeed): SeoCategoryRoute {
     h1ByLocale[locale] = meta.h1;
     titleByLocale[locale] = meta.title;
     descriptionByLocale[locale] = meta.description;
+    categoryNameByLocale[locale] = meta.categoryName;
     introByLocale[locale] = buildCategoryIntro(
       locale,
       meta.categoryName,
@@ -82,6 +85,7 @@ function buildRouteFromSeed(seed: CategorySeed): SeoCategoryRoute {
     descriptionByLocale,
     h1ByLocale,
     introByLocale,
+    categoryNameByLocale,
     seoTextByLocale,
     faqByLocale,
     relatedCategoryIds: seed.relatedCategoryIds,

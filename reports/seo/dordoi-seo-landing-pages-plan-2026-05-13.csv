@@ -1,0 +1,24 @@
+priority,locale,url,page_type,target_keyword,intent,index_policy,content_required,depends_on,notes
+P0,ru,/ru/catalog,catalog_browse,каталог поставщиков Дордой,browse grid filters search,index,"H1 with Дордой+каталог; title; 120-200w intro; short FAQ; footer links; query noindex",URL architecture approve,Do NOT rename URL; anti-duplicate with /suppliers
+P0,ru,/ru/suppliers,suppliers_landing,поставщики Дордой,buyer SEO about suppliers,index,"800-1200w unique; H1 Поставщики рынка Дордой; 6-8 FAQ; CTA catalog; seller secondary to /sell",/ru/catalog hub,Replace current seller-only ArticlePage content
+P1,ru,/ru/dordoi-market,market_landing,рынок Дордой Бишкек,market overview,index,"1000w+ history geography how to buy; unique FAQ; links catalog wholesale cargo",none,New route required
+P1,ru,/ru/wholesale,wholesale_landing,Дордой оптом,wholesale guide,index,"800w+ MOQ logistics; unique FAQ; CTA catalog categories",/ru/catalog,New route; no vendor grid duplicate
+P1,ru,/ru/categories/women-clothing,category_landing,женская одежда оптом Дордой,category suppliers,index,"500-800w; H2 structure; 6+ vendors or noindex until volume",catalog category data,Canonical target for ?cat=women-*
+P1,ru,/ru/categories/shoes,category_landing,обувь оптом Дордой,category,index,500w+ curated teaser,/ru/categories/women-clothing pattern,
+P1,ru,/ru/categories/men-clothing,category_landing,мужская одежда оптом Дордой,category,index,500w+,category tree,
+P1,ru,/ru/categories/kids-clothing,category_landing,детская одежда оптом Дордой,category,index,500w+,category tree,
+P2,ru,/ru/categories/bags,category_landing,сумки оптом Дордой,category,index,500w+,
+P2,ru,/ru/categories/fabrics,category_landing,ткани оптом Дордой,category,index,500w+,
+P2,ru,/ru/categories/accessories,category_landing,аксессуары оптом Дордой,category,index,500w+,
+P2,ru,/ru/categories/home-textile,category_landing,домашний текстиль Дордой,category,index,500w+,
+P2,ru,/ru/cargo,cargo_landing,карго Дордой,delivery cargo,index,"800w+ countries partners FAQ",/ru/buyers,Create after P1 landings
+P2,kk,/kk/catalog,catalog_browse,Дордой каталогы,browse,index,mirror RU catalog metadata strategy,/ru/catalog content model,Index after RU stable
+P2,kk,/kk/suppliers,suppliers_landing,Дордой жеткізушілері,suppliers,index,mirror RU suppliers landing,/ru/suppliers,Not seller intent
+P3,ru,/ru/for-buyers-from-kazakhstan,country_landing,купить с Дордоя из Казахстана,country buyer,index,800w+ unique,noindex until content
+P3,ru,/ru/for-buyers-from-uzbekistan,country_landing,поставщики Дордой Узбекистан,country,index,800w+,
+P3,ru,/ru/for-buyers-from-tajikistan,country_landing,карго Дордой Таджикистан,country,index,800w+,
+P3,ru,/ru/for-buyers-from-kyrgyzstan,country_landing,заказ с Дордоя Кыргызстан,country,index,800w+,
+P3,ru,/ru/for-buyers-from-russia,country_landing,поставщики Дордой Россия,country,index,800w+,
+P3,ru,/ru/for-buyers-from-kazakhstan/women-clothing,combo_landing,женская одежда Дордой Казахстан,combo,noindex until volume,800w+ 10+ vendors,country+category pages,Thin content risk
+P0,ru,/ru/catalog?page=*,catalog_query,pagination filter,UX only,noindex,canonical to clean URL,/ru/categories/* when live,Technical SEO fix later
+P0,ru,/ru/catalog?compare=1,catalog_debug,debug,debug,noindex nofollow,block in robots,none,Remove from index

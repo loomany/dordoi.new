@@ -78,7 +78,7 @@ export default async function SeoCategoryPage({ params }: Props) {
         ...labels,
         vendorPreviewBody:
           totalCount > 0
-            ? labels.vendorPreviewBodyWithVendors(totalCount)
+            ? labels.vendorPreviewBodyWithVendors
             : labels.vendorPreviewBodyEmpty,
       }}
     />

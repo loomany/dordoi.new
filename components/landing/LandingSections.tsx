@@ -14,7 +14,6 @@ import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { landingBlueCtaClassName } from "@/lib/landing-cta";
-import { HomePopularSectionsBlock } from "@/components/landing/HomePopularSectionsBlock";
 import { vendorOnboardingTelegramHref } from "@/lib/vendor-onboarding-telegram";
 import { cn } from "@/lib/utils";
 import { getLandingSpec, spacingClass, typographyClass } from "@/lib/landing-spec";
@@ -62,31 +61,15 @@ export async function LandingSections() {
 
   return (
     <div className="flex flex-col">
-      {sections.flatMap((id, i) => {
-        const stripe = (
-          <div
-            key={id}
-            id={id === "howItWorks" ? "how-it-works" : undefined}
-            className={cn(sectionY, stripeBg(i))}
-          >
-            {nodes[id] ?? null}
-          </div>
-        );
-
-        if (id === "ctaBand") {
-          return [
-            <div
-              key="popular-sections"
-              className={cn(sectionY, stripeBg(i))}
-            >
-              <HomePopularSectionsBlock titleClass={titleClass} blockGap={blockGap} />
-            </div>,
-            stripe,
-          ];
-        }
-
-        return [stripe];
-      })}
+      {sections.map((id, i) => (
+        <div
+          key={id}
+          id={id === "howItWorks" ? "how-it-works" : undefined}
+          className={cn(sectionY, stripeBg(i))}
+        >
+          {nodes[id] ?? null}
+        </div>
+      ))}
     </div>
   );
 }

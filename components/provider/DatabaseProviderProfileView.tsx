@@ -28,6 +28,7 @@ import {
 } from "@/lib/catalog/published-vendors";
 import { getSessionProfile } from "@/lib/auth/session-profile";
 import { fetchBuyerFavoriteKeySet } from "@/lib/favorites/buyer-favorites";
+import { digitsOnly } from "@/lib/phone";
 import {
   formatListingUpdatedToday,
   formatProviderAddedDate,
@@ -54,6 +55,30 @@ import { buildVendorFaq } from "@/lib/dordoi/vendorFaq";
 type Props = {
   vendor: PublishedVendorRow;
 };
+
+function ensureHttp(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+}
+
+function telegramHref(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("@")) {
+    return `https://t.me/${trimmed.slice(1)}`;
+  }
+  if (trimmed.startsWith("t.me/")) {
+    return `https://${trimmed}`;
+  }
+  return ensureHttp(trimmed);
+}
+
+function whatsappHref(raw: string | null | undefined): string | null {
+  const digits = digitsOnly(raw ?? "");
+  return digits ? `https://wa.me/${digits}` : null;
+}
 
 function optionalText(value: string | null | undefined, fallback = "—"): string {
   const trimmed = value?.trim();
@@ -142,6 +167,17 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
   const displayLocationRow = showcase?.locationRow ?? vendor.location_row;
   const listingKey = catalogListingKeyFromSlug(vendor.slug);
   const initialFavorite = favoriteKeys.has(listingKey);
+  const primaryWhatsapp = whatsappHref(vendor.whatsapp_1) ?? whatsappHref(vendor.phone_number);
+  const secondaryWhatsapp = whatsappHref(vendor.whatsapp_2);
+  const telegramHrefResolved = vendor.telegram_url
+    ? telegramHref(vendor.telegram_url)
+    : null;
+  const instagramHrefResolved = vendor.instagram_url
+    ? ensureHttp(vendor.instagram_url)
+    : null;
+  const telHrefResolved = vendor.phone_number
+    ? `tel:${digitsOnly(vendor.phone_number)}`
+    : null;
   const googleMapsPublicHref = resolveGoogleMapsHref(
     vendor.google_maps_uri,
     vendor.google_place_id,
@@ -486,12 +522,11 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
               <VendorContactActions
                 listingKey={listingKey}
                 initialFavorite={initialFavorite}
-                contactsLocked
-                primaryWhatsapp={null}
-                secondaryWhatsapp={null}
-                telegramHref={null}
-                instagramHref={null}
-                telHref={null}
+                primaryWhatsapp={primaryWhatsapp}
+                secondaryWhatsapp={secondaryWhatsapp}
+                telegramHref={telegramHrefResolved}
+                instagramHref={instagramHrefResolved}
+                telHref={telHrefResolved}
                 googleMapsHref={googleMapsPublicHref}
                 twoGisHref={twoGisPublicHref}
                 yandexMapsHref={yandexMapsPublicHref}
