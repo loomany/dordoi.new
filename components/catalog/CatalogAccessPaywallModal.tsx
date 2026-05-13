@@ -10,7 +10,10 @@ import {
 } from "@/app/actions/subscription";
 import { useOpenAuthDialog } from "@/components/auth/auth-dialog-context";
 import type { SubscriptionPlan } from "@/lib/subscription/plans";
-import { savePendingCheckoutPlan } from "@/lib/subscription/pending-checkout";
+import {
+  clearPendingCheckoutPlan,
+  savePendingCheckoutPlan,
+} from "@/lib/subscription/pending-checkout";
 import {
   Dialog,
   DialogContent,

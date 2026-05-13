@@ -21,15 +21,12 @@ import {
 import { filterPublishedVendorsBySubcategorySlugs } from "@/lib/catalog/catalog-category-filter";
 import {
   capCatalogTotalCountForFreeAccess,
+  catalogEffectivePage,
   catalogFreeVendorLimit,
   catalogPageSizeForAccess,
 } from "@/lib/catalog/catalog-access-limits";
-import {
-  capCatalogTotalCountForFreeAccess,
-  catalogEffectivePage,
-  catalogPageSizeForAccess,
-} from "@/lib/catalog/catalog-access-limits";
 import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
+import { applyCatalogAccessToVendors } from "@/lib/catalog/catalog-vendor-access";
 import {
   buildCatalogCardSourceRowForPublishedVendor,
   fetchPublishedVendorsCatalogPage,
