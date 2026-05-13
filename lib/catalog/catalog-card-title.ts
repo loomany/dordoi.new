@@ -68,6 +68,20 @@ export function sanitizeAiCatalogBrandName(raw: string): string | null {
   return s;
 }
 
+/** Телефоны, URL и @ники — только в блоке контактов, не в «О поставщике». */
+export function stripPublicContactLeaksFromVendorText(text: string): string {
+  let s = text.normalize("NFKC").trim();
+  if (!s) return "";
+  s = s.replace(/https?:\/\/\S+/gi, " ");
+  s = s.replace(/\bwww\.\S+/gi, " ");
+  s = s.replace(/@[\w][\w.]*/g, " ");
+  s = s.replace(/\+?\d[\d\s\-()]{7,}\d/g, " ");
+  s = s.replace(/\b\d{9,15}\b/g, " ");
+  s = s.replace(/[\u0000-\u001F]/g, " ");
+  s = s.replace(/\s{2,}/g, " ").trim();
+  return s.replace(/[\s,.;:!?\-—•·]+$/u, "").trim();
+}
+
 /**
  * Не дублируем «Магазин женской одежды» + «Оптовый магазин женской одежды».
  */

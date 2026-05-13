@@ -16,10 +16,11 @@ import { VendorPhotoBatchFeed } from "@/components/provider/VendorPhotoBatchFeed
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Link } from "@/i18n/navigation";
 import { catalogListingKeyFromSlug } from "@/lib/catalog/listing-key";
+import { stripPublicContactLeaksFromVendorText } from "@/lib/catalog/catalog-card-title";
+import { getAiCatalogDisplayOverlay } from "@/lib/catalog/parsed-ai-catalog-overlay";
 import {
   buildCatalogCardSourceRowForPublishedVendor,
   fetchApprovedVendorPhotoBatches,
-  getAiCatalogDisplayOverlay,
   type PublishedVendorRow,
 } from "@/lib/catalog/published-vendors";
 import { getSessionProfile } from "@/lib/auth/session-profile";
@@ -103,6 +104,27 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
   });
   const aiAboutOverlay = getAiCatalogDisplayOverlay(vendor.parsed_ai_data);
   const aboutUsesAiSnapshot = Boolean(aiAboutOverlay?.description?.trim());
+  const aboutBodyParagraphs = (() => {
+    if (showcase) {
+      const parts = [showcase.description.trim()];
+      if (showcase.descriptionDetail?.trim()) {
+        parts.push(showcase.descriptionDetail.trim());
+      }
+      return parts
+        .map(stripPublicContactLeaksFromVendorText)
+        .filter((p) => p.length > 0);
+    }
+    if (aboutUsesAiSnapshot) {
+      const ai = stripPublicContactLeaksFromVendorText(
+        cardRow.display.description.trim(),
+      );
+      return ai ? [ai] : [];
+    }
+    return [vendor.description?.trim(), vendor.description_detail?.trim()]
+      .filter(Boolean)
+      .map((p) => stripPublicContactLeaksFromVendorText(p!))
+      .filter((p) => p.length > 0);
+  })();
   const pageTitle =
     cardRow.display.storeTitle.trim() || tBrowse("fallbackStoreTitle");
   const categoryLabels = showcase
@@ -322,23 +344,9 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
               <section className="mt-8 border-t border-border/70 pt-6">
                 <h2 className="text-lg font-semibold text-card-foreground">{t("aboutTitle")}</h2>
                 <div className="mt-3 space-y-4 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
-                  {showcase ? (
-                    <>
-                      <p>{showcase.description}</p>
-                      {showcase.descriptionDetail ? (
-                        <p>{showcase.descriptionDetail}</p>
-                      ) : null}
-                    </>
-                  ) : (
-                    <>
-                      {cardRow.display.description.trim() ? (
-                        <p>{cardRow.display.description.trim()}</p>
-                      ) : null}
-                      {!aboutUsesAiSnapshot && vendor.description_detail?.trim() ? (
-                        <p>{vendor.description_detail.trim()}</p>
-                      ) : null}
-                    </>
-                  )}
+                  {aboutBodyParagraphs.map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))}
                 </div>
               </section>
 
