@@ -26,6 +26,8 @@ import { getShowcaseCatalogFields } from "@/lib/catalog/showcase-vendor-i18n";
 
 const SAMPLE_IDS = ["0", "1", "2", "3", "4", "5"] as const;
 const CATALOG_PAGE_SIZE = 10;
+/** First page numbers always listed before an ellipsis (SaaS-style trail). */
+const PAGINATION_LEADING_PAGES = 7;
 
 /** Profile slugs for sample rows — aligns with `data/provider-registry`. */
 const SAMPLE_PROFILE_SLUGS: (ProviderSlug | undefined)[] = [
@@ -74,6 +76,41 @@ function buildCatalogBrowsePath(opts: {
   }
   const q = params.toString();
   return q.length > 0 ? `/catalog?${q}` : "/catalog";
+}
+
+/** Compact page list: `1 2 … 5 6 7 … 39` or `1–7 … 39` at start — one row, no wrap. */
+type CatalogPaginationItem = number | "ellipsis";
+
+function getCatalogPaginationItems(
+  totalPages: number,
+  currentPage: number,
+  delta = 1,
+): CatalogPaginationItem[] {
+  const current = Math.min(Math.max(1, currentPage), totalPages);
+  const range: number[] = [];
+  for (let i = 1; i <= totalPages; i++) {
+    if (
+      i === totalPages ||
+      i <= PAGINATION_LEADING_PAGES ||
+      (i >= current - delta && i <= current + delta)
+    ) {
+      range.push(i);
+    }
+  }
+  const out: CatalogPaginationItem[] = [];
+  let prev: number | undefined;
+  for (const i of range) {
+    if (prev !== undefined) {
+      if (i - prev === 2) {
+        out.push(prev + 1);
+      } else if (i - prev > 2) {
+        out.push("ellipsis");
+      }
+    }
+    out.push(i);
+    prev = i;
+  }
+  return out;
 }
 
 /** Full catalog browse chrome: header, filters, responsive card grid. */
@@ -225,7 +262,7 @@ export async function CatalogBrowseLayout({
 
           {totalPages > 1 ? (
             <nav
-              className="flex flex-wrap items-center justify-center gap-2 pt-2"
+              className="flex flex-nowrap items-center justify-center gap-1 pt-2 sm:gap-1.5"
               aria-label="Страницы каталога"
             >
               <Link
@@ -236,7 +273,7 @@ export async function CatalogBrowseLayout({
                 })}
                 aria-disabled={currentPage === 1}
                 className={cn(
-                  "inline-flex size-9 items-center justify-center rounded-full border border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-card text-sm font-medium text-card-foreground shadow-sm transition-colors hover:border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] hover:bg-secondary/60",
+                  "inline-flex h-9 shrink-0 items-center justify-center rounded-md border border-border/80 bg-card px-2 text-muted-foreground shadow-sm transition-colors hover:bg-muted/60 hover:text-foreground",
                   currentPage === 1 && "pointer-events-none opacity-45",
                 )}
               >
@@ -244,29 +281,37 @@ export async function CatalogBrowseLayout({
                 <span className="sr-only">Предыдущая страница</span>
               </Link>
 
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => {
-                const active = pageNumber === currentPage;
-
-                return (
-                  <Link
-                    key={pageNumber}
-                    href={buildCatalogBrowsePath({
-                      page: pageNumber,
-                      categorySlugs,
-                      compareWithPreview,
-                    })}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "inline-flex size-9 items-center justify-center rounded-full border text-sm font-semibold shadow-sm transition-colors",
-                      active
-                        ? "border-primary/30 bg-secondary text-secondary-foreground"
-                        : "border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-card text-card-foreground hover:border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] hover:bg-secondary/60",
-                    )}
-                  >
-                    {nf.format(pageNumber)}
-                  </Link>
-                );
-              })}
+              <div className="flex min-w-0 flex-nowrap items-center justify-center gap-1 sm:gap-1.5">
+                {getCatalogPaginationItems(totalPages, currentPage).map((item, idx) =>
+                  item === "ellipsis" ? (
+                    <span
+                      key={`e-${idx}`}
+                      className="inline-flex h-9 shrink-0 select-none items-center px-1 text-sm text-muted-foreground/80"
+                      aria-hidden
+                    >
+                      …
+                    </span>
+                  ) : (
+                    <Link
+                      key={item}
+                      href={buildCatalogBrowsePath({
+                        page: item,
+                        categorySlugs,
+                        compareWithPreview,
+                      })}
+                      aria-current={item === currentPage ? "page" : undefined}
+                      className={cn(
+                        "inline-flex h-9 min-w-9 shrink-0 items-center justify-center rounded-md border px-2 text-sm font-medium tabular-nums transition-colors",
+                        item === currentPage
+                          ? "border-primary/35 bg-primary text-primary-foreground shadow-sm"
+                          : "border-border/80 bg-card text-card-foreground shadow-sm hover:bg-muted/50",
+                      )}
+                    >
+                      {nf.format(item)}
+                    </Link>
+                  ),
+                )}
+              </div>
 
               <Link
                 href={buildCatalogBrowsePath({
@@ -276,7 +321,7 @@ export async function CatalogBrowseLayout({
                 })}
                 aria-disabled={currentPage === totalPages}
                 className={cn(
-                  "inline-flex size-9 items-center justify-center rounded-full border border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-card text-sm font-medium text-card-foreground shadow-sm transition-colors hover:border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] hover:bg-secondary/60",
+                  "inline-flex h-9 shrink-0 items-center justify-center rounded-md border border-border/80 bg-card px-2 text-muted-foreground shadow-sm transition-colors hover:bg-muted/60 hover:text-foreground",
                   currentPage === totalPages && "pointer-events-none opacity-45",
                 )}
               >
