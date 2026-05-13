@@ -110,13 +110,22 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
 
   if (buyer.liveListing) {
     const phoneDigits = buyer.phoneDigits?.trim() || "";
-    const showDualContact =
+    const callDigits =
+      phoneDigits || buyer.whatsappDigits?.trim() || "";
+    const showStackedWaCall =
       phoneDigits.length > 0 && Boolean(buyer.whatsappDigits?.trim());
-    const hasSocialRow = Boolean(telegramHref || instagramHref);
+    const showSecondaryCall =
+      !showStackedWaCall &&
+      callDigits.length > 0 &&
+      !telegramHref &&
+      !instagramHref;
+    const hasSocialRow = Boolean(
+      telegramHref || instagramHref || showSecondaryCall,
+    );
 
     return (
       <div className="mt-auto space-y-3 pt-7">
-        {showDualContact ? (
+        {showStackedWaCall ? (
           <>
             <a
               href={whatsappHref}
@@ -172,6 +181,11 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
               >
                 <InstagramGlyph className="size-3.5 shrink-0 sm:size-4" />
                 <span className="truncate">{strings.ctaInstagram}</span>
+              </a>
+            ) : null}
+            {showSecondaryCall ? (
+              <a href={`tel:+${callDigits}`} className={socialBtn}>
+                {strings.ctaCall}
               </a>
             ) : null}
           </div>

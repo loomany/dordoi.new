@@ -55,7 +55,7 @@ export const BUYERS: BuyerDirectoryRow[] = [
     completedOrdersDisplay: "150+",
     whatsappDigits: "996704403480",
     telegramUrl: "",
-    instagramUrl: "https://www.instagram.com/dordoi_zakup_aiperi",
+    instagramUrl: "",
     photoSrc: "/buyers/portrait-aiperi.png",
     liveListing: true,
     linkedVendorSlug: "dordoi-zakup-aiperi",
