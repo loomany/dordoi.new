@@ -71,9 +71,19 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
     return (
       <>
         <div className="mt-auto space-y-3 pt-7">
-          <button type="button" onClick={() => setOpen(true)} className={waBtn}>
-            {strings.ctaClaimSpot}
-          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <a
+              href={LOOMANY_TELEGRAM}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={socialBtn}
+            >
+              {strings.ctaContact}
+            </a>
+            <button type="button" onClick={() => setOpen(true)} className={waBtn}>
+              {strings.ctaClaimSpot}
+            </button>
+          </div>
         </div>
 
         <Dialog open={open} onOpenChange={setOpen}>
@@ -119,9 +129,7 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
       callDigits.length > 0 &&
       !telegramHref &&
       !instagramHref;
-    const hasSocialRow = Boolean(
-      telegramHref || instagramHref || showSecondaryCall,
-    );
+    const hasSocialRow = Boolean(telegramHref || instagramHref);
 
     return (
       <div className="mt-auto space-y-3 pt-7">
@@ -142,6 +150,20 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
               {strings.ctaCall}
             </a>
           </>
+        ) : showSecondaryCall ? (
+          <div className="grid grid-cols-2 gap-2">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={waBtn}
+            >
+              {strings.ctaContact}
+            </a>
+            <a href={`tel:+${callDigits}`} className={socialBtn}>
+              {strings.ctaCall}
+            </a>
+          </div>
         ) : (
           <a
             href={whatsappHref}
@@ -181,11 +203,6 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
               >
                 <InstagramGlyph className="size-3.5 shrink-0 sm:size-4" />
                 <span className="truncate">{strings.ctaInstagram}</span>
-              </a>
-            ) : null}
-            {showSecondaryCall ? (
-              <a href={`tel:+${callDigits}`} className={socialBtn}>
-                {strings.ctaCall}
               </a>
             ) : null}
           </div>
