@@ -43,7 +43,6 @@ export function BuyersDirectoryInteractive() {
               buyerSpotModal: {
                 title: t("buyerSpotModal.title"),
                 line1: t("buyerSpotModal.line1"),
-                line2: t("buyerSpotModal.line2"),
                 telegramLabel: t("buyerSpotModal.telegramLabel"),
               },
             }}

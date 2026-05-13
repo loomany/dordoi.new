@@ -39,7 +39,6 @@ const socialBtn =
 export type BuyerSpotModalStrings = {
   title: string;
   line1: string;
-  line2: string;
   telegramLabel: string;
 };
 
@@ -89,7 +88,6 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
             </DialogHeader>
             <div className="space-y-3 text-sm leading-relaxed text-slate-600">
               <p>{m.line1}</p>
-              <p>{m.line2}</p>
               <p className="border-t border-slate-100 pt-3 text-slate-800">
                 <span className="font-medium text-slate-700">
                   {m.telegramLabel}{" "}
@@ -220,7 +218,6 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
           </DialogHeader>
           <div className="space-y-3 text-sm leading-relaxed text-slate-600">
             <p>{m.line1}</p>
-            <p>{m.line2}</p>
             <p className="border-t border-slate-100 pt-3 text-slate-800">
               <span className="font-medium text-slate-700">
                 {m.telegramLabel}{" "}
