@@ -26,7 +26,7 @@
     "codeLabel": "WhatsApp kodi",
     "verifyCode": "Davom etish",
     "nameLabel": "Ism",
-    "emailLabel": "Email",
+    "emailLabel": "Elektron pochta",
     "emailHint": "Ixtiyoriy",
     "completeRegistration": "Roʻyxatdan oʻtishni yakunlash",
     "loading": "Kuting…",
@@ -452,7 +452,7 @@
       "supportEmail": "support@dordoi.help"
     },
     "faq": {
-      "h1": "TBS",
+      "h1": "Tez-tez beriladigan savollar",
       "h2": "Qisqacha",
       "q1": "Bu Ozon kabi marketpleysmi?",
       "a1": "Yo‘q. Bu Dordoy ulgurji atrofidagi B2B platforma: kataloglar, rollar va arizalar, chakana marketpleys modelisiz.",
@@ -591,9 +591,15 @@
       "paywall": {
         "title": "Dordoy yetkazib beruvchilari to'liq katalogini oching",
         "body": "Do'kon nomlari, WhatsApp va Telegram kontaktlari, profillar va opt shartlari — cheklovsiz. Bir to'lovdan keyin xaridingiz uchun yetkazib beruvchini darhol tanlang.",
-        "ctaPayment": "$9.99 evaziga kirishni ochish",
+        "ctaPayment": "To'lash",
         "closeDialog": "Yopish",
-        "unlockCard": "Yetkazib beruvchini ochish"
+        "unlockCard": "Yetkazib beruvchini ochish",
+        "planMonthlyLabel": "Oylik",
+        "planMonthlyPrice": "$9.99",
+        "planQuarterlyLabel": "3 oy",
+        "planQuarterlyPrice": "$300",
+        "checkoutError": "To'lovni boshlab bo'lmadi. Hisobingizga kiring va qayta urinib ko'ring.",
+        "checkoutLoading": "To'lovga o'tilmoqda…"
       },
       "listingAdded": "Qo'shilgan sana {date}",
       "listingUpdated": "Yangilandi {relative}",
@@ -695,7 +701,10 @@
           "description": "Uylab olingan partiyaning nazorati, kamchiliklarni ko'rish va masofaviy xaridorlar uchun bozor hisobi. Xizmat uchun belgilangan tariff, platforma tomonidan yashirin komissiyalarsiz."
         }
       },
-      "fallbackStoreTitle": "Do'kon"
+      "fallbackStoreTitle": "Do'kon",
+      "paginationNavAria": "Katalog sahifalari",
+      "paginationPrev": "Oldingi sahifa",
+      "paginationNext": "Keyingi sahifa"
     },
     "providerProfile": {
       "listingAdded": "{date} da qo'shildi",
@@ -845,7 +854,139 @@
         }
       },
       "recommendedSellersTitle": "Tavsiya etilgan sotuvchilar",
-      "recommendedSellersNavAria": "Tavsiya etilgan sotuvchilar bo'yicha navigatsiya"
+      "recommendedSellersNavAria": "Tavsiya etilgan sotuvchilar bo'yicha navigatsiya",
+      "vendorFaq": {
+        "sectionTitle": "{vendorName} haqidagi tez-tez beriladigan savollar",
+        "sectionLead": "Javoblar aloqa, buyurtma va xarid qilish shartlarini tezda tushunishga yordam beradi.",
+        "sectionAria": "{vendorName} haqidagi tez-tez beriladigan savollar",
+        "defaultCity": "Bishkek",
+        "defaultCountry": "Qırg'iziston",
+        "contactPhone": "telefon",
+        "contactListTwo": "{a} va {b}",
+        "contactListMany": "{head} va {last}",
+        "fallbackNoDescription": "Tovarlar, mavjudlik, o'lchamlar va buyurtma shartlarini bevosita sotuvchidan aniqlash yaxshidir.",
+        "whatToOrder": {
+          "question": "{name}dan nima buyurtma qilish mumkin?",
+          "questionBuyer": "{name} qanday yordam bera oladi?",
+          "introWithCategory": "{name} «{categoryLabel}» kategoriyasida tovarlar taklif etadi",
+          "introNoCategory": "{name} — Dordoi.help'dagi sotuvchining profili",
+          "salesWholesale": " optik xaridlar uchun",
+          "salesHybrid": " optik va chakana buyurtmalar uchun imkoniyat bilan",
+          "locationSuffix": "Sahifada Dordoida ilova qilingan bozor qatori: {locationRow}."
+        },
+        "wholesale": {
+          "question": "{name} optik xaridorlar bilan ishlaydimi?",
+          "answerWholesale": "{name} profili optik xaridorlarga mo'ljallangan.",
+          "answerHybrid": "{name} profili optik va chakana xaridorlarga mo'ljallangan.",
+          "minOrderSuffix": "Profilda minimal buyurtma ko'rsatilgan: {minOrder}.",
+          "contactsSuffix": "Narxlar, mavjudlik va yetkazib berish shartlarini {contacts} orqali aniqlash mumkin.",
+          "noContactsSuffix": "Buyurtma shartlarini bevosita sotuvchidan aniqlash yaxshidir.",
+          "answerRetail": "{name} chakana sotuvchi sifatida ko'rsatilgan. Agar mavjud bo'lsa, optik shartlarni bevosita sotuvchidan aniqlash kerak.",
+          "retailContactsSuffix": " {contacts} orqali",
+          "answerUnknown": "{name}da optik xarid qilish shartlari profilida ko'rsatilmagan.",
+          "unknownContactsSuffix": " Sotuvchi bilan {contacts} orqali bog'laning, ish formatini va minimal buyurtmani aniqlash uchun.",
+          "unknownNoContactsSuffix": "Sotuvchi bilan bog'laning, ish formatini va buyurtma shartlarini aniqlashtirish uchun."
+        },
+        "contact": {
+          "question": "{name} bilan qanday bog'lanish mumkin?",
+          "answerWithChannels": "Sotuvchi sahifasida aloqa tugmalari mavjud: {contacts}. Taklif va shartlarni aniqlashtirish uchun yozing yoki qo'ng'iroq qiling.",
+          "answerNoChannels": "{name} aloqa ma'lumotlari ushbu sahifada keltirilgan. Agar aloqa tugmalari yo'q bo'lsa, profil ta'rifini ko'rib chiqing yoki keyinroq qaytib keling — sotuvchi ma'lumotlarni yangilashi mumkin."
+        },
+        "delivery": {
+          "question": "Mahsulotni yetkazib berish bilan buyurtma berish mumkinmi?",
+          "answerBase": "Dordoi.help sotuvchi haqida aloqa ma'lumotlarini va ma'lumotlarni ko'rsatadi. Yetkazib berish va jo'natish shartlarini to'g'ridan-to'g'ri do'kondan aniqlash kerak.",
+          "answerDeliveryHelp": "Profilda sotuvchi yetkazib berishda yordam berishi mumkinligi ko'rsatilgan — batafsil ma'lumot olish uchun murojaat qilganingizda muhokama qilish kerak.",
+          "answerGeo": "Dordoi bozorida ko'plab ta'minotchilar {geo} dan ishlaydi, lekin bu avtomatik yetkazib berish degani emas — shartlar sotuvchidan bog'liq."
+        },
+        "prices": {
+          "question": "Narxlar va mavjudlikni qanday aniqlash mumkin?",
+          "answerBase": "Narxlar, o'lchamlar va mahsulot mavjudligi o'zgarishi mumkin. Buyurtma berishdan oldin sotuvchi bilan yozish va haqiqiy ma'lumotni aniqlash tavsiya etiladi.",
+          "answerSamples": "Profilda namunalar mavjudligi ko'rsatilgan — sotuvchidan ularni qanday olishni so'rang.",
+          "contactsSuffix": "{contacts} orqali bog'lanish mumkin."
+        },
+        "platform": {
+          "question": "Dordoi.help xaridorlarga qanday yordam beradi?",
+          "answer": "Dordoi.help ta'minotchilar, do'konlar va xaridorlarni bitta katalogda to'playdi, shuning uchun xaridorlar Dordoi bozorida sotuvchini topish va bog'lanishni tezda amalga oshirish osonroq."
+        },
+        "similar": {
+          "questionWithBlock": "O'xshash ta'minotchilar bormi?",
+          "answerWithBlock": "Ha, ushbu sahifada 'O'xshash ta'minotchilar' bo'limida boshqa do'konlar va katalogdan ta'minotchilar ko'rsatilgan — ular o'xshash toifa mahsulotlarini taklif etishi mumkin.",
+          "questionFind": "O'xshash ta'minotchilarni qanday topish mumkin?",
+          "answerFind": "Dordoi.help katalogidan foydalaning: toifalar bo'yicha filtrlar va qidiruv boshqa sotuvchilarni o'xshash mahsulotlar bilan topishga yordam beradi."
+        },
+        "categoryDefaultLabel": "mahsulotlar",
+        "category": {
+          "contactSuffix": "{contacts} orqali bog'lanish mumkin.",
+          "contactFallback": "Sotuvchidan to'g'ridan-to'g'ri aniqlang.",
+          "women": {
+            "q1": "{name} da qaysi ayollar mahsulotlarini topish mumkin?",
+            "a1": "{name} ' {categoryLabel} ' toifasida faol. Mahsulot assortimenti, modellari va mavjudligini sotuvchidan oldin aniqlash yaxshiroq.",
+            "q2": "{name} ayollar kiyimlarini opte sotib olish uchun mos keladimi?",
+            "a2Wholesale": "Agar siz ayollar kiyimlarini opte sotib olish uchun ta'minotchi izlayotgan bo'lsangiz, bu profil dastlabki aloqa va shartlarni muhokama qilish uchun foydali bo'lishi mumkin.",
+            "a2Other": "Profil dastlabki aloqa uchun foydali bo'lishi mumkin, lekin opte shartlarini sotuvchidan aniqlab olish lozim.",
+            "q3": "Buyurtma berishdan oldin o'lchamlar, modellari va mavjudligini aniqlash mumkinmi?",
+            "a3": "Ha, buyurtma berishdan oldin {name} ga yozib, o'lchamlar, modellari va mavjudligini aniqlash tavsiya etiladi."
+          },
+          "men": {
+            "q1": "{name} qaysi erkak kiyimlarini taklif qiladi?",
+            "a1": "{name} ' {categoryLabel} ' toifasida ta'minotchi. Mahsulot assortimenti va mavjudligini sotuvchidan aniqlang.",
+            "q2": "{name} erkak kiyimlarini opte sotish uchun mos keladimi?",
+            "a2": "Profil erkak kiyimlari sotuvchisi bilan dastlabki aloqa uchun mos. Olig shartlari to'g'ridan-to'g'ri muhokama qilinadi."
+          },
+          "kids": {
+            "q1": "{name} dan qanday bolalar kiyimlarini buyurtma berish mumkin?",
+            "a1": "{name} bolalar kiyimlari ('{categoryLabel}') bilan ishlaydi. O'lchamlar, modellari va mavjudligini sotuvchidan aniqlang.",
+            "q2": "{name} dan bolalar kiyimlarini opte sotib olish mumkinmi?",
+            "a2": "Bolalar kiyimlarini opte sotib olish shartlarini sotuvchidan aniqlang — profilga kategoriya keltirilgan, lekin buyurtma tafsilotlarini to'g'ridan-to'g'ri muhokama qilish kerak."
+          },
+          "shoes": {
+            "q1": "{name} dan obuvni opte buyurtma berish mumkinmi?",
+            "a1": "{name} obuv yetkazib beruvchi. Opte shartlarini va minimal buyurtmani sotuvchidan aniqlang.",
+            "q2": "O'lchamlar va mavjudlikni qanday aniqlash mumkin?",
+            "a2": "{name} ga yozing va buyurtma berishdan oldin o'lchamlar, modellari va mavjudligini aniqlang.",
+            "q3": "{name} do'kondan poyabzal xarid qilish uchun mos keladimi?",
+            "a3": "{name} poyabzal ta'minotchisi bilan dastlabki aloqa uchun foydali bo'lishi mumkin."
+          },
+          "bags": {
+            "q1": "{name}dan summalarni ulgurji buyurtma berish mumkinmi?",
+            "a1": "{name} summalar va charm buyumlar bilan ishlaydi. Ulgurji shartlarni sotuvchidan aniqlang.",
+            "q2": "Model, ranglar va mavjudlikni qanday aniqlash mumkin?",
+            "a2": "Buyurtmadan oldin model, ranglar va mavjudlikni aniqlash uchun {name} bilan bog'laning."
+          },
+          "accessories": {
+            "q1": "{name}dan aksessuarlarni ulgurji buyurtma berish mumkinmi?",
+            "a1": "{name} aksessuarlar («{categoryLabel}») taklif etadi. Ulgurji shartlarni sotuvchi bilan muhokama qiling.",
+            "q2": "{name}dan kichik partiyalar bilan xarid qilish mumkinmi?",
+            "a2": "Minimal buyurtma va partiya shartlarini sotuvchidan aniqlang — profil yorda bog'lanish uchun kontaktlarni o'z ichiga oladi."
+          },
+          "fabric": {
+            "q1": "{name} qaysi matolar va tikuv materiallarini taklif etadi?",
+            "a1": "{name} matolar va tikuv jihozlari bilan ishlaydi. assortimentni sotuvchidan aniqlang.",
+            "q2": "{name}dan matolarni ulgurji xarid qilish mumkinmi?",
+            "a2": "Matolar uchun ulgurji xarid qilish shartlari to'g'ridan-to'g'ri sotuvchi bilan muhokama qilinadi."
+          },
+          "cargo": {
+            "q1": "{name} yuk tashish va logistika sohasida nima bilan shug'ullanadi?",
+            "a1": "{name} — Dordoi.help saytida yuk tashish/logistika toifasidagi profil. Yuk tashish va kuzatish shartlarini sotuvchidan aniqlang.",
+            "q2": "Yuklarni yetkazib berish shartlarini qanday muhokama qilish mumkin?",
+            "a2": "Marshrutlar, muddatlar va narxlarni muhokama qilish uchun sahifadagi kontaktlar orqali {name} bilan bog'laning."
+          },
+          "buyer": {
+            "q1": "Dordoidagi xarid qiluvchi qanday yordam beradi?",
+            "a1": "{name} — xarid qiluvchi yoki xarid xizmati profili. Xarid qiluvchi bozorni topishda yordam berishi va sotuvchilar bilan shartlarni kelishishda yordam berishi mumkin — tafsilotlar murojaat qilganda muhokama qilinadi.",
+            "q2": "Xarid qiluvchi bozorga kerakli mahsulotni topishi mumkinmi?",
+            "a2": "{name}ga murojaat qilib, kerakli mahsulot va shartlarni ta'riflang — xarid qiluvchi bozorni izlash va xarid qilishni qanday tashkil etish haqida ko'rsatma berishi mumkin.",
+            "q3": "Xarid va kuzatuv shartlarini qanday muhokama qilish mumkin?",
+            "a3": "Ish formatini, komissiya va xaridni kuzatishni muhokama qilish uchun sahifadagi mavjud kontaktlar orqali {name}ga xat yozing."
+          },
+          "general": {
+            "q1": "{name} ulgurji xarid uchun mos keladimi?",
+            "a1": "{name} profili bozor ta'minotchisi bilan dastlabki aloqa uchun foydali bo'lishi mumkin. Ulgurji shartlarni sotuvchidan aniqlang.",
+            "q2": "Buyurtmadan oldin {name}dan nima aniqlash kerak?",
+            "a2": "Buyurtmadan oldin assortiment, narxlar, mavjudlik va yetkazib berish shartlarini aniqlash tavsiya etiladi."
+          }
+        }
+      }
     }
   },
   "catalogCategories": {

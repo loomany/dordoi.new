@@ -1,0 +1,6541 @@
+{
+  "generatedAt": "2026-05-13T20:20:03.988Z",
+  "locales": [
+    "kk",
+    "kg",
+    "uz",
+    "tj"
+  ],
+  "skipLive": false,
+  "skipDb": false,
+  "summary": {
+    "messages-missing": 40,
+    "messages-empty": 12,
+    "messages-identical-ru": 44,
+    "vendor-db-missing-i18n": 820,
+    "vendor-db-identical-ru": 0,
+    "vendor-db-stale": 0,
+    "static-identical-ru": 0,
+    "static-empty": 0,
+    "live-fetch-fail": 9,
+    "live-faq-ru-leak": 0,
+    "live-page-ru-leak": 8
+  },
+  "totalIssues": 933,
+  "issues": [
+    {
+      "kind": "messages-missing",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Cabinet.buyer.subscription.title",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Cabinet.buyer.subscription.body",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Cabinet.buyer.subscription.manageCta",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Cabinet.buyer.subscription.portalError",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Cabinet.admin.vendorAiPlaygroundInstagramUrlPlaceholder",
+      "detail": "https://www.instagram.com/…"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.catalogBrowse.paywall.planMonthlyLabel",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.catalogBrowse.paywall.planMonthlyPrice",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.catalogBrowse.paywall.planQuarterlyLabel",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.catalogBrowse.paywall.planQuarterlyPrice",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.catalogBrowse.paywall.checkoutError",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.catalogBrowse.paywall.checkoutLoading",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.catalogBrowse.paginationNavAria",
+      "detail": "Страницы каталога"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.catalogBrowse.showcaseVendors.dordoi-showcase-example-1-clothing.descriptionDetail",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.catalogBrowse.showcaseVendors.dordoi-showcase-example-2-shoes.descriptionDetail",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.suppliers.h2",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.help.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.contact.contactEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.privacy.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kk",
+      "path": "messages/kk.json",
+      "field": "Pages.refund.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Cabinet.navAdmin",
+      "detail": "Администрирование"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Cabinet.buyer.subscription.title",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Cabinet.buyer.subscription.body",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Cabinet.buyer.subscription.manageCta",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Cabinet.buyer.subscription.portalError",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Cabinet.admin.vendorAiPlaygroundMetaTitle",
+      "detail": "ИИ: текст карточки — Dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Cabinet.admin.vendorAiPlaygroundTitle",
+      "detail": "ИИ: текст карточки (песочница)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Cabinet.admin.vendorAiPlaygroundInstagramUrlPlaceholder",
+      "detail": "https://www.instagram.com/…"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.catalogBrowse.paywall.planMonthlyLabel",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.catalogBrowse.paywall.planMonthlyPrice",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.catalogBrowse.paywall.planQuarterlyLabel",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.catalogBrowse.paywall.planQuarterlyPrice",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.catalogBrowse.paywall.checkoutError",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.catalogBrowse.paywall.checkoutLoading",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.catalogBrowse.paginationNavAria",
+      "detail": "Страницы каталога"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.catalogBrowse.showcaseVendors.dordoi-showcase-example-1-clothing.descriptionDetail",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.catalogBrowse.showcaseVendors.dordoi-showcase-example-2-shoes.descriptionDetail",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.suppliers.h2",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.buyers.filterOptions.electronics",
+      "detail": "Электроника · опт"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.help.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.contact.contactEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.privacy.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "kg",
+      "path": "messages/kg.json",
+      "field": "Pages.refund.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Cabinet.buyer.subscription.title",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Cabinet.buyer.subscription.body",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Cabinet.buyer.subscription.manageCta",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Cabinet.buyer.subscription.portalError",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Cabinet.admin.vendorAiPlaygroundInstagramUrlPlaceholder",
+      "detail": "https://www.instagram.com/…"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.catalogBrowse.paywall.planMonthlyLabel",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.catalogBrowse.paywall.planMonthlyPrice",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.catalogBrowse.paywall.planQuarterlyLabel",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.catalogBrowse.paywall.planQuarterlyPrice",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.catalogBrowse.paywall.checkoutError",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.catalogBrowse.paywall.checkoutLoading",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.catalogBrowse.showcaseVendors.dordoi-showcase-example-1-clothing.descriptionDetail",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.catalogBrowse.showcaseVendors.dordoi-showcase-example-2-shoes.descriptionDetail",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.suppliers.h2",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.help.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.contact.contactEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.privacy.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "uz",
+      "path": "messages/uz.json",
+      "field": "Pages.refund.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.buyer.subscription.title",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.buyer.subscription.body",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.buyer.subscription.manageCta",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.buyer.subscription.portalError",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.vendor.edit.minBatch",
+      "detail": "Мин. партия / отгрузка"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.vendor.edit.samplesNote",
+      "detail": "Уточнение по пробной партии"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.admin.moderationEmpty",
+      "detail": "Нет заявок в этом списке."
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.admin.reviewBadgeManualCheck",
+      "detail": "Проверить вручную"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.admin.googlePlacesAutoFoundHint",
+      "detail": "Найдено автоматически через Google Places. Проверьте название, категорию и адрес перед публикацией."
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.admin.twoGisAutoFoundHint",
+      "detail": "Данные импортированы из 2GIS. Проверьте название, категорию и адрес перед публикацией."
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.admin.openInGoogleMaps",
+      "detail": "Открыть в Google Maps"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Cabinet.admin.vendorAiPlaygroundInstagramUrlPlaceholder",
+      "detail": "https://www.instagram.com/…"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.catalogBrowse.paywall.planMonthlyLabel",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.catalogBrowse.paywall.planMonthlyPrice",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.catalogBrowse.paywall.planQuarterlyLabel",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.catalogBrowse.paywall.planQuarterlyPrice",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.catalogBrowse.paywall.checkoutError",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-missing",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.catalogBrowse.paywall.checkoutLoading",
+      "detail": "missing overlay key (runtime falls back to RU)"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.catalogBrowse.showcaseVendors.dordoi-showcase-example-1-clothing.descriptionDetail",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.catalogBrowse.showcaseVendors.dordoi-showcase-example-2-shoes.descriptionDetail",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-empty",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.suppliers.h2",
+      "detail": "empty string"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.buyers.filterOptions.electronics",
+      "detail": "Электроника · опт"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.help.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.contact.contactEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.privacy.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "Pages.refund.supportEmail",
+      "detail": "support@dordoi.help"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "catalogCategoryTree.sub.uw-kids",
+      "detail": "Детское нижнее белье"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "catalogCategoryTree.sub.shoes-women",
+      "detail": "Женская обувь (туфли, сапоги, босоножки)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "catalogCategoryTree.sub.shoes-men",
+      "detail": "Мужская обувь (ботинки, туфли, мокасины)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "catalogCategoryTree.sub.shoes-sports",
+      "detail": "Спортивная обувь (кроссовки, кеды)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "catalogCategoryTree.sub.bags-wallets",
+      "detail": "Кошельки, портмоне, визитницы"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "catalogCategoryTree.sub.acc-headwear",
+      "detail": "Головные уборы (шапки, кепки, панамы)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "catalogCategoryTree.sub.acc-scarves",
+      "detail": "Шарфы, платки, палантины"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "catalogCategoryTree.sub.fab-notions",
+      "detail": "Швейная фурнитура (пуговицы, молнии, резинки, кружево)"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "catalogCategoryTree.sub.ht-bedding",
+      "detail": "Постельное белье"
+    },
+    {
+      "kind": "messages-identical-ru",
+      "locale": "tj",
+      "path": "messages/tj.json",
+      "field": "catalogCategoryTree.sub.ht-towels",
+      "detail": "Полотенца (махровые, кухонные)"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:hanife-homecollection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:hanife-homecollection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:hanife-homecollection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:hanife-homecollection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:pokryvalo-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:pokryvalo-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:pokryvalo-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:pokryvalo-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:coco-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:coco-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:coco-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:coco-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nelikvid-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nelikvid-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nelikvid-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nelikvid-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:aliplus01",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:aliplus01",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:aliplus01",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:aliplus01",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:levelshop-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:levelshop-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:levelshop-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:levelshop-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:kamea-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:kamea-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:kamea-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:kamea-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:dora-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:dora-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:dora-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:dora-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:centralsklad-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:centralsklad-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:centralsklad-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:centralsklad-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:dordoi-odejda-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:dordoi-odejda-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:dordoi-odejda-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:dordoi-odejda-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:dordoi-showcase-example-2-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:dordoi-showcase-example-2-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:dordoi-showcase-example-2-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:dordoi-showcase-example-2-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:euromix-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:euromix-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:euromix-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:euromix-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:avant-santex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:avant-santex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:avant-santex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:avant-santex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:krovatki-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:krovatki-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:krovatki-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:krovatki-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:televizoro-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:televizoro-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:televizoro-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:televizoro-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:beautypro-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:beautypro-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:beautypro-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:beautypro-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:sewing-machine-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:sewing-machine-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:sewing-machine-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:sewing-machine-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:saulebrand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:saulebrand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:saulebrand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:saulebrand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:masali-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:masali-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:masali-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:masali-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:zipari-furniture",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:zipari-furniture",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:zipari-furniture",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:zipari-furniture",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mono-liza-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mono-liza-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mono-liza-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mono-liza-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:beeline-kyrgyzstan",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:beeline-kyrgyzstan",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:beeline-kyrgyzstan",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:beeline-kyrgyzstan",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:muslima-style",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:muslima-style",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:muslima-style",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:muslima-style",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:rezino4ka-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:rezino4ka-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:rezino4ka-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:rezino4ka-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:moya-shapka-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:moya-shapka-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:moya-shapka-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:moya-shapka-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nkids-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nkids-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nkids-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nkids-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:bala-box-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:bala-box-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:bala-box-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:bala-box-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:gulmira-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:gulmira-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:gulmira-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:gulmira-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:fam-optom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:fam-optom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:fam-optom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:fam-optom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mir-futbola-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mir-futbola-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mir-futbola-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mir-futbola-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:topbala-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:topbala-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:topbala-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:topbala-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mini-boom-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mini-boom-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mini-boom-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mini-boom-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:luxury-yasin",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:luxury-yasin",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:luxury-yasin",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:luxury-yasin",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:veliki-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:veliki-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:veliki-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:veliki-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:1nur-kg1",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:1nur-kg1",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:1nur-kg1",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:1nur-kg1",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:hilaltextile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:hilaltextile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:hilaltextile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:hilaltextile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:rahima-lingerie-shop",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:rahima-lingerie-shop",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:rahima-lingerie-shop",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:rahima-lingerie-shop",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:superpijamy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:superpijamy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:superpijamy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:superpijamy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:eva-textile-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:eva-textile-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:eva-textile-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:eva-textile-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:walkers-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:walkers-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:walkers-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:walkers-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nazar-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nazar-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nazar-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nazar-brand-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nijnee642optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nijnee642optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nijnee642optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nijnee642optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:krasnyi-slon",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:krasnyi-slon",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:krasnyi-slon",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:krasnyi-slon",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:pijama-optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:pijama-optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:pijama-optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:pijama-optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:aska-shop-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:aska-shop-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:aska-shop-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:aska-shop-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:palto-gulmira",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:palto-gulmira",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:palto-gulmira",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:palto-gulmira",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:totoskin-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:totoskin-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:totoskin-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:totoskin-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:sezimkids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:sezimkids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:sezimkids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:sezimkids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:seven-costumes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:seven-costumes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:seven-costumes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:seven-costumes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nurhome-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nurhome-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nurhome-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nurhome-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:miss-style-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:miss-style-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:miss-style-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:miss-style-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:carikali-shoes-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:carikali-shoes-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:carikali-shoes-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:carikali-shoes-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:kover-sag-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:kover-sag-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:kover-sag-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:kover-sag-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:rukh-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:rukh-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:rukh-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:rukh-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:zaada-woman",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:zaada-woman",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:zaada-woman",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:zaada-woman",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:socksmart-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:socksmart-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:socksmart-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:socksmart-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:sport-legion-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:sport-legion-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:sport-legion-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:sport-legion-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:modnaya-tochka",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:modnaya-tochka",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:modnaya-tochka",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:modnaya-tochka",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:takwa-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:takwa-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:takwa-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:takwa-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:wwwshoeskg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:wwwshoeskg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:wwwshoeskg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:wwwshoeskg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:sportickgz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:sportickgz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:sportickgz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:sportickgz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:dordoi-trendy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:dordoi-trendy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:dordoi-trendy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:dordoi-trendy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mir-bijuterii-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mir-bijuterii-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mir-bijuterii-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mir-bijuterii-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:ladys-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:ladys-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:ladys-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:ladys-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:anttifu-r",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:anttifu-r",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:anttifu-r",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:anttifu-r",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:aselya-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:aselya-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:aselya-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:aselya-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:sarkech-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:sarkech-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:sarkech-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:sarkech-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:moi-paket-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:moi-paket-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:moi-paket-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:moi-paket-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:balama-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:balama-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:balama-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:balama-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:paket-dordoy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:paket-dordoy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:paket-dordoy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:paket-dordoy",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:brand-tochka",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:brand-tochka",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:brand-tochka",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:brand-tochka",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:ceramica-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:ceramica-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:ceramica-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:ceramica-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:kikishark-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:kikishark-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:kikishark-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:kikishark-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:catt-socksko",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:catt-socksko",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:catt-socksko",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:catt-socksko",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:torgovoe-oborudovanie1",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:torgovoe-oborudovanie1",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:torgovoe-oborudovanie1",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:torgovoe-oborudovanie1",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:dordoi-zakup-aiperi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:dordoi-zakup-aiperi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:dordoi-zakup-aiperi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:dordoi-zakup-aiperi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mir-prazha-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mir-prazha-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mir-prazha-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mir-prazha-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nurkeldi-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nurkeldi-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nurkeldi-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nurkeldi-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:routine-wholesale",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:routine-wholesale",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:routine-wholesale",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:routine-wholesale",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:adilet-dordoi-optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:adilet-dordoi-optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:adilet-dordoi-optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:adilet-dordoi-optom",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:kerben-optom6",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:kerben-optom6",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:kerben-optom6",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:kerben-optom6",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:aiel-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:aiel-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:aiel-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:aiel-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:zaikakids-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:zaikakids-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:zaikakids-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:zaikakids-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nurkids-bish",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nurkids-bish",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nurkids-bish",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nurkids-bish",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:kurtkidordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:kurtkidordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:kurtkidordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:kurtkidordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:salinaavto-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:salinaavto-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:salinaavto-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:salinaavto-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:opt-stock",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:opt-stock",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:opt-stock",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:opt-stock",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:sportswearkg2",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:sportswearkg2",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:sportswearkg2",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:sportswearkg2",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:dordoi-alikakids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:dordoi-alikakids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:dordoi-alikakids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:dordoi-alikakids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:adelina-wedding",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:adelina-wedding",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:adelina-wedding",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:adelina-wedding",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:classic-man-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:classic-man-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:classic-man-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:classic-man-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:brandclo-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:brandclo-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:brandclo-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:brandclo-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:aiymatex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:aiymatex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:aiymatex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:aiymatex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:ayka-exclusive-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:ayka-exclusive-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:ayka-exclusive-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:ayka-exclusive-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:bebetom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:bebetom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:bebetom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:bebetom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nurdai-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nurdai-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nurdai-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nurdai-collection",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:seven-sport-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:seven-sport-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:seven-sport-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:seven-sport-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nijneebelye-optom-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nijneebelye-optom-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nijneebelye-optom-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nijneebelye-optom-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:fatimashopkg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:fatimashopkg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:fatimashopkg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:fatimashopkg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:has-moda",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:has-moda",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:has-moda",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:has-moda",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:dordoi-optom-akzar",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:dordoi-optom-akzar",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:dordoi-optom-akzar",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:dordoi-optom-akzar",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:kg-mechta",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:kg-mechta",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:kg-mechta",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:kg-mechta",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:omko-cap",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:omko-cap",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:omko-cap",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:omko-cap",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:lasagrada-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:lasagrada-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:lasagrada-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:lasagrada-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:shvei-mag17",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:shvei-mag17",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:shvei-mag17",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:shvei-mag17",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:anya-dress-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:anya-dress-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:anya-dress-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:anya-dress-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:underwear-kerben",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:underwear-kerben",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:underwear-kerben",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:underwear-kerben",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:elon-store-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:elon-store-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:elon-store-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:elon-store-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:servizoff",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:servizoff",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:servizoff",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:servizoff",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:optom-kerben-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:optom-kerben-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:optom-kerben-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:optom-kerben-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:optom-shop",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:optom-shop",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:optom-shop",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:optom-shop",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:shapki-syrga",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:shapki-syrga",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:shapki-syrga",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:shapki-syrga",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:baha-tactical-sng",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:baha-tactical-sng",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:baha-tactical-sng",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:baha-tactical-sng",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:baby-shop-204",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:baby-shop-204",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:baby-shop-204",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:baby-shop-204",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:neznaika-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:neznaika-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:neznaika-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:neznaika-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:tlc-teleco",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:tlc-teleco",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:tlc-teleco",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:tlc-teleco",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:golden-toys-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:golden-toys-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:golden-toys-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:golden-toys-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:souvenirs-tynara",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:souvenirs-tynara",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:souvenirs-tynara",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:souvenirs-tynara",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:halatydordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:halatydordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:halatydordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:halatydordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mone-store312",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mone-store312",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mone-store312",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mone-store312",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:amai-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:amai-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:amai-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:amai-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:lvd-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:lvd-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:lvd-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:lvd-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:bohemia-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:bohemia-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:bohemia-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:bohemia-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mim-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mim-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mim-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mim-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:muhsina-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:muhsina-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:muhsina-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:muhsina-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:manswear-whosale",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:manswear-whosale",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:manswear-whosale",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:manswear-whosale",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:hadi-wear",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:hadi-wear",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:hadi-wear",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:hadi-wear",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:tentek-nurtoys",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:tentek-nurtoys",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:tentek-nurtoys",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:tentek-nurtoys",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:test-vendor-67155377-baf1-4047-9948-955ef78f300e",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:test-vendor-67155377-baf1-4047-9948-955ef78f300e",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:test-vendor-67155377-baf1-4047-9948-955ef78f300e",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:test-vendor-67155377-baf1-4047-9948-955ef78f300e",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:aistenok-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:aistenok-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:aistenok-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:aistenok-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nailsmarket-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nailsmarket-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nailsmarket-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nailsmarket-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mayakids-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mayakids-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mayakids-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mayakids-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:amina-optom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:amina-optom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:amina-optom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:amina-optom-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:yasina-parfum-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:yasina-parfum-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:yasina-parfum-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:yasina-parfum-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:anfen-kerben",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:anfen-kerben",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:anfen-kerben",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:anfen-kerben",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:kovrovyidvor-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:kovrovyidvor-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:kovrovyidvor-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:kovrovyidvor-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:dordoi-kovry",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:dordoi-kovry",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:dordoi-kovry",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:dordoi-kovry",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:kovry-avangard",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:kovry-avangard",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:kovry-avangard",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:kovry-avangard",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:asia-plastt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:asia-plastt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:asia-plastt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:asia-plastt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:gulka-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:gulka-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:gulka-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:gulka-kids",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:fan-aziya-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:fan-aziya-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:fan-aziya-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:fan-aziya-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:goldhome-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:goldhome-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:goldhome-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:goldhome-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:sklad-tehno-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:sklad-tehno-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:sklad-tehno-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:sklad-tehno-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:vanessa-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:vanessa-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:vanessa-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:vanessa-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:maraton-sport-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:maraton-sport-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:maraton-sport-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:maraton-sport-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:milaisa-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:milaisa-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:milaisa-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:milaisa-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:aikol-classic",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:aikol-classic",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:aikol-classic",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:aikol-classic",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:brand-baaluu",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:brand-baaluu",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:brand-baaluu",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:brand-baaluu",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:boya-professional-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:boya-professional-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:boya-professional-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:boya-professional-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:import-holod",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:import-holod",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:import-holod",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:import-holod",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:merino-alpaca",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:merino-alpaca",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:merino-alpaca",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:merino-alpaca",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:aziz-1987-aye",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:aziz-1987-aye",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:aziz-1987-aye",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:aziz-1987-aye",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:perimoda-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:perimoda-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:perimoda-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:perimoda-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:zipari-ru",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:zipari-ru",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:zipari-ru",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:zipari-ru",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:platki-bolot",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:platki-bolot",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:platki-bolot",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:platki-bolot",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:anpaco-tex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:anpaco-tex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:anpaco-tex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:anpaco-tex",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:amanatt-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:amanatt-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:amanatt-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:amanatt-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:aleyna-home-collection-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:aleyna-home-collection-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:aleyna-home-collection-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:aleyna-home-collection-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mideakyrgyzstan",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mideakyrgyzstan",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mideakyrgyzstan",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mideakyrgyzstan",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mens-belye",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mens-belye",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mens-belye",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mens-belye",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:zima-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:zima-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:zima-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:zima-textile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:bim-tekstile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:bim-tekstile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:bim-tekstile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:bim-tekstile",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:tapkin-naz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:tapkin-naz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:tapkin-naz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:tapkin-naz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:dordoi-showcase-example-1-clothing",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:dordoi-showcase-example-1-clothing",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:dordoi-showcase-example-1-clothing",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:dordoi-showcase-example-1-clothing",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:madiyo-dekna-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:madiyo-dekna-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:madiyo-dekna-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:madiyo-dekna-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:ostore-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:ostore-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:ostore-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:ostore-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:cap-muaz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:cap-muaz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:cap-muaz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:cap-muaz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:zoloto-bish",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:zoloto-bish",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:zoloto-bish",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:zoloto-bish",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:coolbaby-asia",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:coolbaby-asia",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:coolbaby-asia",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:coolbaby-asia",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:chameleon-1224",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:chameleon-1224",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:chameleon-1224",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:chameleon-1224",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mk-beauty-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mk-beauty-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mk-beauty-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mk-beauty-opt",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:donmeri-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:donmeri-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:donmeri-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:donmeri-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:muratti-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:muratti-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:muratti-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:muratti-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:arabi-officiall",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:arabi-officiall",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:arabi-officiall",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:arabi-officiall",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:crosslive-sport",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:crosslive-sport",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:crosslive-sport",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:crosslive-sport",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:carisma-kgz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:carisma-kgz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:carisma-kgz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:carisma-kgz",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:sundali-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:sundali-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:sundali-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:sundali-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:anjur-kids-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:anjur-kids-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:anjur-kids-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:anjur-kids-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:velidass-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:velidass-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:velidass-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:velidass-shoes",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:tapkin-house-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:tapkin-house-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:tapkin-house-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:tapkin-house-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:moroz-holod-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:moroz-holod-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:moroz-holod-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:moroz-holod-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:germany-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:germany-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:germany-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:germany-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:imperiya-posudy-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:imperiya-posudy-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:imperiya-posudy-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:imperiya-posudy-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:danek-co",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:danek-co",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:danek-co",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:danek-co",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:guls-brand",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:guls-brand",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:guls-brand",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:guls-brand",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:511tactical-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:511tactical-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:511tactical-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:511tactical-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:zip-lock-dian",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:zip-lock-dian",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:zip-lock-dian",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:zip-lock-dian",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:uniform-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:uniform-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:uniform-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:uniform-bishkek",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:bravelli-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:bravelli-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:bravelli-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:bravelli-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:ladyclairekg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:ladyclairekg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:ladyclairekg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:ladyclairekg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:lustra-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:lustra-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:lustra-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:lustra-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:dall-italia-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:dall-italia-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:dall-italia-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:dall-italia-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:islam-korea-djunhai",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:islam-korea-djunhai",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:islam-korea-djunhai",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:islam-korea-djunhai",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:fan-kg-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:fan-kg-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:fan-kg-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:fan-kg-official",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:skjfchys-dkfjjfn",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:skjfchys-dkfjjfn",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:skjfchys-dkfjjfn",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:skjfchys-dkfjjfn",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:mir-belya-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:mir-belya-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:mir-belya-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:mir-belya-dordoi",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:kancmag-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:kancmag-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:kancmag-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:kancmag-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:saada-markett",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:saada-markett",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:saada-markett",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:saada-markett",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:aisha-collection-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:aisha-collection-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:aisha-collection-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:aisha-collection-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:manzi-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:manzi-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:manzi-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:manzi-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:nfu-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:nfu-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:nfu-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:nfu-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:sarboy-textile-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:sarboy-textile-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:sarboy-textile-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:sarboy-textile-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:arzan-kilem-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:arzan-kilem-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:arzan-kilem-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:arzan-kilem-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:brendovyye-sumki-zhazgul",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:brendovyye-sumki-zhazgul",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:brendovyye-sumki-zhazgul",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:brendovyye-sumki-zhazgul",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kk",
+      "path": "vendor:luxe-shoe-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "kg",
+      "path": "vendor:luxe-shoe-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "uz",
+      "path": "vendor:luxe-shoe-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "vendor-db-missing-i18n",
+      "locale": "tj",
+      "path": "vendor:luxe-shoe-kg",
+      "field": "parsed_ai_data.i18n.description",
+      "detail": "no localized description"
+    },
+    {
+      "kind": "live-page-ru-leak",
+      "locale": "kk",
+      "path": "/kk/categories/aksessuar-koterme",
+      "detail": "page RU leak:  на рынке Дордой"
+    },
+    {
+      "kind": "live-page-ru-leak",
+      "locale": "kk",
+      "path": "/kk/categories/orau-sauda-zhuymesi-koterme",
+      "detail": "page RU leak:  с оптовыми покупателями |  на рынке Дордой"
+    },
+    {
+      "kind": "live-fetch-fail",
+      "locale": "kk",
+      "path": "/kk/catalog/1nur-kg1",
+      "detail": "HTTP 500"
+    },
+    {
+      "kind": "live-fetch-fail",
+      "locale": "kk",
+      "path": "/kk/catalog/1dordoy-optom",
+      "detail": "HTTP 500"
+    },
+    {
+      "kind": "live-fetch-fail",
+      "locale": "kk",
+      "path": "/kk/catalog/511tactical-kg",
+      "detail": "HTTP 500"
+    },
+    {
+      "kind": "live-page-ru-leak",
+      "locale": "kg",
+      "path": "/kg/categories/aksessuar-dung",
+      "detail": "page RU leak:  на рынке Дордой"
+    },
+    {
+      "kind": "live-page-ru-leak",
+      "locale": "kg",
+      "path": "/kg/categories/oroo-sauda-zhuymosu-dung",
+      "detail": "page RU leak:  с оптовыми покупателями |  на рынке Дордой"
+    },
+    {
+      "kind": "live-fetch-fail",
+      "locale": "kg",
+      "path": "/kg/catalog/1dordoy-optom",
+      "detail": "HTTP 500"
+    },
+    {
+      "kind": "live-fetch-fail",
+      "locale": "kg",
+      "path": "/kg/catalog/1nur-kg1",
+      "detail": "HTTP 500"
+    },
+    {
+      "kind": "live-fetch-fail",
+      "locale": "kg",
+      "path": "/kg/catalog/511tactical-kg",
+      "detail": "HTTP 500"
+    },
+    {
+      "kind": "live-page-ru-leak",
+      "locale": "uz",
+      "path": "/uz/categories/aksessuar-ulgurji",
+      "detail": "page RU leak:  на рынке Дордой"
+    },
+    {
+      "kind": "live-page-ru-leak",
+      "locale": "uz",
+      "path": "/uz/categories/qadoqlash-savdo-jihozlari",
+      "detail": "page RU leak:  с оптовыми покупателями |  на рынке Дордой"
+    },
+    {
+      "kind": "live-fetch-fail",
+      "locale": "uz",
+      "path": "/uz/catalog/1dordoy-optom",
+      "detail": "HTTP 500"
+    },
+    {
+      "kind": "live-fetch-fail",
+      "locale": "uz",
+      "path": "/uz/catalog/1nur-kg1",
+      "detail": "HTTP 500"
+    },
+    {
+      "kind": "live-fetch-fail",
+      "locale": "uz",
+      "path": "/uz/catalog/511tactical-kg",
+      "detail": "HTTP 500"
+    },
+    {
+      "kind": "live-page-ru-leak",
+      "locale": "tj",
+      "path": "/tj/categories/aksessuar-opt",
+      "detail": "page RU leak:  на рынке Дордой"
+    },
+    {
+      "kind": "live-page-ru-leak",
+      "locale": "tj",
+      "path": "/tj/categories/bastebandi-asbob-opt",
+      "detail": "page RU leak:  с оптовыми покупателями |  на рынке Дордой"
+    }
+  ]
+}

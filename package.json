@@ -11,6 +11,8 @@
     "check:i18n": "node scripts/check-i18n-keys.mjs",
     "report:missing-i18n": "node scripts/report-missing-messages.mjs",
     "report:i18n-identical-to-ru": "node scripts/list-overlay-identical-to-ru.mjs",
+    "audit:seo-locales": "tsx scripts/audit-seo-locale-translations.mts",
+    "audit:i18n": "tsx scripts/audit-full-i18n.mts",
     "generate:landing-spec": "tsx scripts/generate-landing-spec.mts",
     "translate:messages": "tsx scripts/translate-messages.mts",
     "translate:messages:all": "tsx scripts/translate-messages.mts --locale=all --align",
@@ -38,6 +40,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
+    "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
     "axios": "^1.16.0",

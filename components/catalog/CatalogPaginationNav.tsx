@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
@@ -57,6 +58,7 @@ export function CatalogPaginationNav({
   compareWithPreview = false,
   locale,
 }: Props) {
+  const t = useTranslations("Pages.catalogBrowse");
   const isMobile = useIsCatalogMobile();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   const pathOpts = useMemo(
@@ -71,7 +73,7 @@ export function CatalogPaginationNav({
   return (
     <nav
       className="flex flex-nowrap items-center justify-center gap-0.5 pt-6 lg:gap-1.5 lg:pt-10"
-      aria-label="Страницы каталога"
+      aria-label={t("paginationNavAria")}
     >
       <Link
         href={buildCatalogBrowsePath({ page: Math.max(1, currentPage - 1), ...pathOpts })}
@@ -82,7 +84,7 @@ export function CatalogPaginationNav({
         )}
       >
         <ChevronLeft className="size-3.5 lg:size-4" aria-hidden />
-        <span className="sr-only">Предыдущая страница</span>
+        <span className="sr-only">{t("paginationPrev")}</span>
       </Link>
 
       <div className="flex min-w-0 flex-nowrap items-center justify-center gap-0.5 lg:gap-1.5">
@@ -125,7 +127,7 @@ export function CatalogPaginationNav({
         )}
       >
         <ChevronRight className="size-3.5 lg:size-4" aria-hidden />
-        <span className="sr-only">Следующая страница</span>
+        <span className="sr-only">{t("paginationNext")}</span>
       </Link>
     </nav>
   );

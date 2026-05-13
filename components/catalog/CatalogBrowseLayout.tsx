@@ -7,6 +7,7 @@ import {
   CatalogCategoryFilterFallback,
 } from "@/components/catalog/CatalogCategoryFilter";
 import { CatalogBrowseCardGrid } from "@/components/catalog/CatalogBrowseCardGrid";
+import { CatalogCheckoutResume } from "@/components/catalog/CatalogCheckoutResume";
 import { CatalogPopularCategories } from "@/components/catalog/CatalogPopularCategories";
 import { CatalogBuyerSpotlight } from "@/components/catalog/CatalogBuyerSpotlight";
 import { CatalogPaginationNav } from "@/components/catalog/CatalogPaginationNav";
@@ -18,9 +19,8 @@ import {
   formatProviderAddedDate,
 } from "@/lib/provider-dates";
 import { filterPublishedVendorsBySubcategorySlugs } from "@/lib/catalog/catalog-category-filter";
-import {
-  hasFullCatalogAccess,
-} from "@/lib/catalog/catalog-guest-access";
+import { applyCatalogAccessToVendors } from "@/lib/catalog/catalog-vendor-access";
+import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
 import {
   buildCatalogCardSourceRowForPublishedVendor,
   fetchPublishedVendorsCatalogPage,
@@ -71,7 +71,7 @@ export async function CatalogBrowseLayout({
   const tTree = await getTranslations("catalogCategoryTree");
   const locale = await getLocale();
   const profile = await getSessionProfile();
-  const catalogAccessUnlocked = hasFullCatalogAccess(profile);
+  const catalogAccessUnlocked = await hasFullCatalogAccess(profile);
   const favoriteKeys = profile
     ? await fetchBuyerFavoriteKeySet(profile.userId)
     : new Set<string>();
@@ -121,7 +121,11 @@ export async function CatalogBrowseLayout({
       publishedVendors,
       categorySlugs,
     );
-    const realCards: CatalogCardSourceRow[] = publishedVendorsFiltered.map((v) =>
+    const accessibleVendors = applyCatalogAccessToVendors(
+      publishedVendorsFiltered,
+      { hasFullAccess: catalogAccessUnlocked, globalOffset: 0 },
+    );
+    const realCards: CatalogCardSourceRow[] = accessibleVendors.map((v) =>
       buildCatalogCardSourceRowForPublishedVendor(v, {
         tBrowse: t,
         tTreeCategory: (key) => tTree(key),
@@ -156,7 +160,12 @@ export async function CatalogBrowseLayout({
       currentPage = totalPages;
     }
 
-    const realCards: CatalogCardSourceRow[] = catalogPage.vendors.map((v) =>
+    const pageOffset = (currentPage - 1) * CATALOG_PAGE_SIZE;
+    const accessibleVendors = applyCatalogAccessToVendors(catalogPage.vendors, {
+      hasFullAccess: catalogAccessUnlocked,
+      globalOffset: pageOffset,
+    });
+    const realCards: CatalogCardSourceRow[] = accessibleVendors.map((v) =>
       buildCatalogCardSourceRowForPublishedVendor(v, {
         tBrowse: t,
         tTreeCategory: (key) => tTree(key),
@@ -244,6 +253,7 @@ export async function CatalogBrowseLayout({
           </div>
         </div>
 
+        <CatalogCheckoutResume />
         <div className="mt-6">
           <CatalogBrowseCardGrid
             key={currentPage}
@@ -256,6 +266,12 @@ export async function CatalogBrowseLayout({
               body: t("paywall.body"),
               ctaPayment: t("paywall.ctaPayment"),
               closeDialog: t("paywall.closeDialog"),
+              planMonthlyLabel: t("paywall.planMonthlyLabel"),
+              planMonthlyPrice: t("paywall.planMonthlyPrice"),
+              planQuarterlyLabel: t("paywall.planQuarterlyLabel"),
+              planQuarterlyPrice: t("paywall.planQuarterlyPrice"),
+              checkoutError: t("paywall.checkoutError"),
+              checkoutLoading: t("paywall.checkoutLoading"),
             }}
             lockedCardUnlockLabel={t("paywall.unlockCard")}
             gridAriaLabel={t("gridAria")}

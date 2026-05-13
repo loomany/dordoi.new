@@ -22,6 +22,11 @@ export type VendorFaqInput = {
   samplesAvailable?: boolean;
 };
 
+type VendorFaqT = (
+  key: string,
+  values?: Record<string, string | number | boolean>,
+) => string;
+
 type FaqBucket =
   | "women_clothing"
   | "men_clothing"
@@ -65,344 +70,365 @@ function trimOrNull(value: string | null | undefined): string | null {
   return t || null;
 }
 
-function formatContactList(input: VendorFaqInput): string | null {
+function formatContactList(input: VendorFaqInput, t: VendorFaqT): string | null {
   const channels: string[] = [];
   if (input.hasWhatsapp) channels.push("WhatsApp");
   if (input.hasInstagram) channels.push("Instagram");
   if (input.hasTelegram) channels.push("Telegram");
-  if (input.hasPhone) channels.push("телефон");
+  if (input.hasPhone) channels.push(t("contactPhone"));
   if (channels.length === 0) return null;
   if (channels.length === 1) return channels[0]!;
-  if (channels.length === 2) return `${channels[0]} и ${channels[1]}`;
-  return `${channels.slice(0, -1).join(", ")} и ${channels[channels.length - 1]}`;
-}
-
-function salesTypeLabel(salesType: VendorFaqInput["salesType"]): string | null {
-  switch (salesType) {
-    case "wholesale":
-      return "опт";
-    case "retail":
-      return "розница";
-    case "hybrid":
-      return "розница/опт";
-    default:
-      return null;
+  if (channels.length === 2) {
+    return t("contactListTwo", { a: channels[0]!, b: channels[1]! });
   }
+  return t("contactListMany", {
+    head: channels.slice(0, -1).join(", "),
+    last: channels[channels.length - 1]!,
+  });
 }
 
-function buildWhatToOrder(input: VendorFaqInput, bucket: FaqBucket): VendorFaqItem {
+function categoryContactSuffix(
+  input: VendorFaqInput,
+  t: VendorFaqT,
+): string {
+  const contacts = formatContactList(input, t);
+  return contacts
+    ? ` ${t("category.contactSuffix", { contacts })}`
+    : ` ${t("category.contactFallback")}`;
+}
+
+function buildWhatToOrder(
+  input: VendorFaqInput,
+  bucket: FaqBucket,
+  t: VendorFaqT,
+): VendorFaqItem {
   const { name } = input;
   const categoryLabel = trimOrNull(input.categoryLabel);
   const description = trimOrNull(input.description);
-  const sales = salesTypeLabel(input.salesType);
   const locationRow = trimOrNull(input.locationRow);
 
-  let answer = `${name}`;
-  if (categoryLabel) {
-    answer += ` предлагает товары в категории «${categoryLabel}»`;
-  } else {
-    answer += ` — профиль поставщика на Dordoi.help`;
-  }
-  if (sales === "опт") {
-    answer += " для закупки оптом";
-  } else if (sales === "розница/опт") {
-    answer += " с возможностью оптовых и розничных заказов";
+  let answer = categoryLabel
+    ? t("whatToOrder.introWithCategory", { name, categoryLabel })
+    : t("whatToOrder.introNoCategory", { name });
+
+  if (input.salesType === "wholesale") {
+    answer += t("whatToOrder.salesWholesale");
+  } else if (input.salesType === "hybrid") {
+    answer += t("whatToOrder.salesHybrid");
   }
   answer += ".";
+
   if (description) {
     const snippet =
       description.length > 120 ? `${description.slice(0, 117).trimEnd()}…` : description;
     answer += ` ${snippet}`;
   } else {
-    answer +=
-      " Ассортимент, наличие, размеры и условия заказа лучше уточнять напрямую у продавца.";
+    answer += ` ${t("fallbackNoDescription")}`;
   }
+
   if (locationRow) {
-    answer += ` На странице указан ряд на рынке Дордой: ${locationRow}.`;
+    answer += ` ${t("whatToOrder.locationSuffix", { locationRow })}`;
   }
 
   const question =
     bucket === "buyer_service"
-      ? `Чем может помочь ${name}?`
-      : `Что можно заказать у ${name}?`;
+      ? t("whatToOrder.questionBuyer", { name })
+      : t("whatToOrder.question", { name });
 
   return { question, answer };
 }
 
-function buildWholesaleQuestion(input: VendorFaqInput): VendorFaqItem {
+function buildWholesaleQuestion(
+  input: VendorFaqInput,
+  t: VendorFaqT,
+): VendorFaqItem {
   const { name } = input;
-  const sales = salesTypeLabel(input.salesType);
+  const salesType = input.salesType;
   const minOrder = trimOrNull(input.minOrder);
-  const contacts = formatContactList(input);
+  const contacts = formatContactList(input, t);
 
   let answer: string;
-  if (sales === "опт" || sales === "розница/опт") {
-    answer = `Профиль ${name} ориентирован на ${sales === "опт" ? "оптовых" : "оптовых и розничных"} покупателей.`;
+  if (salesType === "wholesale") {
+    answer = t("wholesale.answerWholesale", { name });
     if (minOrder) {
-      answer += ` В профиле указан минимальный заказ: ${minOrder}.`;
+      answer += ` ${t("wholesale.minOrderSuffix", { minOrder })}`;
     }
-    if (contacts) {
-      answer += ` Уточнить цены, наличие и условия поставки можно через ${contacts}.`;
-    } else {
-      answer += " Условия заказа лучше уточнять напрямую у продавца.";
+    answer += contacts
+      ? ` ${t("wholesale.contactsSuffix", { contacts })}`
+      : ` ${t("wholesale.noContactsSuffix")}`;
+  } else if (salesType === "hybrid") {
+    answer = t("wholesale.answerHybrid", { name });
+    if (minOrder) {
+      answer += ` ${t("wholesale.minOrderSuffix", { minOrder })}`;
     }
-  } else if (sales === "розница") {
-    answer = `${name} указан как розничный продавец. Оптовые условия, если они доступны, нужно уточнять у продавца напрямую`;
+    answer += contacts
+      ? ` ${t("wholesale.contactsSuffix", { contacts })}`
+      : ` ${t("wholesale.noContactsSuffix")}`;
+  } else if (salesType === "retail") {
+    answer = t("wholesale.answerRetail", { name });
     if (contacts) {
-      answer += ` через ${contacts}`;
+      answer += t("wholesale.retailContactsSuffix", { contacts });
     }
     answer += ".";
   } else {
-    answer = `Условия оптовой закупки у ${name} не указаны в профиле.`;
+    answer = t("wholesale.answerUnknown", { name });
     if (contacts) {
-      answer += ` Свяжитесь с продавцом через ${contacts}, чтобы уточнить формат работы и минимальный заказ.`;
+      answer += t("wholesale.unknownContactsSuffix", { contacts });
     } else {
-      answer += " Свяжитесь с продавцом, чтобы уточнить формат работы и условия заказа.";
+      answer += ` ${t("wholesale.unknownNoContactsSuffix")}`;
     }
   }
 
   return {
-    question: `Работает ли ${name} с оптовыми покупателями?`,
+    question: t("wholesale.question", { name }),
     answer,
   };
 }
 
-function buildContactQuestion(input: VendorFaqInput): VendorFaqItem {
+function buildContactQuestion(
+  input: VendorFaqInput,
+  t: VendorFaqT,
+): VendorFaqItem {
   const { name } = input;
-  const contacts = formatContactList(input);
+  const contacts = formatContactList(input, t);
 
   const answer = contacts
-    ? `На странице продавца доступны кнопки связи: ${contacts}. Напишите или позвоните, чтобы уточнить ассортимент и условия заказа.`
-    : `Контакты ${name} указаны на этой странице. Если кнопок связи нет, проверьте описание профиля или вернитесь позже — продавец может обновить данные.`;
+    ? t("contact.answerWithChannels", { contacts })
+    : t("contact.answerNoChannels", { name });
 
   return {
-    question: `Как связаться с ${name}?`,
+    question: t("contact.question", { name }),
     answer,
   };
 }
 
-function buildDeliveryQuestion(input: VendorFaqInput): VendorFaqItem {
+function buildDeliveryQuestion(
+  input: VendorFaqInput,
+  t: VendorFaqT,
+): VendorFaqItem {
   const city = trimOrNull(input.city);
   const country = trimOrNull(input.country);
 
-  let answer =
-    "Dordoi.help показывает контакты и информацию о продавце. Условия доставки и отправки нужно уточнять напрямую у магазина.";
+  let answer = t("delivery.answerBase");
   if (input.deliveryHelp === true) {
-    answer = `${answer} В профиле отмечено, что продавец может помочь с доставкой — детали стоит обсудить при обращении.`;
+    answer += ` ${t("delivery.answerDeliveryHelp")}`;
   }
   if (city || country) {
     const geo = [city, country].filter(Boolean).join(", ");
-    answer += ` Многие поставщики на рынке Дордой работают из ${geo}, но это не означает автоматическую доставку — условия зависят от продавца.`;
+    answer += ` ${t("delivery.answerGeo", { geo })}`;
   }
 
   return {
-    question: "Можно ли заказать товар с доставкой?",
+    question: t("delivery.question"),
     answer,
   };
 }
 
-function buildPricesQuestion(input: VendorFaqInput): VendorFaqItem {
-  const contacts = formatContactList(input);
-  let answer =
-    "Цены, размеры и наличие товара могут меняться. Перед заказом рекомендуется написать продавцу и уточнить актуальную информацию.";
+function buildPricesQuestion(
+  input: VendorFaqInput,
+  t: VendorFaqT,
+): VendorFaqItem {
+  const contacts = formatContactList(input, t);
+  let answer = t("prices.answerBase");
   if (input.samplesAvailable === true) {
-    answer +=
-      " В профиле отмечена возможность образцов — уточните у продавца, как их получить.";
+    answer += ` ${t("prices.answerSamples")}`;
   }
   if (contacts) {
-    answer += ` Связаться можно через ${contacts}.`;
+    answer += ` ${t("prices.contactsSuffix", { contacts })}`;
   }
 
   return {
-    question: "Как проверить актуальность цен и наличия?",
+    question: t("prices.question"),
     answer,
   };
 }
 
-function buildPlatformQuestion(): VendorFaqItem {
+function buildPlatformQuestion(t: VendorFaqT): VendorFaqItem {
   return {
-    question: "Чем Dordoi.help помогает покупателю?",
-    answer:
-      "Dordoi.help собирает поставщиков, магазины и байеров в одном каталоге, чтобы покупателю было проще найти продавца на рынке Дордой и быстро перейти к контакту.",
+    question: t("platform.question"),
+    answer: t("platform.answer"),
   };
 }
 
-function buildSimilarSellersQuestion(input: VendorFaqInput): VendorFaqItem {
+function buildSimilarSellersQuestion(
+  input: VendorFaqInput,
+  t: VendorFaqT,
+): VendorFaqItem {
   if (input.hasRecommendedSellers) {
     return {
-      question: "Есть ли похожие поставщики?",
-      answer:
-        "Да, на этой странице в блоке «Похожие поставщики» показаны другие магазины и поставщики из каталога — они могут предлагать товары из похожей категории.",
+      question: t("similar.questionWithBlock"),
+      answer: t("similar.answerWithBlock"),
     };
   }
   return {
-    question: "Как найти похожих поставщиков?",
-    answer:
-      "Используйте каталог Dordoi.help: фильтры по категориям и поиск помогут найти других продавцов с похожим ассортиментом.",
+    question: t("similar.questionFind"),
+    answer: t("similar.answerFind"),
   };
 }
 
 function categoryQuestions(
   input: VendorFaqInput,
   bucket: FaqBucket,
+  t: VendorFaqT,
 ): VendorFaqItem[] {
   const { name } = input;
-  const categoryLabel = trimOrNull(input.categoryLabel) ?? "товары";
-  const contacts = formatContactList(input);
-  const contactSuffix = contacts
-    ? ` Связаться можно через ${contacts}.`
-    : " Уточните у продавца напрямую.";
+  const categoryLabel =
+    trimOrNull(input.categoryLabel) ?? t("categoryDefaultLabel");
+  const suffix = categoryContactSuffix(input, t);
 
   switch (bucket) {
     case "women_clothing":
       return [
         {
-          question: `Какие женские товары можно найти у ${name}?`,
-          answer: `${name} работает в категории «${categoryLabel}». Конкретный ассортимент, модели и наличие лучше уточнять у продавца перед заказом.${contactSuffix}`,
+          question: t("category.women.q1", { name }),
+          answer: `${t("category.women.a1", { name, categoryLabel })}${suffix}`,
         },
         {
-          question: `Подходит ли ${name} для закупки женской одежды оптом?`,
-          answer:
+          question: t("category.women.q2", { name }),
+          answer: `${
             input.salesType === "wholesale" || input.salesType === "hybrid"
-              ? `Если вы ищете поставщика женской одежды для закупки оптом, этот профиль может быть полезен для первичного контакта и обсуждения условий.${contactSuffix}`
-              : `Профиль может быть полезен для первичного контакта, но оптовые условия нужно уточнять у продавца.${contactSuffix}`,
+              ? t("category.women.a2Wholesale")
+              : t("category.women.a2Other")
+          }${suffix}`,
         },
         {
-          question: "Можно ли уточнить размеры, модели и наличие перед заказом?",
-          answer: `Да, перед заказом рекомендуется написать ${name} и уточнить размерный ряд, модели и наличие.${contactSuffix}`,
+          question: t("category.women.q3"),
+          answer: `${t("category.women.a3", { name })}${suffix}`,
         },
       ];
     case "men_clothing":
       return [
         {
-          question: `Какую мужскую одежду предлагает ${name}?`,
-          answer: `${name} — поставщик в категории «${categoryLabel}». Ассортимент и наличие уточняйте у продавца.${contactSuffix}`,
+          question: t("category.men.q1", { name }),
+          answer: `${t("category.men.a1", { name, categoryLabel })}${suffix}`,
         },
         {
-          question: `Подходит ли ${name} для оптовой закупки мужской одежды?`,
-          answer: `Профиль подойдёт для первичного контакта с продавцом мужской одежды. Оптовые условия обсуждаются напрямую.${contactSuffix}`,
+          question: t("category.men.q2", { name }),
+          answer: `${t("category.men.a2")}${suffix}`,
         },
       ];
     case "kids_clothing":
       return [
         {
-          question: `Какую детскую одежду можно заказать у ${name}?`,
-          answer: `${name} работает с детской одеждой («${categoryLabel}»). Размеры, модели и наличие уточняйте у продавца.${contactSuffix}`,
+          question: t("category.kids.q1", { name }),
+          answer: `${t("category.kids.a1", { name, categoryLabel })}${suffix}`,
         },
         {
-          question: `Можно ли закупать детскую одежду оптом у ${name}?`,
-          answer: `Условия оптовой закупки детской одежды уточняйте у продавца — в профиле указана категория, но детали заказа обсуждаются напрямую.${contactSuffix}`,
+          question: t("category.kids.q2", { name }),
+          answer: `${t("category.kids.a2")}${suffix}`,
         },
       ];
     case "shoes":
       return [
         {
-          question: `Можно ли заказать обувь оптом у ${name}?`,
-          answer: `${name} — поставщик обуви. Условия опта и минимальный заказ уточняйте у продавца.${contactSuffix}`,
+          question: t("category.shoes.q1", { name }),
+          answer: `${t("category.shoes.a1", { name })}${suffix}`,
         },
         {
-          question: "Как уточнить размерный ряд и наличие?",
-          answer: `Напишите ${name} и уточните размерный ряд, модели и наличие перед заказом.${contactSuffix}`,
+          question: t("category.shoes.q2"),
+          answer: `${t("category.shoes.a2", { name })}${suffix}`,
         },
         {
-          question: `Подходит ли ${name} для закупки обуви для магазина?`,
-          answer: `Профиль может быть полезен для первичного контакта с поставщиком обуви на рынке Дордой.${contactSuffix}`,
+          question: t("category.shoes.q3", { name }),
+          answer: `${t("category.shoes.a3", { name })}${suffix}`,
         },
       ];
     case "bags":
       return [
         {
-          question: `Можно ли заказать сумки оптом у ${name}?`,
-          answer: `${name} работает с сумками и кожгалантереей. Условия опта уточняйте у продавца.${contactSuffix}`,
+          question: t("category.bags.q1", { name }),
+          answer: `${t("category.bags.a1", { name })}${suffix}`,
         },
         {
-          question: "Как уточнить модели, цвета и наличие?",
-          answer: `Свяжитесь с ${name}, чтобы уточнить модели, цвета и наличие перед заказом.${contactSuffix}`,
+          question: t("category.bags.q2"),
+          answer: `${t("category.bags.a2", { name })}${suffix}`,
         },
       ];
     case "accessories":
       return [
         {
-          question: `Можно ли заказать аксессуары оптом у ${name}?`,
-          answer: `${name} предлагает аксессуары («${categoryLabel}»). Условия опта обсуждаются с продавцом.${contactSuffix}`,
+          question: t("category.accessories.q1", { name }),
+          answer: `${t("category.accessories.a1", { name, categoryLabel })}${suffix}`,
         },
         {
-          question: `Подходит ли ${name} для закупки небольшими партиями?`,
-          answer: `Минимальный заказ и условия партий уточняйте у продавца — в профиле есть контакты для связи.${contactSuffix}`,
+          question: t("category.accessories.q2", { name }),
+          answer: `${t("category.accessories.a2")}${suffix}`,
         },
       ];
     case "fabric":
       return [
         {
-          question: `Какие ткани и швейные материалы предлагает ${name}?`,
-          answer: `${name} работает с тканями и швейной фурнитурой. Ассортимент уточняйте у продавца.${contactSuffix}`,
+          question: t("category.fabric.q1", { name }),
+          answer: `${t("category.fabric.a1", { name })}${suffix}`,
         },
         {
-          question: `Можно ли закупать ткани оптом у ${name}?`,
-          answer: `Условия оптовой закупки тканей обсуждаются напрямую с продавцом.${contactSuffix}`,
+          question: t("category.fabric.q2", { name }),
+          answer: `${t("category.fabric.a2")}${suffix}`,
         },
       ];
     case "cargo":
       return [
         {
-          question: `Чем занимается ${name} в сегменте карго и логистики?`,
-          answer: `${name} — профиль в категории карго/логистики на Dordoi.help. Условия перевозки и сопровождения уточняйте у продавца.${contactSuffix}`,
+          question: t("category.cargo.q1", { name }),
+          answer: `${t("category.cargo.a1", { name })}${suffix}`,
         },
         {
-          question: "Как обсудить условия доставки грузов?",
-          answer: `Свяжитесь с ${name} через контакты на странице, чтобы обсудить маршруты, сроки и стоимость.${contactSuffix}`,
+          question: t("category.cargo.q2"),
+          answer: `${t("category.cargo.a2", { name })}${suffix}`,
         },
       ];
     case "buyer_service":
       return [
         {
-          question: "Чем помогает байер на Дордое?",
-          answer: `${name} — профиль байера или услуги закупа. Байер может помочь найти товар на рынке и согласовать условия с продавцами — детали обсуждаются при обращении.${contactSuffix}`,
+          question: t("category.buyer.q1"),
+          answer: `${t("category.buyer.a1", { name })}${suffix}`,
         },
         {
-          question: "Может ли байер найти нужный товар на рынке?",
-          answer: `Обратитесь к ${name}, опишите нужный товар и условия — байер подскажет, как организовать поиск и закупку на рынке Дордой.${contactSuffix}`,
+          question: t("category.buyer.q2"),
+          answer: `${t("category.buyer.a2", { name })}${suffix}`,
         },
         {
-          question: "Как обсудить условия закупа и сопровождения?",
-          answer: `Напишите ${name} через доступные контакты на странице, чтобы обсудить формат работы, комиссию и сопровождение закупки.${contactSuffix}`,
+          question: t("category.buyer.q3"),
+          answer: `${t("category.buyer.a3", { name })}${suffix}`,
         },
       ];
     default:
       return [
         {
-          question: `Подходит ли ${name} для оптовой закупки?`,
-          answer: `Профиль ${name} может быть полезен для первичного контакта с поставщиком на рынке Дордой. Условия опта уточняйте у продавца.${contactSuffix}`,
+          question: t("category.general.q1", { name }),
+          answer: `${t("category.general.a1", { name })}${suffix}`,
         },
         {
-          question: `Что уточнить у ${name} перед заказом?`,
-          answer: `Перед заказом рекомендуется уточнить ассортимент, цены, наличие и условия поставки.${contactSuffix}`,
+          question: t("category.general.q2", { name }),
+          answer: `${t("category.general.a2")}${suffix}`,
         },
       ];
   }
 }
 
-export function buildVendorFaq(input: VendorFaqInput): VendorFaqItem[] {
+export function buildVendorFaq(
+  input: VendorFaqInput,
+  t: VendorFaqT,
+): VendorFaqItem[] {
   const bucket = mapCategoryToBucket(input.category);
 
   const core: VendorFaqItem[] = [
-    buildWhatToOrder(input, bucket),
-    buildWholesaleQuestion(input),
-    buildContactQuestion(input),
-    buildDeliveryQuestion(input),
-    buildPricesQuestion(input),
+    buildWhatToOrder(input, bucket, t),
+    buildWholesaleQuestion(input, t),
+    buildContactQuestion(input, t),
+    buildDeliveryQuestion(input, t),
+    buildPricesQuestion(input, t),
   ];
 
-  const categorySpecific = categoryQuestions(input, bucket);
+  const categorySpecific = categoryQuestions(input, bucket, t);
 
   const tail: VendorFaqItem[] = [
-    buildPlatformQuestion(),
-    buildSimilarSellersQuestion(input),
+    buildPlatformQuestion(t),
+    buildSimilarSellersQuestion(input, t),
   ];
 
   const combined = [...core, ...categorySpecific.slice(0, 3), ...tail];
 
-  // Deduplicate by question text and cap at 8
   const seen = new Set<string>();
   const result: VendorFaqItem[] = [];
   for (const item of combined) {

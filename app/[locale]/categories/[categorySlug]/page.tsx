@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { CatalogBrowseCardGrid } from "@/components/catalog/CatalogBrowseCardGrid";
+import { CatalogCheckoutResume } from "@/components/catalog/CatalogCheckoutResume";
 import { SeoCategoryLanding } from "@/components/seo/SeoCategoryLanding";
 import { getSessionProfile } from "@/lib/auth/session-profile";
-import { hasFullCatalogAccess } from "@/lib/catalog/catalog-guest-access";
+import { applyCatalogAccessToVendors } from "@/lib/catalog/catalog-vendor-access";
+import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
 import { buildSeoCategoryMetadata } from "@/lib/catalog/seo-category-metadata";
 import { getSeoCategoryVendorPageData } from "@/lib/catalog/seo-category-vendors";
 import {
@@ -45,13 +47,17 @@ export default async function SeoCategoryPage({ params }: Props) {
 
   const routeLocale = locale as RouteLocale;
   const profile = await getSessionProfile();
-  const catalogAccessUnlocked = hasFullCatalogAccess(profile);
+  const catalogAccessUnlocked = await hasFullCatalogAccess(profile);
   const { vendors, totalCount } = await getSeoCategoryVendorPageData(route);
+  const accessibleVendors = applyCatalogAccessToVendors(vendors, {
+    hasFullAccess: catalogAccessUnlocked,
+    globalOffset: 0,
+  });
   const tBrowse = await getTranslations("Pages.catalogBrowse");
   const tTree = await getTranslations("catalogCategoryTree");
   const labels = seoCategoryPageLabels(routeLocale);
 
-  const cards = vendors.map((v) =>
+  const cards = accessibleVendors.map((v) =>
     buildCatalogCardSourceRowForPublishedVendor(v, {
       tBrowse,
       tTreeCategory: (key) => tTree(key),
@@ -61,7 +67,9 @@ export default async function SeoCategoryPage({ params }: Props) {
 
   const vendorGrid =
     cards.length > 0 ? (
-      <CatalogBrowseCardGrid
+      <>
+        <CatalogCheckoutResume />
+        <CatalogBrowseCardGrid
         cards={cards}
         favoriteKeys={[]}
         hasFullCatalogAccess={catalogAccessUnlocked}
@@ -70,6 +78,12 @@ export default async function SeoCategoryPage({ params }: Props) {
           body: tBrowse("paywall.body"),
           ctaPayment: tBrowse("paywall.ctaPayment"),
           closeDialog: tBrowse("paywall.closeDialog"),
+          planMonthlyLabel: tBrowse("paywall.planMonthlyLabel"),
+          planMonthlyPrice: tBrowse("paywall.planMonthlyPrice"),
+          planQuarterlyLabel: tBrowse("paywall.planQuarterlyLabel"),
+          planQuarterlyPrice: tBrowse("paywall.planQuarterlyPrice"),
+          checkoutError: tBrowse("paywall.checkoutError"),
+          checkoutLoading: tBrowse("paywall.checkoutLoading"),
         }}
         lockedCardUnlockLabel={tBrowse("paywall.unlockCard")}
         gridAriaLabel={labels.vendorPreviewTitle}
@@ -78,6 +92,7 @@ export default async function SeoCategoryPage({ params }: Props) {
         collapseLabel={tBrowse("vendorCard.collapse")}
         expandLabel={tBrowse("vendorCard.expand")}
       />
+      </>
     ) : null;
 
   return (

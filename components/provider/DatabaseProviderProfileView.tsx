@@ -102,6 +102,7 @@ function MediaImage({
 
 export async function DatabaseProviderProfileView({ vendor }: Props) {
   const t = await getTranslations("Pages.providerProfile");
+  const tVendorFaq = await getTranslations("Pages.providerProfile.vendorFaq");
   const tTree = await getTranslations("catalogCategoryTree");
   const tBrowse = await getTranslations("Pages.catalogBrowse");
   const locale = await getLocale();
@@ -201,24 +202,27 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
   );
   const aboutDescriptionText =
     aboutBodyParagraphs.length > 0 ? aboutBodyParagraphs.join(" ") : null;
-  const faqItems = buildVendorFaq({
-    name: publicH1,
-    category: normalizeVendorCategoryMainSlugs(vendor.categories)[0] ?? null,
-    categoryLabel: categoryLabels[0] ?? null,
-    city: "Бишкек",
-    country: "Кыргызстан",
-    description: aboutDescriptionText,
-    salesType: cardRow.display.tradeType,
-    minOrder: vendor.min_batch,
-    locationRow: vendor.location_row,
-    hasWhatsapp: false,
-    hasPhone: false,
-    hasInstagram: false,
-    hasTelegram: false,
-    hasRecommendedSellers: recommendedVendors.length > 0,
-    deliveryHelp: vendor.delivery_help,
-    samplesAvailable: vendor.samples_available,
-  });
+  const faqItems = buildVendorFaq(
+    {
+      name: publicH1,
+      category: normalizeVendorCategoryMainSlugs(vendor.categories)[0] ?? null,
+      categoryLabel: categoryLabels[0] ?? null,
+      city: tVendorFaq("defaultCity"),
+      country: tVendorFaq("defaultCountry"),
+      description: aboutDescriptionText,
+      salesType: cardRow.display.tradeType,
+      minOrder: vendor.min_batch,
+      locationRow: vendor.location_row,
+      hasWhatsapp: false,
+      hasPhone: false,
+      hasInstagram: false,
+      hasTelegram: false,
+      hasRecommendedSellers: recommendedVendors.length > 0,
+      deliveryHelp: vendor.delivery_help,
+      samplesAvailable: vendor.samples_available,
+    },
+    (key, values) => tVendorFaq(key, values),
+  );
   const terms = showcase
     ? [
         {
@@ -497,7 +501,12 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                 collapseLabel={tBrowse("cardCollapse")}
                 expandLabel={tBrowse("cardExpand")}
               />
-              <VendorFaqSection items={faqItems} vendorName={publicH1} />
+              <VendorFaqSection
+                items={faqItems}
+                sectionTitle={tVendorFaq("sectionTitle", { vendorName: publicH1 })}
+                sectionLead={tVendorFaq("sectionLead")}
+                sectionAria={tVendorFaq("sectionAria", { vendorName: publicH1 })}
+              />
               <FaqJsonLd items={faqItems} />
             </main>
 

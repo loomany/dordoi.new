@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
 import Image from "next/image";
-import { ArrowRight, ChevronDown, ChevronUp, Package, ShoppingBag } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronUp, Lock, Package, ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
@@ -260,7 +260,7 @@ export function CatalogCard({
         )}
       >
         <span className="min-w-0 truncate">{tCard("profileCta")}</span>
-        <ArrowRight className="size-3 shrink-0 opacity-75" aria-hidden />
+        <Lock className="size-3 shrink-0 opacity-80" aria-hidden />
       </button>
     ) : href ? (
       <Link

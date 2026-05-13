@@ -1,12 +1,6 @@
 /** Сколько карточек поставщиков видит гость без оплаты (глобально, с учётом пагинации). */
 export const GUEST_FREE_CATALOG_CARDS = 6;
 
-export function hasFullCatalogAccess(
-  profile: { userId: string } | null | undefined,
-): boolean {
-  return Boolean(profile?.userId);
-}
-
 export function isCatalogCardLockedForGuest(opts: {
   hasFullAccess: boolean;
   globalIndex: number;

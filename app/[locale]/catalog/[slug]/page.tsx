@@ -18,6 +18,9 @@ import { buildPageMetadata } from "@/lib/seo";
 import { baseUrl } from "@/lib/site";
 import { routing } from "@/i18n/routing";
 import { fetchPublishedVendorBySlug } from "@/lib/catalog/published-vendors";
+import { redactVendorSensitiveFields } from "@/lib/catalog/catalog-vendor-access";
+import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
+import { getSessionProfile } from "@/lib/auth/session-profile";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -79,10 +82,15 @@ export default async function ProviderProfilePage({ params }: Props) {
   setRequestLocale(locale);
 
   if (!isProviderSlug(slug)) {
-    const vendor = await fetchPublishedVendorBySlug(slug);
-    if (!vendor) {
+    const profile = await getSessionProfile();
+    const catalogAccessUnlocked = await hasFullCatalogAccess(profile);
+    const vendorRaw = await fetchPublishedVendorBySlug(slug);
+    if (!vendorRaw) {
       notFound();
     }
+    const vendor = catalogAccessUnlocked
+      ? vendorRaw
+      : redactVendorSensitiveFields(vendorRaw);
     const jsonLd = buildVendorLocalBusinessJsonLd(vendor, locale);
     return (
       <>

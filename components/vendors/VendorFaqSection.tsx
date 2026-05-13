@@ -3,10 +3,17 @@ import type { VendorFaqItem } from "@/lib/dordoi/vendorFaq";
 
 type Props = {
   items: VendorFaqItem[];
-  vendorName: string;
+  sectionTitle: string;
+  sectionLead: string;
+  sectionAria: string;
 };
 
-export function VendorFaqSection({ items, vendorName }: Props) {
+export function VendorFaqSection({
+  items,
+  sectionTitle,
+  sectionLead,
+  sectionAria,
+}: Props) {
   if (items.length === 0) return null;
 
   return (
@@ -21,16 +28,14 @@ export function VendorFaqSection({ items, vendorName }: Props) {
         id="vendor-faq-title"
         className="mt-2 text-lg font-semibold tracking-tight text-foreground"
       >
-        Частые вопросы о {vendorName}
+        {sectionTitle}
       </h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Ответы помогут быстро понять условия связи, заказа и закупки.
-      </p>
+      <p className="mt-1 text-sm text-muted-foreground">{sectionLead}</p>
       <div className="mt-4">
         <FaqAccordion
           items={items}
           defaultOpenIndex={0}
-          ariaLabel={`Частые вопросы о ${vendorName}`}
+          ariaLabel={sectionAria}
         />
       </div>
     </section>

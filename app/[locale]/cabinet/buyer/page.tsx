@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { BuyerFavoritesSection } from "@/components/cabinet/BuyerFavoritesSection";
+import { ManageSubscriptionButton } from "@/components/cabinet/ManageSubscriptionButton";
 import { getSessionProfile } from "@/lib/auth/session-profile";
 import { fetchBuyerFavoriteKeysOrdered } from "@/lib/favorites/buyer-favorites";
 import { buildPageMetadata } from "@/lib/seo";
@@ -36,6 +37,7 @@ export default async function BuyerCabinetPage({ params }: Props) {
   return (
     <div className="pb-4">
       <h1 className="sr-only">{t("title")}</h1>
+      <ManageSubscriptionButton />
       <BuyerFavoritesSection locale={locale} listingKeys={favoriteKeys} />
     </div>
   );
