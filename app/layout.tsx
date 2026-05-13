@@ -3,6 +3,7 @@ import { Inter, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
+import { SiteBrandJsonLd } from "@/components/seo/SiteBrandJsonLd";
 import { htmlLangFromRouteLocale } from "@/lib/hreflang";
 import { baseUrl, siteIndexable } from "@/lib/site";
 
@@ -37,6 +38,15 @@ export const metadata: Metadata = {
     default: "Dordoi.help",
     template: "%s | Dordoi.help",
   },
+  icons: {
+    icon: [
+      { url: "/icon", type: "image/png", sizes: "32x32" },
+      { url: "/apple-icon", type: "image/png", sizes: "180x180" },
+    ],
+    apple: [{ url: "/apple-icon", type: "image/png", sizes: "180x180" }],
+    shortcut: "/icon",
+  },
+  manifest: "/manifest.webmanifest",
 };
 
 export default async function RootLayout({
@@ -55,6 +65,7 @@ export default async function RootLayout({
       className={`${inter.variable} ${geistMono.variable} min-h-dvh h-full antialiased`}
     >
       <body className="flex min-h-dvh flex-col">
+        <SiteBrandJsonLd />
         <NuqsAdapter>{children}</NuqsAdapter>
       </body>
     </html>
