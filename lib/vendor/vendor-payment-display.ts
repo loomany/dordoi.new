@@ -17,7 +17,7 @@ export function displayVendorTerm(
   value: string | null | undefined,
   fallback: string,
 ): string {
-  if (isVendorTermUnset(value)) return fallback;
+  if (value == null || isVendorTermUnset(value)) return fallback;
   return value.trim();
 }
 
