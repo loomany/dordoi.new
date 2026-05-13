@@ -6,10 +6,6 @@ import { CatalogBrowseCardGrid } from "@/components/catalog/CatalogBrowseCardGri
 import { CatalogCheckoutResume } from "@/components/catalog/CatalogCheckoutResume";
 import { SeoCategoryLanding } from "@/components/seo/SeoCategoryLanding";
 import { getSessionProfile } from "@/lib/auth/session-profile";
-import {
-  capCatalogTotalCountForFreeAccess,
-  catalogPageSizeForAccess,
-} from "@/lib/catalog/catalog-access-limits";
 import { applyCatalogAccessToVendors } from "@/lib/catalog/catalog-vendor-access";
 import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
 import { buildSeoCategoryMetadata } from "@/lib/catalog/seo-category-metadata";
@@ -52,16 +48,9 @@ export default async function SeoCategoryPage({ params }: Props) {
   const routeLocale = locale as RouteLocale;
   const profile = await getSessionProfile();
   const catalogAccessUnlocked = await hasFullCatalogAccess(profile);
-  const { vendors: fetchedVendors, totalCount: rawTotal } =
+  const { vendors: fetchedVendors, totalCount } =
     await getSeoCategoryVendorPageData(route);
-  const vendors = catalogAccessUnlocked
-    ? fetchedVendors
-    : fetchedVendors.slice(0, catalogPageSizeForAccess(false));
-  const totalCount = capCatalogTotalCountForFreeAccess(
-    rawTotal,
-    catalogAccessUnlocked,
-  );
-  const accessibleVendors = applyCatalogAccessToVendors(vendors, {
+  const accessibleVendors = applyCatalogAccessToVendors(fetchedVendors, {
     hasFullAccess: catalogAccessUnlocked,
     globalOffset: 0,
   });
@@ -113,7 +102,7 @@ export default async function SeoCategoryPage({ params }: Props) {
       route={route}
       vendorCount={totalCount}
       vendorGrid={vendorGrid}
-      vendorListItems={vendors.map((v) => ({
+      vendorListItems={fetchedVendors.map((v) => ({
         slug: v.slug,
         name: v.store_name?.trim() || v.slug,
       }))}

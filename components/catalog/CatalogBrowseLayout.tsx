@@ -19,12 +19,6 @@ import {
   formatProviderAddedDate,
 } from "@/lib/provider-dates";
 import { filterPublishedVendorsBySubcategorySlugs } from "@/lib/catalog/catalog-category-filter";
-import {
-  capCatalogTotalCountForFreeAccess,
-  catalogEffectivePage,
-  catalogFreeVendorLimit,
-  catalogPageSizeForAccess,
-} from "@/lib/catalog/catalog-access-limits";
 import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
 import { applyCatalogAccessToVendors } from "@/lib/catalog/catalog-vendor-access";
 import {
@@ -127,13 +121,10 @@ export async function CatalogBrowseLayout({
       publishedVendors,
       categorySlugs,
     );
-    const limitedVendors = catalogAccessUnlocked
-      ? publishedVendorsFiltered
-      : publishedVendorsFiltered.slice(0, catalogFreeVendorLimit());
-    const accessibleVendors = applyCatalogAccessToVendors(limitedVendors, {
-      hasFullAccess: catalogAccessUnlocked,
-      globalOffset: 0,
-    });
+    const accessibleVendors = applyCatalogAccessToVendors(
+      publishedVendorsFiltered,
+      { hasFullAccess: catalogAccessUnlocked, globalOffset: 0 },
+    );
     const realCards: CatalogCardSourceRow[] = accessibleVendors.map((v) =>
       buildCatalogCardSourceRowForPublishedVendor(v, {
         tBrowse: t,
@@ -150,28 +141,18 @@ export async function CatalogBrowseLayout({
     visibleCards = cards.slice(pageStart, pageEnd);
   } else {
     const requestedPage = parsePositivePage(page);
-    const effectivePage = catalogEffectivePage(
-      requestedPage,
-      catalogAccessUnlocked,
-    );
-    const effectivePageSize = catalogPageSizeForAccess(catalogAccessUnlocked);
 
     let catalogPage = await fetchPublishedVendorsCatalogPage({
-      page: effectivePage,
-      pageSize: effectivePageSize,
+      page: requestedPage,
+      pageSize: CATALOG_PAGE_SIZE,
       subcategorySlugs: categorySlugs,
     });
 
-    cardCount = capCatalogTotalCountForFreeAccess(
-      catalogPage.totalCount,
-      catalogAccessUnlocked,
-    );
-    totalPages = catalogAccessUnlocked
-      ? Math.max(1, Math.ceil(cardCount / CATALOG_PAGE_SIZE))
-      : 1;
-    currentPage = catalogAccessUnlocked ? catalogPage.page : 1;
+    cardCount = catalogPage.totalCount;
+    totalPages = Math.max(1, Math.ceil(cardCount / CATALOG_PAGE_SIZE));
+    currentPage = catalogPage.page;
 
-    if (catalogAccessUnlocked && cardCount > 0 && requestedPage > totalPages) {
+    if (cardCount > 0 && requestedPage > totalPages) {
       catalogPage = await fetchPublishedVendorsCatalogPage({
         page: totalPages,
         pageSize: CATALOG_PAGE_SIZE,
