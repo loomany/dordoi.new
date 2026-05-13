@@ -8,6 +8,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
 import type { CatalogLeadVideo } from "@/lib/catalog/asso-corsets-lead-video";
+import { ensureHttpUrl } from "@/lib/catalog/vendor-map-links";
 import type { ParsedVendorCardData } from "@/lib/catalog/vendor-card-display";
 import { CATALOG_CARD_COLLAPSED_DESCRIPTION_MAX_CHARS } from "@/lib/vendor/vendor-field-limits";
 import { cn } from "@/lib/utils";
@@ -123,7 +124,9 @@ export function CatalogCard({
 }: CatalogCardProps) {
   const router = useRouter();
   const tCard = useTranslations("Pages.catalogBrowse.vendorCard");
-  const hasPhotos = Boolean(photoUrls && photoUrls.length > 0);
+  const hasPhotos = Boolean(
+    leadVideo || (photoUrls && photoUrls.length > 0),
+  );
   const descTrim = display.description.trim();
 
   const isWholesaleSupplier =
@@ -370,7 +373,7 @@ export function CatalogCard({
     hasPhotos && !collapsed ? (
       <div className="min-h-0 w-full pt-4">
         <CatalogCardPhotoRail
-          urls={photoUrls!}
+          urls={photoUrls ?? []}
           altBase={display.storeTitle}
           className="w-full min-w-0"
           leadVideo={leadVideo}
@@ -403,19 +406,24 @@ export function CatalogCard({
     <>
       <div className="relative w-full min-w-0">
         <div className="flex items-center gap-3">
-          {avatar}
+          <div className="shrink-0 self-center">{avatar}</div>
           <div className={cn("min-w-0 flex-1 text-left", titleReserveRight)}>
             <h2 className="text-base font-semibold uppercase leading-tight tracking-tight text-card-foreground sm:text-lg">
               {display.storeTitle}
             </h2>
-            <div className="mt-1 min-h-[2.75rem]">
-              {display.subtitle?.trim() ? (
-                <p className="line-clamp-2 text-xs font-normal normal-case leading-snug tracking-normal text-muted-foreground sm:text-sm">
-                  {display.subtitle.trim()}
-                </p>
-              ) : null}
-            </div>
           </div>
+        </div>
+        <div
+          className={cn(
+            "mt-1 min-h-[2.75rem] pl-[calc(3.5rem+0.75rem)]",
+            titleReserveRight,
+          )}
+        >
+          {display.subtitle?.trim() ? (
+            <p className="line-clamp-2 text-xs font-normal normal-case leading-snug tracking-normal text-muted-foreground sm:text-sm">
+              {display.subtitle.trim()}
+            </p>
+          ) : null}
         </div>
       </div>
 
