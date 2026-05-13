@@ -35,18 +35,6 @@ export type BuyerDirectoryRow = {
 
 export const BUYERS: BuyerDirectoryRow[] = [
   {
-    id: "aiperi-zakup",
-    category: "textile",
-    experienceYears: 6,
-    completedOrdersDisplay: "150+",
-    whatsappDigits: "996704403480",
-    telegramUrl: "",
-    instagramUrl: "https://www.instagram.com/dordoi_zakup_aiperi",
-    photoSrc: "/buyers/portrait-aiperi.png",
-    liveListing: true,
-    linkedVendorSlug: "dordoi-zakup-aiperi",
-  },
-  {
     id: "arailym",
     category: "textile",
     experienceYears: 5,
@@ -57,6 +45,18 @@ export const BUYERS: BuyerDirectoryRow[] = [
     instagramUrl: "",
     photoSrc: "/buyers/portrait-arailym.png",
     liveListing: true,
+  },
+  {
+    id: "aiperi-zakup",
+    category: "textile",
+    experienceYears: 6,
+    completedOrdersDisplay: "150+",
+    whatsappDigits: "996704403480",
+    telegramUrl: "",
+    instagramUrl: "https://www.instagram.com/dordoi_zakup_aiperi",
+    photoSrc: "/buyers/portrait-aiperi.png",
+    liveListing: true,
+    linkedVendorSlug: "dordoi-zakup-aiperi",
   },
   {
     id: "daniyar-isakov",
