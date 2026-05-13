@@ -53,7 +53,7 @@ export function CatalogBrowseCardGrid({
 
   return (
     <section
-      className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start lg:grid-cols-3"
+      className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
       aria-label={gridAriaLabel}
     >
       {cards.map((c, index) => {
@@ -63,9 +63,9 @@ export function CatalogBrowseCardGrid({
         const initialFavorite = favoriteSet.has(listingKey);
 
         return (
-          <div key={c.id} className="flex min-h-0 w-full min-w-0 flex-col">
+          <div key={c.id} className="flex h-full min-h-0 w-full min-w-0 flex-col">
             <CatalogCard
-              className="flex min-h-0 w-full"
+              className="h-full min-h-0 w-full flex-1"
               href={c.href}
               display={c.display}
               photoUrls={c.photoUrls}

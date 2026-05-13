@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
-import { ensureHttpUrl } from "@/lib/catalog/vendor-map-links";
+import type { CatalogLeadVideo } from "@/lib/catalog/asso-corsets-lead-video";
 import type { ParsedVendorCardData } from "@/lib/catalog/vendor-card-display";
 import { CATALOG_CARD_COLLAPSED_DESCRIPTION_MAX_CHARS } from "@/lib/vendor/vendor-field-limits";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,8 @@ export type CatalogCardProps = {
   href?: string;
   /** Фото под CTA при раскрытии: карусель (одно фото, листание влево-вправо). */
   photoUrls?: string[];
+  /** Первый слайд карусели — видео (только Asso Corsets). */
+  leadVideo?: CatalogLeadVideo;
   /** Карточка-подборка / после модерации — акцентная рамка. */
   featured?: boolean;
   /** Кнопка избранного в подвале карточки; клик не всплывает к ссылке карточки. */
@@ -105,6 +107,7 @@ export function CatalogCard({
   viewProfileLabel,
   href,
   photoUrls,
+  leadVideo,
   featured,
   favoriteSlot,
   aboutStoreLabel,
@@ -370,6 +373,7 @@ export function CatalogCard({
           urls={photoUrls!}
           altBase={display.storeTitle}
           className="w-full min-w-0"
+          leadVideo={leadVideo}
         />
       </div>
     ) : null;
@@ -404,25 +408,30 @@ export function CatalogCard({
             <h2 className="text-base font-semibold uppercase leading-tight tracking-tight text-card-foreground sm:text-lg">
               {display.storeTitle}
             </h2>
-            {display.subtitle?.trim() ? (
-              <p className="mt-1 line-clamp-2 text-xs font-normal normal-case leading-snug tracking-normal text-muted-foreground sm:text-sm">
-                {display.subtitle.trim()}
-              </p>
-            ) : null}
+            <div className="mt-1 min-h-[2.75rem]">
+              {display.subtitle?.trim() ? (
+                <p className="line-clamp-2 text-xs font-normal normal-case leading-snug tracking-normal text-muted-foreground sm:text-sm">
+                  {display.subtitle.trim()}
+                </p>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
 
-      {descTrim ? (
-        <section
-          aria-label={aboutStoreLabel?.trim() || undefined}
-          className="min-w-0"
+      <section
+        aria-label={aboutStoreLabel?.trim() || undefined}
+        className="min-h-[4.125rem] min-w-0 flex-1"
+      >
+        <p
+          className={cn(
+            "line-clamp-3 whitespace-pre-line break-words text-sm leading-relaxed text-muted-foreground",
+            !descTrim && "invisible",
+          )}
         >
-          <p className="line-clamp-3 whitespace-pre-line break-words text-sm leading-relaxed text-muted-foreground">
-            {truncateForCompact(descTrim)}
-          </p>
-        </section>
-      ) : null}
+          {descTrim ? truncateForCompact(descTrim) : "\u00a0"}
+        </p>
+      </section>
     </>
   );
 
@@ -471,7 +480,7 @@ export function CatalogCard({
 
   const shellClass = cn(
     articleClass,
-    "flex min-h-0 w-full flex-col",
+    "flex h-full min-h-0 w-full flex-col",
     variant === "preview" && "ring-1 ring-dashed ring-muted-foreground/25",
   );
 
@@ -482,7 +491,7 @@ export function CatalogCard({
 
   return (
     <article className={shellClass} {...dataAttrs}>
-      <div className="flex min-h-0 flex-col">{body}</div>
+      <div className="flex h-full min-h-0 flex-1 flex-col">{body}</div>
     </article>
   );
 }
