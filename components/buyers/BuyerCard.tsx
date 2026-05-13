@@ -96,9 +96,11 @@ export function BuyerCard({ buyer, profile, strings, className }: Props) {
           >
             {profile.name}
           </h2>
-          <p className="mt-2 text-sm font-medium leading-snug text-slate-600">
-            {profile.specialization}
-          </p>
+          {!isOpenSlot ? (
+            <p className="mt-2 text-sm font-medium leading-snug text-slate-600">
+              {profile.specialization}
+            </p>
+          ) : null}
         </div>
       </div>
 
