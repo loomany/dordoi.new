@@ -10,6 +10,7 @@ import type { CatalogLeadVideo } from "@/lib/catalog/asso-corsets-lead-video";
 export { getAiCatalogDisplayOverlay };
 import {
   commerceCopyFromVendorRow,
+  inferCatalogCardSubtitleFallback,
   inferVendorTradeType,
   type ParsedVendorCardData,
 } from "@/lib/catalog/vendor-card-display";
@@ -106,7 +107,7 @@ const PUBLISHED_VENDOR_SELECT_FIELDS =
 
 /** List query для пагинированного `/catalog` — с `parsed_ai_data` для текста ИИ на карточке. */
 const PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS =
-  "id, slug, store_name, description, categories, logo_url, product_photos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
+  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
 
 const PUBLISHED_VENDOR_PROFILE_SELECT_FIELDS =
   "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at, followers_count, parsed_ai_data";
@@ -214,7 +215,6 @@ export type PublishedVendorCatalogListRow = Omit<
   | "two_gis_uri"
   | "yandex_maps_uri"
   | "followers_count"
-  | "product_videos"
 >;
 
 export type FetchPublishedVendorsCatalogPageParams = {
@@ -287,6 +287,11 @@ function mapPublishedVendorCatalogListRow(
         (x): x is string => typeof x === "string",
       )
     : [];
+  const videos = Array.isArray(r.product_videos)
+    ? (r.product_videos as unknown[]).filter(
+        (x): x is string => typeof x === "string",
+      )
+    : [];
   return {
     id,
     slug,
@@ -295,6 +300,7 @@ function mapPublishedVendorCatalogListRow(
     categories: cats,
     logo_url: typeof r.logo_url === "string" ? r.logo_url : null,
     product_photos: photos,
+    product_videos: videos,
     location_row: typeof r.location_row === "string" ? r.location_row : null,
     created_at:
       typeof r.created_at === "string"
@@ -576,6 +582,8 @@ export type CatalogCardSourceRow = {
   display: ParsedVendorCardData;
   photoUrls: string[] | undefined;
   leadVideo?: CatalogLeadVideo;
+  /** Для client-side lead-video (Asso Corsets). */
+  productVideos?: string[];
   featured: boolean;
   /** Локализованная строка «Добавлено …» — рассчитывается в layout. */
   addedLine: string;
@@ -603,7 +611,7 @@ export function vendorToCatalogCardSource(opts: {
     vendor.product_photos.length > 0 ? vendor.product_photos : undefined;
   const leadVideo = leadVideoForAssoCorsets({
     slug: vendor.slug,
-    productVideos: "product_videos" in vendor ? vendor.product_videos : undefined,
+    productVideos: vendor.product_videos,
     posterUrl: vendor.product_photos[0],
   });
 
@@ -633,6 +641,7 @@ export function vendorToCatalogCardSource(opts: {
     display,
     photoUrls,
     leadVideo,
+    productVideos: vendor.product_videos,
     featured: false,
     addedLine,
     updatedLine,
@@ -664,6 +673,13 @@ export function buildCatalogCardSourceRowForPublishedVendor(
     addedLine,
     updatedLine,
   });
+  const subtitleFallback = inferCatalogCardSubtitleFallback(
+    vendor.categories,
+    (id) => tTreeCategory(`main.${id}`),
+  );
+  const subtitle =
+    row.display.subtitle?.trim() ||
+    dedupeCatalogSubtitle(row.display.storeTitle, subtitleFallback);
   const showcase = getShowcaseCatalogFields(vendor.slug, tBrowse);
   if (showcase) {
     return {
@@ -673,6 +689,7 @@ export function buildCatalogCardSourceRowForPublishedVendor(
         storeTitle: showcase.title,
         description: showcase.description,
         categories: showcase.categories,
+        subtitle,
       },
     };
   }
@@ -680,6 +697,7 @@ export function buildCatalogCardSourceRowForPublishedVendor(
     ...row,
     display: {
       ...row.display,
+      subtitle,
       categories: localizedMainCategoryLabels(vendor.categories, (id) =>
         tTreeCategory(`main.${id}`),
       ),

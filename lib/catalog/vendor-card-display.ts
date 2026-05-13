@@ -3,6 +3,8 @@
  * Сырые поля БД маппятся сюда; UI подмешивает i18n-дефолты для пустых `commerce.*`.
  */
 
+import { localizedMainCategoryLabels } from "@/lib/catalog/vendor-category-normalize";
+
 export type VendorTradeType = "wholesale" | "retail" | "hybrid";
 
 export type VendorCardCommerceCopy = {
@@ -47,6 +49,16 @@ export function inferVendorTradeType(
     return "wholesale";
   }
   return "hybrid";
+}
+
+/** Подзаголовок карточки, если ИИ не вернул `subtitle` — первая категория витрины. */
+export function inferCatalogCardSubtitleFallback(
+  categories: string[] | null | undefined,
+  tMainCategory: (mainId: string) => string,
+): string | null {
+  if (!Array.isArray(categories) || categories.length === 0) return null;
+  const labels = localizedMainCategoryLabels(categories, tMainCategory);
+  return labels[0]?.trim() || null;
 }
 
 /** Строки для карточки из существующих полей анкеты; пустые → дефолты в UI через i18n. */

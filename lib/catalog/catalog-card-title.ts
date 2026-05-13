@@ -137,6 +137,7 @@ export function isPlaceholderCatalogStoreName(name: string | null | undefined): 
   if (/^интернет-магазин/u.test(t)) return true;
   if (/^(?:авто)?аксессуар/u.test(t)) return true;
   if (/^(?:123|cosmos|тест|пример)\b/i.test(t)) return true;
+  if (/^(?:null|undefined|none|n\/a)$/i.test(t)) return true;
   return false;
 }
 
@@ -199,6 +200,7 @@ export function sanitizeAiCatalogBrandName(raw: string): string | null {
   s = stripGenericShopSuffixFromStoreTitle(s);
   if (s.length < 2 || s.length > 56) return null;
   if (isGenericCategoryLabel(s)) return null;
+  if (/^(?:null|undefined|none|n\/a)$/i.test(s)) return null;
   return s;
 }
 
