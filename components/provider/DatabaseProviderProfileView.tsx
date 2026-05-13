@@ -294,32 +294,35 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
       <JsonLd data={jsonLd} />
       <div className="bg-[#FAFAF8] pb-16 pt-6 sm:pt-8">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <nav aria-label={t("breadcrumbNav")} className="text-xs text-gray-400">
-            <ol className="flex flex-wrap items-center gap-1.5">
-              <li>
-                <Link href="/" className="hover:text-gray-600">
-                  {t("breadcrumbHome")}
-                </Link>
-              </li>
-              <li className="text-gray-300" aria-hidden>
-                /
-              </li>
-              <li>
-                <Link href="/catalog" className="hover:text-gray-600">
-                  {t("breadcrumbCatalog")}
-                </Link>
-              </li>
-              <li className="text-gray-300" aria-hidden>
-                /
-              </li>
-              <li className="font-medium text-gray-600" aria-current="page">
-                {pageTitle}
-              </li>
-            </ol>
-          </nav>
-
-          <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
             <main className="order-2 min-w-0 rounded-[var(--d-radius-2xl)] border border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-card p-5 shadow-[var(--d-shadow-soft)] sm:p-6 lg:order-none">
+              <nav
+                aria-label={t("breadcrumbNav")}
+                className="mb-4 text-xs text-muted-foreground/75"
+              >
+                <ol className="flex flex-wrap items-center gap-1.5">
+                  <li>
+                    <Link href="/" className="transition-colors hover:text-foreground">
+                      {t("breadcrumbHome")}
+                    </Link>
+                  </li>
+                  <li className="text-muted-foreground/40" aria-hidden>
+                    /
+                  </li>
+                  <li>
+                    <Link href="/catalog" className="transition-colors hover:text-foreground">
+                      {t("breadcrumbCatalog")}
+                    </Link>
+                  </li>
+                  <li className="text-muted-foreground/40" aria-hidden>
+                    /
+                  </li>
+                  <li className="font-medium text-muted-foreground" aria-current="page">
+                    {pageTitle}
+                  </li>
+                </ol>
+              </nav>
+
               <header className="relative grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-start sm:gap-x-3">
                 <div className="pointer-events-none hidden min-w-0 sm:block" aria-hidden />
                 <div className="min-w-0 pr-12 sm:col-start-2 sm:w-full sm:px-0 sm:text-center">

@@ -7,6 +7,7 @@ import {
   CatalogCategoryFilterFallback,
 } from "@/components/catalog/CatalogCategoryFilter";
 import { CatalogBrowseCardGrid } from "@/components/catalog/CatalogBrowseCardGrid";
+import { CatalogBuyerSpotlight } from "@/components/catalog/CatalogBuyerSpotlight";
 import { CatalogPaginationNav } from "@/components/catalog/CatalogPaginationNav";
 import type { ProviderSlug } from "@/data/provider-registry";
 import { getSessionProfile } from "@/lib/auth/session-profile";
@@ -182,49 +183,57 @@ export async function CatalogBrowseLayout({
     <div className="bg-[#FAFAF8] pb-12 pt-5 sm:pt-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="space-y-4">
-            <nav aria-label={t("breadcrumbNav")} className="text-xs text-gray-400">
-              <ol className="flex flex-wrap items-center gap-1.5">
-                <li>
-                  <Link href="/" className="transition-colors hover:text-gray-600">
-                    {t("breadcrumbHome")}
-                  </Link>
-                </li>
-                <li aria-hidden className="text-gray-300">
-                  /
-                </li>
-                <li className="text-gray-500">{t("breadcrumbCatalog")}</li>
-              </ol>
-            </nav>
+          <nav aria-label={t("breadcrumbNav")} className="text-xs text-gray-400">
+            <ol className="flex flex-wrap items-center gap-1.5">
+              <li>
+                <Link href="/" className="transition-colors hover:text-gray-600">
+                  {t("breadcrumbHome")}
+                </Link>
+              </li>
+              <li aria-hidden className="text-gray-300">
+                /
+              </li>
+              <li className="text-gray-500">{t("breadcrumbCatalog")}</li>
+            </ol>
+          </nav>
 
-            <header>
-              <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">{t("title")}</h1>
-              <p className="mt-3 max-w-3xl text-gray-500">{t("subtitle")}</p>
-              <p className="mt-4 text-sm text-gray-400">{statsLine}</p>
-            </header>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:items-start lg:gap-x-6">
+            <div className="flex flex-col gap-3 lg:col-span-2">
+              <header>
+                <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">
+                  {t("title")}
+                </h1>
+                <p className="mt-3 max-w-3xl text-gray-500">{t("subtitle")}</p>
+                <p className="mt-4 text-sm text-gray-400">{statsLine}</p>
+              </header>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <label className="relative flex min-h-11 flex-1 items-center">
-                <span className="sr-only">{t("searchLabel")}</span>
-                <span className="pointer-events-none absolute left-4 text-gray-400">
-                  <Search className="size-4 stroke-[1.5]" aria-hidden />
-                </span>
-                <input
-                  type="search"
-                  name="catalog-q"
-                  placeholder={t("searchPlaceholder")}
-                  aria-label={t("searchLabel")}
-                  className="w-full rounded-full border border-border bg-card py-2.5 pl-11 pr-4 text-sm text-card-foreground placeholder:text-muted-foreground/70 outline-none transition-shadow focus:border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] focus:ring-2 focus:ring-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)]"
-                  autoComplete="off"
-                />
-              </label>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <label className="relative flex min-h-11 min-w-0 flex-1 items-center">
+                  <span className="sr-only">{t("searchLabel")}</span>
+                  <span className="pointer-events-none absolute left-4 text-gray-400">
+                    <Search className="size-4 stroke-[1.5]" aria-hidden />
+                  </span>
+                  <input
+                    type="search"
+                    name="catalog-q"
+                    placeholder={t("searchPlaceholder")}
+                    aria-label={t("searchLabel")}
+                    className="w-full rounded-full border border-border bg-card py-2.5 pl-11 pr-4 text-sm text-card-foreground placeholder:text-muted-foreground/70 outline-none transition-shadow focus:border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] focus:ring-2 focus:ring-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)]"
+                    autoComplete="off"
+                  />
+                </label>
 
-              <Suspense fallback={<CatalogCategoryFilterFallback />}>
-                <CatalogCategoryFilter />
-              </Suspense>
+                <Suspense fallback={<CatalogCategoryFilterFallback />}>
+                  <CatalogCategoryFilter />
+                </Suspense>
+              </div>
             </div>
+
+            <CatalogBuyerSpotlight className="lg:col-start-3 lg:row-span-2 lg:row-start-1" />
+          </div>
         </div>
 
-        <div className="mt-10">
+        <div className="mt-6">
           <CatalogBrowseCardGrid
             key={currentPage}
             cards={visibleCards}
