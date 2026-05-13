@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-import { brandMarkImageJsx } from "@/lib/brand/brand-mark-image";
+import { brandLogoDataUrl } from "@/lib/brand/brand-logo-data";
 
 export const alt = "Dordoi.help";
 export const size = { width: 1200, height: 630 };
@@ -22,9 +22,7 @@ export default function OpenGraphImage() {
           color: "#ffffff",
         }}
       >
-        <div style={{ width: 128, height: 128, display: "flex" }}>
-          {brandMarkImageJsx({ sizePx: 128 })}
-        </div>
+        <img src={brandLogoDataUrl()} alt="" width={128} height={128} />
         <div
           style={{
             display: "flex",

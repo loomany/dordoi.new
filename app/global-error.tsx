@@ -25,7 +25,7 @@ export default function GlobalError({
         <main style={{ maxWidth: 420, textAlign: "center" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/icon"
+            src="/favicon.ico"
             alt="Dordoi.help"
             width={56}
             height={56}

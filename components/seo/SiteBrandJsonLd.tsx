@@ -3,7 +3,7 @@ import { baseUrl } from "@/lib/site";
 
 export function SiteBrandJsonLd() {
   const url = baseUrl();
-  const logo = `${url}/apple-icon`;
+  const logo = `${url}/brand/logo-192.png`;
 
   return (
     <JsonLd
@@ -18,8 +18,8 @@ export function SiteBrandJsonLd() {
             logo: {
               "@type": "ImageObject",
               url: logo,
-              width: 180,
-              height: 180,
+              width: 192,
+              height: 192,
             },
           },
           {

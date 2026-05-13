@@ -40,11 +40,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
       { url: "/icon", type: "image/png", sizes: "32x32" },
       { url: "/apple-icon", type: "image/png", sizes: "180x180" },
+      { url: "/brand/logo-192.png", type: "image/png", sizes: "192x192" },
     ],
     apple: [{ url: "/apple-icon", type: "image/png", sizes: "180x180" }],
-    shortcut: "/icon",
+    shortcut: "/favicon.ico",
   },
   manifest: "/manifest.webmanifest",
 };

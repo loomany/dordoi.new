@@ -8,7 +8,7 @@ export default function NotFound() {
       <body className="flex min-h-dvh items-center justify-center bg-background p-6 text-foreground antialiased">
         <main className="flex max-w-md flex-col items-center text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/icon" alt="Dordoi.help" width={56} height={56} className="rounded-xl" />
+          <img src="/favicon.ico" alt="Dordoi.help" width={56} height={56} className="rounded-xl" />
           <p className="mt-6 text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">
             404
           </p>
