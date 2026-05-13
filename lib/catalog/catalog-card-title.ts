@@ -17,6 +17,30 @@ const GENERIC_SHOP_TITLE_SUFFIXES: RegExp[] = [
   /,\s*магазин\s+корейской\s+косметики$/iu,
   /,\s*оптовый\s+магазин\s+корейской\s+косметики$/iu,
   /,\s*точка\s+оптовой\s+продажи$/iu,
+  /,\s*магазин\s+одежды$/iu,
+  /,\s*магазин\s+обуви$/iu,
+  /,\s*магазин\s+косметики$/iu,
+  /,\s*магазин\s+тканей$/iu,
+  /,\s*магазин\s+текстиля$/iu,
+  /,\s*магазин\s+посуды$/iu,
+  /,\s*магазин\s+игрушек$/iu,
+  /,\s*магазин\s+нижнего\s+белья$/iu,
+  /,\s*магазин\s+бытовой\s+техники$/iu,
+  /,\s*магазин\s+люстр$/iu,
+  /,\s*магазин\s+канцтоваров$/iu,
+  /,\s*магазин\s+ковров$/iu,
+  /,\s*магазин\s+спортивной\s+одежды$/iu,
+  /,\s*магазин\s+домашнего\s+текстиля$/iu,
+  /,\s*оптовый\s+магазин$/iu,
+  /,\s*интернет-магазин$/iu,
+  /,\s*обувной\s+магазин$/iu,
+  /,\s*текстильная\s+компания$/iu,
+  /,\s*швейная\s+фабрика$/iu,
+  /,\s*швейных\s+цех$/iu,
+  /,\s*магазин$/iu,
+  /,\s*бутик$/iu,
+  /,\s*шоурум$/iu,
+  /,\s*showroom$/iu,
 ];
 
 /**
@@ -64,6 +88,7 @@ export function sanitizeAiCatalogBrandName(raw: string): string | null {
   s = s.replace(/\s*[_-](kg|kgs|official|shop|store|brand|moda)\b/giu, " ");
   s = s.replace(/[_]{1,}/g, " ");
   s = s.replace(/\s{2,}/g, " ").trim();
+  s = stripGenericShopSuffixFromStoreTitle(s);
   if (s.length < 2 || s.length > 56) return null;
   return s;
 }

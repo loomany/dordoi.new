@@ -25,6 +25,7 @@ import {
   parseVendorTextWithOpenAI,
   type VendorTextModerationOutput,
 } from "@/lib/ai/vendor-text-openai-parse";
+import { resolveCatalogStoreTitleForCard } from "@/lib/catalog/catalog-card-title";
 import type { ParsedVendorCardData } from "@/lib/catalog/vendor-card-display";
 
 type VendorRow = {
@@ -136,8 +137,13 @@ function buildDisplay(
   ai: VendorTextModerationOutput,
 ): ParsedVendorCardData {
   const cats = Array.isArray(row.categories) ? row.categories : [];
+  const { storeTitle } = resolveCatalogStoreTitleForCard({
+    dbStoreName: row.store_name?.trim() ?? "",
+    fallbackTitle: "Магазин",
+    catalogBrandNameFromAi: ai.catalogBrandName,
+  });
   return {
-    storeTitle: row.store_name?.trim() || "Магазин",
+    storeTitle,
     catalogBrandName: ai.catalogBrandName,
     subtitle: ai.subtitle,
     description: ai.description,
