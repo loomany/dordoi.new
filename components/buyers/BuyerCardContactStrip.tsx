@@ -76,7 +76,7 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
     return (
       <div className="mt-auto space-y-3 pt-7">
         {showDualContact ? (
-          <div className="grid grid-cols-2 gap-2">
+          <>
             <a
               href={whatsappHref}
               target="_blank"
@@ -85,10 +85,13 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
             >
               {strings.ctaWhatsApp}
             </a>
-            <a href={`tel:+${phoneDigits}`} className={socialBtn}>
+            <a
+              href={`tel:+${phoneDigits}`}
+              className={`${socialBtn} w-full py-3.5 text-sm`}
+            >
               {strings.ctaCall}
             </a>
-          </div>
+          </>
         ) : (
           <a
             href={whatsappHref}
