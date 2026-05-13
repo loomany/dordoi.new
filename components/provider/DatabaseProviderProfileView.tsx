@@ -19,6 +19,7 @@ import { catalogListingKeyFromSlug } from "@/lib/catalog/listing-key";
 import {
   buildCatalogCardSourceRowForPublishedVendor,
   fetchApprovedVendorPhotoBatches,
+  getAiCatalogDisplayOverlay,
   type PublishedVendorRow,
 } from "@/lib/catalog/published-vendors";
 import { getSessionProfile } from "@/lib/auth/session-profile";
@@ -100,6 +101,8 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
     tTreeCategory: (key) => tTree(key),
     locale,
   });
+  const aiAboutOverlay = getAiCatalogDisplayOverlay(vendor.parsed_ai_data);
+  const aboutUsesAiSnapshot = Boolean(aiAboutOverlay?.description?.trim());
   const pageTitle =
     cardRow.display.storeTitle.trim() || tBrowse("fallbackStoreTitle");
   const categoryLabels = showcase
@@ -331,7 +334,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                       {cardRow.display.description.trim() ? (
                         <p>{cardRow.display.description.trim()}</p>
                       ) : null}
-                      {vendor.description_detail ? (
+                      {!aboutUsesAiSnapshot && vendor.description_detail?.trim() ? (
                         <p>{vendor.description_detail.trim()}</p>
                       ) : null}
                     </>

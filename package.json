@@ -26,6 +26,7 @@
     "publish:vendors-catalog": "tsx scripts/publish-vendors-with-storage-media.ts",
     "report:vendor-categories": "tsx scripts/list-vendor-categories.ts",
     "test:ai-two-vendors": "tsx scripts/test-ai-two-vendors.ts",
+    "ai:published-catalog": "tsx scripts/run-ai-published-catalog.ts",
     "verify:catalog-ai": "tsx scripts/verify-catalog-parsed-ai.ts",
     "bot": "python -m bot"
   },
