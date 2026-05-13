@@ -66,3 +66,22 @@ export function ogAlternateLocalesForRouteLocale(routeLocale: string): string[] 
     .filter((l) => l !== routeLocale)
     .map((l) => ogLocaleFromRouteLocale(l));
 }
+
+/**
+ * hreflang when each route locale has its own path (e.g. localized category slugs).
+ * `pathsByRouteLocale` values are paths without locale prefix, e.g. `/categories/zhenskaya-odezhda-optom`.
+ */
+export function hreflangAlternatesFromLocalePaths(
+  pathsByRouteLocale: Record<string, string>,
+): Record<string, string> {
+  const root = baseUrl();
+  const languages: Record<string, string> = {};
+  for (const locale of routing.locales) {
+    const path = normalizePath(pathsByRouteLocale[locale] ?? "");
+    const tag = ROUTE_LOCALE_TO_HREFLANG[locale] ?? locale;
+    languages[tag] = `${root}/${locale}${path}`;
+  }
+  const ruPath = normalizePath(pathsByRouteLocale.ru ?? "");
+  languages["x-default"] = `${root}/ru${ruPath}`;
+  return languages;
+}
