@@ -407,6 +407,11 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                         pageSize={PHOTO_FEED_PAGE_SIZE}
                         altBase={t("productPhotosAltBase", { title: pageTitle })}
                         locale={locale}
+                        productVideos={
+                          vendor.product_videos && vendor.product_videos.length > 0
+                            ? vendor.product_videos
+                            : undefined
+                        }
                       />
                     </div>
                   ) : null}

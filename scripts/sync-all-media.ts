@@ -30,6 +30,7 @@
  *   npm run sync:all-media -- --dry-run=false --delay-ms=500 --batch-size=2
  *   npm run sync:all-media -- --fetch-timeout-ms=120000   (таймаут fetch к Instagram, по умолчанию 120s)
  *   npm run sync:all-media -- --upload-timeout-ms=600000  (таймаут upload в Supabase Storage, по умолчанию 300s)
+ *   npm run sync:all-media -- --skip-db-phase=true       (после фаз 1–2 выйти, Postgres не трогать)
  *
  * Только фото + запись URL в БД (без фазы 2 видео), если фото уже в Storage / чекпоинте:
  *   npm run sync:all-media:photos-db
@@ -113,6 +114,8 @@ function parseArgs() {
   const dryRun = (raw["dry-run"] ?? "true").trim().toLowerCase() !== "false";
   const skipVideoPhase =
     (raw["skip-video-phase"] ?? "false").trim().toLowerCase() === "true";
+  const skipDbPhase =
+    (raw["skip-db-phase"] ?? "false").trim().toLowerCase() === "true";
   const delayMs = Math.max(
     0,
     Math.min(120_000, parseInt(raw["delay-ms"] ?? "500", 10) || 500),
@@ -141,6 +144,7 @@ function parseArgs() {
   return {
     dryRun,
     skipVideoPhase,
+    skipDbPhase,
     delayMs,
     batchSize,
     limit,
@@ -522,6 +526,7 @@ async function main() {
   const {
     dryRun,
     skipVideoPhase,
+    skipDbPhase,
     delayMs,
     batchSize,
     limit,
@@ -538,6 +543,9 @@ async function main() {
   logLine(`dry-run: ${dryRun}`);
   logLine(
     `skip-video-phase: ${skipVideoPhase} (если true — после фото сразу фаза 3 Postgres; видео не качаем)`,
+  );
+  logLine(
+    `skip-db-phase: ${skipDbPhase} (если true — после фаз 1–2 выход без обновления Postgres)`,
   );
   logLine(`delay-ms (между пачками): ${delayMs}`);
   logLine(`batch-size (параллель в пачке): ${batchSize}`);
@@ -781,6 +789,19 @@ async function main() {
           : {}),
       },
     );
+  }
+
+  if (skipDbPhase) {
+    logLine("=== sync-all-media итог (фаза 3 пропущена: --skip-db-phase=true) ===");
+    logLine(
+      `Фото: в map ${photoUrlMap.size} (из Storage без повторной загрузки: ${photoReusedFromStorage}), ошибок: ${photoErrors}`,
+    );
+    logLine(
+      `Видео: в map ${videoUrlMap.size} (из Storage без повторной загрузки: ${videoReusedFromStorage}), ошибок: ${videoErrors}`,
+    );
+    logLine("Postgres не обновлялся. Запустите без --skip-db-phase, когда будете готовы мигрировать URL в БД.");
+    logLine("=== sync-all-media завершён ===");
+    return;
   }
 
   logLine("— Фаза 3: обновление строк в Postgres (vendors, batch_items) —");

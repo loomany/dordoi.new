@@ -27,7 +27,12 @@ function line(msg) {
 }
 
 const passthrough = process.argv.slice(2);
-const defaultArgs = ["--dry-run=false", "--delay-ms=500", "--batch-size=2"];
+const defaultArgs = [
+  "--dry-run=false",
+  "--delay-ms=500",
+  "--batch-size=2",
+  "--skip-db-phase=true",
+];
 const syncArgs = passthrough.length > 0 ? passthrough : defaultArgs;
 const npmArgs = ["run", "sync:all-media", "--", ...syncArgs];
 
