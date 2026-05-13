@@ -6,6 +6,43 @@
 
 const WOMENS_CLOTHING_RE = /женск\w*\s+одежд/i;
 
+const INVISIBLE_CHARS_RE = /[\u200B-\u200D\uFEFF]/g;
+
+function normalizeStoreTitleInput(name: string): string {
+  return name.normalize("NFKC").replace(INVISIBLE_CHARS_RE, "").trim();
+}
+
+/** Категория/ниша вместо бренда — не показываем как заголовок и не берём из ИИ. */
+export function isGenericCategoryLabel(name: string | null | undefined): boolean {
+  if (isPlaceholderCatalogStoreName(name)) return true;
+  const t = typeof name === "string" ? normalizeStoreTitleInput(name).toLowerCase() : "";
+  if (!t) return true;
+  if (/^(?:авто)?аксессуар/u.test(t)) return true;
+  if (/^техника\s+для/u.test(t)) return true;
+  if (/^товары?\s+(?:для|из)\b/u.test(t)) return true;
+  if (/^продажа\s/u.test(t)) return true;
+  if (/^оптовая\s+продажа/u.test(t)) return true;
+  if (/^модная\s+одежда/u.test(t)) return true;
+  if (/^стильная\s+/u.test(t)) return true;
+  if (/^широкий\s+ассортимент/u.test(t)) return true;
+  return false;
+}
+
+function polishDisplayStoreTitle(title: string): string {
+  let t = normalizeStoreTitleInput(title);
+  if (!/_/.test(t)) return t;
+  return t
+    .split(/_+/)
+    .filter((w) => w.length > 0)
+    .map((w) => {
+      if (/^\d+$/.test(w)) return w;
+      if (w.length <= 3 && w === w.toUpperCase()) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    })
+    .join(" ")
+    .trim();
+}
+
 /** После запятой: «магазин детской обуви», «бутик женской одежды», «оптовый магазин»… */
 function isGenericShopDescriptorTail(tail: string): boolean {
   const s = tail.normalize("NFKC").trim().toLowerCase();
@@ -59,7 +96,7 @@ const GENERIC_SHOP_TITLE_SUFFIXES: RegExp[] = [
  * Убирает типовые хвосты «, магазин/бутик …» (универсально + узкие regex).
  */
 export function stripGenericShopSuffixFromStoreTitle(name: string): string {
-  let t = name.normalize("NFKC").trim();
+  let t = normalizeStoreTitleInput(name);
 
   const commaIdx = t.indexOf(",");
   if (commaIdx > 0) {
@@ -89,17 +126,16 @@ export function stripGenericShopSuffixFromStoreTitle(name: string): string {
  * Типичные заглушки бота/импорта — сюда подставляем имя из ИИ или Instagram.
  */
 export function isPlaceholderCatalogStoreName(name: string | null | undefined): boolean {
-  const t = typeof name === "string" ? name.trim().toLowerCase() : "";
+  const t =
+    typeof name === "string" ? normalizeStoreTitleInput(name).toLowerCase() : "";
   if (!t || t.length < 2) return true;
   if (/^\d{1,4}$/.test(t)) return true;
-  if (/^магазин(\s+оптовой)?(\s+женск|\s+мужск|\s+детск)/i.test(t)) return true;
-  if (/^магазин\s*,?\s*$/i.test(t)) return true;
-  if (/^бутик(\s+женск|\s+мужск|\s+детск)/i.test(t)) return true;
-  if (/^бутик\s*,?\s*$/i.test(t)) return true;
-  if (/^шоурум(\s|$)/i.test(t)) return true;
-  if (/^магазины\b/i.test(t)) return true;
-  if (/^оптовый\s+магазин\b/i.test(t)) return true;
-  if (/^интернет-магазин\b/i.test(t)) return true;
+  if (/^магазин(?:ы)?(?:\s|$)/u.test(t)) return true;
+  if (/^бутик(?:\s|$)/u.test(t)) return true;
+  if (/^шоурум(?:\s|$)/u.test(t)) return true;
+  if (/^оптовый\s+магазин/u.test(t)) return true;
+  if (/^интернет-магазин/u.test(t)) return true;
+  if (/^(?:авто)?аксессуар/u.test(t)) return true;
   if (/^(?:123|cosmos|тест|пример)\b/i.test(t)) return true;
   return false;
 }
@@ -142,7 +178,7 @@ export function brandNameFromInstagramProfileUrl(
   if (!handle) return null;
   const name = humanizeInstagramHandle(handle);
   if (name.length < 2 || name.length > 56) return null;
-  if (isPlaceholderCatalogStoreName(name)) return null;
+  if (isGenericCategoryLabel(name)) return null;
   return name;
 }
 
@@ -162,7 +198,7 @@ export function sanitizeAiCatalogBrandName(raw: string): string | null {
   s = s.replace(/\s{2,}/g, " ").trim();
   s = stripGenericShopSuffixFromStoreTitle(s);
   if (s.length < 2 || s.length > 56) return null;
-  if (isPlaceholderCatalogStoreName(s)) return null;
+  if (isGenericCategoryLabel(s)) return null;
   return s;
 }
 
@@ -212,20 +248,25 @@ export function resolveCatalogStoreTitleForCard(opts: {
   catalogBrandNameFromAi: string | null | undefined;
   instagramProfileUrl?: string | null;
 }): { storeTitle: string; catalogBrandName: string | null } {
-  const rawDb = opts.dbStoreName.trim();
+  const rawDb = normalizeStoreTitleInput(opts.dbStoreName);
   const stripped = stripGenericShopSuffixFromStoreTitle(rawDb);
-  const base = stripped || opts.fallbackTitle.trim() || "Магазин";
+  const base = stripped || normalizeStoreTitleInput(opts.fallbackTitle) || "Магазин";
 
   if (stripped.length > 0 && !isPlaceholderCatalogStoreName(stripped)) {
-    return { storeTitle: stripped, catalogBrandName: null };
+    return {
+      storeTitle: polishDisplayStoreTitle(stripped),
+      catalogBrandName: null,
+    };
   }
 
-  const brandAi = sanitizeAiCatalogBrandName(opts.catalogBrandNameFromAi ?? "");
+  const brandAiRaw = sanitizeAiCatalogBrandName(opts.catalogBrandNameFromAi ?? "");
+  const brandAi =
+    brandAiRaw && !isGenericCategoryLabel(brandAiRaw) ? brandAiRaw : null;
   const brandIg = brandNameFromInstagramProfileUrl(opts.instagramProfileUrl);
   const brand = brandAi || brandIg;
   const useBrand = Boolean(brand) && isPlaceholderCatalogStoreName(base);
   return {
-    storeTitle: useBrand ? brand! : base,
+    storeTitle: useBrand ? polishDisplayStoreTitle(brand!) : base,
     catalogBrandName: brand || null,
   };
 }
