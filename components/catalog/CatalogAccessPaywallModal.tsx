@@ -9,7 +9,6 @@ import {
   type SubscriptionCheckoutResult,
 } from "@/app/actions/subscription";
 import { useOpenAuthDialog } from "@/components/auth/auth-dialog-context";
-import type { SubscriptionPlan } from "@/lib/subscription/plans";
 import {
   clearPendingCheckoutPlan,
   savePendingCheckoutPlan,
@@ -32,8 +31,6 @@ export type CatalogAccessPaywallCopy = {
   closeDialog: string;
   planMonthlyLabel?: string;
   planMonthlyPrice?: string;
-  planQuarterlyLabel?: string;
-  planQuarterlyPrice?: string;
   checkoutError?: string;
   checkoutLoading?: string;
 };
@@ -47,13 +44,12 @@ type Props = {
 export function CatalogAccessPaywallModal({ open, onOpenChange, copy }: Props) {
   const locale = useLocale();
   const openAuthDialog = useOpenAuthDialog();
-  const [plan, setPlan] = useState<SubscriptionPlan>("monthly");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function handleCheckout() {
     setError(null);
-    savePendingCheckoutPlan(plan);
+    savePendingCheckoutPlan("monthly");
     onOpenChange(false);
 
     startTransition(async () => {
@@ -68,7 +64,7 @@ export function CatalogAccessPaywallModal({ open, onOpenChange, copy }: Props) {
       }
 
       const result: SubscriptionCheckoutResult =
-        await createDordoiSubscriptionCheckoutUrl(plan, locale);
+        await createDordoiSubscriptionCheckoutUrl("monthly", locale);
 
       if (!result.ok) {
         if (result.error === "auth_required") {
@@ -101,19 +97,13 @@ export function CatalogAccessPaywallModal({ open, onOpenChange, copy }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-1 grid gap-3 sm:grid-cols-2">
-          <PlanOption
-            active={plan === "monthly"}
-            label={copy.planMonthlyLabel ?? "$9.99 / month"}
-            price={copy.planMonthlyPrice ?? "$9.99"}
-            onSelect={() => setPlan("monthly")}
-          />
-          <PlanOption
-            active={plan === "quarterly"}
-            label={copy.planQuarterlyLabel ?? "$300 / 3 months"}
-            price={copy.planQuarterlyPrice ?? "$300"}
-            onSelect={() => setPlan("quarterly")}
-          />
+        <div className="mt-1 rounded-2xl border border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] bg-white px-4 py-3 shadow-sm ring-2 ring-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)]">
+          <span className="block text-xs font-medium uppercase tracking-wide text-zinc-500">
+            {copy.planMonthlyLabel ?? "$9.99 / month"}
+          </span>
+          <span className="mt-1 block text-xl font-bold tracking-tight text-zinc-950">
+            {copy.planMonthlyPrice ?? "$9.99"}
+          </span>
         </div>
 
         {error ? (
@@ -142,37 +132,5 @@ export function CatalogAccessPaywallModal({ open, onOpenChange, copy }: Props) {
         </button>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function PlanOption({
-  active,
-  label,
-  price,
-  onSelect,
-}: {
-  active: boolean;
-  label: string;
-  price: string;
-  onSelect: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={cn(
-        "rounded-2xl border px-4 py-3 text-left transition-colors",
-        active
-          ? "border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] bg-white shadow-sm ring-2 ring-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)]"
-          : "border-zinc-200/90 bg-white/70 hover:border-zinc-300",
-      )}
-    >
-      <span className="block text-xs font-medium uppercase tracking-wide text-zinc-500">
-        {label}
-      </span>
-      <span className="mt-1 block text-xl font-bold tracking-tight text-zinc-950">
-        {price}
-      </span>
-    </button>
   );
 }
