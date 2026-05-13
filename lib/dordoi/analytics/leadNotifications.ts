@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 
 import {
   rateLimitSiteRegistrationCompleted,
+  rateLimitSubscriptionPayment,
   rateLimitVendorModeration,
 } from "@/lib/dordoi/analytics/rateLimit";
 import { sendDordoiAdminTelegram } from "@/lib/dordoi/analytics/sendDordoiAdminTelegram";
@@ -196,6 +197,59 @@ export async function notifyDordoiSiteRegistrationCompleted(
     return { ok: true, sent: true };
   } catch (e) {
     console.error("[notifyDordoiSiteRegistrationCompleted]", e);
+    return { ok: true, sent: false, skippedReason: "notify_error" };
+  }
+}
+
+function subscriptionPlanLabel(variantId: string | null): string {
+  if (!variantId) return "—";
+  const monthly = process.env.LEMON_SQUEEZY_VARIANT_ID_MONTHLY?.trim();
+  const quarterly = process.env.LEMON_SQUEEZY_VARIANT_ID_QUARTERLY?.trim();
+  if (monthly && variantId === monthly) return "Месяц";
+  if (quarterly && variantId === quarterly) return "3 месяца";
+  return variantId;
+}
+
+/**
+ * Dordoi admin Telegram: Lemon Squeezy subscription payment (subscription_created).
+ */
+export async function notifyDordoiSubscriptionPayment(params: {
+  userId: string;
+  subscriptionId: string;
+  status: string;
+  variantId: string | null;
+}): Promise<DordoiLeadNotifyResult> {
+  try {
+    if (!rateLimitSubscriptionPayment(params.subscriptionId)) {
+      return { ok: true, sent: false, skippedReason: "rate_limited" };
+    }
+
+    const userId = escapeTelegramHtml(clip(params.userId, 80));
+    const subId = escapeTelegramHtml(clip(params.subscriptionId, 80));
+    const status = escapeTelegramHtml(clip(params.status, 40));
+    const plan = escapeTelegramHtml(subscriptionPlanLabel(params.variantId));
+
+    const html =
+      `💳 Оплата подписки на Dordoi.help\n\n` +
+      `План: ${plan}\n` +
+      `Статус: ${status}\n` +
+      `User: <code>${userId}</code>\n` +
+      `Subscription: <code>${subId}</code>`;
+
+    const tg = await sendDordoiAdminTelegram(html, {
+      bypassChatMinInterval: true,
+      reason: "lead",
+    });
+    if (!tg.sent) {
+      return {
+        ok: true,
+        sent: false,
+        skippedReason: tg.skippedReason ?? "telegram_not_sent",
+      };
+    }
+    return { ok: true, sent: true };
+  } catch (e) {
+    console.error("[notifyDordoiSubscriptionPayment]", e);
     return { ok: true, sent: false, skippedReason: "notify_error" };
   }
 }

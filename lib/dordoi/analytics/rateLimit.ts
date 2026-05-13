@@ -74,6 +74,13 @@ export function rateLimitSiteRegistrationCompleted(dedupeToken: string): boolean
   return take(`dordoi:site_reg:${t}:registration_completed`, MIN30);
 }
 
+/** Dedupe subscription payment admin Telegram per Lemon subscription id. */
+export function rateLimitSubscriptionPayment(subscriptionId: string): boolean {
+  const id = subscriptionId.trim();
+  if (!id) return false;
+  return take(`dordoi:sub_pay:${hashShort(id)}`, HOUR24);
+}
+
 export function buildSellerRegistrationDedupeKey(input: {
   vendorId?: string;
   applicationId?: string;

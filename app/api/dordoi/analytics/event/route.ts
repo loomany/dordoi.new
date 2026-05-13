@@ -72,10 +72,16 @@ const NO_TELEGRAM_EVENTS: DordoiAnalyticsEventType[] = [
   "seller_registration_started",
 ];
 
+/** Admin Telegram: only first_visit from analytics (registration & payment use dedicated hooks). */
+const TELEGRAM_ANALYTICS_EVENTS: DordoiAnalyticsEventType[] = ["first_visit"];
+
 function shouldSendTelegramForEvent(
   eventType: DordoiAnalyticsEventType,
   visitor: ReturnType<typeof detectDordoiVisitorStatus>,
 ): { send: boolean; skippedReason?: string } {
+  if (!TELEGRAM_ANALYTICS_EVENTS.includes(eventType)) {
+    return { send: false, skippedReason: "event_not_admin_broadcast" };
+  }
   if (NO_TELEGRAM_EVENTS.includes(eventType)) {
     return { send: false, skippedReason: "event_not_broadcast_stage1" };
   }

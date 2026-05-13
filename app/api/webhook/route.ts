@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { isDordoiLemonWebhookEvent } from "@/lib/lemonsqueezy/dordoi";
+import { notifyDordoiSubscriptionPayment } from "@/lib/dordoi/analytics/leadNotifications";
 import {
   resolveUserIdFromWebhookMeta,
   subscriptionUpsertFromAttributes,
@@ -99,12 +100,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "missing_user_id" }, { status: 422 });
   }
 
+  const row = subscriptionUpsertFromAttributes(userId, subscriptionId, attributes);
+
   try {
-    await upsertSubscriptionRow(
-      subscriptionUpsertFromAttributes(userId, subscriptionId, attributes),
-    );
+    await upsertSubscriptionRow(row);
   } catch {
     return NextResponse.json({ error: "db_upsert_failed" }, { status: 500 });
+  }
+
+  if (eventName === "subscription_created") {
+    void notifyDordoiSubscriptionPayment({
+      userId,
+      subscriptionId,
+      status: row.status,
+      variantId: row.variantId,
+    }).catch((e) =>
+      console.error("[lemonsqueezy/webhook] admin payment notify", e),
+    );
   }
 
   return NextResponse.json({ received: true, project: "dordoi" });

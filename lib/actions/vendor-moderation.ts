@@ -20,7 +20,6 @@ import {
   buildVendorSlug,
   buildVendorSlugWithIdSuffix,
 } from "@/lib/catalog/vendor-slug";
-import { notifyDordoiVendorModerationStatusChanged } from "@/lib/dordoi/analytics/leadNotifications";
 import { notifyVendorApplicationApproved } from "@/lib/telegram/notify-vendor-approved";
 
 export type ModerationActionState =
@@ -215,15 +214,6 @@ export async function updateVendorStatus(
     }
     // google_places: без slug/профиля/Telegram — только смена статуса (ручная публикация позже).
   }
-
-  void notifyDordoiVendorModerationStatusChanged({
-    vendorId: String(vendor.id),
-    status,
-    storeTitle: typeof vendor.store_name === "string" ? vendor.store_name : null,
-    categories: vendor.categories,
-  }).catch((e) =>
-    console.error("[updateVendorStatus] dordoi admin moderation notify", e),
-  );
 
   revalidateCabinetAfterModeration();
   return { ok: true };
