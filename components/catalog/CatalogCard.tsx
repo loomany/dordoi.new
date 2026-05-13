@@ -7,7 +7,6 @@ import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
-import type { CatalogLeadVideo } from "@/lib/catalog/asso-corsets-lead-video";
 import { ensureHttpUrl } from "@/lib/catalog/vendor-map-links";
 import type { ParsedVendorCardData } from "@/lib/catalog/vendor-card-display";
 import { CATALOG_CARD_COLLAPSED_DESCRIPTION_MAX_CHARS } from "@/lib/vendor/vendor-field-limits";
@@ -21,11 +20,6 @@ export type CatalogCardProps = {
   href?: string;
   /** Фото под CTA при раскрытии: карусель (одно фото, листание влево-вправо). */
   photoUrls?: string[];
-  /** Первый слайд карусели — видео (только Asso Corsets). */
-  leadVideo?: CatalogLeadVideo;
-  /** Slug витрины + видео URL — резервный client-side lead video. */
-  vendorSlug?: string;
-  productVideos?: string[];
   /** Карточка-подборка / после модерации — акцентная рамка. */
   featured?: boolean;
   /** Кнопка избранного в подвале карточки; клик не всплывает к ссылке карточки. */
@@ -111,9 +105,6 @@ export function CatalogCard({
   viewProfileLabel,
   href,
   photoUrls,
-  leadVideo,
-  vendorSlug,
-  productVideos,
   featured,
   favoriteSlot,
   aboutStoreLabel,
@@ -129,11 +120,7 @@ export function CatalogCard({
 }: CatalogCardProps) {
   const router = useRouter();
   const tCard = useTranslations("Pages.catalogBrowse.vendorCard");
-  const hasPhotos = Boolean(
-    leadVideo ||
-    productVideos?.length ||
-    (photoUrls && photoUrls.length > 0),
-  );
+  const hasPhotos = Boolean(photoUrls && photoUrls.length > 0);
   const descTrim = display.description.trim();
 
   const isWholesaleSupplier =
@@ -383,9 +370,6 @@ export function CatalogCard({
           urls={photoUrls ?? []}
           altBase={display.storeTitle}
           className="w-full min-w-0"
-          leadVideo={leadVideo}
-          vendorSlug={vendorSlug}
-          productVideos={productVideos}
         />
       </div>
     ) : null;
