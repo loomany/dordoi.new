@@ -128,12 +128,20 @@ export function BuyerCard({ buyer, profile, strings, className }: Props) {
         ))}
       </ul>
 
-      {!isOpenSlot ? (
+      {isOpenSlot ? (
+        <div
+          className="mt-5 rounded-xl bg-transparent px-4 py-3 text-xs opacity-0"
+          aria-hidden
+        >
+          <p className="font-medium">{strings.experienceLine}</p>
+          <p className="mt-1">{strings.ordersLine}</p>
+        </div>
+      ) : (
         <div className="mt-5 rounded-xl bg-slate-50/90 px-4 py-3 text-xs text-slate-600 ring-1 ring-slate-100/80">
           <p className="font-medium">{strings.experienceLine}</p>
           <p className="mt-1">{strings.ordersLine}</p>
         </div>
-      ) : null}
+      )}
 
       <BuyerCardContactStrip buyer={buyer} strings={strings} />
     </article>

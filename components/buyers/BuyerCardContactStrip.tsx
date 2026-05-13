@@ -33,8 +33,13 @@ function InstagramGlyph({ className }: { className?: string }) {
 const waBtn =
   "inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3.5 text-center text-sm font-semibold text-white shadow-[0_1px_2px_rgba(15,23,42,0.08)] transition-all hover:bg-emerald-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/80 focus-visible:ring-offset-2";
 
+const contactFooter =
+  "mt-auto flex min-h-[7.5rem] flex-col justify-end gap-3 pt-7";
+
 const socialBtn =
   "inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200/90 bg-white px-2 py-2.5 text-center text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/50 focus-visible:ring-offset-2 sm:gap-2 sm:text-sm";
+
+const callBtn = `${socialBtn} w-full py-3.5 text-sm`;
 
 export type BuyerSpotModalStrings = {
   title: string;
@@ -70,19 +75,12 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
   if (buyer.openSlot) {
     return (
       <>
-        <div className="mt-auto space-y-3 pt-7">
-          <div className="grid grid-cols-2 gap-2">
-            <a
-              href={LOOMANY_TELEGRAM}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={socialBtn}
-            >
-              {strings.ctaContact}
-            </a>
-            <button type="button" onClick={() => setOpen(true)} className={waBtn}>
-              {strings.ctaClaimSpot}
-            </button>
+        <div className={contactFooter}>
+          <button type="button" onClick={() => setOpen(true)} className={waBtn}>
+            {strings.ctaClaimSpot}
+          </button>
+          <div className={callBtn} aria-hidden>
+            <span className="invisible">{strings.ctaCall}</span>
           </div>
         </div>
 
@@ -119,39 +117,19 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
   }
 
   if (buyer.liveListing) {
-    const phoneDigits = buyer.phoneDigits?.trim() || "";
     const callDigits =
-      phoneDigits || buyer.whatsappDigits?.trim() || "";
-    const showStackedWaCall =
-      phoneDigits.length > 0 && Boolean(buyer.whatsappDigits?.trim());
-    const showSecondaryCall =
-      !showStackedWaCall &&
+      buyer.phoneDigits?.trim() || buyer.whatsappDigits?.trim() || "";
+    const showStackedContactCall =
+      Boolean(buyer.whatsappDigits?.trim()) &&
       callDigits.length > 0 &&
       !telegramHref &&
       !instagramHref;
     const hasSocialRow = Boolean(telegramHref || instagramHref);
 
     return (
-      <div className="mt-auto space-y-3 pt-7">
-        {showStackedWaCall ? (
+      <div className={contactFooter}>
+        {showStackedContactCall ? (
           <>
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={waBtn}
-            >
-              {strings.ctaWhatsApp}
-            </a>
-            <a
-              href={`tel:+${phoneDigits}`}
-              className={`${socialBtn} w-full py-3.5 text-sm`}
-            >
-              {strings.ctaCall}
-            </a>
-          </>
-        ) : showSecondaryCall ? (
-          <div className="grid grid-cols-2 gap-2">
             <a
               href={whatsappHref}
               target="_blank"
@@ -160,10 +138,10 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
             >
               {strings.ctaContact}
             </a>
-            <a href={`tel:+${callDigits}`} className={socialBtn}>
+            <a href={`tel:+${callDigits}`} className={callBtn}>
               {strings.ctaCall}
             </a>
-          </div>
+          </>
         ) : (
           <a
             href={whatsappHref}
