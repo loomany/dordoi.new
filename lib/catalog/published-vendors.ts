@@ -24,6 +24,7 @@ import {
   formatListingUpdatedToday,
   formatProviderAddedDate,
 } from "@/lib/provider-dates";
+import { isBuyerOnlyVendorSlug } from "@/lib/catalog/buyer-only-vendor-slugs";
 
 /**
  * Минимальный набор полей `vendors`, нужных для CatalogCard в /catalog.
@@ -110,7 +111,7 @@ export async function fetchPublishedVendorsForCatalog(): Promise<PublishedVendor
     .map((row): PublishedVendorRow | null => {
       const r = row as Record<string, unknown>;
       const slug = typeof r.slug === "string" ? r.slug.trim() : "";
-      if (!slug) {
+      if (!slug || isBuyerOnlyVendorSlug(slug)) {
         return null;
       }
       const id =
@@ -320,6 +321,9 @@ export async function fetchApprovedVendorPhotoBatches(opts: {
 export async function fetchPublishedVendorBySlug(
   slug: string,
 ): Promise<PublishedVendorRow | null> {
+  if (isBuyerOnlyVendorSlug(slug)) {
+    return null;
+  }
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("vendors")

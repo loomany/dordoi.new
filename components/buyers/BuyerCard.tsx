@@ -38,14 +38,23 @@ export function BuyerCard({ buyer, profile, strings, className }: Props) {
     >
       <div className="flex gap-4">
         <div className="relative shrink-0">
-          <Image
-            src={buyer.photoSrc}
-            alt={profile.name}
-            width={80}
-            height={80}
-            className="size-20 rounded-2xl object-cover shadow-md ring-[3px] ring-slate-100"
-            sizes="80px"
-          />
+          {buyer.initialsLabel ? (
+            <div
+              className="flex size-20 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-2xl font-bold text-white shadow-md ring-[3px] ring-slate-100"
+              aria-hidden
+            >
+              {buyer.initialsLabel}
+            </div>
+          ) : (
+            <Image
+              src={buyer.photoSrc}
+              alt={profile.name}
+              width={80}
+              height={80}
+              className="size-20 rounded-2xl object-cover shadow-md ring-[3px] ring-slate-100"
+              sizes="80px"
+            />
+          )}
           <span
             className="pointer-events-none absolute -bottom-0.5 -right-0.5 flex size-[22px] items-center justify-center rounded-full bg-emerald-500 text-white shadow-sm ring-[3px] ring-white"
             aria-label={strings.verifiedBadgeAria}
@@ -85,7 +94,7 @@ export function BuyerCard({ buyer, profile, strings, className }: Props) {
         <p className="mt-1">{strings.ordersLine}</p>
       </div>
 
-      <BuyerCardContactStrip strings={strings} />
+      <BuyerCardContactStrip buyer={buyer} strings={strings} />
     </article>
   );
 }

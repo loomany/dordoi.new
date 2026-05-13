@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Send } from "lucide-react";
 
+import type { BuyerDirectoryRow } from "@/data/buyers-directory";
 import {
   Dialog,
   DialogContent,
@@ -53,12 +54,59 @@ export type BuyerCardContactStripStrings = {
 const LOOMANY_TELEGRAM = "https://t.me/loomany";
 
 type Props = {
+  buyer: BuyerDirectoryRow;
   strings: BuyerCardContactStripStrings;
 };
 
-export function BuyerCardContactStrip({ strings }: Props) {
+export function BuyerCardContactStrip({ buyer, strings }: Props) {
   const [open, setOpen] = useState(false);
   const m = strings.buyerSpotModal;
+  const whatsappHref = `https://wa.me/${buyer.whatsappDigits}`;
+  const telegramHref = buyer.telegramUrl?.trim() || null;
+  const instagramHref = buyer.instagramUrl?.trim() || null;
+
+  if (buyer.liveListing) {
+    return (
+      <div className="mt-auto space-y-3 pt-7">
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={waBtn}
+        >
+          {strings.ctaContact}
+        </a>
+        <div
+          className={
+            telegramHref ? "grid grid-cols-2 gap-2" : "grid grid-cols-1 gap-2"
+          }
+        >
+          {telegramHref ? (
+            <a
+              href={telegramHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={socialBtn}
+            >
+              <Send className="size-3.5 shrink-0 sm:size-4" strokeWidth={2.25} />
+              <span className="truncate">{strings.ctaTelegram}</span>
+            </a>
+          ) : null}
+          {instagramHref ? (
+            <a
+              href={instagramHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={socialBtn}
+            >
+              <InstagramGlyph className="size-3.5 shrink-0 sm:size-4" />
+              <span className="truncate">{strings.ctaInstagram}</span>
+            </a>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

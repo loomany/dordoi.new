@@ -52,6 +52,8 @@ const VENDOR_SELECT =
 
 const BLOCKED_STORE_NAMES = new Set(["cosmos"]);
 
+import { isBuyerOnlyVendorSlug } from "@/lib/catalog/buyer-only-vendor-slugs";
+
 function loadEnvLocal(): void {
   const p = join(process.cwd(), ".env.local");
   if (!existsSync(p)) return;
@@ -176,7 +178,8 @@ async function fetchAllPublishedVendors(
     const page = await fetchPublishedVendorPage(admin, from, to);
     for (const row of page) {
       const slug = row.slug?.trim();
-      if (!slug || isBlockedStoreName(row.store_name)) continue;
+      if (!slug || isBuyerOnlyVendorSlug(slug)) continue;
+      if (isBlockedStoreName(row.store_name)) continue;
       out.push(row);
     }
     if (page.length < pageSize) break;

@@ -20,18 +20,30 @@ export type BuyerDirectoryRow = {
   instagramUrl: string;
   /** Portrait under `public/buyers/` (square PNG/JPEG). */
   photoSrc: string;
+  /** Буквы на аватаре, если нет локального фото. */
+  initialsLabel?: string;
+  /**
+   * Платное место с прямыми контактами (не модалка «слот за $400»).
+   * Связанный вендор в каталоге скрыт через `buyer-only-vendor-slugs`.
+   */
+  liveListing?: boolean;
+  /** Slug вендора в БД — для аудита / будущей синхронизации. */
+  linkedVendorSlug?: string;
 };
 
 export const BUYERS: BuyerDirectoryRow[] = [
   {
-    id: "arman-saparov",
-    category: "mens",
-    experienceYears: 5,
-    completedOrdersDisplay: "200+",
-    whatsappDigits: "996555010101",
-    telegramUrl: "https://t.me/dordoi_buyers_arman",
-    instagramUrl: "https://www.instagram.com/dordoi.help/",
-    photoSrc: "/buyers/portrait-arman.png",
+    id: "aiperi-zakup",
+    category: "textile",
+    experienceYears: 6,
+    completedOrdersDisplay: "150+",
+    whatsappDigits: "996704403480",
+    telegramUrl: "",
+    instagramUrl: "https://www.instagram.com/dordoi_zakup_aiperi",
+    photoSrc: "/buyers/portrait-aiperi.png",
+    initialsLabel: "A",
+    liveListing: true,
+    linkedVendorSlug: "dordoi-zakup-aiperi",
   },
   {
     id: "aisuluu-bakytova",

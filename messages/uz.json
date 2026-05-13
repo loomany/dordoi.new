@@ -313,15 +313,15 @@
       },
       "noResults": "Hech kim filtrga mos kelmaydi — iltimos, so'rovingizni yoki ixtisoslashuvni o'zgartirib ko'ring.",
       "cards": {
-        "arman-saparov": {
-          "name": "Arman Saparov",
-          "specialization": "Erkak kiyimlari va Kargo Qozog'istonda",
-          "description": "Erkaklar assortimenti va Almati hamda Astana shaharlariga tez yetkazib berishga ixtisoslashganman. Sifatli tikuvchilik joylarini yaxshi bilaman.",
+        "aiperi-zakup": {
+          "name": "Aiperi Shop",
+          "specialization": "Dordoyda buyer va xarid · ayollar kiyimi",
+          "description": "2020-yildan beri Dordoy bozorida masofadan xarid qilishda yordam beramiz: yetkazib beruvchini tanlash, xarid va partiyani tekshirish. Rossiya, Qozog'iston va O'zbekistonga odatda 1–10 kun ichida yetkazamiz.",
           "services": {
-            "0": "Qatorlar va konteynerlar bo'yicha foto hisobot",
-            "1": "Partiyani xarid qilish va rezervlash",
-            "2": "Yuborishdan oldin konsolidatsiya",
-            "3": "Qozog'istonga Kargo (Almati, Astana)"
+            "0": "Dordoyda xarid va rezerv",
+            "1": "RF, Qozog'iston va O'zbekistonga yetkazish",
+            "2": "Qatorlar va konteynerlar bo'yicha foto/video hisobot",
+            "3": "WB va Ozon uchun tikuv va hamrohlik"
           }
         },
         "aisuluu-bakytova": {
