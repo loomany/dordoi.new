@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "node scripts/start.mjs",
     "lint": "eslint",
+    "generate:brand-icons": "node scripts/generate-brand-icons.mjs",
     "check:i18n": "node scripts/check-i18n-keys.mjs",
     "report:missing-i18n": "node scripts/report-missing-messages.mjs",
     "report:i18n-identical-to-ru": "node scripts/list-overlay-identical-to-ru.mjs",
