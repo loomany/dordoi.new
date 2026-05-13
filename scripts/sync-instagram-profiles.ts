@@ -18,12 +18,16 @@ import {
   catalogShortDescriptionFromBiography,
   collectExternalUrlStrings,
   detectDeliveryInText,
+  DEFAULT_VENDOR_MEDIA_BUCKET,
+  DEFAULT_VENDOR_VIDEOS_BUCKET,
   extractProductPhotoUrls,
   extractProductVideoUrls,
   extractWhatsappDigitsFromProfile,
   isPlaceholderMinBatch,
+  mergeMediaUrlsPreservingStorage,
   mergeModerationNoteAppend,
   pickLogoUrl,
+  resolveLogoUrlPreservingStorage,
   suggestMinBatchFromBiography,
   type InstagramProfileRow,
 } from "@/lib/vendor/instagram-profile-sync";
@@ -32,8 +36,11 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 type VendorInstagramRow = {
   id: string;
+  status: string;
   instagram_url: string | null;
   logo_url: string | null;
+  product_photos: string[] | null;
+  product_videos: string[] | null;
   location_row: string | null;
   min_batch: string | null;
   whatsapp_1: string | null;
@@ -96,7 +103,7 @@ async function fetchAllVendorsWithInstagram(
     const { data, error } = await admin
       .from("vendors")
       .select(
-        "id, instagram_url, logo_url, location_row, min_batch, whatsapp_1, delivery_help, description, description_detail, moderation_note",
+        "id, status, instagram_url, logo_url, product_photos, product_videos, location_row, min_batch, whatsapp_1, delivery_help, description, description_detail, moderation_note",
       )
       .not("instagram_url", "is", null)
       .order("created_at", { ascending: true })
@@ -157,6 +164,12 @@ async function main() {
   const sliced = limit != null ? profiles.slice(0, limit) : profiles;
 
   const admin = createAdminClient();
+  const photoBucket = (
+    process.env.VENDOR_MEDIA_BUCKET ?? DEFAULT_VENDOR_MEDIA_BUCKET
+  ).trim();
+  const videoBucket = (
+    process.env.VENDOR_VIDEOS_BUCKET ?? DEFAULT_VENDOR_VIDEOS_BUCKET
+  ).trim();
   const vendorRows = await fetchAllVendorsWithInstagram(admin);
   const vendorByIg = buildVendorMapByInstagramUsername(vendorRows);
 
@@ -187,10 +200,30 @@ async function main() {
     const urlsText = collectExternalUrlStrings(row).join("\n");
     const squeezeHaystack = `${biography}\n${urlsText}`.trim();
 
-    const logoUrl = pickLogoUrl(row);
-    const photoUrls = extractProductPhotoUrls(row.latestPosts ?? undefined);
-    const videoUrls = extractProductVideoUrls(row.latestPosts ?? undefined);
-    videoUrlsTotal += videoUrls.length;
+    const incomingLogoUrl = pickLogoUrl(row);
+    const incomingPhotoUrls = extractProductPhotoUrls(row.latestPosts ?? undefined);
+    const incomingVideoUrls = extractProductVideoUrls(row.latestPosts ?? undefined);
+    videoUrlsTotal += incomingVideoUrls.length;
+
+    const isApproved = vendor.status === "approved";
+    const logoUrl = resolveLogoUrlPreservingStorage({
+      isApproved,
+      existingLogoUrl: vendor.logo_url,
+      incomingLogoUrl,
+      mediaBucket: photoBucket,
+    });
+    const photoUrls = mergeMediaUrlsPreservingStorage({
+      isApproved,
+      existing: vendor.product_photos,
+      incoming: incomingPhotoUrls,
+      storageBucket: photoBucket,
+    });
+    const videoUrls = mergeMediaUrlsPreservingStorage({
+      isApproved,
+      existing: vendor.product_videos,
+      incoming: incomingVideoUrls,
+      storageBucket: videoBucket,
+    });
 
     const shortDesc = catalogShortDescriptionFromBiography(biography || null);
     const suggestMin = suggestMinBatchFromBiography(biography || null);
@@ -242,7 +275,7 @@ async function main() {
     }
 
     const vendorUpdate: Record<string, unknown> = {
-      logo_url: logoUrl ?? vendor.logo_url,
+      logo_url: logoUrl,
       description: descriptionNext,
       description_detail: detailNext,
       followers_count: typeof row.followersCount === "number" ? row.followersCount : null,

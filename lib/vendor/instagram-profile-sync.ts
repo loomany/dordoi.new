@@ -22,6 +22,84 @@ export type InstagramLatestPost = {
 
 export const INSTAGRAM_PROFILE_IMPORT_SOURCE = "instagram_profile" as const;
 
+export const DEFAULT_VENDOR_MEDIA_BUCKET = "vendor-media";
+export const DEFAULT_VENDOR_VIDEOS_BUCKET = "vendor-videos";
+
+/** Публичный URL объекта в Supabase Storage для именованного бакета. */
+export function isVendorStoragePublicUrl(
+  url: string | null | undefined,
+  bucket: string,
+): boolean {
+  const t = url?.trim() ?? "";
+  if (!t) return false;
+  return t.includes(`/storage/v1/object/public/${bucket}/`);
+}
+
+/**
+ * Логотип: у approved не затираем Storage URL входящим Instagram/fbcdn.
+ */
+export function resolveLogoUrlPreservingStorage(opts: {
+  isApproved: boolean;
+  existingLogoUrl: string | null | undefined;
+  incomingLogoUrl: string | null | undefined;
+  mediaBucket?: string;
+}): string | null {
+  const bucket = opts.mediaBucket ?? DEFAULT_VENDOR_MEDIA_BUCKET;
+  const existing = opts.existingLogoUrl?.trim() ?? "";
+  const incoming = opts.incomingLogoUrl?.trim() ?? "";
+
+  if (
+    opts.isApproved &&
+    existing &&
+    isVendorStoragePublicUrl(existing, bucket)
+  ) {
+    return existing;
+  }
+  return incoming || existing || null;
+}
+
+/**
+ * Слияние media-массивов для Instagram-sync.
+ * Approved: элементы на нашем Storage не перезаписываются incoming CDN URL.
+ * Pending / иные статусы: incoming как раньше (полная замена массива).
+ */
+export function mergeMediaUrlsPreservingStorage(opts: {
+  isApproved: boolean;
+  existing: readonly string[] | null | undefined;
+  incoming: readonly string[];
+  storageBucket: string;
+  max?: number;
+}): string[] {
+  const max = opts.max ?? 15;
+  const incoming = opts.incoming
+    .map((u) => u?.trim())
+    .filter((u): u is string => Boolean(u))
+    .slice(0, max);
+
+  if (!opts.isApproved) {
+    return incoming;
+  }
+
+  const existing = (opts.existing ?? [])
+    .map((u) => u?.trim())
+    .filter((u): u is string => Boolean(u));
+
+  const maxLen = Math.max(existing.length, incoming.length);
+  const out: string[] = [];
+  for (let i = 0; i < maxLen && out.length < max; i++) {
+    const ex = existing[i];
+    const inc = incoming[i];
+    if (ex && isVendorStoragePublicUrl(ex, opts.storageBucket)) {
+      out.push(ex);
+    } else if (inc) {
+      out.push(inc);
+    } else if (ex) {
+      out.push(ex);
+    }
+  }
+  return out;
+}
+
 const DEFAULT_MIN_BATCH_MARKERS = new Set(
   ["не указано", "не указан", "n/a", "—", "-"].map((s) => s.toLowerCase()),
 );
