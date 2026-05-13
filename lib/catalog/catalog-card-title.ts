@@ -1,13 +1,25 @@
 /**
  * Витринный заголовок карточки каталога (SaaS):
- * 1) Из `store_name` снимаем хвост «, магазин женской одежды» и аналоги — остаётся только бренд («Asso»).
- * 2) Если после снятия всё ещё заглушка / пусто — заголовок из ИИ `catalogBrandName` (снимок в `parsed_ai_data`, в т.ч. с подсказкой Instagram при генерации).
+ * 1) Из `store_name` снимаем хвост «, магазин/бутик …» — остаётся бренд («Mila shop»).
+ * 2) Если название — чистая заглушка — бренд из ИИ `catalogBrandName` или из пути Instagram (без точного ника).
  */
 
 const WOMENS_CLOTHING_RE = /женск\w*\s+одежд/i;
 
-/** Хвосты шаблонов: «Asso, магазин женской одежды» → «Asso». */
+/** После запятой: «магазин детской обуви», «бутик женской одежды», «оптовый магазин»… */
+function isGenericShopDescriptorTail(tail: string): boolean {
+  const s = tail.normalize("NFKC").trim().toLowerCase();
+  if (!s) return false;
+  return /^(?:магазин|магазины|бутик|шоурум|showroom|оптовый|интернет-магазин|обувной\s+магазин|точка\s+оптовой|швейная\s+фабрика|швейных\s+цех|текстильная\s+компания)(?:\s|$|[,.])/u.test(
+    s,
+  );
+}
+
+/** Хвосты без запятой или узкие шаблоны. */
 const GENERIC_SHOP_TITLE_SUFFIXES: RegExp[] = [
+  /,\s*бутик\s+женской\s+одежды$/iu,
+  /,\s*бутик\s+мужской\s+одежды$/iu,
+  /,\s*бутик\s+детской\s+одежды$/iu,
   /,\s*магазин\s+женской\s+одежды$/iu,
   /,\s*магазин\s+мужской\s+одежды$/iu,
   /,\s*магазин\s+детской\s+одежды$/iu,
@@ -44,10 +56,20 @@ const GENERIC_SHOP_TITLE_SUFFIXES: RegExp[] = [
 ];
 
 /**
- * Убирает типовые хвосты «, магазин …» (несколько проходов подряд).
+ * Убирает типовые хвосты «, магазин/бутик …» (универсально + узкие regex).
  */
 export function stripGenericShopSuffixFromStoreTitle(name: string): string {
   let t = name.normalize("NFKC").trim();
+
+  const commaIdx = t.indexOf(",");
+  if (commaIdx > 0) {
+    const left = t.slice(0, commaIdx).trim();
+    const right = t.slice(commaIdx + 1).trim();
+    if (left.length >= 2 && isGenericShopDescriptorTail(right)) {
+      t = left;
+    }
+  }
+
   for (let pass = 0; pass < 4; pass++) {
     let changed = false;
     for (const re of GENERIC_SHOP_TITLE_SUFFIXES) {
@@ -64,14 +86,64 @@ export function stripGenericShopSuffixFromStoreTitle(name: string): string {
 }
 
 /**
- * Типичные заглушки бота/импорта — сюда подставляем нейтральное имя из ИИ.
+ * Типичные заглушки бота/импорта — сюда подставляем имя из ИИ или Instagram.
  */
 export function isPlaceholderCatalogStoreName(name: string | null | undefined): boolean {
   const t = typeof name === "string" ? name.trim().toLowerCase() : "";
-  if (!t || t.length < 4) return true;
+  if (!t || t.length < 2) return true;
+  if (/^\d{1,4}$/.test(t)) return true;
   if (/^магазин(\s+оптовой)?(\s+женск|\s+мужск|\s+детск)/i.test(t)) return true;
   if (/^магазин\s*,?\s*$/i.test(t)) return true;
+  if (/^бутик(\s+женск|\s+мужск|\s+детск)/i.test(t)) return true;
+  if (/^бутик\s*,?\s*$/i.test(t)) return true;
+  if (/^шоурум(\s|$)/i.test(t)) return true;
+  if (/^магазины\b/i.test(t)) return true;
+  if (/^оптовый\s+магазин\b/i.test(t)) return true;
+  if (/^интернет-магазин\b/i.test(t)) return true;
+  if (/^(?:123|cosmos|тест|пример)\b/i.test(t)) return true;
   return false;
+}
+
+/** Handle из URL профиля Instagram. */
+export function extractInstagramHandleFromUrl(
+  url: string | null | undefined,
+): string | null {
+  if (!url?.trim()) return null;
+  const m = url.trim().match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+  const handle = m?.[1]?.replace(/\/+$/u, "").trim();
+  return handle && handle.length >= 2 ? handle : null;
+}
+
+const IG_HANDLE_GEO_TAIL_RE =
+  /(?:[._](?:kg|kgs|kgz|bishkek|bish|kyrgyzstan|optom|official|officiall))+$/iu;
+
+function humanizeInstagramHandle(handle: string): string {
+  let h = handle.trim().replace(/^@+/, "");
+  h = h.replace(IG_HANDLE_GEO_TAIL_RE, "");
+  const words = h.split(/[._]+/).filter((w) => w.length > 0);
+  if (words.length === 0) return "";
+  return words
+    .map((w) => {
+      if (/^\d+$/.test(w)) return w;
+      if (w.length <= 3 && w === w.toUpperCase()) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    })
+    .join(" ")
+    .trim();
+}
+
+/**
+ * Витринное имя из пути Instagram (без точного handle в ответе).
+ */
+export function brandNameFromInstagramProfileUrl(
+  url: string | null | undefined,
+): string | null {
+  const handle = extractInstagramHandleFromUrl(url);
+  if (!handle) return null;
+  const name = humanizeInstagramHandle(handle);
+  if (name.length < 2 || name.length > 56) return null;
+  if (isPlaceholderCatalogStoreName(name)) return null;
+  return name;
 }
 
 /**
@@ -90,6 +162,7 @@ export function sanitizeAiCatalogBrandName(raw: string): string | null {
   s = s.replace(/\s{2,}/g, " ").trim();
   s = stripGenericShopSuffixFromStoreTitle(s);
   if (s.length < 2 || s.length > 56) return null;
+  if (isPlaceholderCatalogStoreName(s)) return null;
   return s;
 }
 
@@ -131,12 +204,13 @@ export function dedupeCatalogSubtitle(
 }
 
 /**
- * Заголовок карточки: каноническое имя из БД или витринное из ИИ при «шаблонном» названии.
+ * Заголовок карточки: бренд из store_name, иначе ИИ / Instagram при заглушке.
  */
 export function resolveCatalogStoreTitleForCard(opts: {
   dbStoreName: string;
   fallbackTitle: string;
   catalogBrandNameFromAi: string | null | undefined;
+  instagramProfileUrl?: string | null;
 }): { storeTitle: string; catalogBrandName: string | null } {
   const rawDb = opts.dbStoreName.trim();
   const stripped = stripGenericShopSuffixFromStoreTitle(rawDb);
@@ -146,10 +220,12 @@ export function resolveCatalogStoreTitleForCard(opts: {
     return { storeTitle: stripped, catalogBrandName: null };
   }
 
-  const brand = sanitizeAiCatalogBrandName(opts.catalogBrandNameFromAi ?? "");
-  const useAi = Boolean(brand) && isPlaceholderCatalogStoreName(base);
+  const brandAi = sanitizeAiCatalogBrandName(opts.catalogBrandNameFromAi ?? "");
+  const brandIg = brandNameFromInstagramProfileUrl(opts.instagramProfileUrl);
+  const brand = brandAi || brandIg;
+  const useBrand = Boolean(brand) && isPlaceholderCatalogStoreName(base);
   return {
-    storeTitle: useAi ? brand! : base,
+    storeTitle: useBrand ? brand! : base,
     catalogBrandName: brand || null,
   };
 }

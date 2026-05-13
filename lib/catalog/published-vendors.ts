@@ -397,6 +397,7 @@ export function vendorToCatalogCardSource(opts: {
     dbStoreName: vendor.store_name?.trim() ?? "",
     fallbackTitle,
     catalogBrandNameFromAi: ai?.catalogBrandName,
+    instagramProfileUrl: vendor.instagram_url,
   });
   const subtitle = dedupeCatalogSubtitle(storeTitle, ai?.subtitle ?? null);
 

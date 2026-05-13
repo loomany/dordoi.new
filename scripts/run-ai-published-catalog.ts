@@ -141,6 +141,7 @@ function buildDisplay(
     dbStoreName: row.store_name?.trim() ?? "",
     fallbackTitle: "Магазин",
     catalogBrandNameFromAi: ai.catalogBrandName,
+    instagramProfileUrl: row.instagram_url,
   });
   return {
     storeTitle,

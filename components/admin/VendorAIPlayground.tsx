@@ -80,6 +80,10 @@ export function VendorAIPlayground() {
                     dbStoreName: storeTitle.trim(),
                     fallbackTitle: "Магазин",
                     catalogBrandNameFromAi: d.catalogBrandName,
+                    instagramProfileUrl:
+                      instagramProfileUrl.length > 0
+                        ? instagramProfileUrl
+                        : undefined,
                   });
                 setPreview({
                   storeTitle: headline,
