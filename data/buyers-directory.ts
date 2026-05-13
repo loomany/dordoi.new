@@ -41,7 +41,6 @@ export const BUYERS: BuyerDirectoryRow[] = [
     telegramUrl: "",
     instagramUrl: "https://www.instagram.com/dordoi_zakup_aiperi",
     photoSrc: "/buyers/portrait-aiperi.png",
-    initialsLabel: "A",
     liveListing: true,
     linkedVendorSlug: "dordoi-zakup-aiperi",
   },
