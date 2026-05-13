@@ -1,29 +1,131 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import type { CatalogLeadVideo } from "@/lib/catalog/catalog-lead-video";
+import { leadVideoFromProductVideos } from "@/lib/catalog/catalog-lead-video";
 import { cn } from "@/lib/utils";
 
 type Props = {
   urls: string[];
   altBase: string;
   className?: string;
+  leadVideo?: CatalogLeadVideo;
+  productVideos?: string[];
+  posterUrl?: string;
 };
+
+function CatalogCardVideoSlide({
+  leadVideo,
+  isActive,
+  playLabel,
+}: {
+  leadVideo: CatalogLeadVideo;
+  isActive: boolean;
+  playLabel: string;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    if (!isActive) {
+      videoRef.current?.pause();
+      setPlaying(false);
+    }
+  }, [isActive]);
+
+  useEffect(() => {
+    if (playing) {
+      void videoRef.current?.play();
+    }
+  }, [playing]);
+
+  const onPlayClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setPlaying(true);
+  };
+
+  if (!playing) {
+    return (
+      <button
+        type="button"
+        onClick={onPlayClick}
+        className="relative block h-full w-full cursor-pointer overflow-hidden bg-muted text-left outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklch,var(--d-card-accent)_40%,transparent)]"
+        aria-label={playLabel}
+      >
+        {leadVideo.posterUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- poster frame
+          <img
+            src={leadVideo.posterUrl}
+            alt=""
+            className="pointer-events-none h-full w-full select-none object-cover [-webkit-user-drag:none]"
+            draggable={false}
+          />
+        ) : (
+          <video
+            src={leadVideo.src}
+            className="pointer-events-none h-full w-full object-cover"
+            preload="metadata"
+            muted
+            playsInline
+            aria-hidden
+          />
+        )}
+        <span
+          className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black/25"
+          aria-hidden
+        >
+          <span className="flex size-16 items-center justify-center rounded-full border-2 border-white bg-black/55 text-white shadow-xl ring-4 ring-black/20 sm:size-[4.5rem]">
+            <Play className="ml-1 size-8 fill-current sm:size-9" aria-hidden />
+          </span>
+        </span>
+      </button>
+    );
+  }
+
+  return (
+    <video
+      ref={videoRef}
+      src={leadVideo.src}
+      className="h-full w-full object-cover"
+      controls
+      playsInline
+      preload="metadata"
+      poster={leadVideo.posterUrl}
+      onClick={(e) => e.stopPropagation()}
+    />
+  );
+}
 
 /**
  * Одно фото на экране; листание как в кабинете модерации —
  * нативный горизонтальный скролл + snap (палец, тачпад, колесо).
  */
-export function CatalogCardPhotoRail({ urls, altBase, className }: Props) {
+export function CatalogCardPhotoRail({
+  urls,
+  altBase,
+  className,
+  leadVideo: leadVideoProp,
+  productVideos,
+  posterUrl,
+}: Props) {
   const t = useTranslations("Pages.catalogBrowse");
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const leadVideo =
+    leadVideoProp ??
+    leadVideoFromProductVideos({
+      productVideos,
+      posterUrl: posterUrl ?? urls[0],
+    });
+  const slideCount = urls.length + (leadVideo ? 1 : 0);
 
   const onScroll = useCallback(() => {
     const el = scrollerRef.current;
-    if (!el || urls.length === 0) {
+    if (!el || slideCount === 0) {
       return;
     }
     const w = el.clientWidth;
@@ -31,8 +133,8 @@ export function CatalogCardPhotoRail({ urls, altBase, className }: Props) {
       return;
     }
     const i = Math.round(el.scrollLeft / w);
-    setActive(Math.min(urls.length - 1, Math.max(0, i)));
-  }, [urls.length]);
+    setActive(Math.min(slideCount - 1, Math.max(0, i)));
+  }, [slideCount]);
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -42,12 +144,12 @@ export function CatalogCardPhotoRail({ urls, altBase, className }: Props) {
     onScroll();
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => el.removeEventListener("scroll", onScroll);
-  }, [onScroll, urls.length]);
+  }, [onScroll, slideCount]);
 
   const goArrow = useCallback(
     (delta: number) => {
       const el = scrollerRef.current;
-      if (!el || urls.length <= 1) {
+      if (!el || slideCount <= 1) {
         return;
       }
       const w = el.clientWidth;
@@ -57,23 +159,22 @@ export function CatalogCardPhotoRail({ urls, altBase, className }: Props) {
       const cur = Math.round(el.scrollLeft / w);
       let next = cur + delta;
       if (next < 0) {
-        next = urls.length - 1;
+        next = slideCount - 1;
       }
-      if (next >= urls.length) {
+      if (next >= slideCount) {
         next = 0;
       }
       el.scrollTo({ left: next * w, behavior: "smooth" });
     },
-    [urls.length],
+    [slideCount],
   );
 
-  if (urls.length === 0) {
+  if (slideCount === 0) {
     return null;
   }
 
-  const showArrows = urls.length > 1;
-
-  const multi = urls.length > 1;
+  const showArrows = slideCount > 1;
+  const multi = slideCount > 1;
 
   return (
     <div
@@ -87,30 +188,45 @@ export function CatalogCardPhotoRail({ urls, altBase, className }: Props) {
           ref={scrollerRef}
           className={cn(
             "flex h-full w-full min-w-0 snap-x snap-mandatory overflow-y-hidden overscroll-x-contain scroll-smooth",
-            /* pan-x: свайп по фото между снимками; pan-y: скролл страницы вверх/вниз с той же области (touch-pan-x ломал вертикаль). */
             multi ? "overflow-x-auto touch-[pan-x_pan-y]" : "overflow-x-hidden",
             "[-ms-overflow-style:none] [scrollbar-width:none]",
             "[&::-webkit-scrollbar]:hidden",
           )}
         >
-          {urls.map((url, i) => (
+          {leadVideo ? (
             <div
-              key={`${url}-${i}`}
               className="h-full w-full shrink-0 grow-0 basis-full snap-center snap-always"
               aria-roledescription="slide"
-              aria-label={`${i + 1} / ${urls.length}`}
+              aria-label={`1 / ${slideCount}`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element -- внешние превью URL */}
-              <img
-                src={url}
-                alt=""
-                className="pointer-events-none h-full w-full select-none object-cover [-webkit-user-drag:none]"
-                loading={i === 0 ? "eager" : "lazy"}
-                decoding="async"
-                draggable={false}
+              <CatalogCardVideoSlide
+                leadVideo={leadVideo}
+                isActive={active === 0}
+                playLabel={t("catalogPhotoPlayVideo")}
               />
             </div>
-          ))}
+          ) : null}
+          {urls.map((url, i) => {
+            const slideIndex = i + (leadVideo ? 1 : 0);
+            return (
+              <div
+                key={`${url}-${i}`}
+                className="h-full w-full shrink-0 grow-0 basis-full snap-center snap-always"
+                aria-roledescription="slide"
+                aria-label={`${slideIndex + 1} / ${slideCount}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element -- внешние превью URL */}
+                <img
+                  src={url}
+                  alt=""
+                  className="pointer-events-none h-full w-full select-none object-cover [-webkit-user-drag:none]"
+                  loading={slideIndex === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  draggable={false}
+                />
+              </div>
+            );
+          })}
         </div>
 
         {showArrows ? (
@@ -155,7 +271,7 @@ export function CatalogCardPhotoRail({ urls, altBase, className }: Props) {
 
       {showArrows ? (
         <p className="mt-2 text-center text-[11px] tabular-nums text-muted-foreground/70">
-          {active + 1} / {urls.length}
+          {active + 1} / {slideCount}
         </p>
       ) : null}
     </div>

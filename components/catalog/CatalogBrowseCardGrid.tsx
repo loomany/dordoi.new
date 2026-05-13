@@ -69,6 +69,8 @@ export function CatalogBrowseCardGrid({
               href={c.href}
               display={c.display}
               photoUrls={c.photoUrls}
+              leadVideo={c.leadVideo}
+              productVideos={c.productVideos}
               featured={c.featured}
               viewProfileLabel={viewProfileLabel}
               aboutStoreLabel={aboutStoreLabel}

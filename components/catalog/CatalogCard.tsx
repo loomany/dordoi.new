@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
+import type { CatalogLeadVideo } from "@/lib/catalog/catalog-lead-video";
 import { ensureHttpUrl } from "@/lib/catalog/vendor-map-links";
 import type { ParsedVendorCardData } from "@/lib/catalog/vendor-card-display";
 import { CATALOG_CARD_COLLAPSED_DESCRIPTION_MAX_CHARS } from "@/lib/vendor/vendor-field-limits";
@@ -20,6 +21,9 @@ export type CatalogCardProps = {
   href?: string;
   /** Фото под CTA при раскрытии: карусель (одно фото, листание влево-вправо). */
   photoUrls?: string[];
+  /** Первое видео в начале карусели (если есть в БД). */
+  leadVideo?: CatalogLeadVideo;
+  productVideos?: string[];
   /** Карточка-подборка / после модерации — акцентная рамка. */
   featured?: boolean;
   /** Кнопка избранного в подвале карточки; клик не всплывает к ссылке карточки. */
@@ -105,6 +109,8 @@ export function CatalogCard({
   viewProfileLabel,
   href,
   photoUrls,
+  leadVideo,
+  productVideos,
   featured,
   favoriteSlot,
   aboutStoreLabel,
@@ -120,7 +126,8 @@ export function CatalogCard({
 }: CatalogCardProps) {
   const router = useRouter();
   const tCard = useTranslations("Pages.catalogBrowse.vendorCard");
-  const hasPhotos = Boolean(photoUrls && photoUrls.length > 0);
+  const hasMedia =
+    Boolean(photoUrls && photoUrls.length > 0) || Boolean(leadVideo);
   const descTrim = display.description.trim();
 
   const isWholesaleSupplier =
@@ -129,7 +136,7 @@ export function CatalogCard({
   const instagramHref = ensureHttpUrl(display.instagramUrl ?? undefined);
 
   const canCollapse =
-    hasPhotos && Boolean(collapseLabel) && Boolean(expandLabel);
+    hasMedia && Boolean(collapseLabel) && Boolean(expandLabel);
 
   const isMobile = useIsCatalogMobile();
   const breakpointDefault =
@@ -364,18 +371,20 @@ export function CatalogCard({
   );
 
   const photosExpanded =
-    hasPhotos && !collapsed ? (
+    hasMedia && !collapsed ? (
       <div className="min-h-0 w-full pt-4">
         <CatalogCardPhotoRail
           urls={photoUrls ?? []}
           altBase={display.storeTitle}
           className="w-full min-w-0"
+          leadVideo={leadVideo}
+          productVideos={productVideos}
         />
       </div>
     ) : null;
 
   const photosSection =
-    hasPhotos ? (
+    hasMedia ? (
       <div
         className={cn(
           "grid min-h-0 transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none",
