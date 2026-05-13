@@ -98,10 +98,10 @@ function auditStaticField(
 }
 
 async function main(): Promise<void> {
-  const routeData = await import("../lib/catalog/seo-category-route-data.ts");
-  const categoryRoutes = await import("../lib/catalog/seo-category-routes.ts");
-  const pageLabels = await import("../lib/seo/seo-page-labels.ts");
-  const coreLandings = await import("../lib/seo/core-seo-landings.ts");
+  const routeData = await import("../lib/catalog/seo-category-route-data");
+  const categoryRoutes = await import("../lib/catalog/seo-category-routes");
+  const pageLabels = await import("../lib/seo/seo-page-labels");
+  const coreLandings = await import("../lib/seo/core-seo-landings");
 
   const SEO_CATEGORY_ROUTES: SeoCategoryRoute[] =
     routeData.SEO_CATEGORY_ROUTES;
