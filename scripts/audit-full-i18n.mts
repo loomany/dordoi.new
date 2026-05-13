@@ -13,6 +13,13 @@ import { fileURLToPath } from "node:url";
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+/** Keep in sync with lib/catalog/buyer-only-vendor-slugs.ts (inlined for script ESM). */
+const BUYER_ONLY_VENDOR_SLUGS = new Set<string>(["dordoi-zakup-aiperi"]);
+function isBuyerOnlyVendorSlug(slug: string | null | undefined): boolean {
+  const key = typeof slug === "string" ? slug.trim() : "";
+  return key.length > 0 && BUYER_ONLY_VENDOR_SLUGS.has(key);
+}
+
 import type { RouteLocale } from "../lib/seo/route-locale";
 import type { SeoCategoryRoute } from "../lib/catalog/seo-category-route-data";
 import type { CoreSeoLanding } from "../lib/seo/core-seo-landings";
@@ -75,12 +82,14 @@ const ALLOW_IDENTICAL_VALUES = new Set([
   "VIP",
   "B2B",
   "B2C",
+  "support@dordoi.help",
 ]);
 
 const ALLOW_IDENTICAL_KEY_SUFFIXES = [
   ".contactPhone",
   ".defaultCity",
   ".defaultCountry",
+  "InstagramUrlPlaceholder",
 ];
 
 /** CJK in kk/kg/uz/tj overlays usually means a bad machine translation. */
@@ -173,7 +182,9 @@ function getNested(obj: unknown, path: string): unknown {
 }
 
 function isAllowedIdentical(key: string, value: string): boolean {
-  if (ALLOW_IDENTICAL_VALUES.has(value.trim())) return true;
+  const v = value.trim();
+  if (ALLOW_IDENTICAL_VALUES.has(v)) return true;
+  if (v.startsWith("https://www.instagram.com")) return true;
   return ALLOW_IDENTICAL_KEY_SUFFIXES.some((s) => key.endsWith(s));
 }
 
@@ -268,6 +279,7 @@ function auditMessages(issues: Issue[], locales: TargetLocale[]): void {
           detail: "missing overlay key (runtime falls back to RU)",
         });
       } else if (locVal.trim() === "") {
+        if (ruVal.trim() === "") continue;
         empty++;
         issues.push({
           kind: "messages-empty",
@@ -444,6 +456,7 @@ async function auditVendorDb(
   let identicalDesc = 0;
 
   for (const row of rows) {
+    if (isBuyerOnlyVendorSlug(row.slug)) continue;
     const pad = row.parsed_ai_data as Record<string, unknown> | null;
     const display = pad?.display as Record<string, unknown> | undefined;
     const ruDesc =
@@ -557,6 +570,7 @@ async function auditLive(
       });
     }
     for (const slug of slugs) {
+      if (isBuyerOnlyVendorSlug(slug)) continue;
       push({
         locale,
         path: `/${locale}/catalog/${encodeURIComponent(slug)}`,
