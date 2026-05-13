@@ -30,6 +30,10 @@
  *   npm run sync:all-media -- --dry-run=false --delay-ms=500 --batch-size=2
  *   npm run sync:all-media -- --fetch-timeout-ms=120000   (таймаут fetch к Instagram, по умолчанию 120s)
  *   npm run sync:all-media -- --upload-timeout-ms=600000  (таймаут upload в Supabase Storage, по умолчанию 300s)
+ *
+ * Только фото + запись URL в БД (без фазы 2 видео), если фото уже в Storage / чекпоинте:
+ *   npm run sync:all-media:photos-db
+ *   (эквивалент: --dry-run=false --skip-video-phase=true)
  */
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -107,6 +111,8 @@ function parseArgs() {
     }
   }
   const dryRun = (raw["dry-run"] ?? "true").trim().toLowerCase() !== "false";
+  const skipVideoPhase =
+    (raw["skip-video-phase"] ?? "false").trim().toLowerCase() === "true";
   const delayMs = Math.max(
     0,
     Math.min(120_000, parseInt(raw["delay-ms"] ?? "500", 10) || 500),
@@ -134,6 +140,7 @@ function parseArgs() {
   );
   return {
     dryRun,
+    skipVideoPhase,
     delayMs,
     batchSize,
     limit,
@@ -328,6 +335,56 @@ type BatchItemRow = {
   photo_url: string;
 };
 
+/** PostgREST: последовательные PATCH по 4k+ строкам «висят» в логе; пачки + частый прогресс. */
+const BATCH_ITEM_DB_CONCURRENCY = 12;
+
+async function updateBatchItemPhotoUrlsParallel(
+  admin: ReturnType<typeof createAdminClient>,
+  patches: { id: string; next: string }[],
+): Promise<{ updated: number; errors: number }> {
+  let updated = 0;
+  let errors = 0;
+  const total = patches.length;
+  if (total === 0) {
+    logLine("DB batch_items: обновлять нечего (все URL уже совпадают или нет в map).");
+    return { updated: 0, errors: 0 };
+  }
+  logLine(
+    `DB batch_items: к обновлению ${total} строк, параллельность ${BATCH_ITEM_DB_CONCURRENCY}…`,
+  );
+  for (let i = 0; i < total; i += BATCH_ITEM_DB_CONCURRENCY) {
+    const slice = patches.slice(i, i + BATCH_ITEM_DB_CONCURRENCY);
+    const settled = await Promise.allSettled(
+      slice.map((row) =>
+        admin
+          .from("vendor_photo_batch_items")
+          .update({ photo_url: row.next })
+          .eq("id", row.id)
+          .then(({ error }) => {
+            if (error) throw new Error(error.message);
+          }),
+      ),
+    );
+    for (let j = 0; j < settled.length; j++) {
+      const r = settled[j]!;
+      const row = slice[j]!;
+      if (r.status === "fulfilled") {
+        updated += 1;
+      } else {
+        errors += 1;
+        logLine(
+          `DB batch_items ✖ ${row.id}: ${r.reason instanceof Error ? r.reason.message : String(r.reason)}`,
+        );
+      }
+    }
+    const done = Math.min(i + BATCH_ITEM_DB_CONCURRENCY, total);
+    if (done % 50 === 0 || done === total) {
+      logLine(`DB batch_items: обработано ${done}/${total}…`);
+    }
+  }
+  return { updated, errors };
+}
+
 async function fetchAllVendors(admin: ReturnType<typeof createAdminClient>): Promise<VendorMediaRow[]> {
   const pageSize = 1000;
   const out: VendorMediaRow[] = [];
@@ -464,6 +521,7 @@ async function main() {
   loadEnvLocal();
   const {
     dryRun,
+    skipVideoPhase,
     delayMs,
     batchSize,
     limit,
@@ -478,6 +536,9 @@ async function main() {
 
   logLine("=== sync-all-media старт ===");
   logLine(`dry-run: ${dryRun}`);
+  logLine(
+    `skip-video-phase: ${skipVideoPhase} (если true — после фото сразу фаза 3 Postgres; видео не качаем)`,
+  );
   logLine(`delay-ms (между пачками): ${delayMs}`);
   logLine(`batch-size (параллель в пачке): ${batchSize}`);
   logLine(`photo-bucket: ${photoBucket}`);
@@ -648,72 +709,79 @@ async function main() {
     },
   );
 
-  logLine("— Фаза 2: видео (скачивание → mp4 → Storage) —");
   let videoReusedFromStorage = 0;
-  const videoErrors = await processInParallelBatches(
-    videoQueue,
-    batchSize,
-    delayMs,
-    "видео",
-    async (srcUrl, meta) => {
-      const tAll = Date.now();
-      const short = hashKey(srcUrl).slice(0, 10);
-      const path = videoObjectPath(srcUrl);
-      const { data: existingPublic } = admin.storage.from(videoBucket).getPublicUrl(path);
-      const existingUrl = existingPublic.publicUrl;
-      if (existingUrl && (await publicObjectHeadOk(existingUrl, headTimeoutMs))) {
-        videoReusedFromStorage += 1;
-        videoUrlMap.set(srcUrl, existingUrl);
-        logLine(
-          `видео [${meta.index1}/${meta.total}] ⊘ уже в Storage (${path}), CDN пропущен, за ${Date.now() - tAll}ms`,
+  let videoErrors = 0;
+  if (skipVideoPhase) {
+    logLine(
+      "— Фаза 2: видео — пропуск (--skip-video-phase=true). В map остаётся только префилл из чекпоинта (если есть).",
+    );
+  } else {
+    logLine("— Фаза 2: видео (скачивание → mp4 → Storage) —");
+    videoErrors = await processInParallelBatches(
+      videoQueue,
+      batchSize,
+      delayMs,
+      "видео",
+      async (srcUrl, meta) => {
+        const tAll = Date.now();
+        const short = hashKey(srcUrl).slice(0, 10);
+        const path = videoObjectPath(srcUrl);
+        const { data: existingPublic } = admin.storage.from(videoBucket).getPublicUrl(path);
+        const existingUrl = existingPublic.publicUrl;
+        if (existingUrl && (await publicObjectHeadOk(existingUrl, headTimeoutMs))) {
+          videoReusedFromStorage += 1;
+          videoUrlMap.set(srcUrl, existingUrl);
+          logLine(
+            `видео [${meta.index1}/${meta.total}] ⊘ уже в Storage (${path}), CDN пропущен, за ${Date.now() - tAll}ms`,
+          );
+          return;
+        }
+        logLine(`видео [${meta.index1}/${meta.total}] hash=${short}… загрузка CDN…`);
+        const tDl = Date.now();
+        const { buffer, contentType } = await downloadBytes(
+          srcUrl,
+          VIDEO_FETCH_HEADERS,
+          fetchTimeoutMs,
         );
-        return;
-      }
-      logLine(`видео [${meta.index1}/${meta.total}] hash=${short}… загрузка CDN…`);
-      const tDl = Date.now();
-      const { buffer, contentType } = await downloadBytes(
-        srcUrl,
-        VIDEO_FETCH_HEADERS,
-        fetchTimeoutMs,
-      );
-      logLine(
-        `видео [${meta.index1}/${meta.total}] скачано ${buffer.length} байт за ${Date.now() - tDl}ms, content-type=${contentType || "?"}`,
-      );
-      if (!looksLikeMp4(buffer, contentType, srcUrl)) {
-        throw new Error(`not mp4 (content-type: ${contentType || "?"})`);
-      }
-      logLine(`видео [${meta.index1}/${meta.total}] upload ${videoBucket} ${path}…`);
-      const tUp = Date.now();
-      const { error: upErr } = await withTimeout(
-        admin.storage.from(videoBucket).upload(path, buffer, {
-          contentType: "video/mp4",
-          upsert: true,
-        }),
-        uploadTimeoutMs,
-        `upload ${videoBucket}`,
-      );
-      if (upErr) throw new Error(upErr.message);
-      const { data } = admin.storage.from(videoBucket).getPublicUrl(path);
-      const pub = data.publicUrl;
-      if (!pub) throw new Error("empty publicUrl");
-      videoUrlMap.set(srcUrl, pub);
-      logLine(
-        `видео [${meta.index1}/${meta.total}] ✓ upload за ${Date.now() - tUp}ms, всего ${Date.now() - tAll}ms → ${pub.slice(0, 80)}…`,
-      );
-    },
-    {
-      progressOffset: videoProgressOffset,
-      progressTotal: videoWork.length,
-      ...(checkpointFile
-        ? {
-            onBatchSuccess: (urls: string[]) => {
-              for (const u of urls) videoHashesDone.add(hashKey(u));
-              persistCp();
-            },
-          }
-        : {}),
-    },
-  );
+        logLine(
+          `видео [${meta.index1}/${meta.total}] скачано ${buffer.length} байт за ${Date.now() - tDl}ms, content-type=${contentType || "?"}`,
+        );
+        if (!looksLikeMp4(buffer, contentType, srcUrl)) {
+          throw new Error(`not mp4 (content-type: ${contentType || "?"})`);
+        }
+        logLine(`видео [${meta.index1}/${meta.total}] upload ${videoBucket} ${path}…`);
+        const tUp = Date.now();
+        const { error: upErr } = await withTimeout(
+          admin.storage.from(videoBucket).upload(path, buffer, {
+            contentType: "video/mp4",
+            upsert: true,
+          }),
+          uploadTimeoutMs,
+          `upload ${videoBucket}`,
+        );
+        if (upErr) throw new Error(upErr.message);
+        const { data } = admin.storage.from(videoBucket).getPublicUrl(path);
+        const pub = data.publicUrl;
+        if (!pub) throw new Error("empty publicUrl");
+        videoUrlMap.set(srcUrl, pub);
+        logLine(
+          `видео [${meta.index1}/${meta.total}] ✓ upload за ${Date.now() - tUp}ms, всего ${Date.now() - tAll}ms → ${pub.slice(0, 80)}…`,
+        );
+      },
+      {
+        progressOffset: videoProgressOffset,
+        progressTotal: videoWork.length,
+        ...(checkpointFile
+          ? {
+              onBatchSuccess: (urls: string[]) => {
+                for (const u of urls) videoHashesDone.add(hashKey(u));
+                persistCp();
+              },
+            }
+          : {}),
+      },
+    );
+  }
 
   logLine("— Фаза 3: обновление строк в Postgres (vendors, batch_items) —");
   let vendorsUpdated = 0;
@@ -768,27 +836,20 @@ async function main() {
     }
   }
 
-  let itemScan = 0;
+  const batchPatches: { id: string; next: string }[] = [];
   for (const it of items) {
-    itemScan += 1;
-    if (itemScan === 1 || itemScan % 500 === 0 || itemScan === items.length) {
-      logLine(`DB batch_items: проверено ${itemScan}/${items.length}…`);
-    }
     const t = it.photo_url?.trim();
     if (!t || !photoUrlMap.has(t)) continue;
     const next = photoUrlMap.get(t)!;
     if (next === it.photo_url) continue;
-    const { error } = await admin
-      .from("vendor_photo_batch_items")
-      .update({ photo_url: next })
-      .eq("id", it.id);
-    if (error) {
-      logLine(`DB batch_items ✖ ${it.id}: ${error.message}`);
-      dbErrors += 1;
-    } else {
-      itemsUpdated += 1;
-    }
+    batchPatches.push({ id: it.id, next });
   }
+  logLine(
+    `DB batch_items: всего строк ${items.length}, нужна смена URL у ${batchPatches.length}.`,
+  );
+  const batchResult = await updateBatchItemPhotoUrlsParallel(admin, batchPatches);
+  itemsUpdated += batchResult.updated;
+  dbErrors += batchResult.errors;
 
   logLine("Перечитывание БД для сводки внешних ссылок…");
   const vendorsAfter = await fetchAllVendors(admin);

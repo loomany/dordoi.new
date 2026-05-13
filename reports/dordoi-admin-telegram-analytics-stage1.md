@@ -9,7 +9,7 @@
 | [`components/dordoi/DordoiAnalyticsTracker.tsx`](../components/dordoi/DordoiAnalyticsTracker.tsx) | Client-only tracker: `first_visit`, click delegation, storage |
 | [`app/[locale]/layout.tsx`](../app/[locale]/layout.tsx) | Renders `<DordoiAnalyticsTracker locale={…} />` under `NextIntlClientProvider` |
 
-No edits to: `leadNotifications`, `vendor-moderation`, auth, Python, DB/migrations/RLS, payments, `middleware.ts`, `lib/dordoi/analytics/types.ts` (payload already matched Step 1A API).
+No edits to: `leadNotifications`, `vendor-moderation`, auth (except Step 1E / 1F `complete-registration` notify params), Python, DB/migrations/RLS, payments, `middleware.ts`. **Step 1F** extends [`lib/dordoi/analytics/types.ts`](../lib/dordoi/analytics/types.ts) and related server modules — see **§10 Step 1F** below.
 
 ### 2. How the tracker is wired
 
@@ -23,7 +23,8 @@ No edits to: `leadNotifications`, `vendor-moderation`, auth, Python, DB/migratio
 | `dordoi_visitor_id` | `localStorage` | Stable UUID per browser |
 | `dordoi_session_id` | `sessionStorage` | UUID per tab session |
 | `dordoi_first_touch` | `localStorage` | JSON: `firstPath`, `firstSearch`, `firstReferrer`, UTM fields, `gclidPresent` / `gbraidPresent` / `wbraidPresent`, `visitorId`, `sessionId`, `createdAt` |
-| `dordoi_first_visit_sent` | `sessionStorage` | `"1"` after the first eligible `first_visit` POST for this tab |
+| `dordoi_first_visit_sent` | `sessionStorage` | `"1"` only after a **successful** `first_visit` POST (`HTTP 200` and body **not** `skippedReason: "rate_limited"`) for this tab |
+| `dordoi_last_first_visit_notified_at` | `localStorage` | Milliseconds timestamp; with successful POST above, blocks another `first_visit` POST for **24 hours** (same browser) |
 
 First-touch is written **once** when absent and the current path is **not** excluded; it is **not** overwritten on later navigations.
 
@@ -31,7 +32,7 @@ First-touch is written **once** when absent and the current path is **not** excl
 
 | Event | Trigger |
 |-------|---------|
-| `first_visit` | First non-excluded view in the tab (`sessionStorage` guard) |
+| `first_visit` | First non-excluded view in the tab when **not** blocked by `sessionStorage` (`dordoi_first_visit_sent`) **and** not within **24h** of the last successful `first_visit` (`dordoi_last_first_visit_notified_at`) |
 | `whatsapp_click` | `click` on `a[href]` containing `wa.me` or `whatsapp` |
 | `telegram_click` | `click` on `a[href]` containing `t.me` or `telegram` |
 | `phone_click` | `click` on `a[href^="tel:"]` |
@@ -69,10 +70,11 @@ No POSTs while `pathname` matches (case-insensitive substring / pattern):
 Not executed in this environment (no interactive browser). Suggested checklist:
 
 1. Open `/ru` or `/ru/catalog` — DevTools **Network**: one `POST /api/dordoi/analytics/event` with `eventType: "first_visit"`.
-2. Hard refresh (F5) same URL — **no** second `first_visit` (same tab, `sessionStorage` guard).
-3. Click a visible WhatsApp / Telegram / `tel:` link — expect matching `*_click` POST.
-4. Open `/ru/cabinet/...` — no analytics POSTs from navigation alone (excluded).
-5. Confirm response body remains `{ ok: true, sent: …, skippedReason?: … }` (Telegram still decided server-side).
+2. Hard refresh (F5) same URL — **no** second `first_visit` (same tab: `sessionStorage` + 24h `localStorage` guard).
+3. New tab same browser within 24h — **no** second `first_visit` (`localStorage` timestamp); after 24h or cleared `dordoi_last_first_visit_notified_at`, new tab may POST again once per tab until success.
+4. Click a visible WhatsApp / Telegram / `tel:` link — expect matching `*_click` POST.
+5. Open `/ru/cabinet/...` — no analytics POSTs from navigation alone (excluded).
+6. Confirm response body remains `{ ok: true, sent: …, skippedReason?: … }` (Telegram still decided server-side). If the server returns `skippedReason: "rate_limited"`, the client **does not** persist `dordoi_first_visit_sent` / `dordoi_last_first_visit_notified_at` (may retry on next navigation).
 
 ### 9. Scope confirmation (Step 1B)
 
@@ -80,9 +82,39 @@ Not executed in this environment (no interactive browser). Suggested checklist:
 - **Auth / Python / DB / RLS / payments / middleware**: **not** changed for Step 1B.
 - **Commit / push**: **not** performed.
 
-### 10. Step 1A reference
+### 10. Step 1F — admin Telegram format refresh (traffic, bots, anti-spam)
 
-Server module and `POST /api/dordoi/analytics/event` were added in Step 1A. This document covers **Step 1B** (client tracker) and **Step 1C** (vendor moderation admin Telegram).
+**Scope:** shorter admin messages, richer traffic labels, bot policy for `first_visit`, internal referrer rule, registration locale from `Referer`, client + server anti-spam.
+
+| Area | Behavior |
+|------|----------|
+| **Traffic** | Paid (Google / Meta / TikTok / Telegram + click ids), AI referrers, organic search (Google / Bing / Yandex / DDG / Yahoo) with optional query line (Google may show «скрыт» when no `q`), social hosts, **Direct·internal** when referrer is `dordoi.help` / `www.dordoi.help`, then generic referral / direct. |
+| **Locale in admin** | From landing path: `/ru` → RU, `/kk` → **KZ** (no `/kz` route), `/kg` `/uz` `/tj` → matching labels via [`pathToAdminLocaleDisplay`](../lib/dordoi/analytics/telegramFormatter.ts). |
+| **`first_visit` bots** | Only **seven** major search crawlers → `search_crawler` → short Telegram allowed. **SEO** tools (Ahrefs, Semrush, MJ12, DotBot, PetalBot, Mediapartners-Google, …) → `bot_seo_skipped`. **Unknown** `*bot*` → `bot_unknown_skipped`. **Suspicious** / probe UA → `bot_suspicious_skipped`. Other bots → `bot_skipped`. |
+| **Server rate limit** | `visitorId` length **≥ 8** → [`rateLimitFirstVisitByVisitor`](../lib/dordoi/analytics/rateLimit.ts) (**24h**); else existing session-based **30m** [`rateLimitFirstVisit`](../lib/dordoi/analytics/rateLimit.ts). |
+| **Client anti-spam** | `dordoi_last_first_visit_notified_at` (**24h**) + `dordoi_first_visit_sent` per tab; both updated **only** after successful POST (and **not** when JSON `skippedReason === "rate_limited"`). |
+| **Registration** | [`complete-registration`](../app/api/auth/complete-registration/route.ts) passes `referrerUrl: request.headers.get("referer")` into [`notifyDordoiSiteRegistrationCompleted`](../lib/dordoi/analytics/leadNotifications.ts) for display locale only (auth semantics unchanged). |
+
+**Files (primary):** [`lib/dordoi/analytics/types.ts`](../lib/dordoi/analytics/types.ts), [`botDetection.ts`](../lib/dordoi/analytics/botDetection.ts), [`channel.ts`](../lib/dordoi/analytics/channel.ts), [`rateLimit.ts`](../lib/dordoi/analytics/rateLimit.ts), [`telegramFormatter.ts`](../lib/dordoi/analytics/telegramFormatter.ts), [`event/route.ts`](../app/api/dordoi/analytics/event/route.ts), [`DordoiAnalyticsTracker.tsx`](../components/dordoi/DordoiAnalyticsTracker.tsx), [`leadNotifications.ts`](../lib/dordoi/analytics/leadNotifications.ts).
+
+**API smoke (curl / HTTP client):**
+
+| Case | Expected `skippedReason` (when Telegram not sent) |
+|------|-----------------------------------------------------|
+| A — `first_visit`, normal browser UA | `dry_run` or real send per env |
+| B — `first_visit`, SEO crawler UA (e.g. AhrefsBot) | `bot_seo_skipped` |
+| C — `first_visit`, allowed search crawler (e.g. Googlebot) | passes bot gate → may hit `dry_run` / send / `rate_limited` |
+| D — `first_visit`, generic `SomethingBot/1.0` | `bot_unknown_skipped` |
+| E — `first_visit`, suspicious UA | `bot_suspicious_skipped` |
+| F — repeat `first_visit` same `visitorId` within 24h | `rate_limited` |
+
+**Locale path smoke:** open `/ru/…`, `/kk/…`, `/kg/…`, `/uz/…`, `/tj/…` with dry-run enabled and confirm admin HTML uses **RU / KZ / KG / UZ / TJ** labels where applicable.
+
+**Automated (2026-05-13):** `npx tsc --noEmit` exit **0**; `npm run build` exit **0** (Next.js 16.2.6). **Commit / push:** not performed without separate approve.
+
+### 11. Step 1A reference
+
+Server module and `POST /api/dordoi/analytics/event` were added in Step 1A. This document covers **Step 1B** (client tracker), **Step 1C** (vendor moderation admin Telegram), **Step 1E** (registration), **Step 1D** (verification), and **Step 1F** (format refresh).
 
 ---
 
@@ -96,7 +128,7 @@ Server module and `POST /api/dordoi/analytics/event` were added in Step 1A. This
 | [`lib/actions/vendor-moderation.ts`](../lib/actions/vendor-moderation.ts) | After successful `vendors` status `update`, calls Dordoi notify (non-blocking); `select` extended with `categories` |
 | [`lib/dordoi/analytics/types.ts`](../lib/dordoi/analytics/types.ts) | Types: `DordoiVendorModerationNotifyParams`, `DordoiLeadNotifyResult`, `DordoiVendorModerationNotifyStatus` |
 
-**Not changed:** `telegramFormatter.ts`, `rateLimit.ts` (reuse `rateLimitVendorModeration`), `telegramHtml.ts`, tracker, layout, auth, Python, DB/migrations/RLS, payments, `vendor-admin-pending-edit.ts`, `middleware.ts`.
+**Not changed (Step 1C scope only):** `telegramFormatter.ts` (see **Step 1F** for later formatter edits), `rateLimit.ts` (reuse `rateLimitVendorModeration`), `telegramHtml.ts`, tracker, layout, auth, Python, DB/migrations/RLS, payments, `vendor-admin-pending-edit.ts`, `middleware.ts`.
 
 ### 2. Hook placement
 
@@ -190,7 +222,7 @@ Then approve/reject a vendor from admin UI:
 | [`lib/dordoi/analytics/types.ts`](../lib/dordoi/analytics/types.ts) | `DordoiSiteRegistrationNotifyParams`, `DordoiSiteRegistrationAttribution` |
 | [`lib/dordoi/analytics/rateLimit.ts`](../lib/dordoi/analytics/rateLimit.ts) | `rateLimitSiteRegistrationCompleted` — TTL **30 min**, key `dordoi:site_reg:{userId}:registration_completed` (fallback `fb:{sha256…}` without raw email/phone in the key) |
 | [`lib/dordoi/analytics/telegramHtml.ts`](../lib/dordoi/analytics/telegramHtml.ts) | `maskEmailForAdminTelegram`, `maskPhoneDigitsForAdminTelegram` |
-| [`app/api/auth/complete-registration/route.ts`](../app/api/auth/complete-registration/route.ts) | After successful `signIn` session: `void notifyDordoiSiteRegistrationCompleted(…).catch(…)`; `registrationRole` from `linkVendorProfileForPhone`; `localeHintFromRequest` from `Accept-Language` |
+| [`app/api/auth/complete-registration/route.ts`](../app/api/auth/complete-registration/route.ts) | After successful `signIn` session: `void notifyDordoiSiteRegistrationCompleted(…).catch(…)`; `registrationRole` from `linkVendorProfileForPhone`; `localeHintFromRequest` from `Accept-Language`; optional **`referrerUrl`** from `Referer` for admin **display** locale only |
 
 **Not changed:** Python bot, payments/Lemon, DB/migrations/RLS, middleware, tracker, `package.json` / lockfile.
 
@@ -206,12 +238,8 @@ In [`POST` `complete-registration`](app/api/auth/complete-registration/route.ts)
 
 ### 3. Telegram message
 
-- Title: **«Новая регистрация на Dordoi.help»**.
-- **Пользователь:** `User ID` (UUID in `<code>`), masked **email**, masked **phone** (digits from DB), **Role/type** `buyer` or `vendor` (from vendor link).
-- **Регистрация:** `Status: completed`, **Locale** from `Accept-Language` first matching `ru|kk|kg|uz|tj`, else `unknown`.
-- **Источник:** `Channel` / `First page` / `Campaign` default **`unknown`** (attribution optional on params — not passed from route in this step).
-
-All dynamic segments go through **`escapeTelegramHtml`** + **`clip`**. **No** password, JWT, cookies, session body, or `service_role` in the message.
+- **Short emoji-style** HTML (Step 1F refresh): masked **email** / **phone**, **role** (`buyer` / `vendor`), **locale** from registration **`Referer`** path when possible (`/kk` → KZ, etc.), else `Accept-Language` hint.
+- **No** long User ID block; dynamic text still uses **`escapeTelegramHtml`** + **`clip`**. **No** password, JWT, cookies, session body, or `service_role` in the message.
 
 ### 4. Dedupe
 
@@ -408,7 +436,8 @@ Server: `npx next start -p 3067` with process env (shell vars set **before** sta
 | Case | Setup | Expected | Observed |
 |------|--------|----------|----------|
 | `first_visit`, normal UA | `DORDOI_ADMIN_TELEGRAM_ENABLED=1`, `DRY_RUN=1`, token+chats set | `ok: true`, `sent: false`, `skippedReason: dry_run` | **dry_run** |
-| `first_visit`, Googlebot UA | same | `bot_skipped` | **bot_skipped** |
+| `first_visit`, Googlebot UA (allowed search crawler) | same | passes bot policy → may reach Telegram layer → **dry_run** / send, or **`rate_limited`** on repeat within TTL | (re-run smoke) |
+| `first_visit`, AhrefsBot / SemrushBot UA | same | `bot_seo_skipped` | **bot_seo_skipped** |
 | `whatsapp_click` | same | reaches Telegram layer → **dry_run** | **dry_run** |
 | `catalog_open` | same | `event_not_broadcast_stage1` | **event_not_broadcast_stage1** |
 | invalid body (not JSON) | — | `invalid_json` | **invalid_json** |
@@ -421,7 +450,7 @@ Server: `npx next start -p 3067` with process env (shell vars set **before** sta
 Verified in [`components/dordoi/DordoiAnalyticsTracker.tsx`](../components/dordoi/DordoiAnalyticsTracker.tsx):
 
 - **`credentials: "omit"`** on analytics `fetch` (line ~133).
-- **`first_visit` once per tab:** `sessionStorage` key `dordoi_first_visit_sent` set to `"1"` before POST; effect bails if already set.
+- **`first_visit` once per successful POST per tab:** `sessionStorage` key `dordoi_first_visit_sent` set to `"1"` only after `POST` returns `ok` and **not** `skippedReason: "rate_limited"`; `localStorage` `dordoi_last_first_visit_notified_at` updated on the same condition (**24h** cooldown across tabs).
 - **`first_touch` not overwritten:** `ensureFirstTouchSnapshot` returns early if `readFirstTouch()` exists; only first eligible path writes `localStorage`.
 - **Clicks:** `wa.me` / `whatsapp` → `whatsapp_click`; `t.me` / `telegram` → `telegram_click`; `tel:` → `phone_click`; `mailto:` / allowed `data-analytics-event` → `contact_click` / `seller_registration_started`.
 - **Payload:** IDs, path, search, referrer, locale, optional `firstTouch` snapshot, `targetHref` / `targetLabel` for links — **no** `document.cookie`, forms, JWT, or `process.env` / `DORDOI_*` on the client (confirmed: no `process.env` / `DORDOI_` in `components/` for this tracker).

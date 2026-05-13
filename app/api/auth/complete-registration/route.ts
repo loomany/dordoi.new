@@ -235,6 +235,7 @@ export async function POST(request: Request) {
       phoneDigits,
       role: registrationRole,
       localeLabel: localeHintFromRequest(request),
+      referrerUrl: request.headers.get("referer"),
     }).catch((e) =>
       console.error("[complete-registration] dordoi admin registration notify", e),
     );

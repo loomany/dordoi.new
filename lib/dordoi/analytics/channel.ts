@@ -54,15 +54,86 @@ function hostFromReferrer(ref: string | undefined | null): string | null {
   }
 }
 
+function isDordoiSiteHost(host: string): boolean {
+  return host === "dordoi.help" || host === "www.dordoi.help";
+}
+
 function isGoogleHost(host: string): boolean {
   return host === "google.com" || host.endsWith(".google.com");
 }
 
+function isPaidMedium(m: string): boolean {
+  return (
+    m === "cpc" ||
+    m === "ppc" ||
+    m === "paid" ||
+    m === "paid_search" ||
+    m === "paid_social" ||
+    m === "ads"
+  );
+}
+
+function finish(
+  channel: DordoiTrafficChannelLabel,
+  sourceBucket: DordoiSourceBucket,
+  reason: string,
+  utm: DordoiChannelClassification["utm"],
+  paidParams: DordoiChannelClassification["paidParams"],
+): DordoiChannelClassification {
+  return { channel, sourceBucket, reason, utm, paidParams };
+}
+
+/** Organic search query line for Telegram; omit for non-search channels. */
+export function searchQueryLineForTelegram(
+  referrer: string | undefined | null,
+  channel: DordoiTrafficChannelLabel,
+): { show: boolean; text: string } {
+  const organic: DordoiTrafficChannelLabel[] = [
+    "Google Organic",
+    "Bing Organic",
+    "Yandex Organic",
+    "DuckDuckGo Organic",
+    "Yahoo Organic",
+  ];
+  if (!organic.includes(channel)) {
+    return { show: false, text: "" };
+  }
+  const ref = referrer?.trim() ?? "";
+  if (!ref) {
+    if (channel === "Google Organic") {
+      return { show: true, text: "скрыт Google" };
+    }
+    return { show: false, text: "" };
+  }
+  let url: URL;
+  try {
+    url = new URL(ref);
+  } catch {
+    return { show: false, text: "" };
+  }
+  const q = url.searchParams;
+  let raw: string | null = null;
+  if (channel === "Google Organic") {
+    raw =
+      q.get("q")?.trim() ||
+      q.get("query")?.trim() ||
+      q.get("search")?.trim() ||
+      null;
+    if (!raw) return { show: true, text: "скрыт Google" };
+  } else if (channel === "Bing Organic" || channel === "DuckDuckGo Organic") {
+    raw = q.get("q")?.trim() || null;
+  } else if (channel === "Yandex Organic") {
+    raw = q.get("text")?.trim() || null;
+  } else if (channel === "Yahoo Organic") {
+    raw = q.get("p")?.trim() || null;
+  }
+  if (!raw) return { show: false, text: "" };
+  return { show: true, text: raw.slice(0, 200) };
+}
+
 export function classifyDordoiTrafficChannel(input: {
   firstTouch?: DordoiFirstTouchPayload;
-  /** Current page query string (with or without ?) */
   search?: string;
-  /** Prefer explicit payload referrer, then header */
   referrer?: string | null;
   headerReferrer?: string | null;
 }): DordoiChannelClassification {
@@ -79,6 +150,8 @@ export function classifyDordoiTrafficChannel(input: {
     Boolean(input.firstTouch?.gbraidPresent) || paramPresent(params, "gbraid");
   const wbraidPresent =
     Boolean(input.firstTouch?.wbraidPresent) || paramPresent(params, "wbraid");
+  const fbclidPresent = paramPresent(params, "fbclid");
+  const ttclidPresent = paramPresent(params, "ttclid");
 
   const utmSource = (params.get("utm_source") ?? "").toLowerCase();
   const utmMedium = (params.get("utm_medium") ?? "").toLowerCase();
@@ -86,19 +159,33 @@ export function classifyDordoiTrafficChannel(input: {
   const utmContent = params.get("utm_content") ?? "";
   const utmTerm = params.get("utm_term") ?? "";
 
-  const paidMedium =
-    utmMedium === "cpc" ||
-    utmMedium === "ppc" ||
-    utmMedium === "paid" ||
-    utmMedium === "paid_search";
+  const paidMedium = isPaidMedium(utmMedium);
   const googlePaidSource = utmSource.includes("google") && paidMedium;
+  const metaSources =
+    utmSource.includes("facebook") ||
+    utmSource.includes("instagram") ||
+    utmSource === "meta" ||
+    utmSource === "fb";
+  const tiktokPaid = utmSource.includes("tiktok") && paidMedium;
+  const telegramPaid = utmSource.includes("telegram") && paidMedium;
 
-  const paidAds =
+  const googlePaidAds =
     gclidPresent ||
     gbraidPresent ||
     wbraidPresent ||
-    paidMedium ||
-    googlePaidSource;
+    googlePaidSource ||
+    (utmSource.includes("google") && paidMedium);
+
+  const metaPaidAds =
+    fbclidPresent ||
+    (metaSources && paidMedium) ||
+    (paidMedium && (utmSource === "fb" || utmSource === "ig"));
+
+  const tiktokPaidAds = ttclidPresent || tiktokPaid;
+  const telegramPaidAds = telegramPaid;
+
+  const genericPaid =
+    paidMedium && !googlePaidSource && !metaPaidAds && !tiktokPaidAds;
 
   const refRaw =
     input.referrer?.trim() ||
@@ -115,69 +202,13 @@ export function classifyDordoiTrafficChannel(input: {
     term: utmTerm || undefined,
   };
 
-  const paidParams = { gclidPresent, gbraidPresent, wbraidPresent };
-
-  const finish = (
-    channel: DordoiTrafficChannelLabel,
-    sourceBucket: DordoiSourceBucket,
-    reason: string,
-  ): DordoiChannelClassification => ({
-    channel,
-    sourceBucket,
-    reason,
-    utm,
-    paidParams,
-  });
-
-  if (paidAds) {
-    let reason = "Paid signal";
-    if (gclidPresent) reason = "gclid present";
-    else if (gbraidPresent) reason = "gbraid present";
-    else if (wbraidPresent) reason = "wbraid present";
-    else if (paidMedium) reason = `utm_medium=${utmMedium}`;
-    else if (googlePaidSource) reason = "utm_source google + paid medium";
-    return finish("Paid Google Ads", "google_ads", reason);
-  }
-
-  if (host && isGoogleHost(host)) {
-    return finish(
-      "Google Organic",
-      "google_organic",
-      "referrer google, no paid params",
-    );
-  }
-
-  if (
-    utmSource === "telegram" ||
-    (host &&
-      (host === "t.me" || host.endsWith(".t.me") || host.includes("telegram")))
-  ) {
-    return finish(
-      "Telegram",
-      "telegram",
-      "utm_source=telegram or referrer telegram",
-    );
-  }
-
-  if (
-    utmSource === "instagram" ||
-    (host &&
-      (host.includes("instagram") || host === "l.instagram.com"))
-  ) {
-    return finish("Instagram", "instagram", "instagram referrer or utm");
-  }
-
-  if (
-    utmSource === "facebook" ||
-    (host &&
-      (host.includes("facebook.") || host === "fb.me" || host.includes("fb.com")))
-  ) {
-    return finish("Facebook", "facebook", "facebook referrer or utm");
-  }
-
-  if (utmSource === "tiktok" || (host && host.includes("tiktok"))) {
-    return finish("TikTok", "tiktok", "tiktok referrer or utm");
-  }
+  const paidParams = {
+    gclidPresent,
+    gbraidPresent,
+    wbraidPresent,
+    fbclidPresent,
+    ttclidPresent,
+  };
 
   const hasUtm =
     Boolean(utm.source) ||
@@ -186,20 +217,158 @@ export function classifyDordoiTrafficChannel(input: {
     Boolean(utm.content) ||
     Boolean(utm.term);
 
-  if (!refRaw && !hasUtm && !gclidPresent && !gbraidPresent && !wbraidPresent) {
-    return finish("Direct / unknown", "direct", "No referrer or UTM");
+  /* Internal first: same-site navigation should not be Referral */
+  if (host && isDordoiSiteHost(host)) {
+    return finish(
+      "Direct / internal",
+      "direct_internal",
+      "referrer dordoi.help",
+      utm,
+      paidParams,
+    );
   }
 
-  if (host) {
-    const socialOrSearch =
-      isGoogleHost(host) ||
-      host.includes("yandex") ||
-      host.includes("bing.com") ||
-      host.includes("duckduckgo");
-    if (!socialOrSearch) {
-      return finish("Referral", "referral", `External referrer: ${host}`);
+  if (googlePaidAds || (genericPaid && utmSource.includes("google"))) {
+    return finish("Google Ads", "google_ads", "google paid", utm, paidParams);
+  }
+  if (metaPaidAds) {
+    const ch: DordoiTrafficChannelLabel =
+      utmSource.includes("instagram") || utmSource === "ig"
+        ? "Instagram Ads"
+        : "Meta Ads";
+    return finish(ch, "meta_ads", "meta paid", utm, paidParams);
+  }
+  if (tiktokPaidAds) {
+    return finish("TikTok Ads", "tiktok_ads", "tiktok paid", utm, paidParams);
+  }
+  if (telegramPaidAds) {
+    return finish("Telegram Ads", "telegram_ads", "telegram paid", utm, paidParams);
+  }
+  if (paidMedium && !gclidPresent && !fbclidPresent && !ttclidPresent) {
+    if (utmSource.includes("tiktok")) {
+      return finish("TikTok Ads", "tiktok_ads", "utm tiktok paid", utm, paidParams);
+    }
+    if (metaSources) {
+      return finish("Meta Ads", "meta_ads", "utm meta paid", utm, paidParams);
+    }
+    if (utmSource.includes("telegram")) {
+      return finish(
+        "Telegram Ads",
+        "telegram_ads",
+        "utm telegram paid",
+        utm,
+        paidParams,
+      );
+    }
+    if (utmSource.includes("google")) {
+      return finish("Google Ads", "google_ads", "utm google paid", utm, paidParams);
     }
   }
 
-  return finish("Unknown", "unknown", "Could not classify");
+  /* AI referrals */
+  if (host) {
+    if (
+      host.includes("chatgpt.com") ||
+      host.includes("chat.openai.com") ||
+      utmSource === "chatgpt" ||
+      utmSource === "openai"
+    ) {
+      return finish("ChatGPT", "ai_chatgpt", "ai referrer", utm, paidParams);
+    }
+    if (
+      host === "gemini.google.com" ||
+      host === "bard.google.com" ||
+      utmSource === "gemini" ||
+      utmSource === "bard"
+    ) {
+      return finish("Gemini", "ai_gemini", "ai referrer", utm, paidParams);
+    }
+    if (host.includes("perplexity.ai") || utmSource === "perplexity") {
+      return finish("Perplexity", "ai_perplexity", "ai referrer", utm, paidParams);
+    }
+    if (host.includes("claude.ai") || utmSource === "claude" || utmSource === "anthropic") {
+      return finish("Claude", "ai_claude", "ai referrer", utm, paidParams);
+    }
+    if (
+      host === "copilot.microsoft.com" ||
+      (host.includes("bing.com") && refRaw.toLowerCase().includes("/chat")) ||
+      utmSource === "copilot"
+    ) {
+      return finish("Copilot", "ai_copilot", "ai referrer", utm, paidParams);
+    }
+  }
+
+  /* Organic search (no paid ids) */
+  if (host && isGoogleHost(host)) {
+    return finish(
+      "Google Organic",
+      "google_organic",
+      "referrer google",
+      utm,
+      paidParams,
+    );
+  }
+  if (host && (host.includes("bing.com") || host === "www.bing.com")) {
+    return finish("Bing Organic", "bing_organic", "referrer bing", utm, paidParams);
+  }
+  if (host && host.includes("yandex")) {
+    return finish("Yandex Organic", "yandex_organic", "referrer yandex", utm, paidParams);
+  }
+  if (host && host.includes("duckduckgo")) {
+    return finish(
+      "DuckDuckGo Organic",
+      "duckduckgo_organic",
+      "referrer ddg",
+      utm,
+      paidParams,
+    );
+  }
+  if (host && host.includes("search.yahoo")) {
+    return finish("Yahoo Organic", "yahoo_organic", "referrer yahoo", utm, paidParams);
+  }
+
+  /* Social / messenger */
+  if (
+    utmSource === "telegram" ||
+    (host &&
+      (host === "t.me" || host.endsWith(".t.me") || host.includes("telegram")))
+  ) {
+    return finish("Telegram", "telegram", "telegram", utm, paidParams);
+  }
+  if (
+    utmSource === "instagram" ||
+    (host && (host.includes("instagram") || host === "l.instagram.com"))
+  ) {
+    return finish("Instagram", "instagram", "instagram", utm, paidParams);
+  }
+  if (
+    utmSource === "facebook" ||
+    (host &&
+      (host.includes("facebook.") ||
+        host === "fb.me" ||
+        host.includes("fb.com") ||
+        host === "l.facebook.com" ||
+        host === "lm.facebook.com"))
+  ) {
+    return finish("Facebook", "facebook", "facebook", utm, paidParams);
+  }
+  if (utmSource === "tiktok" || (host && host.includes("tiktok"))) {
+    return finish("TikTok", "tiktok", "tiktok", utm, paidParams);
+  }
+  if (
+    utmSource === "whatsapp" ||
+    (host && (host.includes("whatsapp.com") || host === "wa.me"))
+  ) {
+    return finish("WhatsApp", "whatsapp", "whatsapp", utm, paidParams);
+  }
+
+  if (!refRaw && !hasUtm && !gclidPresent && !fbclidPresent && !ttclidPresent) {
+    return finish("Direct", "direct", "no referrer utm", utm, paidParams);
+  }
+
+  if (host) {
+    return finish("Referral", "referral", host.slice(0, 120), utm, paidParams);
+  }
+
+  return finish("Unknown", "unknown", "unclassified", utm, paidParams);
 }

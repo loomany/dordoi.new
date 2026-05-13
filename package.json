@@ -21,7 +21,10 @@
     "sync:instagram": "tsx scripts/sync-instagram-profiles.ts",
     "download:instagram-media": "tsx scripts/download-instagram-media.ts",
     "sync:all-media": "tsx scripts/sync-all-media.ts",
+    "sync:all-media:photos-db": "tsx scripts/sync-all-media.ts --dry-run=false --skip-video-phase=true",
     "sync:all-media:overnight": "node scripts/run-sync-all-media-overnight.mjs",
+    "publish:vendors-catalog": "tsx scripts/publish-vendors-with-storage-media.ts",
+    "report:vendor-categories": "tsx scripts/list-vendor-categories.ts",
     "bot": "python -m bot"
   },
   "dependencies": {

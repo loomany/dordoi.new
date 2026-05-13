@@ -26,9 +26,17 @@ function hashShort(s: string): string {
 const MIN30 = 30 * 60 * 1000;
 const MIN10 = 10 * 60 * 1000;
 const MIN5 = 5 * 60 * 1000;
+const HOUR24 = 24 * 60 * 60 * 1000;
 
 export function rateLimitFirstVisit(sessionId: string): boolean {
   return take(`dordoi:fv:${sessionId}`, MIN30);
+}
+
+/** first_visit dedupe by anonymous visitorId (24h). Key uses hash of visitorId only. */
+export function rateLimitFirstVisitByVisitor(visitorId: string): boolean {
+  const v = visitorId.trim();
+  if (v.length < 4) return false;
+  return take(`dordoi:fv:vid:${hashShort(v)}`, HOUR24);
 }
 
 export function rateLimitCta(

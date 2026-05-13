@@ -15,6 +15,7 @@ import {
   rateLimitBuyerRequestSubmitted,
   rateLimitCta,
   rateLimitFirstVisit,
+  rateLimitFirstVisitByVisitor,
   rateLimitSellerRegistrationSubmitted,
   rateLimitVendorApplicationSaved,
   rateLimitVendorModeration,
@@ -78,8 +79,19 @@ function shouldSendTelegramForEvent(
   if (NO_TELEGRAM_EVENTS.includes(eventType)) {
     return { send: false, skippedReason: "event_not_broadcast_stage1" };
   }
-  if (eventType === "first_visit" && visitor.isBot) {
-    return { send: false, skippedReason: "bot_skipped" };
+  if (eventType === "first_visit") {
+    if (visitor.botCategory === "seo_crawler") {
+      return { send: false, skippedReason: "bot_seo_skipped" };
+    }
+    if (visitor.botCategory === "unknown_bot") {
+      return { send: false, skippedReason: "bot_unknown_skipped" };
+    }
+    if (visitor.botCategory === "suspicious") {
+      return { send: false, skippedReason: "bot_suspicious_skipped" };
+    }
+    if (visitor.isBot && visitor.botCategory !== "search_crawler") {
+      return { send: false, skippedReason: "bot_skipped" };
+    }
   }
   return { send: true };
 }
@@ -120,6 +132,12 @@ export async function POST(req: Request) {
     headerReferrer,
   });
 
+  const referrerForTelegram =
+    body.referrer?.trim() ||
+    headerReferrer?.trim() ||
+    firstTouch?.firstReferrer?.trim() ||
+    "";
+
   if (env.debug) {
     console.info("[dordoi-analytics]", body.eventType, body.path, {
       sourceBucket: channel.sourceBucket,
@@ -145,7 +163,12 @@ export async function POST(req: Request) {
 
   /* Rate limits */
   if (body.eventType === "first_visit") {
-    if (!rateLimitFirstVisit(body.sessionId)) {
+    const vid = body.visitorId?.trim() ?? "";
+    const fvOk =
+      vid.length >= 8
+        ? rateLimitFirstVisitByVisitor(vid)
+        : rateLimitFirstVisit(body.sessionId);
+    if (!fvOk) {
       return NextResponse.json({
         ok: true,
         sent: false,
@@ -245,6 +268,7 @@ export async function POST(req: Request) {
     uaShort,
     sessionId: body.sessionId,
     visitorId: body.visitorId,
+    referrerUrl: referrerForTelegram || undefined,
     targetHref: body.targetHref,
     targetLabel: body.targetLabel,
     storeTitle: body.storeTitle,

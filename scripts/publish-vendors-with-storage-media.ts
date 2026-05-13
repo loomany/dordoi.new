@@ -1,9 +1,14 @@
 /**
- * Разовый скрипт: продавцы, у которых фото уже на нашем Storage (vendor-media),
- * получают status=approved, approved_at=now(), при необходимости — slug.
- * В консоль — кликабельные URL каталога (с префиксом локали /ru/…).
+ * Публикация в каталог: status=approved, approved_at=now(), при необходимости — slug.
+ *
+ * По умолчанию — только заявки в очереди (`pending_moderation` / `pending_review`), у которых
+ * **логотип и минимум одна фотография товара** уже на нашем Storage (`vendor-media`).
  *
  *   npx tsx scripts/publish-vendors-with-storage-media.ts
+ *   npx tsx scripts/publish-vendors-with-storage-media.ts --any-storage-photo
+ *     (старое правило: достаточно любого фото или логотипа на Storage)
+ *
+ * В консоль — кликабельные URL каталога (с префиксом локали /ru/…).
  */
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -13,6 +18,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { slugifyVendorTitle, buildVendorSlug } from "@/lib/catalog/vendor-slug";
 import { canonicalInstagramUsernameFromUrl } from "@/lib/vendor/instagram-profile-sync";
 import { isProviderSlug } from "@/data/provider-registry";
+import { isVendorPendingQueueStatus } from "@/lib/vendor/status";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -41,19 +47,35 @@ function bucketPublicPathMarker(bucket: string): string {
   return `/storage/v1/object/public/${bucket}/`;
 }
 
+function storageHit(u: string | null | undefined, bucketMarker: string): boolean {
+  const s = u?.trim() ?? "";
+  return s.length > 0 && s.includes(bucketMarker);
+}
+
+/** Достаточно любого URL на нашем бакете (логотип или любое фото). */
 function rowUsesOurStorage(
   logo_url: string | null,
   product_photos: string[] | null,
   bucket: string,
 ): boolean {
   const m = bucketPublicPathMarker(bucket);
-  const hit = (u: string | null | undefined) => {
-    const s = u?.trim() ?? "";
-    return s.length > 0 && s.includes(m);
-  };
-  if (hit(logo_url)) return true;
+  if (storageHit(logo_url, m)) return true;
   for (const p of product_photos ?? []) {
-    if (hit(p)) return true;
+    if (storageHit(p, m)) return true;
+  }
+  return false;
+}
+
+/** Логотип на Storage + минимум одна карточка товара на Storage. */
+function rowHasLogoAndPhotosOnStorage(
+  logo_url: string | null,
+  product_photos: string[] | null,
+  bucket: string,
+): boolean {
+  const m = bucketPublicPathMarker(bucket);
+  if (!storageHit(logo_url, m)) return false;
+  for (const p of product_photos ?? []) {
+    if (storageHit(p, m)) return true;
   }
   return false;
 }
@@ -150,13 +172,19 @@ async function main() {
   );
   const defaultLocale = "ru";
 
+  const anyStorageMode = process.argv.includes("--any-storage-photo");
   const all = await fetchVendors(admin);
-  const targets = all.filter((v) =>
-    rowUsesOurStorage(v.logo_url, v.product_photos, bucket),
-  );
+  const targets = all.filter((v) => {
+    if (!isVendorPendingQueueStatus(v.status)) return false;
+    return anyStorageMode
+      ? rowUsesOurStorage(v.logo_url, v.product_photos, bucket)
+      : rowHasLogoAndPhotosOnStorage(v.logo_url, v.product_photos, bucket);
+  });
 
   console.log(
-    `\nПродавцов с фото в Storage (${bucket}): ${targets.length}\n`,
+    anyStorageMode
+      ? `\nК публикации (очередь + любой URL в ${bucket}): ${targets.length}\n`
+      : `\nК публикации (очередь + логотип и ≥1 фото в ${bucket}): ${targets.length}\n`,
   );
 
   const links: string[] = [];

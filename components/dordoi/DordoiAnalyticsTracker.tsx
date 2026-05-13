@@ -9,6 +9,8 @@ const STORAGE_VISITOR = "dordoi_visitor_id";
 const STORAGE_SESSION = "dordoi_session_id";
 const STORAGE_FIRST_TOUCH = "dordoi_first_touch";
 const SESSION_FIRST_VISIT = "dordoi_first_visit_sent";
+const LOCAL_LAST_FIRST_VISIT = "dordoi_last_first_visit_notified_at";
+const MS_24H = 24 * 60 * 60 * 1000;
 
 const MAX_HREF = 300;
 const MAX_LABEL = 120;
@@ -134,7 +136,10 @@ async function postEvent(body: Record<string, unknown>): Promise<boolean> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    return res.ok;
+    if (!res.ok) return false;
+    const data = (await res.json()) as { skippedReason?: string };
+    if (data?.skippedReason === "rate_limited") return false;
+    return true;
   } catch {
     return false;
   }
@@ -167,25 +172,37 @@ export function DordoiAnalyticsTracker({ locale }: DordoiAnalyticsTrackerProps) 
 
     if (sessionStorage.getItem(SESSION_FIRST_VISIT) === "1") return;
 
+    const lastRaw = localStorage.getItem(LOCAL_LAST_FIRST_VISIT);
+    if (lastRaw) {
+      const lastMs = Number(lastRaw);
+      if (Number.isFinite(lastMs) && Date.now() - lastMs < MS_24H) {
+        return;
+      }
+    }
+
     const searchNow = window.location.search ?? "";
     const visitorId = getVisitorId();
     const sessionId = getSessionId();
     ensureFirstTouchSnapshot(path, searchNow, visitorId, sessionId);
 
-    sessionStorage.setItem(SESSION_FIRST_VISIT, "1");
-
-    const firstTouch = readFirstTouch();
-    void postEvent({
-      eventType: "first_visit",
-      path: clip(path + searchNow, 2000),
-      search: clip(searchNow, 4000),
-      referrer: clip(document.referrer || "", 2000),
-      locale,
-      sessionId,
-      visitorId,
-      firstTouch: firstTouch ?? undefined,
-      timestamp: new Date().toISOString(),
-    });
+    void (async () => {
+      const firstTouch = readFirstTouch();
+      const ok = await postEvent({
+        eventType: "first_visit",
+        path: clip(path + searchNow, 2000),
+        search: clip(searchNow, 4000),
+        referrer: clip(document.referrer || "", 2000),
+        locale,
+        sessionId,
+        visitorId,
+        firstTouch: firstTouch ?? undefined,
+        timestamp: new Date().toISOString(),
+      });
+      if (ok) {
+        sessionStorage.setItem(SESSION_FIRST_VISIT, "1");
+        localStorage.setItem(LOCAL_LAST_FIRST_VISIT, String(Date.now()));
+      }
+    })();
   }, [locale, pathname]);
 
   useEffect(() => {

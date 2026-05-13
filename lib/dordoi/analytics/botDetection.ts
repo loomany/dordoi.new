@@ -1,17 +1,23 @@
-import type { DordoiVisitorStatus } from "@/lib/dordoi/analytics/types";
+import type { DordoiBotCategory, DordoiVisitorStatus } from "@/lib/dordoi/analytics/types";
 
-const BOT_SUBSTRINGS: Array<{ needle: string; name: string }> = [
+/** Only these may trigger short Telegram "search crawler" messages. */
+const SEARCH_CRAWLER_UA: Array<{ needle: string; name: string }> = [
+  { needle: "google-inspectiontool", name: "Google-InspectionTool" },
+  { needle: "adsbot-google", name: "AdsBot-Google" },
   { needle: "googlebot", name: "Googlebot" },
   { needle: "bingbot", name: "Bingbot" },
   { needle: "yandexbot", name: "YandexBot" },
+  { needle: "duckduckbot", name: "DuckDuckBot" },
+  { needle: "applebot", name: "Applebot" },
+];
+
+const SEO_CRAWLER_UA: Array<{ needle: string; name: string }> = [
   { needle: "ahrefsbot", name: "AhrefsBot" },
   { needle: "semrushbot", name: "SemrushBot" },
   { needle: "mj12bot", name: "MJ12bot" },
   { needle: "dotbot", name: "DotBot" },
   { needle: "petalbot", name: "PetalBot" },
-  { needle: "crawler", name: "crawler" },
-  { needle: "spider", name: "spider" },
-  { needle: "headlesschrome", name: "HeadlessChrome" },
+  { needle: "mediapartners-google", name: "Mediapartners-Google" },
 ];
 
 const GENERIC_BOT = "bot";
@@ -21,25 +27,34 @@ export function detectDordoiVisitorStatus(
 ): DordoiVisitorStatus {
   const ua = userAgent?.trim() ?? "";
   if (!ua) {
-    return { isBot: false, status: "Suspicious" };
+    return {
+      isBot: false,
+      botCategory: "suspicious",
+      status: "Suspicious",
+    };
   }
   const lower = ua.toLowerCase();
 
-  for (const { needle, name } of BOT_SUBSTRINGS) {
+  for (const { needle, name } of SEARCH_CRAWLER_UA) {
     if (lower.includes(needle)) {
-      return { isBot: true, botName: name, status: "Bot" };
+      return {
+        isBot: true,
+        botName: name,
+        botCategory: "search_crawler",
+        status: "Bot",
+      };
     }
   }
 
-  if (lower.includes(GENERIC_BOT)) {
-    const nameMatch = /(?:^|[\s/;()])([a-z0-9._-]*bot[a-z0-9._-]*)(?:[\s/;()]|$)/i.exec(
-      ua,
-    );
-    return {
-      isBot: true,
-      botName: nameMatch?.[1] ?? "bot",
-      status: "Bot",
-    };
+  for (const { needle, name } of SEO_CRAWLER_UA) {
+    if (lower.includes(needle)) {
+      return {
+        isBot: true,
+        botName: name,
+        botCategory: "seo_crawler",
+        status: "Bot",
+      };
+    }
   }
 
   const suspiciousSnippets = [
@@ -49,9 +64,26 @@ export function detectDordoiVisitorStatus(
     "postman",
     "axios/",
     "node-fetch",
+    "headlesschrome",
   ];
-  if (ua.length < 20 || suspiciousSnippets.some((s) => lower.includes(s))) {
-    return { isBot: false, status: "Suspicious" };
+  if (suspiciousSnippets.some((s) => lower.includes(s)) || ua.length < 20) {
+    return {
+      isBot: false,
+      botCategory: "suspicious",
+      status: "Suspicious",
+    };
+  }
+
+  if (lower.includes(GENERIC_BOT)) {
+    const nameMatch = /(?:^|[\s/;()])([a-z0-9._-]*bot[a-z0-9._-]*)(?:[\s/;()]|$)/i.exec(
+      ua,
+    );
+    return {
+      isBot: true,
+      botName: nameMatch?.[1] ?? "bot",
+      botCategory: "unknown_bot",
+      status: "Bot",
+    };
   }
 
   const browserLike =
@@ -65,5 +97,9 @@ export function detectDordoiVisitorStatus(
     return { isBot: false, status: "Human-like visit" };
   }
 
-  return { isBot: false, status: "Suspicious" };
+  return {
+    isBot: false,
+    botCategory: "suspicious",
+    status: "Suspicious",
+  };
 }

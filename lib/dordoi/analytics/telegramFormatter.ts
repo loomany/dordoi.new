@@ -2,8 +2,10 @@ import type {
   DordoiAnalyticsEventType,
   DordoiChannelClassification,
   DordoiDeviceInfo,
+  DordoiLocale,
   DordoiVisitorStatus,
 } from "@/lib/dordoi/analytics/types";
+import { searchQueryLineForTelegram } from "@/lib/dordoi/analytics/channel";
 import { clip, escapeTelegramHtml } from "@/lib/dordoi/analytics/telegramHtml";
 
 export type DordoiTelegramAnalyticsFormatInput = {
@@ -19,6 +21,8 @@ export type DordoiTelegramAnalyticsFormatInput = {
   uaShort: string;
   sessionId: string;
   visitorId: string;
+  /** Referrer URL for organic search query extraction (body or header). */
+  referrerUrl?: string;
   targetHref?: string;
   targetLabel?: string;
   storeTitle?: string;
@@ -28,69 +32,114 @@ export type DordoiTelegramAnalyticsFormatInput = {
   shortNote?: string;
   vendorId?: string;
   moderationStatus?: "approved" | "rejected";
-  /** Landing path from first-touch (optional). */
   firstPath?: string;
 };
 
-function utmLine(ch: DordoiChannelClassification): string {
-  const u = ch.utm;
-  const parts = [u.source, u.medium, u.campaign, u.content, u.term].map((x) =>
-    x ? escapeTelegramHtml(clip(x, 80)) : "—",
-  );
-  return parts.join(" / ");
+const LOCALE_DISPLAY: Record<DordoiLocale, string> = {
+  ru: "RU",
+  kk: "KZ",
+  kg: "KG",
+  uz: "UZ",
+  tj: "TJ",
+};
+
+/** Map URL path prefix → admin display (kk → KZ per product). */
+export function pathToAdminLocaleDisplay(path: string): string {
+  const m = path.trim().match(/^\/(ru|kk|kg|uz|tj)(?:\/|$)/i);
+  if (!m?.[1]) return "unknown";
+  const seg = m[1].toLowerCase() as DordoiLocale;
+  return LOCALE_DISPLAY[seg] ?? "unknown";
 }
 
-function clientBlock(i: DordoiTelegramAnalyticsFormatInput): string {
-  return (
-    `<b>Клиент</b>\n` +
-    `Country: ${escapeTelegramHtml(i.country)}\n` +
-    `IP: ${escapeTelegramHtml(i.ipMasked)}\n` +
-    `Device: ${escapeTelegramHtml(i.device.device)} / ${escapeTelegramHtml(i.device.os)}\n` +
-    `Browser: ${escapeTelegramHtml(i.device.browser)}\n` +
-    `Bot: ${i.visitor.isBot ? "yes" : "no"}` +
-    (i.visitor.botName
-      ? ` (${escapeTelegramHtml(clip(i.visitor.botName, 80))})`
-      : "")
-  );
+function langLine(path: string, locale?: string): string {
+  const fromPath = pathToAdminLocaleDisplay(path);
+  if (fromPath !== "unknown") {
+    return `🌐 Язык: ${escapeTelegramHtml(fromPath)}`;
+  }
+  if (locale && LOCALE_DISPLAY[locale as DordoiLocale]) {
+    return `🌐 Язык: ${escapeTelegramHtml(LOCALE_DISPLAY[locale as DordoiLocale])}`;
+  }
+  if (locale) {
+    return `🌐 Язык: ${escapeTelegramHtml(clip(locale.toUpperCase(), 8))}`;
+  }
+  return `🌐 Язык: unknown`;
 }
 
-function channelBlock(i: DordoiTelegramAnalyticsFormatInput): string {
-  const ch = i.channel;
-  return (
-    `<b>Канал</b>\n` +
-    `${escapeTelegramHtml(ch.channel)}\n` +
-    `Reason: ${escapeTelegramHtml(clip(ch.reason, 200))}\n` +
-    `UTM: ${utmLine(ch)}\n` +
-    `Paid flags: gclid=${ch.paidParams.gclidPresent} gbraid=${ch.paidParams.gbraidPresent} wbraid=${ch.paidParams.wbraidPresent}`
-  );
+function pageLine(path: string): string {
+  return `📍 Страница: ${escapeTelegramHtml(clip(path, 500))}`;
+}
+
+function countryLine(country: string): string {
+  const c = country?.trim() || "unknown";
+  return `🌍 Страна: ${escapeTelegramHtml(clip(c.toUpperCase(), 8))}`;
+}
+
+function deviceLine(device: DordoiDeviceInfo): string {
+  const isMobile = device.device?.toLowerCase().includes("mobile");
+  const icon = isMobile ? "📱" : "💻";
+  const d = `${device.device} / ${device.browser}`;
+  return `${icon} Устройство: ${escapeTelegramHtml(clip(d, 120))}`;
+}
+
+function sourceLine(ch: DordoiChannelClassification): string {
+  return `📢 Источник: ${escapeTelegramHtml(clip(ch.channel, 120))}`;
+}
+
+function campaignLine(ch: DordoiChannelClassification): string | null {
+  const c = ch.utm.campaign?.trim();
+  if (!c) return null;
+  return `🎯 Кампания: ${escapeTelegramHtml(clip(c, 120))}`;
+}
+
+function hotActionLabel(eventType: DordoiAnalyticsEventType): string {
+  switch (eventType) {
+    case "whatsapp_click":
+      return "WhatsApp";
+    case "telegram_click":
+      return "Telegram";
+    case "phone_click":
+      return "Телефон";
+    case "contact_click":
+      return "Контакт";
+    default:
+      return eventType;
+  }
 }
 
 export function formatDordoiAdminAnalyticsHtml(
   i: DordoiTelegramAnalyticsFormatInput,
 ): string {
-  const loc = i.locale ? escapeTelegramHtml(i.locale) : "—";
-  const pathE = escapeTelegramHtml(clip(i.path, 300));
-  const pt = escapeTelegramHtml(clip(i.pageType, 80));
-  const sess = escapeTelegramHtml(clip(i.sessionId, 120));
-  const vis = escapeTelegramHtml(clip(i.visitorId, 120));
-  const ua = escapeTelegramHtml(clip(i.uaShort, 250));
+  const pathE = clip(i.path, 2000);
+  const ref = i.referrerUrl?.trim() ?? "";
+  const qLine = searchQueryLineForTelegram(ref || null, i.channel.channel);
+
+  if (i.eventType === "first_visit" && i.visitor.botCategory === "search_crawler") {
+    const bot = escapeTelegramHtml(clip(i.visitor.botName ?? "bot", 80));
+    return (
+      `🤖 Поисковый бот на Dordoi.help\n\n` +
+      `🤖 Bot: ${bot}\n` +
+      `${langLine(i.path, i.locale)}\n` +
+      `${pageLine(pathE)}\n` +
+      `📢 Тип: Search crawler\n` +
+      `${countryLine(i.country)}`
+    );
+  }
 
   if (i.eventType === "first_visit") {
-    return (
-      `<b>Новый визит на Dordoi.help</b>\n` +
-      `Статус: ${escapeTelegramHtml(i.visitor.status)}\n\n` +
-      `${channelBlock(i)}\n\n` +
-      `<b>Страница</b>\n` +
-      `Entry: ${pathE}\n` +
-      `Page type: ${pt}\n` +
-      `Locale: ${loc}\n\n` +
-      `${clientBlock(i)}\n\n` +
-      `<b>Событие</b>\n` +
-      `first_visit\n` +
-      `Session: <code>${sess}</code>\n` +
-      `Visitor: <code>${vis}</code>\n` +
-      `UA: <code>${ua}</code>`
-    );
+    const lines = [
+      `👤 Новый визит на Dordoi.help`,
+      ``,
+      langLine(i.path, i.locale),
+      pageLine(pathE),
+      sourceLine(i.channel),
+    ];
+    const camp = campaignLine(i.channel);
+    if (camp) lines.push(camp);
+    if (qLine.show) {
+      lines.push(`🔎 Запрос: ${escapeTelegramHtml(clip(qLine.text, 200))}`);
+    }
+    lines.push(countryLine(i.country), deviceLine(i.device));
+    return lines.join("\n");
   }
 
   if (
@@ -99,24 +148,22 @@ export function formatDordoiAdminAnalyticsHtml(
     i.eventType === "telegram_click" ||
     i.eventType === "phone_click"
   ) {
-    const th = i.targetHref
-      ? escapeTelegramHtml(clip(i.targetHref, 300))
-      : "—";
-    const tl = i.targetLabel
-      ? escapeTelegramHtml(clip(i.targetLabel, 120))
-      : "—";
-    return (
-      `<b>Горячее действие на Dordoi.help</b>\n` +
-      `Event: ${escapeTelegramHtml(i.eventType)}\n\n` +
-      `<b>Страница</b>\n` +
-      `Page: ${pathE}\n` +
-      `Page type: ${pt}\n` +
-      `Target label: ${tl}\n` +
-      `Target: ${th}\n\n` +
-      `${channelBlock(i)}\n\n` +
-      `${clientBlock(i)}\n\n` +
-      `Session: <code>${sess}</code>`
-    );
+    const act = hotActionLabel(i.eventType);
+    const lines = [
+      `🔥 Горячее действие`,
+      ``,
+      langLine(i.path, i.locale),
+      pageLine(pathE),
+      `📲 Действие: ${escapeTelegramHtml(act)}`,
+      sourceLine(i.channel),
+    ];
+    const camp = campaignLine(i.channel);
+    if (camp) lines.push(camp);
+    if (qLine.show) {
+      lines.push(`🔎 Запрос: ${escapeTelegramHtml(clip(qLine.text, 200))}`);
+    }
+    lines.push(countryLine(i.country), deviceLine(i.device));
+    return lines.join("\n");
   }
 
   if (i.eventType === "seller_registration_submitted") {
@@ -129,77 +176,71 @@ export function formatDordoiAdminAnalyticsHtml(
     const tg = i.telegramHint
       ? escapeTelegramHtml(clip(i.telegramHint, 80))
       : "—";
-    const fp = i.firstPath
-      ? escapeTelegramHtml(clip(i.firstPath, 300))
-      : "—";
-    return (
-      `<b>Новая заявка продавца на Dordoi.help</b>\n\n` +
-      `<b>Продавец</b>\n` +
-      `Название: ${title}\n` +
-      `Телефон: ${phone}\n` +
-      `Telegram: ${tg}\n` +
-      `Заметка: ${i.shortNote ? escapeTelegramHtml(clip(i.shortNote, 120)) : "—"}\n\n` +
-      `<b>Источник</b>\n` +
-      `${escapeTelegramHtml(i.channel.channel)}\n` +
-      `Reason: ${escapeTelegramHtml(clip(i.channel.reason, 200))}\n` +
-      `UTM: ${utmLine(i.channel)}\n` +
-      `First page: ${fp}\n` +
-      `Submit page: ${pathE}\n\n` +
-      `${clientBlock(i)}\n\n` +
-      `<b>Статус</b>\n` +
-      `Заявка сохранена (сервер)\n` +
-      `Session: <code>${sess}</code>`
-    );
+    const lines = [
+      `📋 Заявка продавца`,
+      ``,
+      langLine(i.path, i.locale),
+      `🏪 ${title}`,
+      `📞 ${phone}`,
+      `✈️ ${tg}`,
+      sourceLine(i.channel),
+    ];
+    const camp = campaignLine(i.channel);
+    if (camp) lines.push(camp);
+    lines.push(`Статус: сохранено`);
+    return lines.join("\n");
   }
 
   if (i.eventType === "buyer_request_submitted") {
-    const fp = i.firstPath
-      ? escapeTelegramHtml(clip(i.firstPath, 300))
-      : "—";
-    return (
-      `<b>Новая заявка покупателя на Dordoi.help</b>\n\n` +
-      `<b>Покупатель</b>\n` +
-      `Телефон: ${i.maskedPhone ? escapeTelegramHtml(clip(i.maskedPhone, 40)) : "—"}\n` +
-      `Telegram: ${i.telegramHint ? escapeTelegramHtml(clip(i.telegramHint, 80)) : "—"}\n` +
-      `Запрос: ${i.shortNote ? escapeTelegramHtml(clip(i.shortNote, 120)) : "—"}\n\n` +
-      `<b>Источник</b>\n` +
-      `${channelBlock(i)}\n` +
-      `First page: ${fp}\n` +
-      `Submit page: ${pathE}\n\n` +
-      `${clientBlock(i)}\n\n` +
-      `Session: <code>${sess}</code>`
-    );
+    const lines = [
+      `🛒 Заявка покупателя`,
+      ``,
+      langLine(i.path, i.locale),
+      `📞 ${i.maskedPhone ? escapeTelegramHtml(clip(i.maskedPhone, 40)) : "—"}`,
+      sourceLine(i.channel),
+    ];
+    const camp = campaignLine(i.channel);
+    if (camp) lines.push(camp);
+    return lines.join("\n");
   }
 
   if (i.eventType === "vendor_application_saved") {
     return (
-      `<b>Анкета продавца сохранена на Dordoi.help</b>\n\n` +
-      `Vendor: ${i.vendorId ? `<code>${escapeTelegramHtml(clip(i.vendorId, 80))}</code>` : "—"}\n` +
-      `Название: ${i.storeTitle ? escapeTelegramHtml(clip(i.storeTitle, 120)) : "—"}\n\n` +
-      `${channelBlock(i)}\n\n` +
-      `${clientBlock(i)}`
+      `📎 Анкета продавца (сайт)\n\n` +
+      langLine(i.path, i.locale) +
+      `\n` +
+      (i.vendorId
+        ? `ID: <code>${escapeTelegramHtml(clip(i.vendorId, 80))}</code>\n`
+        : "") +
+      (i.storeTitle
+        ? `🏪 ${escapeTelegramHtml(clip(i.storeTitle, 120))}\n`
+        : "") +
+      sourceLine(i.channel)
     );
   }
 
   if (i.eventType === "vendor_approved" || i.eventType === "vendor_rejected") {
     const st = i.moderationStatus ?? "unknown";
     const head =
-      st === "approved"
-        ? `<b>Продавец одобрен на Dordoi.help</b>`
-        : `<b>Продавец отклонён на Dordoi.help</b>`;
+      st === "approved" ? `✅ Продавец одобрен` : `⛔ Продавец отклонён`;
     return (
       `${head}\n\n` +
-      `Vendor ID: ${i.vendorId ? `<code>${escapeTelegramHtml(clip(i.vendorId, 80))}</code>` : "—"}\n` +
-      `Название: ${i.storeTitle ? escapeTelegramHtml(clip(i.storeTitle, 120)) : "—"}\n` +
-      `Статус: ${escapeTelegramHtml(st)}\n\n` +
-      `${clientBlock(i)}`
+      langLine(i.path, i.locale) +
+      `\n` +
+      (i.vendorId
+        ? `ID: <code>${escapeTelegramHtml(clip(i.vendorId, 80))}</code>\n`
+        : "") +
+      (i.storeTitle
+        ? `🏪 ${escapeTelegramHtml(clip(i.storeTitle, 120))}\n`
+        : "") +
+      `Статус: ${escapeTelegramHtml(st)}`
     );
   }
 
-  /* catalog_open, seller_profile_view, seller_registration_started — no Telegram in Stage 1 */
   return (
-    `<b>Событие Dordoi.help</b>\n` +
-    `${escapeTelegramHtml(i.eventType)}\n` +
-    `Path: ${pathE}`
+    `ℹ️ ${escapeTelegramHtml(i.eventType)}\n` +
+    pageLine(pathE) +
+    `\n` +
+    sourceLine(i.channel)
   );
 }

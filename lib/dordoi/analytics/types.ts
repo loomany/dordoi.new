@@ -28,25 +28,62 @@ export type DordoiAnalyticsEventType =
   | DordoiCtaEventType
   | DordoiLeadEventType;
 
+/** Bot buckets for Telegram policy (search = allow short TG; SEO/suspicious = no TG). */
+export type DordoiBotCategory =
+  | "search_crawler"
+  | "seo_crawler"
+  | "unknown_bot"
+  | "suspicious";
+
 export type DordoiTrafficChannelLabel =
-  | "Paid Google Ads"
+  | "Google Ads"
+  | "TikTok Ads"
+  | "Meta Ads"
+  | "Instagram Ads"
+  | "Facebook Ads"
+  | "Telegram Ads"
   | "Google Organic"
+  | "Bing Organic"
+  | "Yandex Organic"
+  | "DuckDuckGo Organic"
+  | "Yahoo Organic"
+  | "ChatGPT"
+  | "Gemini"
+  | "Perplexity"
+  | "Claude"
+  | "Copilot"
   | "Telegram"
   | "Instagram"
   | "Facebook"
   | "TikTok"
-  | "Direct / unknown"
+  | "WhatsApp"
+  | "Direct / internal"
+  | "Direct"
   | "Referral"
   | "Unknown";
 
 export type DordoiSourceBucket =
   | "google_ads"
+  | "tiktok_ads"
+  | "meta_ads"
+  | "telegram_ads"
   | "google_organic"
+  | "bing_organic"
+  | "yandex_organic"
+  | "duckduckgo_organic"
+  | "yahoo_organic"
+  | "ai_chatgpt"
+  | "ai_gemini"
+  | "ai_perplexity"
+  | "ai_claude"
+  | "ai_copilot"
   | "telegram"
   | "instagram"
   | "facebook"
   | "tiktok"
+  | "whatsapp"
   | "direct"
+  | "direct_internal"
   | "referral"
   | "unknown";
 
@@ -65,12 +102,15 @@ export type DordoiChannelClassification = {
     gclidPresent: boolean;
     gbraidPresent: boolean;
     wbraidPresent: boolean;
+    fbclidPresent: boolean;
+    ttclidPresent: boolean;
   };
 };
 
 export type DordoiVisitorStatus = {
   isBot: boolean;
   botName?: string;
+  botCategory?: DordoiBotCategory;
   status: "Human-like visit" | "Bot" | "Suspicious";
 };
 
@@ -134,7 +174,9 @@ export type DordoiSiteRegistrationNotifyParams = {
   /** DB / auth phone as digits only (same as profiles.phone). */
   phoneDigits: string;
   role: "buyer" | "vendor" | "unknown";
-  /** ru | kk | … if known; else caller may pass "unknown". */
+  /** Fallback when signup URL has no locale segment (e.g. Accept-Language hint). */
   localeLabel: string;
+  /** Optional `Referer` header from signup POST — used to derive 🌐 Язык from path. */
+  referrerUrl?: string | null;
   attribution?: DordoiSiteRegistrationAttribution;
 };
