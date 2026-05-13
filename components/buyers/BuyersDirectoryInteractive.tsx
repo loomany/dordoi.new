@@ -31,8 +31,6 @@ export function BuyersDirectoryInteractive() {
               verifiedBadgeAria: t("verifiedBadgeAria"),
               openSlotBadge: t("openSlotBadge"),
               openSlotBadgeAria: t("openSlotBadgeAria"),
-              openSlotStatsPrimary: t("openSlotStatsPrimary"),
-              openSlotStatsSecondary: t("openSlotStatsSecondary"),
               experienceLine: t("experience", { years: b.experienceYears }),
               ordersLine: t("orders", { count: b.completedOrdersDisplay }),
               ctaContact: t("ctaContact"),

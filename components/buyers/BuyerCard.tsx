@@ -13,8 +13,6 @@ export type BuyerCardStrings = BuyerCardContactStripStrings & {
   ordersLine: string;
   openSlotBadge: string;
   openSlotBadgeAria: string;
-  openSlotStatsPrimary: string;
-  openSlotStatsSecondary: string;
 };
 
 /** Localized copy from `Pages.buyers.cards.<id>` */
@@ -128,28 +126,12 @@ export function BuyerCard({ buyer, profile, strings, className }: Props) {
         ))}
       </ul>
 
-      <div
-        className={cn(
-          "mt-5 rounded-xl px-4 py-3 text-xs ring-1",
-          isOpenSlot
-            ? "bg-emerald-50/90 font-medium text-emerald-900 ring-emerald-100/90"
-            : "bg-slate-50/90 text-slate-600 ring-slate-100/80",
-        )}
-      >
-        {isOpenSlot ? (
-          <>
-            <p>{strings.openSlotStatsPrimary}</p>
-            <p className="mt-1 text-emerald-800/80">
-              {strings.openSlotStatsSecondary}
-            </p>
-          </>
-        ) : (
-          <>
-            <p className="font-medium">{strings.experienceLine}</p>
-            <p className="mt-1">{strings.ordersLine}</p>
-          </>
-        )}
-      </div>
+      {!isOpenSlot ? (
+        <div className="mt-5 rounded-xl bg-slate-50/90 px-4 py-3 text-xs text-slate-600 ring-1 ring-slate-100/80">
+          <p className="font-medium">{strings.experienceLine}</p>
+          <p className="mt-1">{strings.ordersLine}</p>
+        </div>
+      ) : null}
 
       <BuyerCardContactStrip buyer={buyer} strings={strings} />
     </article>
