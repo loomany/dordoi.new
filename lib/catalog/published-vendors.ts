@@ -751,9 +751,10 @@ export function vendorToCatalogCardSource(opts: {
   fallbackTitle: string;
   addedLine: string;
   updatedLine: string;
+  locale?: string;
 }): CatalogCardSourceRow {
-  const { vendor, fallbackTitle, addedLine, updatedLine } = opts;
-  const ai = getAiCatalogDisplayOverlay(vendor.parsed_ai_data);
+  const { vendor, fallbackTitle, addedLine, updatedLine, locale } = opts;
+  const ai = getAiCatalogDisplayOverlay(vendor.parsed_ai_data, locale);
   const photoUrls =
     vendor.product_photos.length > 0 ? vendor.product_photos : undefined;
   const leadVideo = leadVideoFromProductVideos({
@@ -825,6 +826,7 @@ export function buildCatalogCardSourceRowForPublishedVendor(
     fallbackTitle: tBrowse("fallbackStoreTitle"),
     addedLine,
     updatedLine,
+    locale,
   });
   const subtitleFallback = inferCatalogCardSubtitleFallback(
     vendor.categories,

@@ -2,6 +2,10 @@ import type {
   VendorCardCommerceCopy,
   VendorTradeType,
 } from "@/lib/catalog/vendor-card-display";
+import {
+  mergeCommerceWithI18n,
+  resolveVendorDisplayI18nEntry,
+} from "@/lib/catalog/vendor-parsed-ai-i18n";
 
 function isVendorTradeType(v: unknown): v is VendorTradeType {
   return v === "wholesale" || v === "retail" || v === "hybrid";
@@ -79,6 +83,7 @@ function resolveAiDisplayPayload(
  */
 export function getAiCatalogDisplayOverlay(
   parsedAiData: unknown,
+  locale?: string,
 ): {
   catalogBrandName: string | null;
   description: string;
@@ -108,11 +113,24 @@ export function getAiCatalogDisplayOverlay(
   const rawTt = d.tradeType ?? d.trade_type;
   const tradeType = isVendorTradeType(rawTt) ? rawTt : null;
   const commerce = commerceFromUnknown(d.commerce ?? d.Commerce);
-  return {
+  const base = {
     catalogBrandName,
     description,
     subtitle,
     tradeType,
     commerce,
+  };
+
+  if (!locale || locale === "ru") return base;
+
+  const localized = resolveVendorDisplayI18nEntry(parsedAiData, locale);
+  if (!localized) return base;
+
+  return {
+    ...base,
+    description: localized.description,
+    subtitle:
+      localized.subtitle !== undefined ? localized.subtitle : base.subtitle,
+    commerce: mergeCommerceWithI18n(base.commerce, localized.commerce),
   };
 }

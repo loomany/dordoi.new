@@ -1,15 +1,10 @@
-import { buildSitemapXmlBody } from "@/lib/sitemap-xml-body";
+import { buildSitemapIndexXml } from "@/lib/sitemap/build-sitemap-index-xml";
+import { sitemapXmlResponse } from "@/lib/sitemap/sitemap-response";
 
-/** Read indexability at request time (same intent as previous `app/sitemap.ts`). */
+/** Root sitemap index (`/sitemap.xml`). */
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const body = await buildSitemapXmlBody();
-  return new Response(body, {
-    status: 200,
-    headers: {
-      "Content-Type": "application/xml; charset=utf-8",
-      "Cache-Control": "public, max-age=0, must-revalidate",
-    },
-  });
+  const body = await buildSitemapIndexXml();
+  return sitemapXmlResponse(body);
 }

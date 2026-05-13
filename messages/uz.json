@@ -843,7 +843,9 @@
             }
           }
         }
-      }
+      },
+      "recommendedSellersTitle": "Tavsiya etilgan sotuvchilar",
+      "recommendedSellersNavAria": "Tavsiya etilgan sotuvchilar bo'yicha navigatsiya"
     }
   },
   "catalogCategories": {

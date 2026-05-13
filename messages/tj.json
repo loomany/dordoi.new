@@ -839,7 +839,13 @@
             }
           }
         }
-      }
+      },
+      "recommendedSellersTitle": "Соҳибони тавсияшуда",
+      "recommendedSellersNavAria": "Навигатсияи соҳиби тавсияшуда",
+      "openOnMap": "Дар харита кушоед",
+      "openInGoogleMaps": "Google Maps",
+      "openIn2Gis": "2GIS",
+      "openInYandexMaps": "Яндекс Ҳаритаҳо"
     }
   },
   "catalogCategories": {
@@ -936,7 +942,7 @@
         "sectionIdentity": "Ном ва тавсиф",
         "storeName": "Номи каталог",
         "storeNameHint": "Не больше {max} символов — сарлавҳаи карточка дар каталог (одатан 1–2 хатсайр дар экрани компютер).",
-        "location": "Где вас искать на Дордое",
+        "location": "Гар дар Дордой шуморо пайдо кунам",
         "description": "Тавсиф барои каталог",
         "descriptionHint": "То {max} символов (ластик лимит). Барои муқаддимаи мукаммал дар каталог, нишона — то ~{recommended} символов.",
         "descriptionDetail": "Идомаи тавсиф",
@@ -963,7 +969,7 @@
     "admin": {
       "metaTitle": "Админ-панель — Dordoi.help",
       "metaDescription": "Управление платформой.",
-      "moderationTitle": "Заявки продавцов",
+      "moderationTitle": "Дархостҳои фурӯшандагон",
       "filterPending": "Ожидают решения",
       "filterAll": "Все заявки",
       "moderationEmpty": "Нет заявок в этом списке.",
@@ -996,7 +1002,7 @@
       "cardDescription": "Дар бораи магазин",
       "cardCategories": "Категорияҳо",
       "cardContacts": "Тамосҳо",
-      "cardMinBatch": "Мин. партия",
+      "cardMinBatch": "Мин. гурӯҳ",
       "cardPayment": "Пардохт",
       "cardDelivery": "Расондан",
       "cardDeliveryYes": "Таъмин кардани расонӣ",
@@ -1033,7 +1039,32 @@
       "vendorAiPlaygroundPreviewPlaceholder": "Маълумот ворид кунед ва «Коркард бо ИИ» пахш кунед.",
       "vendorAiPlaygroundNavLink": "ИИ: песочницаи матни корти →",
       "vendorCatalogPreviewTitle": "Мисли каталог",
-      "vendorCatalogPreviewCta": "Кушодани анкета"
+      "vendorCatalogPreviewCta": "Кушодани анкета",
+      "reviewBadgeGooglePlaces": "Google Places",
+      "reviewBadgeTwoGis": "2GIS",
+      "reviewBadgeManualCheck": "Проверить вручную",
+      "googlePlacesAutoFoundHint": "Найдено автоматически через Google Places. Проверьте название, категорию и адрес перед публикацией.",
+      "twoGisAutoFoundHint": "Данные импортированы из 2GIS. Проверьте название, категорию и адрес перед публикацией.",
+      "openInGoogleMaps": "Открыть в Google Maps",
+      "openIn2Gis": "Открыть в 2GIS",
+      "statusPendingReview": "На проверке",
+      "googlePlacesNoPhoneYet": "Телефон нишон дода нашуд — ҳангоми таҳрири дархост илова кунед.",
+      "googlePlacesDataTitle": "Данҳо Google Places",
+      "twoGisDataTitle": "Данҳо 2GIS",
+      "googlePlacesLabelCategory": "Категория",
+      "googlePlacesLabelPrimaryType": "Навъи нуқта",
+      "googlePlacesLabelTypes": "Навъҳо",
+      "googlePlacesLabelFoundVia": "Ёфта шудааст тавассути",
+      "googlePlacesLabelDistance": "Фосила аз Дордой",
+      "googlePlacesLabelAddress": "Суроға",
+      "googlePlacesLabelCoords": "Координатҳо",
+      "googlePlacesLabelStatus": "Ҳолат",
+      "googlePlacesFoundNearby": "Ҷустуҷӯ дар наздикии Дордой",
+      "googlePlacesFoundText": "Ҷустуҷӯи матнӣ",
+      "googlePlacesFoundBoth": "Ҷустуҷӯи матнӣ + ҷустуҷӯи дар наздикӣ",
+      "googlePlacesStatusNeedsReview": "Назар кардан лозим аст",
+      "googlePlacesMetaParseFailed": "Маъlumatҳои хидматрасонӣ дастрас нестанд",
+      "googlePlacesDistanceMeters": "{meters} м"
     }
   },
   "catalogCategoryTree": {
@@ -1082,7 +1113,7 @@
       "uw-men": "Мардумон нижнее белье",
       "uw-kids": "Детское нижнее белье",
       "uw-swimwear": "Купальники ва плавки",
-      "uw-hosiery": "Чулочно-носочные изделия (носки, колготки, следки)",
+      "uw-hosiery": "Чулочно-носочные маҳсулот (носки, колготки, следки)",
       "uw-shape-thermal": "Корректирующее ва термобелье",
       "shoes-women": "Женская обувь (туфли, сапоги, босоножки)",
       "shoes-men": "Мужская обувь (ботинки, туфли, мокасины)",
@@ -1101,7 +1132,7 @@
       "acc-gloves": "Перчатки ва варежки",
       "acc-sunglasses": "Солнцезащитные ва имиджевые очки",
       "acc-hair-jewelry": "Бижутерия ва украшения барои tóc",
-      "acc-watches": "Часы",
+      "acc-watches": "Часҳо",
       "fab-fabrics": "Ткани (рулонами ва на отрез)",
       "fab-yarn-thread": "Пряжа ва нитки",
       "fab-notions": "Швейная фурнитура (пуговицы, молнии, резинки, кружево)",

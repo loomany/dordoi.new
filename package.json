@@ -14,6 +14,8 @@
     "generate:landing-spec": "tsx scripts/generate-landing-spec.mts",
     "translate:messages": "tsx scripts/translate-messages.mts",
     "translate:messages:all": "tsx scripts/translate-messages.mts --locale=all --align",
+    "translate:vendors": "tsx scripts/translate-vendors.mts",
+    "translate:vendors:all": "tsx scripts/translate-vendors.mts --locale=all --align",
     "seed:showcase-ai": "tsx scripts/seed-showcase-ai.mts",
     "seed:showcase-restore-media": "tsx scripts/seed-showcase-ai.mts --reuse-storage",
     "places:dordoi": "tsx scripts/google-places/fetch-dordoi-filtered-places.ts",

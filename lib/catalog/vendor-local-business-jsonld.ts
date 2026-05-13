@@ -1,4 +1,5 @@
 import type { PublishedVendorRow } from "@/lib/catalog/published-vendors";
+import { getAiCatalogDisplayOverlay } from "@/lib/catalog/parsed-ai-catalog-overlay";
 import { baseUrl } from "@/lib/site";
 
 function ensureHttpUrl(value: string): string {
@@ -41,7 +42,9 @@ export function buildVendorLocalBusinessJsonLd(
   const path = `/catalog/${vendor.slug}`;
   const canonical = `${baseUrl()}/${locale}${path}`;
   const name = vendor.store_name?.trim() || vendor.slug;
-  const description = vendor.description?.trim();
+  const aiOverlay = getAiCatalogDisplayOverlay(vendor.parsed_ai_data, locale);
+  const description =
+    aiOverlay?.description?.trim() || vendor.description?.trim();
   const logoUrl = vendor.logo_url?.trim();
   const locationRow = vendor.location_row?.trim();
   const telephone = vendor.phone_number?.trim();

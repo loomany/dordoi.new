@@ -116,7 +116,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
     tTreeCategory: (key) => tTree(key),
     locale,
   });
-  const aiAboutOverlay = getAiCatalogDisplayOverlay(vendor.parsed_ai_data);
+  const aiAboutOverlay = getAiCatalogDisplayOverlay(vendor.parsed_ai_data, locale);
   const aboutUsesAiSnapshot = Boolean(aiAboutOverlay?.description?.trim());
   const aboutBodyParagraphs = (() => {
     if (showcase) {
@@ -347,7 +347,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
               <header className="relative grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-start sm:gap-x-3">
                 <div className="pointer-events-none hidden min-w-0 sm:block" aria-hidden />
                 <div className="min-w-0 pr-12 sm:col-start-2 sm:w-full sm:px-0 sm:text-center">
-                  <h1 className="sr-only text-3xl font-extrabold tracking-tight text-card-foreground sm:not-sr-only sm:text-5xl lg:text-6xl">
+                  <h1 className="sr-only text-2xl font-extrabold tracking-tight text-card-foreground sm:not-sr-only sm:text-3xl lg:text-4xl">
                     {publicH1}
                   </h1>
                   <div className="mt-0 flex flex-wrap items-center gap-2 text-sm text-muted-foreground sm:mt-3 sm:justify-center">

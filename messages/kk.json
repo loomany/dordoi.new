@@ -26,7 +26,7 @@
     "codeLabel": "WhatsApp коды",
     "verifyCode": "Жалғастыру",
     "nameLabel": "Атыңыз",
-    "emailLabel": "Email",
+    "emailLabel": "Электрондық пошта",
     "emailHint": "Міндетті емес",
     "completeRegistration": "Тіркеуді аяқтау",
     "loading": "Күтіңіз…",
@@ -51,7 +51,7 @@
   },
   "Header": {
     "ctaStart": "Кіру",
-    "ctaAccount": "Аккаунт",
+    "ctaAccount": "Есептік жазба",
     "openMenu": "Мәзірді ашу",
     "closeMenu": "Жабу",
     "langSwitcher": "Тіл: {locale}",
@@ -839,7 +839,13 @@
             }
           }
         }
-      }
+      },
+      "recommendedSellersTitle": "Ұсынылатын сатушылар",
+      "recommendedSellersNavAria": "Ұсынылатын сатушыларға навигация",
+      "openOnMap": "Картеде ашу",
+      "openInGoogleMaps": "Google Maps",
+      "openIn2Gis": "2GIS",
+      "openInYandexMaps": "Яндекс Карты"
     }
   },
   "catalogCategories": {
@@ -1033,7 +1039,32 @@
       "vendorAiPlaygroundPreviewPlaceholder": "Деректерді енгізіп, «ИИ өңдеу» басыңыз.",
       "vendorAiPlaygroundNavLink": "ИИ: карточка мәтіні песочница →",
       "vendorCatalogPreviewTitle": "Каталогтағыдай",
-      "vendorCatalogPreviewCta": "Анкетаны ашу"
+      "vendorCatalogPreviewCta": "Анкетаны ашу",
+      "reviewBadgeGooglePlaces": "Google Places",
+      "reviewBadgeTwoGis": "2GIS",
+      "reviewBadgeManualCheck": "Қолмен тексеру",
+      "googlePlacesAutoFoundHint": "Google Places арқылы автоматты түрде табылды. Жариялаудан бұрын атауын, санатын және мекенжайын тексеріңіз.",
+      "twoGisAutoFoundHint": "Деректер 2GIS-тен импортталды. Жариялаудан бұрын атауын, санатын және мекенжайын тексеріңіз.",
+      "openInGoogleMaps": "Google Maps-те ашу",
+      "openIn2Gis": "2GIS-те ашу",
+      "statusPendingReview": "Тексеруді күтуде",
+      "googlePlacesNoPhoneYet": "Телефон көрсетілмеген — өтінімді редакциялау кезінде қосыңыз.",
+      "googlePlacesDataTitle": "Google Places деректері",
+      "twoGisDataTitle": "2GIS деректері",
+      "googlePlacesLabelCategory": "Санат",
+      "googlePlacesLabelPrimaryType": "Нүкте түрі",
+      "googlePlacesLabelTypes": "Түрлері",
+      "googlePlacesLabelFoundVia": "Табылған арқылы",
+      "googlePlacesLabelDistance": "Дордойдан қашықтығы",
+      "googlePlacesLabelAddress": "Мекенжай",
+      "googlePlacesLabelCoords": "Координаттар",
+      "googlePlacesLabelStatus": "Статус",
+      "googlePlacesFoundNearby": "Дордоң жанында іздеу",
+      "googlePlacesFoundText": "Мәтінмен іздеу",
+      "googlePlacesFoundBoth": "Мәтінмен іздеу + жанында іздеу",
+      "googlePlacesStatusNeedsReview": "Тексеруді қажет етеді",
+      "googlePlacesMetaParseFailed": "Қызметтік деректер қолжетімсіз",
+      "googlePlacesDistanceMeters": "{meters} м"
     }
   },
   "catalogCategoryTree": {

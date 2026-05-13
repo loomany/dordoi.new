@@ -9,6 +9,7 @@ import {
 } from "@/lib/catalog/published-vendors";
 import { isSafeVendorPublicSlug } from "@/lib/catalog/vendor-public-seo";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { VENDOR_SITEMAP_CHUNK_SIZE } from "@/lib/sitemap/constants";
 
 const VENDOR_SITEMAP_SLUGS_CACHE_REVALIDATE_SECONDS = 120;
 
@@ -56,4 +57,18 @@ export async function fetchIndexableVendorSlugsForSitemap(): Promise<string[]> {
       tags: [CATALOG_VENDORS_LIST_CACHE_TAG],
     },
   )();
+}
+
+/** 1-based chunk count for vendor child sitemaps. */
+export async function getVendorSitemapChunkCount(): Promise<number> {
+  const slugs = await fetchIndexableVendorSlugsForSitemap();
+  if (slugs.length === 0) return 0;
+  return Math.ceil(slugs.length / VENDOR_SITEMAP_CHUNK_SIZE);
+}
+
+/** Slice indexable slugs for a 1-based chunk index. */
+export function sliceVendorSitemapChunk(slugs: string[], chunkIndex: number): string[] {
+  if (chunkIndex < 1) return [];
+  const start = (chunkIndex - 1) * VENDOR_SITEMAP_CHUNK_SIZE;
+  return slugs.slice(start, start + VENDOR_SITEMAP_CHUNK_SIZE);
 }
