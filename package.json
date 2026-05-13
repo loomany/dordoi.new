@@ -19,12 +19,16 @@
     "places:import-admin": "tsx scripts/google-places/import-google-places-to-admin.ts",
     "seed:2gis": "tsx scripts/seed-from-2gis.ts",
     "sync:instagram": "tsx scripts/sync-instagram-profiles.ts",
+    "download:instagram-media": "tsx scripts/download-instagram-media.ts",
+    "sync:all-media": "tsx scripts/sync-all-media.ts",
+    "sync:all-media:overnight": "node scripts/run-sync-all-media-overnight.mjs",
     "bot": "python -m bot"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
+    "axios": "^1.16.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",

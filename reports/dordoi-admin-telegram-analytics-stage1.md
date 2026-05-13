@@ -114,7 +114,7 @@ In [`updateVendorStatus`](lib/actions/vendor-moderation.ts):
 | `seller_registration_submitted` | No public web form saving a new vendor in Next; onboarding is Python bot (out of scope). |
 | `buyer_request_submitted` | No server save path for buyer requests in app code. |
 | `vendor_application_saved` | No separate “application saved” web path; admin pending edit left untouched per scope. |
-| Auth registration | Auth routes are **forbidden** to modify. |
+| Auth registration | **Step 1E** (approved scope): only [`app/api/auth/complete-registration/route.ts`](../app/api/auth/complete-registration/route.ts) — Dordoi admin Telegram after successful sign-in. Other auth routes unchanged. |
 
 ### 4. Telegram message content
 
@@ -177,6 +177,160 @@ Then approve/reject a vendor from admin UI:
 - **DB / migrations / RLS:** not changed.
 - **Auth / payments / Lemon / Python / middleware / tracker / layout:** not changed.
 - **Commit / push:** not performed.
+
+---
+
+## Step 1E — site registration admin Telegram (`complete-registration`)
+
+### 1. Files changed
+
+| Path | Role |
+|------|------|
+| [`lib/dordoi/analytics/leadNotifications.ts`](../lib/dordoi/analytics/leadNotifications.ts) | `notifyDordoiSiteRegistrationCompleted` — HTML message, dedupe, `sendDordoiAdminTelegram` |
+| [`lib/dordoi/analytics/types.ts`](../lib/dordoi/analytics/types.ts) | `DordoiSiteRegistrationNotifyParams`, `DordoiSiteRegistrationAttribution` |
+| [`lib/dordoi/analytics/rateLimit.ts`](../lib/dordoi/analytics/rateLimit.ts) | `rateLimitSiteRegistrationCompleted` — TTL **30 min**, key `dordoi:site_reg:{userId}:registration_completed` (fallback `fb:{sha256…}` without raw email/phone in the key) |
+| [`lib/dordoi/analytics/telegramHtml.ts`](../lib/dordoi/analytics/telegramHtml.ts) | `maskEmailForAdminTelegram`, `maskPhoneDigitsForAdminTelegram` |
+| [`app/api/auth/complete-registration/route.ts`](../app/api/auth/complete-registration/route.ts) | After successful `signIn` session: `void notifyDordoiSiteRegistrationCompleted(…).catch(…)`; `registrationRole` from `linkVendorProfileForPhone`; `localeHintFromRequest` from `Accept-Language` |
+
+**Not changed:** Python bot, payments/Lemon, DB/migrations/RLS, middleware, tracker, `package.json` / lockfile.
+
+### 2. Hook placement
+
+In [`POST` `complete-registration`](app/api/auth/complete-registration/route.ts):
+
+1. Validation, token, profile upsert, `linkVendorProfileForPhone` — **unchanged** intent (added `registrationRole` = `vendor` if `linked`).
+2. Sign-in must succeed (`session` non-null).
+3. **`notifyDordoiSiteRegistrationCompleted`** runs **only then**, via `void … .catch(…)` — Telegram failures **do not** change HTTP 200 or cookies.
+4. If profile upsert or earlier step fails → **no** notify (handler returns before notify).
+5. If sign-in fails (`SIGN_IN_FAILED`) → **no** notify.
+
+### 3. Telegram message
+
+- Title: **«Новая регистрация на Dordoi.help»**.
+- **Пользователь:** `User ID` (UUID in `<code>`), masked **email**, masked **phone** (digits from DB), **Role/type** `buyer` or `vendor` (from vendor link).
+- **Регистрация:** `Status: completed`, **Locale** from `Accept-Language` first matching `ru|kk|kg|uz|tj`, else `unknown`.
+- **Источник:** `Channel` / `First page` / `Campaign` default **`unknown`** (attribution optional on params — not passed from route in this step).
+
+All dynamic segments go through **`escapeTelegramHtml`** + **`clip`**. **No** password, JWT, cookies, session body, or `service_role` in the message.
+
+### 4. Dedupe
+
+- Primary key: **Supabase `authUser.id`** (UUID).
+- Same user + completed within **30 minutes** → `skippedReason: "rate_limited"`, no second Telegram.
+
+### 5. Gaps (follow-up, not this PR)
+
+- **Attribution** (first touch / UTM / campaign) for registration: not sent from `complete-registration` body; extend API with optional fields or server session in a **separate** change.
+- **`seller_registration_submitted` / `buyer_request_submitted`:** still no dedicated server save hook (unchanged).
+
+### 6. Dry-run smoke (local / Site env)
+
+With:
+
+- `DORDOI_ADMIN_TELEGRAM_ENABLED=1`
+- `DORDOI_ADMIN_TELEGRAM_DRY_RUN=1`
+- `DORDOI_ADMIN_TELEGRAM_BOT_TOKEN=dummy`
+- `DORDOI_ADMIN_TELEGRAM_CHAT_IDS=123`
+- `DORDOI_ANALYTICS_DEBUG=1`
+
+Expect: successful `complete-registration` → `[dordoi-analytics][dry-run] prepared telegram message` in logs with registration HTML; failed registration / sign-in → **no** dry-run line for this hook; duplicate same `userId` within TTL → rate_limited path (no spam).
+
+### 7. Automated checks (this change)
+
+| Command | Result |
+|---------|--------|
+| `npx tsc --noEmit` | Exit **0** |
+| `npm run build` | Exit **0** (Next.js 16.2.6) |
+
+### 8. Scope confirmation (Step 1E)
+
+- **Commit / push:** not performed.
+
+### 9. Step 1E final verification (checklist — 2026-05-13, read-only)
+
+#### 9.1 `git status --short` (working tree snapshot)
+
+**Modified (not staged):** `.gitignore`, `app/api/auth/complete-registration/route.ts`, `lib/dordoi/analytics/leadNotifications.ts`, `lib/dordoi/analytics/rateLimit.ts`, `lib/dordoi/analytics/telegramHtml.ts`, `lib/dordoi/analytics/types.ts`, `package-lock.json`, `package.json`, `reports/dordoi-admin-telegram-analytics-stage1.md`.
+
+**Untracked:** `reports/dordoi-admin-telegram-analytics-audit.md`, `reports/dordoi-analytics-step1b-browser-verification.md`, `reports/step1a-verification-smoke.md`, `reports/telegram-notifications-audit.md`, `scripts/download-instagram-media.ts`, `scripts/publish-vendors-with-storage-media.ts`, `scripts/run-sync-all-media-overnight.mjs`, `scripts/sync-all-media.ts`, `supabase/migrations/20260515120000_vendor_videos_bucket.sql`.
+
+**Staged:** none observed (`git status` first column empty for listed paths).
+
+*Note: `package.json` / `package-lock.json` / `.gitignore` are **not** part of Step 1E implementation; do not bundle them into a Step 1E-only commit unless intentional.*
+
+#### 9.2 `git diff --stat` (tracked files only)
+
+```
+ .gitignore                                        |   5 +
+ app/api/auth/complete-registration/route.ts       |  38 +++++++-
+ lib/dordoi/analytics/leadNotifications.ts         |  84 ++++++++++++++++-
+ lib/dordoi/analytics/rateLimit.ts                 |   7 ++
+ lib/dordoi/analytics/telegramHtml.ts              |  38 ++++++++
+ lib/dordoi/analytics/types.ts                     |  18 ++++
+ package-lock.json                                 | 107 +++++++++++++++++++++-
+ package.json                                      |   4 +
+ reports/dordoi-admin-telegram-analytics-stage1.md |  72 ++++++++++++++-
+ 9 files changed, 365 insertions(+), 8 deletions(-)
+```
+
+`reports/telegram-notifications-audit.md` is **untracked** → it does **not** appear in `git diff --stat`.
+
+#### 9.3 `complete-registration` / security (code review)
+
+| Check | Result |
+|-------|--------|
+| Notify only after successful **session** (`session` non-null) | **Pass** — `notifyDordoiSiteRegistrationCompleted` is after `if (!session) return … SIGN_IN_FAILED` (lines 225–240). |
+| Profile upsert failure → no notify | **Pass** — returns at 167–184 before notify. |
+| `SIGN_IN_FAILED` → no notify | **Pass** — early return 225–229 before notify. |
+| Telegram error does not break registration | **Pass** — `void … .catch(console.error)`; response already built after fire-and-forget. |
+| `authUser` guard | **Pass** — explicit `if (!authUser) return CREATE_USER_FAILED` (129–134) narrows type before `updateUserById` / notify. |
+| `service_role` / JWT / cookies / session / password in Telegram HTML | **Pass** — notify payload is only `userId`, optional `email`, `phoneDigits`, `role`, `localeLabel`; HTML uses masks + `escapeTelegramHtml`. JWT is only in JSON response body, not passed to `notifyDordoi…`. |
+
+#### 9.4 Masking / escaping / dedupe key
+
+| Check | Result |
+|-------|--------|
+| Email masked | **Pass** — `maskEmailForAdminTelegram` + `escapeTelegramHtml` in `leadNotifications.ts`. |
+| Phone masked | **Pass** — `maskPhoneDigitsForAdminTelegram` + `escapeTelegramHtml`. |
+| Raw email/phone not in **map key** string | **Pass** — key is `dordoi:site_reg:{uuid}:registration_completed` or `fb:` + hex; digits feed **hash input** only for fallback, not stored as plaintext in the key. |
+| HTML escape | **Pass** — `escapeTelegramHtml` on dynamic lines. |
+
+#### 9.5 Dedupe / TTL
+
+| Check | Result |
+|-------|--------|
+| user id + `registration_completed` semantics | **Pass** — `rateLimitSiteRegistrationCompleted` uses `take(\`dordoi:site_reg:${t}:registration_completed\`, MIN30)`. |
+| Fallback without raw PII in key | **Pass** — `fb:${sha256…}` only in key. |
+| TTL 30 min | **Pass** — `MIN30` in `rateLimit.ts`. |
+
+#### 9.6 Env / token separation
+
+| Check | Result |
+|-------|--------|
+| Site registration uses `sendDordoiAdminTelegram` → `DORDOI_ADMIN_TELEGRAM_*` + `DORDOI_ANALYTICS_DEBUG` | **Pass** — `leadNotifications` → `sendDordoiAdminTelegram` → `loadDordoiAdminTelegramEnv`. |
+| No `TELEGRAM_BOT_TOKEN` in registration notify path | **Pass** — grep `leadNotifications.ts`: no `TELEGRAM_BOT_TOKEN`. |
+
+#### 9.7 Automated commands (re-run this verification)
+
+| Command | Result |
+|---------|--------|
+| `npx tsc --noEmit` | Exit **0** |
+| `npm run build` | Exit **0** (Next.js 16.2.6) |
+
+#### 9.8 Dry-run smoke (interactive registration)
+
+**Not executed** in this environment: a full `complete-registration` requires a **valid** `tempToken` from the real OTP / `verify-code` flow, working Supabase Auth + `profiles` write, and matching env on the running server. Without that chain, we cannot confirm server stdout contains `[dordoi-analytics][dry-run]` with **«Новая регистрация на Dordoi.help»** or TTL anti-spam in vivo.
+
+**Manual recipe (staging/local):** set env from §6 above → complete one real registration → inspect server logs for dry-run HTML; repeat `complete-registration` for the same user within 30 minutes (if your product allows) and confirm no second message / `rate_limited` internal path.
+
+#### 9.9 Verdict
+
+| Question | Answer |
+|----------|--------|
+| Registration notify **code-ready**? | **Yes** — wiring, guards, masking, dedupe, and env path match Step 1E spec. |
+| Remaining manual checks | Interactive registration + log inspection (§9.8); optional Railway env confirmation. |
+| **Commit** allowed? | **Yes, only if** you `git add` **only** Step 1E paths (`complete-registration`, `lib/dordoi/analytics/*` as changed, and chosen reports). **Avoid** committing unrelated `package.json` / lock / `.gitignore` / scripts / migration unless a separate approve. |
+| Commit / push performed here? | **No** |
 
 ---
 
@@ -317,7 +471,7 @@ Staging / first deploy can use `DORDOI_ADMIN_TELEGRAM_DRY_RUN=1` and `DEBUG=1` b
 
 - **Seller web submit** — no Next path emitting `seller_registration_submitted` to this admin bot (Python bot onboarding).
 - **Buyer request save** — no app path for `buyer_request_submitted`.
-- **Auth registration** — not modified.
+- **Auth registration** — **Step 1E:** Dordoi admin notify on successful [`complete-registration`](app/api/auth/complete-registration/route.ts) only; no other auth routes changed.
 - **Python bot** — not modified.
 
 ### 11. Deploy checklist

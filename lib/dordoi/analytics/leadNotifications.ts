@@ -1,13 +1,31 @@
 import "server-only";
 
-import { rateLimitVendorModeration } from "@/lib/dordoi/analytics/rateLimit";
+import { createHash } from "node:crypto";
+
+import {
+  rateLimitSiteRegistrationCompleted,
+  rateLimitVendorModeration,
+} from "@/lib/dordoi/analytics/rateLimit";
 import { sendDordoiAdminTelegram } from "@/lib/dordoi/analytics/sendDordoiAdminTelegram";
-import { clip, escapeTelegramHtml } from "@/lib/dordoi/analytics/telegramHtml";
+import {
+  clip,
+  escapeTelegramHtml,
+  maskEmailForAdminTelegram,
+  maskPhoneDigitsForAdminTelegram,
+} from "@/lib/dordoi/analytics/telegramHtml";
 import type {
   DordoiLeadNotifyResult,
+  DordoiSiteRegistrationNotifyParams,
   DordoiVendorModerationNotifyParams,
-  DordoiVendorModerationNotifyStatus,
 } from "@/lib/dordoi/analytics/types";
+
+function siteRegistrationDedupeToken(
+  params: DordoiSiteRegistrationNotifyParams,
+): string {
+  const uid = params.userId?.trim();
+  if (uid) return uid;
+  return `fb:${createHash("sha256").update(`reg|${params.phoneDigits}`).digest("hex").slice(0, 24)}`;
+}
 
 function formatCategoryLabel(categories: unknown): string {
   if (categories == null) return "unknown";
@@ -95,4 +113,64 @@ export async function notifyDordoiVendorRejected(
   args: Omit<DordoiVendorModerationNotifyParams, "status">,
 ): Promise<DordoiLeadNotifyResult> {
   return notifyDordoiVendorModerationStatusChanged({ ...args, status: "rejected" });
+}
+
+/**
+ * Dordoi admin Telegram: buyer/site registration completed (DORDOI_ADMIN_TELEGRAM_* only).
+ * Does not throw; failures are logged and swallowed.
+ */
+export async function notifyDordoiSiteRegistrationCompleted(
+  params: DordoiSiteRegistrationNotifyParams,
+): Promise<DordoiLeadNotifyResult> {
+  try {
+    const dedupe = siteRegistrationDedupeToken(params);
+    if (!rateLimitSiteRegistrationCompleted(dedupe)) {
+      return { ok: true, sent: false, skippedReason: "rate_limited" };
+    }
+
+    const uid = escapeTelegramHtml(clip(params.userId, 80));
+    const emailMasked = escapeTelegramHtml(
+      clip(maskEmailForAdminTelegram(params.email), 120),
+    );
+    const phoneMasked = escapeTelegramHtml(
+      clip(maskPhoneDigitsForAdminTelegram(params.phoneDigits), 80),
+    );
+    const roleLine = escapeTelegramHtml(clip(params.role, 32));
+    const localeLine = escapeTelegramHtml(clip(params.localeLabel, 16));
+
+    const ch = params.attribution?.channel?.trim();
+    const fp = params.attribution?.firstPage?.trim();
+    const camp = params.attribution?.campaign?.trim();
+    const channelLine = escapeTelegramHtml(clip(ch || "unknown", 120));
+    const firstPageLine = escapeTelegramHtml(clip(fp || "unknown", 300));
+    const campaignLine = escapeTelegramHtml(clip(camp || "unknown", 120));
+
+    const html =
+      `<b>Новая регистрация на Dordoi.help</b>\n\n` +
+      `<b>Пользователь</b>\n` +
+      `User ID: <code>${uid}</code>\n` +
+      `Email: ${emailMasked}\n` +
+      `Phone: ${phoneMasked}\n` +
+      `Role/type: ${roleLine}\n\n` +
+      `<b>Регистрация</b>\n` +
+      `Status: completed\n` +
+      `Locale: ${localeLine}\n\n` +
+      `<b>Источник</b>\n` +
+      `Channel: ${channelLine}\n` +
+      `First page: ${firstPageLine}\n` +
+      `Campaign: ${campaignLine}`;
+
+    const tg = await sendDordoiAdminTelegram(html);
+    if (!tg.sent) {
+      return {
+        ok: true,
+        sent: false,
+        skippedReason: tg.skippedReason ?? "telegram_not_sent",
+      };
+    }
+    return { ok: true, sent: true };
+  } catch (e) {
+    console.error("[notifyDordoiSiteRegistrationCompleted]", e);
+    return { ok: true, sent: false, skippedReason: "notify_error" };
+  }
 }

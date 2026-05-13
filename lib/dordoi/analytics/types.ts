@@ -120,3 +120,21 @@ export type DordoiVendorModerationNotifyParams = {
   /** DB `vendors.categories` (array, string, or json). */
   categories: unknown;
 };
+
+/** Optional attribution for site registration admin notify (separate client stage). */
+export type DordoiSiteRegistrationAttribution = {
+  channel?: string;
+  firstPage?: string;
+  campaign?: string;
+};
+
+export type DordoiSiteRegistrationNotifyParams = {
+  userId: string;
+  email?: string | null;
+  /** DB / auth phone as digits only (same as profiles.phone). */
+  phoneDigits: string;
+  role: "buyer" | "vendor" | "unknown";
+  /** ru | kk | … if known; else caller may pass "unknown". */
+  localeLabel: string;
+  attribution?: DordoiSiteRegistrationAttribution;
+};

@@ -59,6 +59,13 @@ export function rateLimitVendorModeration(
   return take(`dordoi:vm:${vendorId}:${status}`, MIN30);
 }
 
+/** Dedupe site registration admin Telegram: same user, 30 min (key must not contain raw PII). */
+export function rateLimitSiteRegistrationCompleted(dedupeToken: string): boolean {
+  const t = dedupeToken.trim();
+  if (!t) return false;
+  return take(`dordoi:site_reg:${t}:registration_completed`, MIN30);
+}
+
 export function buildSellerRegistrationDedupeKey(input: {
   vendorId?: string;
   applicationId?: string;

@@ -55,3 +55,8 @@ scripts/.e2e_telegram.session-journal
 
 # Google Places offline outputs (npm run places:dordoi)
 data/generated/
+
+# sync-all-media resume checkpoint (npm run sync:all-media)
+.sync-all-media.checkpoint.json
+# overnight wrapper log
+sync-all-media-overnight.log

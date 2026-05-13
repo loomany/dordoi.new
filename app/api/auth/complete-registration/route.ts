@@ -6,6 +6,7 @@ import { findAuthUserByPhoneDigits } from "@/lib/auth/find-auth-user-by-phone";
 import { linkVendorProfileForPhone } from "@/lib/auth/link-vendor-profile";
 import { randomPassword } from "@/lib/auth/password";
 import { verifyRegistrationToken } from "@/lib/auth/registration-token";
+import { notifyDordoiSiteRegistrationCompleted } from "@/lib/dordoi/analytics/leadNotifications";
 import { assertValidPhoneDigits, toE164Digits } from "@/lib/phone";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createRouteHandlerSupabase } from "@/lib/supabase/route-handler-client";
@@ -23,6 +24,20 @@ function normalizeOptionalEmail(
   const t = raw.trim();
   if (t === "") return undefined;
   return t;
+}
+
+const SITE_REG_LOCALES = new Set(["ru", "kk", "kg", "uz", "tj"]);
+
+function localeHintFromRequest(request: Request): string {
+  const h = request.headers.get("accept-language");
+  if (!h?.trim()) return "unknown";
+  for (const part of h.split(",")) {
+    const tag = part.trim().split(";")[0]?.trim().toLowerCase();
+    if (!tag) continue;
+    const base = tag.split("-")[0] ?? "";
+    if (SITE_REG_LOCALES.has(base)) return base;
+  }
+  return "unknown";
 }
 
 export async function POST(request: Request) {
@@ -111,6 +126,13 @@ export async function POST(request: Request) {
       }
     }
 
+    if (!authUser) {
+      return NextResponse.json(
+        { error: "Не удалось создать аккаунт", code: "CREATE_USER_FAILED" },
+        { status: 500 },
+      );
+    }
+
     const { error: updateError } = await admin.auth.admin.updateUserById(
       authUser.id,
       {
@@ -162,8 +184,12 @@ export async function POST(request: Request) {
       );
     }
 
+    let registrationRole: "buyer" | "vendor" = "buyer";
     try {
-      await linkVendorProfileForPhone(admin, authUser.id, phoneDigits);
+      const lr = await linkVendorProfileForPhone(admin, authUser.id, phoneDigits);
+      if (lr.linked) {
+        registrationRole = "vendor";
+      }
     } catch (e) {
       console.error("[complete-registration] link vendor", e);
     }
@@ -202,6 +228,16 @@ export async function POST(request: Request) {
         { status: 500 },
       );
     }
+
+    void notifyDordoiSiteRegistrationCompleted({
+      userId: authUser.id,
+      email: emailNorm ?? null,
+      phoneDigits,
+      role: registrationRole,
+      localeLabel: localeHintFromRequest(request),
+    }).catch((e) =>
+      console.error("[complete-registration] dordoi admin registration notify", e),
+    );
 
     const response = NextResponse.json({
       success: true,
