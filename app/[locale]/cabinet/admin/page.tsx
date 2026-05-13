@@ -6,6 +6,7 @@ import { getPendingPhotoBatches } from "@/lib/actions/vendor-photo-batch-moderat
 import { getPendingVendors } from "@/lib/actions/vendor-moderation";
 import { buildPageMetadata } from "@/lib/seo";
 import { fetchVendorsForModeration } from "@/lib/vendor/admin-queue";
+import { Link } from "@/i18n/navigation";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -40,6 +41,14 @@ export default async function AdminCabinetPage({ params, searchParams }: Props) 
 
   return (
     <section className="flex flex-col gap-8">
+      <p className="text-sm text-muted-foreground">
+        <Link
+          href="/cabinet/admin/vendor-ai"
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
+          {t("vendorAiPlaygroundNavLink")}
+        </Link>
+      </p>
       {sp.updated === "1" ? (
         <div
           className="rounded-xl border border-emerald-200/90 bg-emerald-50 px-4 py-3 text-sm text-emerald-950 dark:border-emerald-900/40 dark:bg-emerald-950/35 dark:text-emerald-50"

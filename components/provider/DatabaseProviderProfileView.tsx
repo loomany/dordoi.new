@@ -17,6 +17,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { Link } from "@/i18n/navigation";
 import { catalogListingKeyFromSlug } from "@/lib/catalog/listing-key";
 import {
+  buildCatalogCardSourceRowForPublishedVendor,
   fetchApprovedVendorPhotoBatches,
   type PublishedVendorRow,
 } from "@/lib/catalog/published-vendors";
@@ -27,7 +28,6 @@ import {
   formatListingUpdatedToday,
   formatProviderAddedDate,
 } from "@/lib/provider-dates";
-import { localizedMainCategoryLabels } from "@/lib/catalog/vendor-category-normalize";
 import {
   ensureHttpUrl,
   resolveGoogleMapsHref,
@@ -95,13 +95,16 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
     : new Set<string>();
 
   const showcase = getShowcaseProfileFields(vendor.slug, tBrowse);
-  const title =
-    showcase?.title ??
-    vendor.store_name?.trim() ??
-    tBrowse("fallbackStoreTitle");
+  const cardRow = buildCatalogCardSourceRowForPublishedVendor(vendor, {
+    tBrowse,
+    tTreeCategory: (key) => tTree(key),
+    locale,
+  });
+  const pageTitle =
+    cardRow.display.storeTitle.trim() || tBrowse("fallbackStoreTitle");
   const categoryLabels = showcase
     ? showcase.categories
-    : localizedMainCategoryLabels(vendor.categories, (id) => tTree(`main.${id}`));
+    : cardRow.display.categories;
   const displayLocationRow = showcase?.locationRow ?? vendor.location_row;
   const listingKey = catalogListingKeyFromSlug(vendor.slug);
   const initialFavorite = favoriteKeys.has(listingKey);
@@ -131,15 +134,14 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
     limit: PHOTO_FEED_PAGE_SIZE,
   });
   const description =
-    showcase?.description.trim() ||
-    vendor.description?.trim() ||
+    cardRow.display.description.trim() ||
     vendor.description_detail?.trim() ||
-    t("listingBlurbFallback", { title });
+    t("listingBlurbFallback", { title: pageTitle });
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    name: title,
+    name: pageTitle,
     description,
     url: canonical,
     telephone: vendor.phone_number ? formatPhoneDisplay(vendor.phone_number) : undefined,
@@ -241,7 +243,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                 /
               </li>
               <li className="font-medium text-gray-600" aria-current="page">
-                {title}
+                {pageTitle}
               </li>
             </ol>
           </nav>
@@ -252,7 +254,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                 <div className="pointer-events-none hidden min-w-0 sm:block" aria-hidden />
                 <div className="min-w-0 pr-12 sm:col-start-2 sm:w-full sm:px-0 sm:text-center">
                   <h1 className="sr-only text-3xl font-extrabold tracking-tight text-card-foreground sm:not-sr-only sm:text-5xl lg:text-6xl">
-                    {title}
+                    {pageTitle}
                   </h1>
                   <div className="mt-0 flex flex-wrap items-center gap-2 text-sm text-muted-foreground sm:mt-3 sm:justify-center">
                     {displayLocationRow ? (
@@ -285,11 +287,11 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                     <div
                       className={
                         categoryLabels.length === 1
-                          ? "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0 px-4 py-4 sm:grid-cols-[14rem_1fr] sm:items-start sm:gap-x-4 sm:gap-y-0 sm:px-5"
-                          : "flex flex-col gap-2 px-4 py-4 sm:grid sm:grid-cols-[14rem_1fr] sm:items-start sm:gap-4 sm:px-5"
+                          ? "flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-4 sm:gap-x-4 sm:px-5"
+                          : "flex flex-col gap-3 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4 sm:gap-y-2 sm:px-5"
                       }
                     >
-                      <dt className="flex min-w-0 items-center gap-2.5">
+                      <dt className="flex min-w-0 shrink-0 items-center gap-2.5">
                         <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_oklch,var(--d-card-accent)_8%,transparent)] text-[var(--d-card-accent)]">
                           <Tag className="size-4" aria-hidden />
                         </span>
@@ -297,20 +299,8 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                           {tBrowse("cardCategoriesMany")}
                         </span>
                       </dt>
-                      <dd
-                        className={
-                          categoryLabels.length === 1
-                            ? "flex shrink-0 items-center justify-end sm:block sm:pt-1"
-                            : "sm:pt-1"
-                        }
-                      >
-                        <ul
-                          className={
-                            categoryLabels.length === 1
-                              ? "flex flex-wrap items-center justify-end gap-2 sm:justify-start"
-                              : "flex flex-wrap gap-2"
-                          }
-                        >
+                      <dd className="flex min-w-0 items-center justify-end self-end sm:self-auto">
+                        <ul className="flex flex-wrap items-center justify-end gap-2">
                           {categoryLabels.map((cat, i) => (
                             <li
                               key={`${cat}:${i}`}
@@ -338,8 +328,8 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                     </>
                   ) : (
                     <>
-                      {vendor.description ? (
-                        <p>{vendor.description.trim()}</p>
+                      {cardRow.display.description.trim() ? (
+                        <p>{cardRow.display.description.trim()}</p>
                       ) : null}
                       {vendor.description_detail ? (
                         <p>{vendor.description_detail.trim()}</p>
@@ -388,7 +378,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                       <div className="overflow-hidden rounded-xl border border-border/70 bg-muted">
                         <MediaImage
                           src={vendor.container_photo_url}
-                          alt={t("containerLocationAlt", { title })}
+                          alt={t("containerLocationAlt", { title: pageTitle })}
                           className="aspect-video w-full object-cover"
                         />
                       </div>
@@ -404,7 +394,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                         vendorId={vendor.id}
                         initialBatches={initialPhotoBatches}
                         pageSize={PHOTO_FEED_PAGE_SIZE}
-                        altBase={t("productPhotosAltBase", { title })}
+                        altBase={t("productPhotosAltBase", { title: pageTitle })}
                         locale={locale}
                       />
                     </div>
@@ -419,7 +409,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                   <div className="flex size-[120px] items-center justify-center overflow-hidden rounded-full border border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-white shadow-sm">
                     <MediaImage
                       src={vendor.logo_url}
-                      alt={t("logoAlt", { title })}
+                      alt={t("logoAlt", { title: pageTitle })}
                       className="size-full object-cover"
                     />
                   </div>
@@ -428,7 +418,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                     <Phone className="size-11" aria-hidden />
                   </div>
                 )}
-                <h2 className="mt-6 text-lg font-bold text-card-foreground lg:hidden">{title}</h2>
+                <h2 className="mt-6 text-lg font-bold text-card-foreground lg:hidden">{pageTitle}</h2>
               </div>
 
               <VendorContactActions

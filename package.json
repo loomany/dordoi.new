@@ -25,6 +25,8 @@
     "sync:all-media:overnight": "node scripts/run-sync-all-media-overnight.mjs",
     "publish:vendors-catalog": "tsx scripts/publish-vendors-with-storage-media.ts",
     "report:vendor-categories": "tsx scripts/list-vendor-categories.ts",
+    "test:ai-two-vendors": "tsx scripts/test-ai-two-vendors.ts",
+    "verify:catalog-ai": "tsx scripts/verify-catalog-parsed-ai.ts",
     "bot": "python -m bot"
   },
   "dependencies": {

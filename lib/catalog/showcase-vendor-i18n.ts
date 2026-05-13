@@ -17,8 +17,9 @@ export function isShowcaseVendorSlug(
   );
 }
 
-/** `t` из `getTranslations("Pages.catalogBrowse")`. */
-export type CatalogBrowseT = (key: string) => string;
+/** `t` из `getTranslations("Pages.catalogBrowse")` — сигнатура как у next-intl `Translator`. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- ICU values (React nodes, rich types) from next-intl
+export type CatalogBrowseT = (key: string, values?: Record<string, any>) => string;
 
 function readCategories(t: CatalogBrowseT, slug: string): string[] {
   const base = `showcaseVendors.${slug}`;

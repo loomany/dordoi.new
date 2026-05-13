@@ -19,7 +19,9 @@ import {
 import { useTransition } from "react";
 
 import { ProductPhotosSwipeCarousel } from "@/components/cabinet/ProductPhotosSwipeCarousel";
+import { CatalogCard } from "@/components/catalog/CatalogCard";
 import { updateVendorStatus } from "@/lib/actions/vendor-moderation";
+import { localizedMainCategoryLabels } from "@/lib/catalog/vendor-category-normalize";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type { VendorApplicationRecord } from "@/lib/vendor/vendor-application";
@@ -28,6 +30,9 @@ import {
   parseGooglePlacesDescriptionForAdmin,
   type GooglePlacesAdminParsedMeta,
 } from "@/lib/vendor/google-places-import-description";
+import {
+  vendorApplicationToParsedVendorCardData,
+} from "@/lib/vendor/vendor-application-catalog-preview";
 import { isVendorPendingQueueStatus } from "@/lib/vendor/status";
 import { digitsOnly } from "@/lib/phone";
 import { useVendorEditSeenIds } from "@/hooks/use-vendor-edit-seen";
@@ -146,6 +151,49 @@ function EmptyPendingIllustration() {
         </p>
       </div>
     </div>
+  );
+}
+
+function VendorCatalogAsInStorePreview({
+  vendor,
+}: {
+  vendor: VendorApplicationRecord;
+}) {
+  const tAdmin = useTranslations("Cabinet.admin");
+  const tBrowse = useTranslations("Pages.catalogBrowse");
+  const tTree = useTranslations("catalogCategoryTree");
+  const categoryLabels = localizedMainCategoryLabels(vendor.categories, (id) =>
+    tTree(`main.${id}`),
+  );
+  const display = vendorApplicationToParsedVendorCardData(
+    vendor,
+    categoryLabels,
+    { untitledStoreLabel: tAdmin("cardUntitledStore") },
+  );
+  const photos =
+    vendor.product_photos?.filter(
+      (u) => typeof u === "string" && u.trim().length > 0,
+    ) ?? [];
+
+  return (
+    <section className="flex flex-col gap-3 border-b border-zinc-100 pb-5 dark:border-zinc-800">
+      <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {tAdmin("vendorCatalogPreviewTitle")}
+      </h4>
+      <div className="max-w-xl min-w-0">
+        <CatalogCard
+          display={display}
+          href={`/cabinet/admin/vendor/${vendor.id}/edit`}
+          viewProfileLabel={tAdmin("vendorCatalogPreviewCta")}
+          aboutStoreLabel={tBrowse("cardAboutStore")}
+          collapseLabel={tBrowse("cardCollapse")}
+          expandLabel={tBrowse("cardExpand")}
+          defaultCollapsed={false}
+          defaultCollapsedMobile={false}
+          photoUrls={photos.length > 0 ? photos : undefined}
+        />
+      </div>
+    </section>
   );
 }
 
@@ -303,6 +351,8 @@ function VendorApplicationCard({
           {formatDate(v.created_at, locale)} · {v.language.toUpperCase()}
         </p>
       </header>
+
+      <VendorCatalogAsInStorePreview vendor={v} />
 
       {v.application_source === "google_places" ? (
         <GooglePlacesReviewHint v={v} t={t} />

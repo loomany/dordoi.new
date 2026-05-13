@@ -17,15 +17,13 @@ import {
 } from "@/lib/provider-dates";
 import { filterPublishedVendorsBySubcategorySlugs } from "@/lib/catalog/catalog-category-filter";
 import {
+  buildCatalogCardSourceRowForPublishedVendor,
   fetchPublishedVendorsForCatalog,
-  vendorToCatalogCardSource,
   type CatalogCardSourceRow,
 } from "@/lib/catalog/published-vendors";
-import { getShowcaseCatalogFields } from "@/lib/catalog/showcase-vendor-i18n";
-import { localizedMainCategoryLabels } from "@/lib/catalog/vendor-category-normalize";
 
 const SAMPLE_IDS = ["0", "1", "2", "3", "4", "5"] as const;
-const CATALOG_PAGE_SIZE = 10;
+const CATALOG_PAGE_SIZE = 12;
 /** First page numbers always listed before an ellipsis (SaaS-style trail). */
 const PAGINATION_LEADING_PAGES = 7;
 
@@ -140,25 +138,13 @@ export async function CatalogBrowseLayout({
     publishedVendors,
     categorySlugs,
   );
-  const fallbackStore = t("fallbackStoreTitle");
-  const realCards: CatalogCardSourceRow[] = publishedVendorsFiltered.map((v) => {
-    const row = vendorToCatalogCardSource({
-      vendor: v,
-      fallbackTitle: fallbackStore,
-      addedLine: t("listingAdded", {
-        date: formatProviderAddedDate(v.created_at, locale),
-      }),
-      updatedLine,
-    });
-    const showcase = getShowcaseCatalogFields(v.slug, t);
-    if (showcase) {
-      return { ...row, ...showcase };
-    }
-    return {
-      ...row,
-      categories: localizedMainCategoryLabels(v.categories, (id) => tTree(`main.${id}`)),
-    };
-  });
+  const realCards: CatalogCardSourceRow[] = publishedVendorsFiltered.map((v) =>
+    buildCatalogCardSourceRowForPublishedVendor(v, {
+      tBrowse: t,
+      tTreeCategory: (key) => tTree(key),
+      locale,
+    }),
+  );
 
   // 2) Плейсхолдеры из переводов — если в БД ещё нет approved или включён compare.
   const sampleCards: CatalogCardSourceRow[] = SAMPLE_IDS.map((id, index) => {
@@ -167,12 +153,16 @@ export async function CatalogBrowseLayout({
       id,
       slug,
       href: slug ? `/catalog/${slug}` : undefined,
-      title: t(`samples.${id}.title`),
-      tagline: null,
-      description: t(`samples.${id}.description`),
-      categories: [],
-      avatarUrl: null,
-      hideAvatar: false,
+      display: {
+        storeTitle: t(`samples.${id}.title`),
+        subtitle: null,
+        description: t(`samples.${id}.description`),
+        tradeType: "hybrid",
+        commerce: {},
+        logoUrl: null,
+        categories: [],
+        instagramUrl: null,
+      },
       photoUrls: undefined,
       featured: false,
       addedLine,
@@ -244,7 +234,7 @@ export async function CatalogBrowseLayout({
             </div>
         </div>
 
-        <div className="mt-10 space-y-6">
+        <div className="mt-10">
           <CatalogBrowseCardGrid
             key={currentPage}
             cards={visibleCards}
@@ -254,15 +244,18 @@ export async function CatalogBrowseLayout({
             aboutStoreLabel={t("cardAboutStore")}
             collapseLabel={t("cardCollapse")}
             expandLabel={t("cardExpand")}
-            cardCategoryOne={t("cardCategoryOne")}
-            cardCategoriesMany={t("cardCategoriesMany")}
           />
 
           {totalPages > 1 ? (
-            <nav
-              className="flex flex-nowrap items-center justify-center gap-1 pt-2 sm:gap-1.5"
-              aria-label="Страницы каталога"
-            >
+            <div className="mt-8 sm:mt-10">
+              <div
+                className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent dark:via-border/80"
+                aria-hidden
+              />
+              <nav
+                className="flex flex-nowrap items-center justify-center gap-1 pt-8 sm:gap-1.5 sm:pt-10"
+                aria-label="Страницы каталога"
+              >
               <Link
                 href={buildCatalogBrowsePath({
                   page: Math.max(1, currentPage - 1),
@@ -327,6 +320,7 @@ export async function CatalogBrowseLayout({
                 <span className="sr-only">Следующая страница</span>
               </Link>
             </nav>
+            </div>
           ) : null}
         </div>
       </div>

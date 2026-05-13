@@ -2,43 +2,30 @@
 
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { ArrowRight, ChevronDown, ChevronUp, Package, ShoppingBag } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
-import {
-  CATALOG_CARD_COLLAPSED_DESCRIPTION_MAX_CHARS,
-  DESCRIPTION_CARD_MAX_CHARS,
-} from "@/lib/vendor/vendor-field-limits";
+import { ensureHttpUrl } from "@/lib/catalog/vendor-map-links";
+import type { ParsedVendorCardData } from "@/lib/catalog/vendor-card-display";
+import { CATALOG_CARD_COLLAPSED_DESCRIPTION_MAX_CHARS } from "@/lib/vendor/vendor-field-limits";
 import { cn } from "@/lib/utils";
 
 export type CatalogCardProps = {
-  title: string;
-  description: string;
+  display: ParsedVendorCardData;
+  /** Длинный лейбл профиля (превью без `href`, подсказки); в каталоге CTA — короткий `vendorCard.profileCta`. */
   viewProfileLabel: string;
-  /** When set, the whole card links to the provider profile (no nested button). */
+  /** Если задан — блок «шапка + описание» — нативная ссылка на профиль (ПКМ / новая вкладка); подвал и фото вне ссылки. CTA в подвале — второй `<Link>`. */
   href?: string;
-  /** Строка под названием (образец полей анкеты / короткий акцент). */
-  tagline?: string | null;
-  /** Круглый логотип слева от названия. */
-  avatarUrl?: string | null;
-  /** Скрыть блок аватара (только название в шапке). */
-  hideAvatar?: boolean;
-  /** Горизонтальная лента фото справа (или под текстом на узком экране). */
+  /** Фото под CTA при раскрытии: карусель (одно фото, листание влево-вправо). */
   photoUrls?: string[];
   /** Карточка-подборка / после модерации — акцентная рамка. */
   featured?: boolean;
-  /** Pre-formatted “added / updated” lines from registry + i18n. */
-  addedLine?: string;
-  updatedLine?: string;
-  /** Кнопка избранного — угол карточки; клик не всплывает к ссылке карточки. */
+  /** Кнопка избранного в подвале карточки; клик не всплывает к ссылке карточки. */
   favoriteSlot?: ReactNode;
-  /** Заголовок текстового блока о поставщике (колонка слева от ленты фото). */
+  /** Заголовок текстового блока о поставщике (aria для описания). */
   aboutStoreLabel?: string;
-  /** Категории товаров (как в анкете `vendors.categories`). */
-  categories?: string[];
-  /** Подпись над чипами: «Категория» / «Категории» в зависимости от числа. */
-  categoriesSectionLabel?: string;
   /** i18n-лейблы для toggle «свернуть/развернуть»; если не заданы — toggle не отображается. */
   collapseLabel?: string;
   expandLabel?: string;
@@ -57,6 +44,10 @@ export type CatalogCardProps = {
   collapsedExternal?: boolean;
   onCollapsedExternalChange?: (collapsed: boolean) => void;
   className?: string;
+  /** `preview` — превью в админке (метаданные для тестов / будущий CTA). */
+  variant?: "catalog" | "preview";
+  /** Заменить стандартный CTA «Профиль магазина» (например кнопка публикации в админке). */
+  profileCtaSlot?: ReactNode;
 };
 
 function cardInitials(title: string): string {
@@ -71,11 +62,8 @@ function cardInitials(title: string): string {
   return t.slice(0, 2).toUpperCase();
 }
 
-/** Обрезка описания в каталоге; полный лимит поля — `DESCRIPTION_CARD_MAX_CHARS`. */
 const COMPACT_DESC_MAX = CATALOG_CARD_COLLAPSED_DESCRIPTION_MAX_CHARS;
-const RAIL_DESC_MAX = DESCRIPTION_CARD_MAX_CHARS;
 
-/** Обрезает текст по символам (по последнему пробелу), добавляет «…», убирая хвостовые знаки. */
 function truncateAtChars(text: string, maxLen: number): string {
   if (text.length <= maxLen) {
     return text;
@@ -91,25 +79,35 @@ function truncateForCompact(text: string): string {
   return truncateAtChars(text, COMPACT_DESC_MAX);
 }
 
-function truncateForRail(text: string): string {
-  return truncateAtChars(text, RAIL_DESC_MAX);
+/** Линейная иконка Instagram для компактной кнопки в карточке каталога. */
+function CatalogInstagramGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+  );
 }
 
-/** Карточка поставщика в каталоге: аватар + блок текста + опциональная лента фото. */
+/** Карточка поставщика в каталоге: компактный вид; при раскрытии — карусель фото под CTA. */
 export function CatalogCard({
-  title,
-  description,
+  display,
   viewProfileLabel,
   href,
-  tagline,
-  avatarUrl,
-  hideAvatar = false,
   photoUrls,
   featured,
   favoriteSlot,
   aboutStoreLabel,
-  categories,
-  categoriesSectionLabel,
   collapseLabel,
   expandLabel,
   defaultCollapsed = false,
@@ -117,54 +115,22 @@ export function CatalogCard({
   collapsedExternal,
   onCollapsedExternalChange,
   className,
+  variant = "catalog",
+  profileCtaSlot,
 }: CatalogCardProps) {
+  const router = useRouter();
+  const tCard = useTranslations("Pages.catalogBrowse.vendorCard");
   const hasPhotos = Boolean(photoUrls && photoUrls.length > 0);
-  const tag = tagline?.trim();
-  const descTrim = description.trim();
-  const categoryList = (categories ?? []).map((c) => c.trim()).filter(Boolean);
-  /**
-   * Локализованные категории приходят с сервера; бейджи компактные, лишние — «+N».
-   */
-  const firstCategoryLabel = categoryList[0];
-  const maxCatBadges = 4;
-  const categoryBadgesVisible = categoryList.slice(0, maxCatBadges);
-  const categoryBadgesOverflow = categoryList.length - categoryBadgesVisible.length;
+  const descTrim = display.description.trim();
 
-  const categoryBadgesRow =
-    categoryList.length > 0 ? (
-      <ul
-        className="mt-2 flex flex-wrap items-center justify-center gap-1.5 lg:justify-start"
-        aria-label={categoriesSectionLabel?.trim() || undefined}
-      >
-        {categoryBadgesVisible.map((cat, i) => (
-          <li
-            key={`${i}-${cat}`}
-            className="inline-flex max-w-[11rem] truncate rounded-full border border-foreground/10 bg-muted/40 px-2 py-0.5 text-[11px] font-medium leading-tight text-foreground/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
-            title={cat}
-          >
-            {cat}
-          </li>
-        ))}
-        {categoryBadgesOverflow > 0 ? (
-          <li
-            className="inline-flex rounded-full border border-dashed border-muted-foreground/30 bg-muted/25 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-muted-foreground"
-            title={categoryList.slice(maxCatBadges).join(", ")}
-          >
-            +{categoryBadgesOverflow}
-          </li>
-        ) : null}
-      </ul>
-    ) : null;
+  const isWholesaleSupplier =
+    display.tradeType === "wholesale" || display.tradeType === "hybrid";
+
+  const instagramHref = ensureHttpUrl(display.instagramUrl ?? undefined);
 
   const canCollapse =
     hasPhotos && Boolean(collapseLabel) && Boolean(expandLabel);
 
-  /**
-   * Состояние сворачивания.
-   * Пока пользователь не нажал toggle — берём дефолт по breakpoint
-   * (`defaultCollapsedMobile` на mobile, иначе `defaultCollapsed`).
-   * После первого клика — фиксируем выбор пользователя в локальном стейте.
-   */
   const isMobile = useIsCatalogMobile();
   const breakpointDefault =
     isMobile && defaultCollapsedMobile !== undefined
@@ -189,17 +155,14 @@ export function CatalogCard({
     }
   };
 
-  /** Реальный ли rail-layout рендерим прямо сейчас. */
-  const effectiveRail = hasPhotos && !collapsed;
-  const showAboutBlock =
-    effectiveRail && Boolean(tag || descTrim);
-
-  /** Сколько кнопок в верхнем правом углу — для расчёта правого паддинга шапки. */
-  const topButtonsCount = (favoriteSlot ? 1 : 0) + (canCollapse ? 1 : 0);
-  const topPadRight =
-    topButtonsCount === 0 ? "" : topButtonsCount === 1 ? "pr-14" : "pr-[5.5rem]";
-  const topPadSymmetric =
-    topButtonsCount === 0 ? "" : topButtonsCount === 1 ? "px-14" : "px-[5.5rem]";
+  const topButtonsCount = canCollapse ? 1 : 0;
+  /** Только у текста заголовка — кнопка сворачивания absolute справа, аватар без лишнего отступа слева. */
+  const titleReserveRight =
+    topButtonsCount === 0
+      ? ""
+      : topButtonsCount === 1
+        ? "pr-14"
+        : "pr-[5.5rem]";
 
   const avatar = (
     <div
@@ -208,10 +171,10 @@ export function CatalogCard({
         featured && "border-primary/30 ring-2 ring-primary/15",
       )}
     >
-      {avatarUrl ? (
+      {display.logoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element -- Supabase / внешние URL превью
         <img
-          src={avatarUrl}
+          src={display.logoUrl}
           alt=""
           className="size-full object-cover"
           loading="lazy"
@@ -222,7 +185,7 @@ export function CatalogCard({
           className="flex size-full items-center justify-center text-xs font-bold uppercase tracking-wide text-muted-foreground"
           aria-hidden
         >
-          {cardInitials(title)}
+          {cardInitials(display.storeTitle)}
         </span>
       )}
     </div>
@@ -251,152 +214,247 @@ export function CatalogCard({
     </button>
   ) : null;
 
-  const topButtons =
-    canCollapse || favoriteSlot ? (
-      <span className="absolute right-4 top-4 z-10 flex items-center gap-2">
-        {collapseToggle}
-        {favoriteSlot}
-      </span>
-    ) : null;
+  const topButtons = canCollapse ? (
+    <span className="absolute right-4 top-4 z-10 flex items-center gap-2">
+      {collapseToggle}
+    </span>
+  ) : null;
 
-  /** Link-style CTA «Профиль магазина →» — общий для compact и rail. */
-  const renderCtaLink = (className?: string) => (
+  const tradeTypeChipLabel =
+    display.tradeType === "wholesale"
+      ? tCard("tradeTypeWholesale")
+      : display.tradeType === "hybrid"
+        ? tCard("tradeTypeHybrid")
+        : tCard("tradeTypeRetail");
+
+  const footerCta =
+    profileCtaSlot ??
+    (href ? (
+      <Link
+        href={href}
+        onClick={(e) => e.stopPropagation()}
+        aria-label={tCard("profileCtaAria")}
+        title={tCard("profileCtaAria")}
+        className={cn(
+          "inline-flex max-w-full shrink-0 items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold leading-tight shadow-sm transition-colors",
+          "border-primary/20 bg-gradient-to-b from-primary/[0.07] to-primary/[0.02] text-primary",
+          "hover:border-primary/35 hover:from-primary/[0.11] hover:to-primary/[0.04]",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-2 focus-visible:ring-offset-card",
+        )}
+      >
+        <span className="min-w-0 truncate">{tCard("profileCta")}</span>
+        <ArrowRight className="size-3 shrink-0 opacity-75" aria-hidden />
+      </Link>
+    ) : (
+      <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4">
+        {viewProfileLabel}
+        <ArrowRight className="size-4" aria-hidden />
+      </span>
+    ));
+
+  const wholesaleBadge = (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-primary underline-offset-4 group-hover:underline",
-        className,
+        "inline-flex max-w-full items-center gap-1.5 truncate rounded-md border px-2.5 py-1 text-[11px] font-semibold leading-none tracking-wide shadow-sm",
+        isWholesaleSupplier
+          ? [
+              "border-primary/25 bg-gradient-to-b from-primary/[0.11] to-primary/[0.06]",
+              "text-primary ring-1 ring-primary/[0.08]",
+              "dark:from-primary/20 dark:to-primary/10 dark:ring-primary/15",
+            ]
+          : [
+              "border-border/80 bg-muted/45 text-muted-foreground",
+              "ring-1 ring-black/[0.04] dark:ring-white/[0.06]",
+            ],
       )}
+      title={
+        isWholesaleSupplier
+          ? tCard("wholesaleBadgeYes")
+          : tCard("wholesaleBadgeNo")
+      }
     >
-      {viewProfileLabel}
-      <ArrowRight
-        className="size-4 transition-transform group-hover:translate-x-0.5"
-        aria-hidden
-      />
+      {isWholesaleSupplier ? (
+        <Package
+          className="size-3.5 shrink-0 opacity-90"
+          strokeWidth={2.25}
+          aria-hidden
+        />
+      ) : (
+        <ShoppingBag
+          className="size-3.5 shrink-0 opacity-80"
+          strokeWidth={2.25}
+          aria-hidden
+        />
+      )}
+      <span className="min-w-0 truncate">
+        {isWholesaleSupplier
+          ? tCard("wholesaleBadgeYes")
+          : tCard("wholesaleBadgeNo")}
+      </span>
     </span>
   );
 
-  /**
-   * Название в rail-колонке.
-   * - На mobile rail-карточка — одна колонка, кнопки (toggle/favorite) лежат над текстом
-   *   → нужен padding, чтобы заголовок не залазил под них.
-   * - На lg+ кнопки уходят над фото-колонкой справа → padding не нужен,
-   *   заголовок центрируется в полной ширине левой колонки (между краем карточки и фото).
-   */
-  const railHeadingRow = (
-    <div
-      className={cn(
-        "relative w-full min-w-0",
-        topPadRight,
-        topButtonsCount > 0 && "lg:pr-0",
-        showAboutBlock && "pb-3",
-      )}
-    >
-      {!hideAvatar ? (
-        <div className="pointer-events-none absolute left-0 top-1/2 z-[1] -translate-y-1/2">
-          {avatar}
-        </div>
-      ) : null}
-      <h2
+  /** В каталоге (`href`) — тип сделки рядом с CTA «Открыть» (справа). */
+  const tradeTypeFooterPill =
+    href != null && href.length > 0 ? (
+      <div className="flex shrink-0 items-center">
+        <span
+          className={cn(
+            "inline-flex shrink-0 items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide shadow-sm",
+            isWholesaleSupplier
+              ? "border-primary/25 bg-primary/10 text-primary"
+              : "border-border/70 bg-muted/70 text-muted-foreground",
+          )}
+          title={
+            isWholesaleSupplier
+              ? tCard("wholesaleBadgeYes")
+              : tCard("wholesaleBadgeNo")
+          }
+        >
+          {tradeTypeChipLabel}
+        </span>
+      </div>
+    ) : null;
+
+  const instagramButton =
+    instagramHref !== null ? (
+      <button
+        type="button"
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (href) {
+            router.push(href);
+          } else if (instagramHref) {
+            window.open(instagramHref, "_blank", "noopener,noreferrer");
+          }
+        }}
+        aria-label={href ? tCard("profileCtaAria") : tCard("instagramAria")}
+        title={href ? tCard("profileCtaAria") : tCard("instagramAria")}
         className={cn(
-          "text-center text-sm font-bold leading-tight text-card-foreground lg:text-lg",
-          !hideAvatar && "pl-[4.25rem]" /* size-14 + gap-3 */,
-          /* Симметричный px сужал заголовок вдвойне с родительским pr под кнопки — на <lg оставляем только отступ справа у обёртки. */
-          hideAvatar && topButtonsCount > 0 && "max-lg:px-0 lg:px-0",
+          "touch-manipulation shrink-0 rounded-full p-px shadow-sm outline-none transition-[transform,box-shadow]",
+          "bg-gradient-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af]",
+          "hover:shadow-md active:scale-[0.97]",
+          "focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-card",
         )}
       >
-        {title}
-      </h2>
-      {categoryBadgesRow ? (
-        <div
-          className={cn(
-            "mt-1.5 w-full min-w-0",
-            !hideAvatar && "pl-[4.25rem] lg:pl-0",
-            hideAvatar && topButtonsCount > 0 && "max-lg:px-0 lg:px-0",
-          )}
-        >
-          {categoryBadgesRow}
-        </div>
-      ) : null}
+        <span className="flex size-8 items-center justify-center rounded-full bg-card ring-1 ring-black/[0.04] dark:ring-white/[0.08]">
+          <CatalogInstagramGlyph className="size-[17px] text-[#E4405F]" />
+        </span>
+      </button>
+    ) : null;
+
+  const footerBlock = (
+    <div className="relative z-10 mt-auto flex w-full min-w-0 shrink-0 items-center justify-between gap-2 border-t border-border/60 pt-3 sm:gap-3 sm:pt-4">
+      <div className="flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2">
+        {favoriteSlot ? (
+          <div className="flex shrink-0 items-center">{favoriteSlot}</div>
+        ) : null}
+        {instagramButton ? (
+          <div className="shrink-0">{instagramButton}</div>
+        ) : null}
+        {!href ? <div className="min-w-0 shrink">{wholesaleBadge}</div> : null}
+      </div>
+      <div className="flex min-w-0 shrink-0 items-center justify-end gap-1.5 pl-1 sm:gap-2">
+        {tradeTypeFooterPill}
+        {footerCta}
+      </div>
     </div>
   );
+
+  const photosExpanded =
+    hasPhotos && !collapsed ? (
+      <div className="min-h-0 w-full pt-4">
+        <CatalogCardPhotoRail
+          urls={photoUrls!}
+          altBase={display.storeTitle}
+          className="w-full min-w-0"
+        />
+      </div>
+    ) : null;
+
+  const photosSection =
+    hasPhotos ? (
+      <div
+        className={cn(
+          "grid min-h-0 transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none",
+          collapsed
+            ? "pointer-events-none grid-rows-[0fr]"
+            : "grid-rows-[1fr]",
+        )}
+      >
+        <div
+          className={cn(
+            "min-h-0 overflow-hidden",
+            collapsed && "pointer-events-none",
+          )}
+        >
+          {photosExpanded}
+        </div>
+      </div>
+    ) : null;
+
+  const headlineAndDescription = (
+    <>
+      <div className="relative w-full min-w-0">
+        <div className="flex items-center gap-3">
+          {avatar}
+          <div className={cn("min-w-0 flex-1 text-left", titleReserveRight)}>
+            <h2 className="text-base font-semibold uppercase leading-tight tracking-tight text-card-foreground sm:text-lg">
+              {display.storeTitle}
+            </h2>
+            {display.subtitle?.trim() ? (
+              <p className="mt-1 line-clamp-2 text-xs font-normal normal-case leading-snug tracking-normal text-muted-foreground sm:text-sm">
+                {display.subtitle.trim()}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      {descTrim ? (
+        <section
+          aria-label={aboutStoreLabel?.trim() || undefined}
+          className="min-w-0"
+        >
+          <p className="line-clamp-3 whitespace-pre-line break-words text-sm leading-relaxed text-muted-foreground">
+            {truncateForCompact(descTrim)}
+          </p>
+        </section>
+      ) : null}
+    </>
+  );
+
+  const mainLinkOrStatic =
+    href != null && href.length > 0 ? (
+      <Link
+        href={href}
+        className={cn(
+          "flex min-h-0 min-w-0 flex-1 flex-col gap-3 cursor-pointer text-left text-inherit no-underline outline-none",
+          "focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.14_250_/_0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-card",
+        )}
+      >
+        {headlineAndDescription}
+      </Link>
+    ) : (
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
+        {headlineAndDescription}
+      </div>
+    );
 
   const body = (
     <>
       {topButtons}
 
-      {effectiveRail ? (
-        <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-5">
-          <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col gap-4">
-            {showAboutBlock ? (
-              <div className="flex min-w-0 flex-col">
-                {railHeadingRow}
-                <section
-                  className="flex flex-col gap-2 border-t border-border/70 pt-3"
-                  aria-label={aboutStoreLabel?.trim() || undefined}
-                >
-                  {aboutStoreLabel?.trim() ? (
-                    <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                      {aboutStoreLabel.trim()}
-                    </h3>
-                  ) : null}
-                  <div className="space-y-2 text-sm leading-relaxed">
-                    {tag && tag !== firstCategoryLabel ? (
-                      <p className="font-semibold text-card-foreground">{tag}</p>
-                    ) : null}
-                    {descTrim ? (
-                      <p className="whitespace-pre-line break-words text-muted-foreground">
-                        {truncateForRail(descTrim)}
-                      </p>
-                    ) : null}
-                  </div>
-                </section>
-              </div>
-            ) : (
-              railHeadingRow
-            )}
-          </div>
+      {mainLinkOrStatic}
 
-          <div className="flex w-full min-w-0 shrink-0 flex-col lg:h-full lg:min-h-0 lg:max-w-[min(100%,260px)]">
-            <CatalogCardPhotoRail urls={photoUrls!} altBase={title} className="w-full min-w-0" />
-            {/* На lg лишняя высота ряда уходит сюда — низ карточки совпадает у соседей */}
-            <div className="flex shrink-0 flex-col justify-end pt-3 lg:min-h-0 lg:flex-1">
-              <div className="flex shrink-0 justify-center">{renderCtaLink("justify-center")}</div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
-          <div className={cn("relative w-full min-w-0", topButtonsCount > 0 && topPadSymmetric)}>
-            <h2 className="text-center text-sm font-bold leading-tight text-card-foreground sm:text-base lg:text-lg">
-              {title}
-            </h2>
-            {categoryBadgesRow ? (
-              <div className="mt-2 flex justify-center">{categoryBadgesRow}</div>
-            ) : null}
-            {tag && tag !== firstCategoryLabel ? (
-              <p className="mt-1.5 text-center text-sm font-semibold leading-snug text-card-foreground">
-                {tag}
-              </p>
-            ) : null}
-            {/* Ряд / адрес (`location_row`) в каталоге не показываем — только на странице профиля магазина. */}
-          </div>
+      {footerBlock}
 
-          {descTrim ? (
-            <p className="line-clamp-3 break-words text-sm leading-relaxed text-muted-foreground">
-              {truncateForCompact(descTrim)}
-            </p>
-          ) : null}
-
-          <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 pt-1">
-            {renderCtaLink()}
-          </div>
-        </div>
-      )}
+      {photosSection}
     </>
   );
 
-  // Рамка: сплошные токены (см. tokens.css) — на мобильном WebKit лучше, чем `color-mix` + тонкий border.
-  // Тень: на <lg компактная, иначе длинный blur на высокой карточке выглядит как «растянутая» обводка.
   const cardOutline =
     "border border-solid border-[var(--d-catalog-card-border)] " +
     "hover:border-[var(--d-catalog-card-border-hover)] hover:shadow-md";
@@ -405,35 +463,25 @@ export function CatalogCard({
 
   const articleClass = cn(
     "relative flex rounded-[var(--d-radius-2xl)] bg-card transition-[box-shadow,border-color]",
-    "p-5 shadow-[var(--d-catalog-card-shadow-mobile)] sm:p-6 lg:shadow-[var(--d-shadow-soft)]",
+    "px-5 pt-5 pb-2 shadow-[var(--d-catalog-card-shadow-mobile)] sm:px-6 sm:pt-6 sm:pb-2.5 lg:shadow-[var(--d-shadow-soft)]",
     cardOutline,
-    href && cn("group outline-none", cardFocusRing),
+    href && cn("group cursor-pointer outline-none", cardFocusRing),
     className,
   );
 
   const shellClass = cn(
     articleClass,
-    /* Без `h-full`: в grid с высоким соседом рамка не должна тянуться на всю строку после сворачивания. */
     "flex min-h-0 w-full flex-col",
+    variant === "preview" && "ring-1 ring-dashed ring-muted-foreground/25",
   );
 
-  if (href) {
-    return (
-      <Link
-        href={href}
-        data-collapsed={collapsed ? "true" : "false"}
-        className={shellClass}
-      >
-        <div className="flex min-h-0 flex-col">{body}</div>
-      </Link>
-    );
-  }
+  const dataAttrs = {
+    "data-collapsed": collapsed ? "true" : "false",
+    "data-vendor-card": variant,
+  } as const;
 
   return (
-    <article
-      data-collapsed={collapsed ? "true" : "false"}
-      className={shellClass}
-    >
+    <article className={shellClass} {...dataAttrs}>
       <div className="flex min-h-0 flex-col">{body}</div>
     </article>
   );

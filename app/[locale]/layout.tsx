@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { AuthDialogProvider } from "@/components/auth/auth-dialog-context";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { DocumentLang } from "@/components/layout/DocumentLang";
@@ -28,13 +29,15 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <DocumentLang />
-      <DordoiAnalyticsTracker locale={locale as DordoiLocale} />
-      <div className="flex min-h-dvh flex-1 flex-col">
-        <SiteHeader />
-        <main className="min-h-0 flex-1">{children}</main>
-        <SiteFooter />
-      </div>
+      <AuthDialogProvider>
+        <DocumentLang />
+        <DordoiAnalyticsTracker locale={locale as DordoiLocale} />
+        <div className="flex min-h-dvh flex-1 flex-col">
+          <SiteHeader />
+          <main className="min-h-0 flex-1">{children}</main>
+          <SiteFooter />
+        </div>
+      </AuthDialogProvider>
     </NextIntlClientProvider>
   );
 }

@@ -1,6 +1,29 @@
 import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  getAiCatalogDisplayOverlay,
+} from "@/lib/catalog/parsed-ai-catalog-overlay";
+
+export { getAiCatalogDisplayOverlay };
+import {
+  commerceCopyFromVendorRow,
+  inferVendorTradeType,
+  type ParsedVendorCardData,
+} from "@/lib/catalog/vendor-card-display";
+import {
+  dedupeCatalogSubtitle,
+  resolveCatalogStoreTitleForCard,
+} from "@/lib/catalog/catalog-card-title";
+import {
+  getShowcaseCatalogFields,
+  type CatalogBrowseT,
+} from "@/lib/catalog/showcase-vendor-i18n";
+import { localizedMainCategoryLabels } from "@/lib/catalog/vendor-category-normalize";
+import {
+  formatListingUpdatedToday,
+  formatProviderAddedDate,
+} from "@/lib/provider-dates";
 
 /**
  * Минимальный набор полей `vendors`, нужных для CatalogCard в /catalog.
@@ -39,6 +62,8 @@ export type PublishedVendorRow = {
   followers_count?: number | null;
   /** URL видео (Instagram Reels и др.), до 15. */
   product_videos?: string[];
+  /** JSONB: снимок после ИИ (`display` + meta); см. миграцию `parsed_ai_data`. */
+  parsed_ai_data?: unknown;
 };
 
 /** Публичный каталог не показывает эти витрины (нормализация: trim + lower case). */
@@ -53,10 +78,10 @@ function isBlockedPublicCatalogStoreName(
 }
 
 const PUBLISHED_VENDOR_SELECT_FIELDS =
-  "id, slug, store_name, description, categories, logo_url, product_photos, location_row, created_at";
+  "id, slug, store_name, description, categories, logo_url, product_photos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
 
 const PUBLISHED_VENDOR_PROFILE_SELECT_FIELDS =
-  "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at, followers_count";
+  "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at, followers_count, parsed_ai_data";
 
 /**
  * Все опубликованные продавцы для публичного каталога.
@@ -88,7 +113,12 @@ export async function fetchPublishedVendorsForCatalog(): Promise<PublishedVendor
       if (!slug) {
         return null;
       }
-      const id = typeof r.id === "string" ? r.id : "";
+      const id =
+        typeof r.id === "string"
+          ? r.id
+          : typeof r.id === "number" && Number.isFinite(r.id)
+            ? String(r.id)
+            : "";
       if (!id) {
         return null;
       }
@@ -120,6 +150,17 @@ export async function fetchPublishedVendorsForCatalog(): Promise<PublishedVendor
           typeof r.created_at === "string"
             ? r.created_at
             : new Date().toISOString(),
+        min_batch: typeof r.min_batch === "string" ? r.min_batch : null,
+        payment_methods:
+          typeof r.payment_methods === "string" ? r.payment_methods : null,
+        delivery_help: Boolean(r.delivery_help),
+        samples_available: Boolean(r.samples_available),
+        samples_note: typeof r.samples_note === "string" ? r.samples_note : null,
+        returns_policy:
+          typeof r.returns_policy === "string" ? r.returns_policy : null,
+        instagram_url:
+          typeof r.instagram_url === "string" ? r.instagram_url : null,
+        parsed_ai_data: r.parsed_ai_data,
       };
     })
     .filter((x): x is PublishedVendorRow => x !== null);
@@ -131,7 +172,12 @@ function normalizePublishedVendorRow(row: unknown): PublishedVendorRow | null {
   if (!slug) {
     return null;
   }
-  const id = typeof r.id === "string" ? r.id : "";
+  const id =
+    typeof r.id === "string"
+      ? r.id
+      : typeof r.id === "number" && Number.isFinite(r.id)
+        ? String(r.id)
+        : "";
   if (!id) {
     return null;
   }
@@ -185,6 +231,7 @@ function normalizePublishedVendorRow(row: unknown): PublishedVendorRow | null {
         : null,
     created_at:
       typeof r.created_at === "string" ? r.created_at : new Date().toISOString(),
+    parsed_ai_data: r.parsed_ai_data,
   };
 }
 
@@ -301,12 +348,8 @@ export type CatalogCardSourceRow = {
   id: string;
   slug: string | undefined;
   href: string | undefined;
-  title: string;
-  tagline: string | null;
-  description: string;
-  categories: string[];
-  avatarUrl: string | null;
-  hideAvatar: boolean;
+  /** Нормализованные поля карточки (каталог / превью админки). */
+  display: ParsedVendorCardData;
   photoUrls: string[] | undefined;
   featured: boolean;
   /** Локализованная строка «Добавлено …» — рассчитывается в layout. */
@@ -315,15 +358,13 @@ export type CatalogCardSourceRow = {
   updatedLine: string;
 };
 
+export type { ParsedVendorCardData, VendorCardCommerceCopy, VendorTradeType } from "@/lib/catalog/vendor-card-display";
+
 /**
  * Маппер `PublishedVendorRow → CatalogCardSourceRow` (форма как у `previewRow` в `CatalogBrowseLayout`).
- * Все поля каталога, отсутствующие в БД, заполняются безопасными дефолтами:
- *  - `featured = false` (одинаковая обводка у всех карточек);
- *  - `tagline = null`;
- *  - `hideAvatar = true` для всех реальных vendor'ов — логотип в карточке каталога
- *    мы намеренно НЕ показываем (больше места под название и описание; логотип
- *    остаётся видимым на странице профиля магазина).
- *  - `location_row` в сетке каталога не показываем — только на странице профиля.
+ * При наличии `parsed_ai_data.display` от ИИ — описание, подзаголовок, тип сделки и commerce берутся оттуда;
+ * При заглушке `store_name` и поле `catalogBrandName` в снимке ИИ — витринный заголовок из ИИ (без ника Instagram).
+ * Логотип, категории, фото и ссылка Instagram — из колонок БД.
  */
 export function vendorToCatalogCardSource(opts: {
   vendor: PublishedVendorRow;
@@ -332,23 +373,85 @@ export function vendorToCatalogCardSource(opts: {
   updatedLine: string;
 }): CatalogCardSourceRow {
   const { vendor, fallbackTitle, addedLine, updatedLine } = opts;
-  const title = vendor.store_name?.trim() || fallbackTitle;
-  const description = vendor.description?.trim() ?? "";
+  const ai = getAiCatalogDisplayOverlay(vendor.parsed_ai_data);
+  const descriptionFallback = vendor.description?.trim() ?? "";
   const photoUrls =
     vendor.product_photos.length > 0 ? vendor.product_photos : undefined;
+
+  const { storeTitle, catalogBrandName } = resolveCatalogStoreTitleForCard({
+    dbStoreName: vendor.store_name?.trim() ?? "",
+    fallbackTitle,
+    catalogBrandNameFromAi: ai?.catalogBrandName,
+  });
+  const subtitle = dedupeCatalogSubtitle(storeTitle, ai?.subtitle ?? null);
+
+  const display: ParsedVendorCardData = {
+    storeTitle,
+    catalogBrandName,
+    subtitle,
+    description: ai?.description ?? descriptionFallback,
+    tradeType: ai?.tradeType ?? inferVendorTradeType(vendor),
+    commerce: ai ? ai.commerce : commerceCopyFromVendorRow(vendor),
+    logoUrl: vendor.logo_url,
+    categories: vendor.categories,
+    instagramUrl: vendor.instagram_url?.trim() || null,
+  };
   return {
     id: vendor.id,
     slug: vendor.slug,
     href: `/catalog/${vendor.slug}`,
-    title,
-    tagline: null,
-    description,
-    categories: vendor.categories,
-    avatarUrl: vendor.logo_url,
-    hideAvatar: true,
+    display,
     photoUrls,
     featured: false,
     addedLine,
     updatedLine,
+  };
+}
+
+/**
+ * Одна строка карточки каталога для опубликованного вендора — та же логика, что в сетке `/catalog`
+ * (ИИ `parsed_ai_data`, витринные slug-и, i18n категорий).
+ */
+export function buildCatalogCardSourceRowForPublishedVendor(
+  vendor: PublishedVendorRow,
+  opts: {
+    tBrowse: CatalogBrowseT;
+    tTreeCategory: (key: string) => string;
+    locale: string;
+  },
+): CatalogCardSourceRow {
+  const { tBrowse, tTreeCategory, locale } = opts;
+  const addedLine = tBrowse("listingAdded", {
+    date: formatProviderAddedDate(vendor.created_at, locale),
+  });
+  const updatedLine = tBrowse("listingUpdated", {
+    relative: formatListingUpdatedToday(locale),
+  });
+  const row = vendorToCatalogCardSource({
+    vendor,
+    fallbackTitle: tBrowse("fallbackStoreTitle"),
+    addedLine,
+    updatedLine,
+  });
+  const showcase = getShowcaseCatalogFields(vendor.slug, tBrowse);
+  if (showcase) {
+    return {
+      ...row,
+      display: {
+        ...row.display,
+        storeTitle: showcase.title,
+        description: showcase.description,
+        categories: showcase.categories,
+      },
+    };
+  }
+  return {
+    ...row,
+    display: {
+      ...row.display,
+      categories: localizedMainCategoryLabels(vendor.categories, (id) =>
+        tTreeCategory(`main.${id}`),
+      ),
+    },
   };
 }

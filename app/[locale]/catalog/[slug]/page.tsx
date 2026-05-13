@@ -12,8 +12,10 @@ import {
 import { buildPageMetadata } from "@/lib/seo";
 import { baseUrl } from "@/lib/site";
 import { routing } from "@/i18n/routing";
-import { fetchPublishedVendorBySlug } from "@/lib/catalog/published-vendors";
-import { getShowcaseCatalogFields } from "@/lib/catalog/showcase-vendor-i18n";
+import {
+  buildCatalogCardSourceRowForPublishedVendor,
+  fetchPublishedVendorBySlug,
+} from "@/lib/catalog/published-vendors";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -38,18 +40,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     namespace: "Pages.catalogBrowse",
   });
+  const tTree = await getTranslations({
+    locale,
+    namespace: "catalogCategoryTree",
+  });
   const tProvider = await getTranslations({
     locale,
     namespace: "Pages.providerProfile",
   });
-  const showcase = getShowcaseCatalogFields(vendor.slug, tBrowse);
+  const cardRow = buildCatalogCardSourceRowForPublishedVendor(vendor, {
+    tBrowse,
+    tTreeCategory: (key) => tTree(key),
+    locale,
+  });
   const title =
-    showcase?.title ??
-    vendor.store_name?.trim() ??
-    tBrowse("fallbackStoreTitle");
+    cardRow.display.storeTitle.trim() || tBrowse("fallbackStoreTitle");
   const description =
-    showcase?.description.trim() ||
-    vendor.description?.trim() ||
+    cardRow.display.description.trim() ||
     vendor.description_detail?.trim() ||
     tProvider("listingBlurbFallback", { title });
   return buildPageMetadata({

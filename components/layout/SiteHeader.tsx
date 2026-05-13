@@ -23,7 +23,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { AuthDialog } from "@/components/auth/AuthDialog";
+import { useOpenAuthDialog } from "@/components/auth/auth-dialog-context";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
@@ -164,7 +164,7 @@ export function SiteHeader() {
   const tb = useTranslations("brand");
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [authOpen, setAuthOpen] = useState(false);
+  const openAuthDialog = useOpenAuthDialog();
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -287,7 +287,7 @@ export function SiteHeader() {
             ) : (
               <button
                 type="button"
-                onClick={() => setAuthOpen(true)}
+                onClick={() => openAuthDialog()}
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {th("ctaStart")}
@@ -311,7 +311,7 @@ export function SiteHeader() {
             ) : (
               <button
                 type="button"
-                onClick={() => setAuthOpen(true)}
+                onClick={() => openAuthDialog()}
                 className="inline-flex shrink-0 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-900/[0.04] transition-colors hover:border-gray-300 hover:bg-gray-50"
               >
                 {th("ctaStart")}
@@ -320,7 +320,6 @@ export function SiteHeader() {
           </div>
         </div>
       </div>
-      <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
     </header>
   );
 }

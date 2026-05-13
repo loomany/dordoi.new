@@ -29,12 +29,28 @@ function supabaseStorageRemotePatterns(): NonNullable<
   }
 }
 
+/** Импорт заявок из 2GIS — превью в админке (`VendorModerationView`). */
+function twoGisPhotoRemotePatterns(): NonNullable<
+  NonNullable<NextConfig["images"]>["remotePatterns"]
+> {
+  return [
+    {
+      protocol: "https",
+      hostname: "*.photo.2gis.com",
+      pathname: "/**",
+    },
+  ];
+}
+
 const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
   images: {
-    remotePatterns: supabaseStorageRemotePatterns(),
+    remotePatterns: [
+      ...supabaseStorageRemotePatterns(),
+      ...twoGisPhotoRemotePatterns(),
+    ],
   },
   experimental: {
     // Включаем экспериментальные `unauthorized()` / `forbidden()` —

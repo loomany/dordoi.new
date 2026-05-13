@@ -9,7 +9,6 @@ import {
   catalogListingKeyFromSlug,
 } from "@/lib/catalog/listing-key";
 import type { CatalogCardSourceRow } from "@/lib/catalog/published-vendors";
-import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
 
 type Props = {
   cards: CatalogCardSourceRow[];
@@ -19,13 +18,11 @@ type Props = {
   aboutStoreLabel: string;
   collapseLabel: string;
   expandLabel: string;
-  cardCategoryOne: string;
-  cardCategoriesMany: string;
 };
 
 /**
  * Состояние свёрнутости — **по индексу карточки** (стабильно при SSR и после гидрации).
- * Раньше на мобилке после гидрации менялся ключ `floor(i/2)` → `i`, из‑за этого стейт и тоггл расходились.
+ * По умолчанию все карточки со сворачиваемыми фото приходят свёрнутыми; раскрывает пользователь.
  */
 export function CatalogBrowseCardGrid({
   cards,
@@ -35,10 +32,7 @@ export function CatalogBrowseCardGrid({
   aboutStoreLabel,
   collapseLabel,
   expandLabel,
-  cardCategoryOne,
-  cardCategoriesMany,
 }: Props) {
-  const isMobile = useIsCatalogMobile();
   const favoriteSet = new Set(favoriteKeys);
 
   const [rowCollapsed, setRowCollapsed] = useState<Record<number, boolean>>({});
@@ -48,9 +42,9 @@ export function CatalogBrowseCardGrid({
       if (Object.prototype.hasOwnProperty.call(rowCollapsed, index)) {
         return rowCollapsed[index]!;
       }
-      return isMobile ? index >= 1 : index >= 2;
+      return true;
     },
-    [rowCollapsed, isMobile],
+    [rowCollapsed],
   );
 
   const setCollapsedForRowOfIndex = useCallback((index: number, next: boolean) => {
@@ -59,7 +53,7 @@ export function CatalogBrowseCardGrid({
 
   return (
     <section
-      className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start"
+      className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start lg:grid-cols-3"
       aria-label={gridAriaLabel}
     >
       {cards.map((c, index) => {
@@ -67,40 +61,21 @@ export function CatalogBrowseCardGrid({
           ? catalogListingKeyFromSlug(c.slug)
           : catalogListingKeyFromSampleId(c.id);
         const initialFavorite = favoriteSet.has(listingKey);
-        const cardCategories =
-          c.categories.length > 0 ? c.categories : undefined;
-        const categoriesSectionLabel =
-          cardCategories && cardCategories.length > 0
-            ? cardCategories.length === 1
-              ? cardCategoryOne
-              : cardCategoriesMany
-            : undefined;
-
-        const defaultCollapsed = index >= 2;
-        const defaultCollapsedMobile = index >= 1;
 
         return (
           <div key={c.id} className="flex min-h-0 w-full min-w-0 flex-col">
             <CatalogCard
               className="flex min-h-0 w-full"
               href={c.href}
-              title={c.title}
-              tagline={c.tagline ?? undefined}
-              description={c.description}
-              categories={cardCategories}
-              categoriesSectionLabel={categoriesSectionLabel}
-              avatarUrl={c.avatarUrl ?? undefined}
-              hideAvatar={c.hideAvatar}
+              display={c.display}
               photoUrls={c.photoUrls}
               featured={c.featured}
-              addedLine={c.addedLine}
-              updatedLine={c.updatedLine}
               viewProfileLabel={viewProfileLabel}
               aboutStoreLabel={aboutStoreLabel}
               collapseLabel={collapseLabel}
               expandLabel={expandLabel}
-              defaultCollapsed={defaultCollapsed}
-              defaultCollapsedMobile={defaultCollapsedMobile}
+              defaultCollapsed
+              defaultCollapsedMobile
               collapsedExternal={collapsedForIndex(index)}
               onCollapsedExternalChange={(next) =>
                 setCollapsedForRowOfIndex(index, next)
