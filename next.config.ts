@@ -46,12 +46,6 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
-  async rewrites() {
-    return [
-      { source: "/favicon.ico", destination: "/icon" },
-      { source: "/apple-touch-icon.png", destination: "/apple-icon" },
-    ];
-  },
   images: {
     remotePatterns: [
       ...supabaseStorageRemotePatterns(),
