@@ -243,6 +243,7 @@ export async function POST(request: Request) {
     const response = NextResponse.json({
       success: true,
       token: session.access_token,
+      name,
     });
     applyAuthCookiesTo(response);
     return response;

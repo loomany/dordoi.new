@@ -173,3 +173,28 @@
     animation: none;
   }
 }
+
+/* Catalog buyer spotlight — slow ambient pulse on the outer halo. */
+@keyframes d-spotlight-halo-pulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.015);
+  }
+}
+
+@layer utilities {
+  .d-spotlight-halo {
+    animation: d-spotlight-halo-pulse 7s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .d-spotlight-halo {
+    animation: none;
+  }
+}

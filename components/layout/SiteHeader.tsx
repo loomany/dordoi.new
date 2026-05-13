@@ -23,7 +23,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useOpenAuthDialog } from "@/components/auth/auth-dialog-context";
+import { useAuthDialog } from "@/components/auth/auth-dialog-context";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
@@ -164,21 +164,77 @@ export function SiteHeader() {
   const tb = useTranslations("brand");
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const openAuthDialog = useOpenAuthDialog();
+  const { openAuthDialog, displayName, clearAuthDisplayName } = useAuthDialog();
   const [user, setUser] = useState<User | null>(null);
+  const [sessionReady, setSessionReady] = useState(false);
+  const [profileName, setProfileName] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+      const nextUser = session?.user ?? null;
+      setUser(nextUser);
+      if (!nextUser) {
+        clearAuthDisplayName();
+      }
     });
     void supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      setSessionReady(true);
     });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [clearAuthDisplayName]);
+
+  useEffect(() => {
+    if (!user) {
+      setProfileName(null);
+      return;
+    }
+
+    let cancelled = false;
+    const supabase = createClient();
+    void supabase
+      .from("profiles")
+      .select("name")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled) {
+          setProfileName(data?.name?.trim() || null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const accountLabel = (() => {
+    const fromContext = displayName?.trim();
+    if (fromContext) {
+      return fromContext;
+    }
+    const fromProfile = profileName?.trim();
+    if (fromProfile) {
+      return fromProfile;
+    }
+    const meta = user?.user_metadata?.full_name;
+    if (typeof meta === "string" && meta.trim() !== "") {
+      return meta.trim();
+    }
+    return th("ctaAccount");
+  })();
+
+  const showAccount = Boolean(user || displayName);
+  const showLogin = sessionReady && !showAccount;
+
+  function handleOpenAuthDialog() {
+    openAuthDialog({
+      returnTo: `${window.location.pathname}${window.location.search}`,
+    });
+  }
 
   const nav: {
     href: string;
@@ -277,21 +333,28 @@ export function SiteHeader() {
               pathname={pathname}
               langNavLabel={th("langNav")}
             />
-            {user ? (
+            {showAccount ? (
               <Link
                 href="/cabinet"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="max-w-[10rem] truncate text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
-                {th("ctaAccount")}
+                {accountLabel}
               </Link>
-            ) : (
+            ) : showLogin ? (
               <button
                 type="button"
-                onClick={() => openAuthDialog()}
+                onClick={handleOpenAuthDialog}
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {th("ctaStart")}
               </button>
+            ) : (
+              <span
+                className="inline-block min-w-[3.5rem] text-sm font-medium text-transparent select-none"
+                aria-hidden
+              >
+                {th("ctaStart")}
+              </span>
             )}
           </div>
 
@@ -301,21 +364,28 @@ export function SiteHeader() {
               pathname={pathname}
               langNavLabel={th("langNav")}
             />
-            {user ? (
+            {showAccount ? (
               <Link
                 href="/cabinet"
-                className="inline-flex shrink-0 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-900/[0.04] transition-colors hover:border-gray-300 hover:bg-gray-50"
+                className="inline-flex max-w-[7rem] shrink-0 items-center truncate rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-900/[0.04] transition-colors hover:border-gray-300 hover:bg-gray-50"
               >
-                {th("ctaAccount")}
+                {accountLabel}
               </Link>
-            ) : (
+            ) : showLogin ? (
               <button
                 type="button"
-                onClick={() => openAuthDialog()}
+                onClick={handleOpenAuthDialog}
                 className="inline-flex shrink-0 items-center rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-900/[0.04] transition-colors hover:border-gray-300 hover:bg-gray-50"
               >
                 {th("ctaStart")}
               </button>
+            ) : (
+              <span
+                className="inline-flex min-w-[4.5rem] shrink-0 items-center rounded-xl border border-transparent px-3 py-2 text-sm font-semibold text-transparent select-none"
+                aria-hidden
+              >
+                {th("ctaStart")}
+              </span>
             )}
           </div>
         </div>

@@ -24,6 +24,8 @@ import {
   toInternationalDigits,
 } from "@/lib/phone-country";
 import { cn } from "@/lib/utils";
+import { resolveSafeReturnTo } from "@/lib/auth/safe-return-to";
+import { createClient } from "@/utils/supabase/client";
 
 type Step = "phone" | "otp" | "register";
 
@@ -84,9 +86,13 @@ const phoneHintKeys: Record<
 export function AuthDialog({
   open,
   onOpenChange,
+  returnTo,
+  reportAuthSuccess,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  returnTo: string | null;
+  reportAuthSuccess: (payload: { name?: string | null }) => void;
 }) {
   const t = useTranslations("Auth");
   const locale = useLocale();
@@ -132,6 +138,37 @@ export function AuthDialog({
     [onOpenChange, resetLocal],
   );
 
+  const finishAuthSuccess = useCallback(
+    async (name?: string | null) => {
+      reportAuthSuccess({ name });
+
+      const supabase = createClient();
+      await supabase.auth.getSession();
+
+      const currentPathWithSearch =
+        typeof window !== "undefined"
+          ? `${window.location.pathname}${window.location.search}`
+          : "";
+
+      const target = resolveSafeReturnTo({
+        rawReturnTo: returnTo,
+        locale,
+        currentPathWithSearch,
+      });
+
+      handleOpenChange(false);
+
+      if (currentPathWithSearch && target === currentPathWithSearch) {
+        router.refresh();
+        return;
+      }
+
+      router.replace(target);
+      router.refresh();
+    },
+    [reportAuthSuccess, returnTo, locale, handleOpenChange, router],
+  );
+
   async function onSendCode(e: React.FormEvent) {
     e.preventDefault();
     setErrorKey(null);
@@ -174,6 +211,7 @@ export function AuthDialog({
         code?: string;
         isNewUser?: boolean;
         tempToken?: string;
+        name?: string | null;
       };
       if (!res.ok) {
         setErrorKey(mapErrorCode(data.code));
@@ -184,9 +222,7 @@ export function AuthDialog({
         setStep("register");
         return;
       }
-      handleOpenChange(false);
-      router.push(`/${locale}/cabinet`);
-      router.refresh();
+      await finishAuthSuccess(data.name ?? null);
     } catch {
       setErrorKey("errorGeneric");
     } finally {
@@ -213,7 +249,7 @@ export function AuthDialog({
           tempToken,
         }),
       });
-      const data = (await res.json()) as { code?: string };
+      const data = (await res.json()) as { code?: string; name?: string | null };
       if (!res.ok) {
         if (data.code === "INVALID_EMAIL") {
           setErrorKey("errorInvalidEmail");
@@ -225,9 +261,8 @@ export function AuthDialog({
         );
         return;
       }
-      handleOpenChange(false);
-      router.push(`/${locale}/cabinet`);
-      router.refresh();
+      const registeredName = data.name?.trim() || name.trim() || null;
+      await finishAuthSuccess(registeredName);
     } catch {
       setErrorKey("errorComplete");
     } finally {

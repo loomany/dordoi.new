@@ -75,7 +75,7 @@ export async function POST(request: Request) {
 
     const { data: profile, error: profileError } = await admin
       .from("profiles")
-      .select("id")
+      .select("id, name")
       .eq("phone", digits)
       .maybeSingle();
 
@@ -158,6 +158,7 @@ export async function POST(request: Request) {
         success: true,
         isNewUser: false,
         token: session.access_token,
+        name: profile.name ?? null,
       });
       applyAuthCookiesTo(response);
       return response;
