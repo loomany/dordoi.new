@@ -1020,7 +1020,13 @@
       "favoritesTitle": "Mening sevimlilarim",
       "favoritesEmpty": "Katalogni oching va kartochkada yoki profilga «Sevimlilar» tugmasini bosing.",
       "favoritesOpenCatalog": "Katalogga o‘ting",
-      "favoritesOpenProfile": "Do‘kon profili"
+      "favoritesOpenProfile": "Do‘kon profili",
+      "subscription": {
+        "title": "Katalogga obuna",
+        "body": "To'lovni, to'lov usulini va obunani bekor qilishni himoyalangan Lemon Squeezy portalida boshqaring.",
+        "manageCta": "Obunani boshqarish",
+        "portalError": "Portalni ochib bo'lmadi. Agar obuna hali mavjud bo'lmasa, katalogda kirishni rasmiylashtiring."
+      }
     },
     "buyerAgent": {
       "metaTitle": "Bayer kabineti — Dordoi.help",

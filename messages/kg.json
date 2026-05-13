@@ -448,7 +448,7 @@
       "supportIntro": "Эгерде сиз сайтта ката тапсаңыз же кызматташуу боюнча сунуштарыңыз болсо, бизге жазыңыз!",
       "supportTelegramLabel": "Telegram:",
       "supportTelegram": "@loomany",
-      "supportEmailLabel": "Email:",
+      "supportEmailLabel": "Электрондук почта:",
       "supportEmail": "support@dordoi.help"
     },
     "faq": {
@@ -474,7 +474,7 @@
       "contactsHeading": "Биздин байланыштар:",
       "contactTelegramLead": "Telegram (эң ылдам жооп):",
       "contactTelegram": "@loomany",
-      "contactEmailLabel": "Email:",
+      "contactEmailLabel": "Электрондук почта:",
       "contactEmail": "support@dordoi.help",
       "contactHoursLabel": "Жардам кызматынын иштөө убактысы:",
       "contactHours": "Дүшөмбү – Жума, 09:00 – 18:00 (Бишкек убактысы)"
@@ -593,7 +593,15 @@
         "body": "Дүкөн аталыштары, WhatsApp жана Telegram байланыштары, профилдер жана опт шарттары — чектөөсүз. Бир төлөмдөн кийин жеткирүүчүнү сатып алууга дароо тандаңыз.",
         "ctaPayment": "$9.99 менен жеткиликтүүлүктү ачуу",
         "closeDialog": "Жабуу",
-        "unlockCard": "Жеткирүүчүнү ачуу"
+        "unlockCard": "Жеткирүүчүнү ачуу",
+        "planMonthlyLabel": "Ай сайын",
+        "planMonthlyPrice": "$9.99",
+        "planQuarterlyLabel": "3 ай",
+        "planQuarterlyPrice": "$300",
+        "checkoutError": "Төлөмдү баштоо мүмкүн болгон жок. Аккаунтуга кирип, кайра аракет кылыңыз.",
+        "checkoutLoading": "Төлөмгө өтүлүүдө…",
+        "checkoutPreparing": "Төлөм бетин даярдоо…",
+        "checkoutPrepareFailed": "Төлөм ачылбай калды. Каталогдон дагы бир жолу аракет кылыңыз."
       },
       "listingAdded": "Кошулган күнү {date}",
       "listingUpdated": "Жаңыланды {relative}",
@@ -696,7 +704,7 @@
         }
       },
       "fallbackStoreTitle": "Дүкөн",
-      "paginationNavAria": "Страницы каталога",
+      "paginationNavAria": "Каталог беттери",
       "paginationPrev": "Алдыңкы бет",
       "paginationNext": "Кийинки бет"
     },
@@ -998,7 +1006,7 @@
     "navTitle": "Шәхси кабинет",
     "navBuyer": "Сатып алуучу",
     "navVendor": "Сатуучу",
-    "navAdmin": "Администрирование",
+    "navAdmin": "Башкаруу",
     "roleBadgeBuyer": "Сатып алуучу",
     "roleBadgeVendor": "Сатуучу",
     "roleBadgeBuyerAgent": "Байер",
@@ -1012,7 +1020,13 @@
       "favoritesTitle": "Менин эң жакшыларыма",
       "favoritesEmpty": "Каталогду ачып, карточкада же профилде «Эң жакшыларына» басыңыз.",
       "favoritesOpenCatalog": "Каталогго өтүү",
-      "favoritesOpenProfile": "Дүкөн профили"
+      "favoritesOpenProfile": "Дүкөн профили",
+      "subscription": {
+        "title": "Каталогго жазылуу",
+        "body": "Lemon Squeezy корголгон порталында төлөмдү, төлөм ыкмасын жана жазылууну токтотууну башкаруу.",
+        "manageCta": "Жазылууну башкаруу",
+        "portalError": "Портал ачылбай калды. Эгерде жазылуу жок болсо, каталогдон жеткиликтүүлүктү алууну каттаңыз."
+      }
     },
     "buyerAgent": {
       "metaTitle": "Байер кабинети — Dordoi.help",
@@ -1181,9 +1195,9 @@
       "cardLogoAlt": "Дүкөндүн логотиби",
       "cardContainerAlt": "Контейнердин сүрөтү",
       "cardNoImage": "Сүрөт жок",
-      "vendorAiPlaygroundMetaTitle": "ИИ: текст карточки — Dordoi.help",
+      "vendorAiPlaygroundMetaTitle": "ИИ: карточка тексти — Dordoi.help",
       "vendorAiPlaygroundMetaDescription": "Песочница модерации без записи в БД.",
-      "vendorAiPlaygroundTitle": "ИИ: текст карточки (песочница)",
+      "vendorAiPlaygroundTitle": "ИИ: карточка тексти (песочница)",
       "vendorAiPlaygroundLead": "Сырой текстти киргизип, «Обработать ИИ» баңыз — превью көрүнөт. Сакталбайт.",
       "vendorAiPlaygroundBack": "Модерацияга",
       "vendorAiPlaygroundInputSection": "Киргизүү",

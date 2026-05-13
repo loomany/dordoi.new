@@ -593,7 +593,15 @@
         "body": "Дүкен атаулары, WhatsApp пен Telegram контактілері, профильдер мен опт шарттары — шектеусіз. Бір төлемнен кейін жеткізушіні сатып алуға бірден таңдай аласыз.",
         "ctaPayment": "$9.99-ға қолжетімділікті ашу",
         "closeDialog": "Жабу",
-        "unlockCard": "Жеткізушіні ашу"
+        "unlockCard": "Жеткізушіні ашу",
+        "planMonthlyLabel": "Ай сайын",
+        "planMonthlyPrice": "$9.99",
+        "planQuarterlyLabel": "3 ай",
+        "planQuarterlyPrice": "$300",
+        "checkoutError": "Төлемді бастау мүмкін болмады. Аккаунтқа кіріп, тағы біррет көріңіз.",
+        "checkoutLoading": "Төлемге өту…",
+        "checkoutPreparing": "Төлем беті дайындалуда…",
+        "checkoutPrepareFailed": "Төлемді ашу мүмкін болмады. Қайтадан каталогтан көріңіз."
       },
       "listingAdded": "{date} күні қосылды",
       "listingUpdated": "{relative} жаңартылды",
@@ -696,7 +704,7 @@
         }
       },
       "fallbackStoreTitle": "Дүкен",
-      "paginationNavAria": "Страницы каталога",
+      "paginationNavAria": "Каталог беттері",
       "paginationPrev": "Алдыңғы бет",
       "paginationNext": "Келесі бет"
     },
@@ -848,7 +856,7 @@
       "openOnMap": "Картеде ашу",
       "openInGoogleMaps": "Google Maps",
       "openIn2Gis": "2GIS",
-      "openInYandexMaps": "Яндекс Карты",
+      "openInYandexMaps": "Яндекс Карта",
       "vendorFaq": {
         "sectionTitle": "{vendorName} туралы жиі қойылатын сұрақтар",
         "sectionLead": "Жауаптар байланыс, тапсырыс және сатып алу шарттарын тез түсінуге көмектеседі.",
@@ -1012,7 +1020,13 @@
       "favoritesTitle": "Менің таңдаулы заттарым",
       "favoritesEmpty": "Каталогты ашыңыз да карточкада немесе профильде «Таңдаулыға» басыңыз.",
       "favoritesOpenCatalog": "Каталогқа өту",
-      "favoritesOpenProfile": "Дүкен профилі"
+      "favoritesOpenProfile": "Дүкен профилі",
+      "subscription": {
+        "title": "Каталогқа жазылу",
+        "body": "Lemon Squeezy қорғалған порталында төлемді, төлеу тәсілдерін және жазылуды басқару.",
+        "manageCta": "Жазылымды басқару",
+        "portalError": "Порталды ашу мүмкін болмады. Егер жазылымыңыз болмаса, каталогта қолжетімділікті алыңыз."
+      }
     },
     "buyerAgent": {
       "metaTitle": "Байер кабинеті — Dordoi.help",
