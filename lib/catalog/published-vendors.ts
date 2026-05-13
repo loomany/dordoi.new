@@ -619,8 +619,7 @@ export function vendorToCatalogCardSource(opts: {
     storeTitle,
     catalogBrandName,
     subtitle,
-    description:
-      ai?.description?.trim() ?? vendor.description?.trim() ?? "",
+    description: ai?.description?.trim() ?? "",
     tradeType: ai?.tradeType ?? inferVendorTradeType(vendor),
     commerce: ai ? ai.commerce : commerceCopyFromVendorRow(vendor),
     logoUrl: vendor.logo_url,
