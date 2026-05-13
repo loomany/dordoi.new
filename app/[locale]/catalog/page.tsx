@@ -5,7 +5,7 @@ import { buildSeoMetadata } from "@/lib/build-seo";
 import { normalizeCatalogCategorySlugs } from "@/lib/catalog/catalog-category-filter";
 import { catalogQueryParsers } from "@/lib/catalog/catalog-query-parsers";
 
-/** Список каталога читает Supabase на каждый запрос (в т.ч. `parsed_ai_data`). */
+/** Список каталога: пагинированный Supabase fetch (`fetchPublishedVendorsCatalogPage`). */
 export const dynamic = "force-dynamic";
 
 const loadCatalogSearchParams = createLoader(catalogQueryParsers);

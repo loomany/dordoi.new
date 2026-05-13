@@ -18,6 +18,7 @@ import {
 import { filterPublishedVendorsBySubcategorySlugs } from "@/lib/catalog/catalog-category-filter";
 import {
   buildCatalogCardSourceRowForPublishedVendor,
+  fetchPublishedVendorsCatalogPage,
   fetchPublishedVendorsForCatalog,
   type CatalogCardSourceRow,
 } from "@/lib/catalog/published-vendors";
@@ -132,21 +133,6 @@ export async function CatalogBrowseLayout({
     relative: formatListingUpdatedToday(locale),
   });
 
-  // 1) Реальные опубликованные продавцы из БД (admin одобрил → видно в каталоге).
-  const publishedVendors = await fetchPublishedVendorsForCatalog();
-  const publishedVendorsFiltered = filterPublishedVendorsBySubcategorySlugs(
-    publishedVendors,
-    categorySlugs,
-  );
-  const realCards: CatalogCardSourceRow[] = publishedVendorsFiltered.map((v) =>
-    buildCatalogCardSourceRowForPublishedVendor(v, {
-      tBrowse: t,
-      tTreeCategory: (key) => tTree(key),
-      locale,
-    }),
-  );
-
-  // 2) Плейсхолдеры из переводов — если в БД ещё нет approved или включён compare.
   const sampleCards: CatalogCardSourceRow[] = SAMPLE_IDS.map((id, index) => {
     const slug = SAMPLE_PROFILE_SLUGS[index];
     return {
@@ -170,18 +156,78 @@ export async function CatalogBrowseLayout({
     };
   });
 
-  const cards: CatalogCardSourceRow[] = compareWithPreview
-    ? [...realCards, ...sampleCards]
-    : realCards.length > 0
-      ? realCards
-      : sampleCards;
-  const cardCount = cards.length;
-  const totalPages = Math.max(1, Math.ceil(cardCount / CATALOG_PAGE_SIZE));
-  const currentPage = Math.min(parsePositivePage(page), totalPages);
-  const pageStart = (currentPage - 1) * CATALOG_PAGE_SIZE;
-  const pageEnd = pageStart + CATALOG_PAGE_SIZE;
-  const visibleCards = cards.slice(pageStart, pageEnd);
   const nf = new Intl.NumberFormat(locale);
+  let visibleCards: CatalogCardSourceRow[];
+  let totalPages: number;
+  let currentPage: number;
+  let cardCount: number;
+  let pageStart: number;
+  let pageEnd: number;
+
+  if (compareWithPreview) {
+    // Debug `/catalog?compare=1` — прежний full fetch + sample rows в памяти.
+    const publishedVendors = await fetchPublishedVendorsForCatalog();
+    const publishedVendorsFiltered = filterPublishedVendorsBySubcategorySlugs(
+      publishedVendors,
+      categorySlugs,
+    );
+    const realCards: CatalogCardSourceRow[] = publishedVendorsFiltered.map((v) =>
+      buildCatalogCardSourceRowForPublishedVendor(v, {
+        tBrowse: t,
+        tTreeCategory: (key) => tTree(key),
+        locale,
+      }),
+    );
+    const cards = [...realCards, ...sampleCards];
+    cardCount = cards.length;
+    totalPages = Math.max(1, Math.ceil(cardCount / CATALOG_PAGE_SIZE));
+    currentPage = Math.min(parsePositivePage(page), totalPages);
+    pageStart = (currentPage - 1) * CATALOG_PAGE_SIZE;
+    pageEnd = pageStart + CATALOG_PAGE_SIZE;
+    visibleCards = cards.slice(pageStart, pageEnd);
+  } else {
+    const requestedPage = parsePositivePage(page);
+    let catalogPage = await fetchPublishedVendorsCatalogPage({
+      page: requestedPage,
+      pageSize: CATALOG_PAGE_SIZE,
+      subcategorySlugs: categorySlugs,
+    });
+
+    cardCount = catalogPage.totalCount;
+    totalPages = Math.max(1, Math.ceil(cardCount / CATALOG_PAGE_SIZE));
+    currentPage = catalogPage.page;
+
+    if (cardCount > 0 && requestedPage > totalPages) {
+      catalogPage = await fetchPublishedVendorsCatalogPage({
+        page: totalPages,
+        pageSize: CATALOG_PAGE_SIZE,
+        subcategorySlugs: categorySlugs,
+      });
+      currentPage = totalPages;
+    }
+
+    const realCards: CatalogCardSourceRow[] = catalogPage.vendors.map((v) =>
+      buildCatalogCardSourceRowForPublishedVendor(v, {
+        tBrowse: t,
+        tTreeCategory: (key) => tTree(key),
+        locale,
+      }),
+    );
+
+    if (cardCount === 0) {
+      visibleCards = sampleCards;
+      cardCount = sampleCards.length;
+      totalPages = 1;
+      currentPage = 1;
+      pageStart = 0;
+      pageEnd = sampleCards.length;
+    } else {
+      visibleCards = realCards;
+      pageStart = (currentPage - 1) * CATALOG_PAGE_SIZE;
+      pageEnd = pageStart + visibleCards.length;
+    }
+  }
+
   const statsLine = t("stats", {
     from: nf.format(cardCount > 0 ? pageStart + 1 : 0),
     to: nf.format(Math.min(pageEnd, cardCount)),
