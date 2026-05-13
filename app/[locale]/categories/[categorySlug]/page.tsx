@@ -79,7 +79,6 @@ export default async function SeoCategoryPage({ params }: Props) {
           body: tBrowse("paywall.body"),
           ctaPayment: tBrowse("paywall.ctaPayment"),
           closeDialog: tBrowse("paywall.closeDialog"),
-          planMonthlyLabel: tBrowse("paywall.planMonthlyLabel"),
           planMonthlyPrice: tBrowse("paywall.planMonthlyPrice"),
           checkoutError: tBrowse("paywall.checkoutError"),
           checkoutLoading: tBrowse("paywall.checkoutLoading"),

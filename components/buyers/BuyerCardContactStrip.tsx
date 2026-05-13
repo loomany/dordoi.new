@@ -1,9 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { Send } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Loader2, Send } from "lucide-react";
+import { useLocale } from "next-intl";
 
+import {
+  createDordoiSubscriptionCheckoutUrl,
+  type SubscriptionCheckoutResult,
+} from "@/app/actions/subscription";
+import { useOpenAuthDialog } from "@/components/auth/auth-dialog-context";
 import type { BuyerDirectoryRow } from "@/data/buyers-directory";
+import { landingBlueCtaClassName } from "@/lib/landing-cta";
+import {
+  clearPendingCheckoutPlan,
+  savePendingCheckoutPlan,
+} from "@/lib/subscription/pending-checkout";
+import { cn } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +57,9 @@ const callBtn = `${socialBtn} w-full py-3.5 text-sm`;
 export type BuyerSpotModalStrings = {
   title: string;
   line1: string;
+  ctaPayment: string;
+  checkoutError: string;
+  checkoutLoading: string;
   telegramLabel: string;
 };
 
@@ -59,6 +75,101 @@ export type BuyerCardContactStripStrings = {
 };
 
 const LOOMANY_TELEGRAM = "https://t.me/loomany";
+
+function BuyerSpotModalBody({
+  strings,
+  onOpenChange,
+}: {
+  strings: BuyerSpotModalStrings;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const locale = useLocale();
+  const openAuthDialog = useOpenAuthDialog();
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  function handleCheckout() {
+    setError(null);
+    savePendingCheckoutPlan("quarterly", "buyers");
+    onOpenChange(false);
+
+    startTransition(async () => {
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user) {
+        openAuthDialog();
+        return;
+      }
+
+      const result: SubscriptionCheckoutResult =
+        await createDordoiSubscriptionCheckoutUrl("quarterly", locale, "buyers");
+
+      if (!result.ok) {
+        if (result.error === "auth_required") {
+          openAuthDialog();
+          return;
+        }
+        clearPendingCheckoutPlan();
+        onOpenChange(true);
+        setError(strings.checkoutError);
+        return;
+      }
+
+      clearPendingCheckoutPlan();
+      window.location.assign(result.url);
+    });
+  }
+
+  return (
+    <>
+      <DialogHeader className="pr-10">
+        <DialogTitle className="text-left text-base font-semibold leading-snug tracking-tight text-slate-900">
+          {strings.title}
+        </DialogTitle>
+      </DialogHeader>
+      <div className="space-y-4 text-sm leading-relaxed text-slate-600">
+        <p>{strings.line1}</p>
+        {error ? (
+          <p className="text-sm text-red-600" role="alert">
+            {error}
+          </p>
+        ) : null}
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={handleCheckout}
+          className={cn(
+            landingBlueCtaClassName,
+            "flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-semibold shadow-md disabled:opacity-70",
+          )}
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="size-4 animate-spin" aria-hidden />
+              <span>{strings.checkoutLoading}</span>
+            </>
+          ) : (
+            strings.ctaPayment
+          )}
+        </button>
+        <p className="border-t border-slate-100 pt-3 text-center text-slate-800">
+          <span className="font-medium text-slate-700">{strings.telegramLabel} </span>
+          <a
+            href={LOOMANY_TELEGRAM}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-emerald-700 underline-offset-4 hover:text-emerald-800 hover:underline"
+          >
+            @loomany
+          </a>
+        </p>
+      </div>
+    </>
+  );
+}
 
 type Props = {
   buyer: BuyerDirectoryRow;
@@ -89,27 +200,7 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
             closeLabel={strings.closeDialog}
             className="border-slate-200/95 bg-white text-slate-900 sm:p-7"
           >
-            <DialogHeader className="pr-10">
-              <DialogTitle className="text-left text-base font-semibold leading-snug tracking-tight text-slate-900">
-                {m.title}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-3 text-sm leading-relaxed text-slate-600">
-              <p>{m.line1}</p>
-              <p className="border-t border-slate-100 pt-3 text-slate-800">
-                <span className="font-medium text-slate-700">
-                  {m.telegramLabel}{" "}
-                </span>
-                <a
-                  href={LOOMANY_TELEGRAM}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-emerald-700 underline-offset-4 hover:text-emerald-800 hover:underline"
-                >
-                  @loomany
-                </a>
-              </p>
-            </div>
+            <BuyerSpotModalBody strings={m} onOpenChange={setOpen} />
           </DialogContent>
         </Dialog>
       </>
@@ -220,27 +311,7 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
           closeLabel={strings.closeDialog}
           className="border-slate-200/95 bg-white text-slate-900 sm:p-7"
         >
-          <DialogHeader className="pr-10">
-            <DialogTitle className="text-left text-base font-semibold leading-snug tracking-tight text-slate-900">
-              {m.title}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 text-sm leading-relaxed text-slate-600">
-            <p>{m.line1}</p>
-            <p className="border-t border-slate-100 pt-3 text-slate-800">
-              <span className="font-medium text-slate-700">
-                {m.telegramLabel}{" "}
-              </span>
-              <a
-                href={LOOMANY_TELEGRAM}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-emerald-700 underline-offset-4 hover:text-emerald-800 hover:underline"
-              >
-                @loomany
-              </a>
-            </p>
-          </div>
+          <BuyerSpotModalBody strings={m} onOpenChange={setOpen} />
         </DialogContent>
       </Dialog>
     </>

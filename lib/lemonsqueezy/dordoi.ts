@@ -60,7 +60,10 @@ export function isDordoiLemonWebhookEvent(opts: {
   return isDordoiCatalogVariantId(opts.variantId);
 }
 
-export function dordoiCatalogCheckoutSuccessUrl(locale?: string | null): string {
+function dordoiCheckoutSuccessUrl(
+  locale: string | null | undefined,
+  pathAfterLocale: string,
+): string {
   const origin = (
     process.env.NEXT_PUBLIC_APP_URL?.trim() || "https://dordoi.help"
   ).replace(/\/$/, "");
@@ -68,5 +71,13 @@ export function dordoiCatalogCheckoutSuccessUrl(locale?: string | null): string 
     locale && routing.locales.includes(locale as (typeof routing.locales)[number])
       ? locale
       : routing.defaultLocale;
-  return `${origin}/${loc}/catalog?checkout=success`;
+  return `${origin}/${loc}${pathAfterLocale}`;
+}
+
+export function dordoiCatalogCheckoutSuccessUrl(locale?: string | null): string {
+  return dordoiCheckoutSuccessUrl(locale, "/catalog?checkout=success");
+}
+
+export function dordoiBuyersCheckoutSuccessUrl(locale?: string | null): string {
+  return dordoiCheckoutSuccessUrl(locale, "/buyers?checkout=success");
 }

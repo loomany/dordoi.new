@@ -8,6 +8,7 @@ import { createDordoiSubscriptionCheckoutUrl } from "@/app/actions/subscription"
 import {
   clearPendingCheckoutPlan,
   hasPendingCheckoutPlan,
+  readPendingCheckoutContext,
   readPendingCheckoutPlan,
 } from "@/lib/subscription/pending-checkout";
 import { createClient } from "@/utils/supabase/client";
@@ -20,9 +21,7 @@ export function CatalogCheckoutResume() {
   const locale = useLocale();
   const t = useTranslations("Pages.catalogBrowse.paywall");
   const busyRef = useRef(false);
-  const [preparing, setPreparing] = useState(
-    () => typeof window !== "undefined" && hasPendingCheckoutPlan(),
-  );
+  const [preparing, setPreparing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const runCheckout = useCallback(async () => {
@@ -48,7 +47,11 @@ export function CatalogCheckoutResume() {
     setPreparing(true);
     setError(null);
 
-    const result = await createDordoiSubscriptionCheckoutUrl(plan, locale);
+    const result = await createDordoiSubscriptionCheckoutUrl(
+      plan,
+      locale,
+      readPendingCheckoutContext(),
+    );
     busyRef.current = false;
 
     if (result.ok) {

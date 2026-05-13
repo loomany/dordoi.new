@@ -268,7 +268,6 @@ export async function CatalogBrowseLayout({
               body: t("paywall.body"),
               ctaPayment: t("paywall.ctaPayment"),
               closeDialog: t("paywall.closeDialog"),
-              planMonthlyLabel: t("paywall.planMonthlyLabel"),
               planMonthlyPrice: t("paywall.planMonthlyPrice"),
               checkoutError: t("paywall.checkoutError"),
               checkoutLoading: t("paywall.checkoutLoading"),

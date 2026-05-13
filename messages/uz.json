@@ -370,9 +370,12 @@
       "ctaTelegram": "Telegram",
       "ctaInstagram": "Instagram",
       "buyerSpotModal": {
-        "title": "Saytda bayer sifatida tasdiqlash — 3 oy uchun $400",
+        "title": "Saytda bayer sifatida tasdiqlash — 3 oy uchun $300",
         "line1": "Har bir kategoriya bo'yicha faqat 3 joyni olamiz.",
-        "telegramLabel": "Telegram:"
+        "ctaPayment": "Оплатить $300",
+        "checkoutError": "To'lovni boshlab bo'lmadi. Akkauntga kiring va qayta urinib ko'ring.",
+        "checkoutLoading": "To'lovga o'tish…",
+        "telegramLabel": "Savollar:"
       },
       "noResults": "Hech kim filtrga mos kelmaydi — iltimos, so'rovingizni yoki ixtisoslashuvni o'zgartirib ko'ring.",
       "cards": {

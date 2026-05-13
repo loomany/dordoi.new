@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { CatalogCheckoutResume } from "@/components/catalog/CatalogCheckoutResume";
 import { BuyerCard } from "@/components/buyers/BuyerCard";
 import { BUYERS } from "@/data/buyers-directory";
 
@@ -11,7 +12,9 @@ export function BuyersDirectoryInteractive() {
   const tAuth = useTranslations("Auth");
 
   return (
-    <section
+    <>
+      <CatalogCheckoutResume />
+      <section
       className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
       aria-label={t("gridAria")}
     >
@@ -43,6 +46,9 @@ export function BuyersDirectoryInteractive() {
               buyerSpotModal: {
                 title: t("buyerSpotModal.title"),
                 line1: t("buyerSpotModal.line1"),
+                ctaPayment: t("buyerSpotModal.ctaPayment"),
+                checkoutError: t("buyerSpotModal.checkoutError"),
+                checkoutLoading: t("buyerSpotModal.checkoutLoading"),
                 telegramLabel: t("buyerSpotModal.telegramLabel"),
               },
             }}
@@ -50,5 +56,6 @@ export function BuyersDirectoryInteractive() {
         );
       })}
     </section>
+    </>
   );
 }

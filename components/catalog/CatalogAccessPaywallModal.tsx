@@ -29,7 +29,6 @@ export type CatalogAccessPaywallCopy = {
   body: string;
   ctaPayment: string;
   closeDialog: string;
-  planMonthlyLabel?: string;
   planMonthlyPrice?: string;
   checkoutError?: string;
   checkoutLoading?: string;
@@ -97,11 +96,8 @@ export function CatalogAccessPaywallModal({ open, onOpenChange, copy }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-1 rounded-2xl border border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] bg-white px-4 py-3 shadow-sm ring-2 ring-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)]">
-          <span className="block text-xs font-medium uppercase tracking-wide text-zinc-500">
-            {copy.planMonthlyLabel ?? "$9.99 / month"}
-          </span>
-          <span className="mt-1 block text-xl font-bold tracking-tight text-zinc-950">
+        <div className="mt-1 flex items-center justify-center rounded-2xl border border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] bg-white px-4 py-4 shadow-sm ring-2 ring-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)]">
+          <span className="text-2xl font-bold tracking-tight text-zinc-950 tabular-nums">
             {copy.planMonthlyPrice ?? "$9.99"}
           </span>
         </div>
