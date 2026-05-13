@@ -41,7 +41,12 @@ import {
 } from "@/lib/catalog/vendor-map-links";
 import { getShowcaseProfileFields } from "@/lib/catalog/showcase-vendor-i18n";
 import { displayVendorPaymentMethods, displayVendorTerm } from "@/lib/vendor/vendor-payment-display";
+import {
+  resolveSeoCategoryForMainId,
+  seoCategoryPath,
+} from "@/lib/catalog/seo-category-routes";
 import { normalizeVendorCategoryMainSlugs } from "@/lib/catalog/vendor-category-normalize";
+import type { RouteLocale } from "@/lib/seo/route-locale";
 import { buildVendorFaq } from "@/lib/dordoi/vendorFaq";
 import { baseUrl } from "@/lib/site";
 
@@ -134,6 +139,16 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
   })();
   const pageTitle =
     cardRow.display.storeTitle.trim() || tBrowse("fallbackStoreTitle");
+  const primaryMainId = normalizeVendorCategoryMainSlugs(vendor.categories)[0];
+  const seoCategoryRoute = primaryMainId
+    ? resolveSeoCategoryForMainId(primaryMainId)
+    : undefined;
+  const categoryBreadcrumbHref = seoCategoryRoute
+    ? seoCategoryPath(locale as RouteLocale, seoCategoryRoute)
+    : undefined;
+  const categoryBreadcrumbLabel = seoCategoryRoute
+    ? seoCategoryRoute.h1ByLocale[locale as RouteLocale]
+    : null;
   const categoryLabels = showcase
     ? showcase.categories
     : cardRow.display.categories;
@@ -315,6 +330,21 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                       {t("breadcrumbCatalog")}
                     </Link>
                   </li>
+                  {categoryBreadcrumbHref && categoryBreadcrumbLabel ? (
+                    <>
+                      <li className="text-muted-foreground/40" aria-hidden>
+                        /
+                      </li>
+                      <li>
+                        <Link
+                          href={categoryBreadcrumbHref}
+                          className="transition-colors hover:text-foreground"
+                        >
+                          {categoryBreadcrumbLabel}
+                        </Link>
+                      </li>
+                    </>
+                  ) : null}
                   <li className="text-muted-foreground/40" aria-hidden>
                     /
                   </li>

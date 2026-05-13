@@ -83,6 +83,7 @@ export function CatalogBrowseCardGrid({  cards,
             <CatalogCard
               className="h-full min-h-0 w-full md:h-auto"
               href={c.href}
+              categoryHref={c.categoryHref}
               display={c.display}
               photoUrls={c.photoUrls}
               leadVideo={c.leadVideo}

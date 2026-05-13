@@ -10,11 +10,20 @@ import { seoCategoryPathsByLocale } from "@/lib/catalog/seo-category-routes";
 import { baseUrl, siteIndexable } from "@/lib/site";
 import type { RouteLocale } from "@/lib/seo/route-locale";
 
-function categoryRobots(route: SeoCategoryRoute): Metadata["robots"] {
+function categoryRobots(
+  route: SeoCategoryRoute,
+  vendorCount: number,
+): Metadata["robots"] {
   if (!siteIndexable()) {
     return { index: false, follow: false, googleBot: { index: false, follow: false } };
   }
+  if (route.indexPolicy === "noindex") {
+    return { index: false, follow: true, googleBot: { index: false, follow: true } };
+  }
   if (route.indexPolicy === "index") {
+    return { index: true, follow: true, googleBot: { index: true, follow: true } };
+  }
+  if (vendorCount >= route.minVendorsToIndex) {
     return { index: true, follow: true, googleBot: { index: true, follow: true } };
   }
   return { index: false, follow: true, googleBot: { index: false, follow: true } };
@@ -23,6 +32,7 @@ function categoryRobots(route: SeoCategoryRoute): Metadata["robots"] {
 export function buildSeoCategoryMetadata(
   locale: RouteLocale,
   route: SeoCategoryRoute,
+  vendorCount: number,
 ): Metadata {
   const pathsByLocale = seoCategoryPathsByLocale(route);
   const path = pathsByLocale[locale];
@@ -32,7 +42,7 @@ export function buildSeoCategoryMetadata(
   const description = route.descriptionByLocale[locale];
 
   return {
-    robots: categoryRobots(route),
+    robots: categoryRobots(route, vendorCount),
     metadataBase: new URL(baseUrl()),
     title,
     description,

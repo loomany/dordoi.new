@@ -1,4 +1,5 @@
 import { SEO_CATEGORY_ROUTES, type SeoCategoryRoute } from "@/lib/catalog/seo-category-route-data";
+import { normalizeVendorCategoryMainSlugs } from "@/lib/catalog/vendor-category-normalize";
 import { ROUTE_LOCALES, type RouteLocale, isRouteLocale } from "@/lib/seo/route-locale";
 
 export type { SeoCategoryRoute } from "@/lib/catalog/seo-category-route-data";
@@ -74,4 +75,24 @@ export function getAllSeoCategoryStaticParams(): Array<{
     }
   }
   return params;
+}
+
+/** SEO category page href for a vendor's primary main category, if mapped in manifest. */
+export function resolveSeoCategoryHrefForMainId(
+  mainId: string,
+  locale: RouteLocale,
+): string | undefined {
+  const route = resolveSeoCategoryForMainId(mainId);
+  if (!route) return undefined;
+  return seoCategoryPath(locale, route);
+}
+
+/** First normalized main category on the vendor row → localized SEO category URL. */
+export function resolveSeoCategoryHrefForVendorCategories(
+  categories: string[] | null | undefined,
+  locale: RouteLocale,
+): string | undefined {
+  const mainId = normalizeVendorCategoryMainSlugs(categories)[0];
+  if (!mainId) return undefined;
+  return resolveSeoCategoryHrefForMainId(mainId, locale);
 }

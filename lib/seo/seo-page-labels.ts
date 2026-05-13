@@ -8,6 +8,8 @@ const CATEGORY_LABELS: Record<
     breadcrumbCatalog: string;
     vendorPreviewTitle: string;
     vendorPreviewBody: string;
+    vendorPreviewBodyEmpty: string;
+    vendorPreviewBodyWithVendors: (count: number) => string;
     ctaCatalog: string;
     ctaBuyers: string;
     relatedTitle: string;
@@ -20,8 +22,11 @@ const CATEGORY_LABELS: Record<
     breadcrumbHome: "Главная",
     breadcrumbCatalog: "Каталог",
     vendorPreviewTitle: "Поставщики категории",
-    vendorPreviewBody:
-      "Подборка продавцов этой категории появится в следующем этапе. Пока откройте полный каталог или найдите байера для помощи с закупкой.",
+    vendorPreviewBody: "",
+    vendorPreviewBodyEmpty:
+      "Пока в этой категории нет опубликованных поставщиков в каталоге. Откройте полный каталог или найдите байера для помощи с закупкой.",
+    vendorPreviewBodyWithVendors: (count) =>
+      `В каталоге найдено поставщиков: ${count}. Ниже — до 12 карточек для быстрого просмотра.`,
     ctaCatalog: "Открыть каталог",
     ctaBuyers: "Найти байера",
     relatedTitle: "Смежные категории",
@@ -33,7 +38,11 @@ const CATEGORY_LABELS: Record<
     breadcrumbHome: "Басты бет",
     breadcrumbCatalog: "Каталог",
     vendorPreviewTitle: "Санат жеткізушілері",
-    vendorPreviewBody: "Бұл санаттағы сатушылар келесі кезеңде қосылады. Қазір толық каталогты ашыңыз.",
+    vendorPreviewBody: "",
+    vendorPreviewBodyEmpty:
+      "Бұл санатта әлі жарияланған жеткізушілер жоқ. Толық каталогты ашыңыз немесе байер табыңыз.",
+    vendorPreviewBodyWithVendors: (count) =>
+      `Каталогта жеткізушілер: ${count}. Төменде 12 карточкаға дейін.`,
     ctaCatalog: "Каталогты ашу",
     ctaBuyers: "Байер табу",
     relatedTitle: "Қатысты санаттар",
@@ -45,7 +54,11 @@ const CATEGORY_LABELS: Record<
     breadcrumbHome: "Башкы бет",
     breadcrumbCatalog: "Каталог",
     vendorPreviewTitle: "Категория жеткирүүчүлөрү",
-    vendorPreviewBody: "Бул категориядагы сатуучулар кийинки этапта кошулат. Азыр толук каталогду ачыңыз.",
+    vendorPreviewBody: "",
+    vendorPreviewBodyEmpty:
+      "Бул категорияда азырынча жарыяланган жеткирүүчүлөр жок. Толук каталогду ачыңыз же байер табыңыз.",
+    vendorPreviewBodyWithVendors: (count) =>
+      `Каталогдо жеткирүүчүлөр: ${count}. Төмөндө 12 карточкага чейин.`,
     ctaCatalog: "Каталогду ачуу",
     ctaBuyers: "Байер табуу",
     relatedTitle: "Текшел категориялар",
@@ -57,7 +70,11 @@ const CATEGORY_LABELS: Record<
     breadcrumbHome: "Bosh sahifa",
     breadcrumbCatalog: "Katalog",
     vendorPreviewTitle: "Toifa yetkazib beruvchilari",
-    vendorPreviewBody: "Ushbu toifadagi sotuvchilar keyingi bosqichda qo'shiladi. Hozir to'liq katalogni oching.",
+    vendorPreviewBody: "",
+    vendorPreviewBodyEmpty:
+      "Ushbu toifada hali e'lon qilingan yetkazib beruvchilar yo'q. To'liq katalogni oching yoki xaridor toping.",
+    vendorPreviewBodyWithVendors: (count) =>
+      `Katalogda yetkazib beruvchilar: ${count}. Quyida 12 tagacha karta.`,
     ctaCatalog: "Katalogni ochish",
     ctaBuyers: "Xaridor topish",
     relatedTitle: "Bog'liq toifalar",
@@ -69,7 +86,11 @@ const CATEGORY_LABELS: Record<
     breadcrumbHome: "Саҳифаи асосӣ",
     breadcrumbCatalog: "Каталог",
     vendorPreviewTitle: "Таъминкунандагони категория",
-    vendorPreviewBody: "Фурӯшандагони ин категория дар марҳилаи оянда илова мешаванд. Ҳоло каталоги пурраро кушоед.",
+    vendorPreviewBody: "",
+    vendorPreviewBodyEmpty:
+      "Дар ин категория ҳоло таъминкунандагони нашршуда нестанд. Каталоги пурраро кушоед ё харидор ёбед.",
+    vendorPreviewBodyWithVendors: (count) =>
+      `Дар каталог таъминкунандагон: ${count}. Дар поён то 12 корт.`,
     ctaCatalog: "Каталогро кушодан",
     ctaBuyers: "Харидор ёфтан",
     relatedTitle: "Категорияҳои марбут",

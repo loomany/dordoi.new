@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { CatalogBrowseCardGrid } from "@/components/catalog/CatalogBrowseCardGrid";
 import { SeoCategoryLanding } from "@/components/seo/SeoCategoryLanding";
 import { buildSeoCategoryMetadata } from "@/lib/catalog/seo-category-metadata";
+import { getSeoCategoryVendorPageData } from "@/lib/catalog/seo-category-vendors";
+import {
+  buildCatalogCardSourceRowForPublishedVendor,
+} from "@/lib/catalog/published-vendors";
 import {
   getAllSeoCategoryStaticParams,
   resolveSeoCategoryBySlug,
@@ -24,7 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!isRouteLocale(locale)) return { title: "404" };
   const route = resolveSeoCategoryBySlug(locale, categorySlug);
   if (!route) return { title: "404" };
-  return buildSeoCategoryMetadata(locale, route);
+  const { totalCount } = await getSeoCategoryVendorPageData(route);
+  return buildSeoCategoryMetadata(locale, route, totalCount);
 }
 
 export default async function SeoCategoryPage({ params }: Props) {
@@ -35,11 +41,46 @@ export default async function SeoCategoryPage({ params }: Props) {
   const route = resolveSeoCategoryBySlug(locale, categorySlug);
   if (!route) notFound();
 
+  const routeLocale = locale as RouteLocale;
+  const { vendors, totalCount } = await getSeoCategoryVendorPageData(route);
+  const tBrowse = await getTranslations("Pages.catalogBrowse");
+  const tTree = await getTranslations("catalogCategoryTree");
+  const labels = seoCategoryPageLabels(routeLocale);
+
+  const cards = vendors.map((v) =>
+    buildCatalogCardSourceRowForPublishedVendor(v, {
+      tBrowse,
+      tTreeCategory: (key) => tTree(key),
+      locale,
+    }),
+  );
+
+  const vendorGrid =
+    cards.length > 0 ? (
+      <CatalogBrowseCardGrid
+        cards={cards}
+        favoriteKeys={[]}
+        gridAriaLabel={labels.vendorPreviewTitle}
+        viewProfileLabel={tBrowse("vendorCard.profileCta")}
+        aboutStoreLabel={tBrowse("vendorCard.aboutStore")}
+        collapseLabel={tBrowse("vendorCard.collapse")}
+        expandLabel={tBrowse("vendorCard.expand")}
+      />
+    ) : null;
+
   return (
     <SeoCategoryLanding
-      locale={locale as RouteLocale}
+      locale={routeLocale}
       route={route}
-      labels={seoCategoryPageLabels(locale)}
+      vendorCount={totalCount}
+      vendorGrid={vendorGrid}
+      labels={{
+        ...labels,
+        vendorPreviewBody:
+          totalCount > 0
+            ? labels.vendorPreviewBodyWithVendors(totalCount)
+            : labels.vendorPreviewBodyEmpty,
+      }}
     />
   );
 }

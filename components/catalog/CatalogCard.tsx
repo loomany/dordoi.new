@@ -18,6 +18,8 @@ export type CatalogCardProps = {
   viewProfileLabel: string;
   /** Если задан — блок «шапка + описание» — нативная ссылка на профиль (ПКМ / новая вкладка); подвал и фото вне ссылки. CTA в подвале — второй `<Link>`. */
   href?: string;
+  /** SEO category page for the subtitle badge (outside profile link to avoid nested anchors). */
+  categoryHref?: string;
   /** Фото под CTA при раскрытии: карусель (одно фото, листание влево-вправо). */
   photoUrls?: string[];
   /** Первое видео в начале карусели (если есть в БД). */
@@ -87,6 +89,7 @@ export function CatalogCard({
   display,
   viewProfileLabel,
   href,
+  categoryHref,
   photoUrls,
   leadVideo,
   productVideos,
@@ -363,9 +366,19 @@ export function CatalogCard({
             {display.storeTitle}
           </h2>
           {display.subtitle?.trim() ? (
-            <p className="mt-0.5 line-clamp-1 text-xs leading-snug text-muted-foreground/85 sm:text-[13px]">
-              {display.subtitle.trim()}
-            </p>
+            categoryHref ? (
+              <Link
+                href={categoryHref}
+                className="mt-0.5 line-clamp-1 text-xs leading-snug text-muted-foreground/85 underline-offset-2 hover:text-primary hover:underline sm:text-[13px]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {display.subtitle.trim()}
+              </Link>
+            ) : (
+              <p className="mt-0.5 line-clamp-1 text-xs leading-snug text-muted-foreground/85 sm:text-[13px]">
+                {display.subtitle.trim()}
+              </p>
+            )
           ) : (
             <p className="mt-0.5 h-[1.125rem]" aria-hidden />
           )}

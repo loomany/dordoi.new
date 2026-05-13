@@ -25,6 +25,8 @@ import {
   getShowcaseCatalogFields,
   type CatalogBrowseT,
 } from "@/lib/catalog/showcase-vendor-i18n";
+import { resolveSeoCategoryHrefForVendorCategories } from "@/lib/catalog/seo-category-routes";
+import type { RouteLocale } from "@/lib/seo/route-locale";
 import { localizedMainCategoryLabels } from "@/lib/catalog/vendor-category-normalize";
 import {
   formatListingUpdatedToday,
@@ -718,6 +720,8 @@ export type CatalogCardSourceRow = {
   id: string;
   slug: string | undefined;
   href: string | undefined;
+  /** Localized SEO category page for the vendor's primary main category. */
+  categoryHref?: string;
   /** Нормализованные поля карточки (каталог / превью админки). */
   display: ParsedVendorCardData;
   photoUrls: string[] | undefined;
@@ -808,6 +812,10 @@ export function buildCatalogCardSourceRowForPublishedVendor(
   const updatedLine = tBrowse("listingUpdated", {
     relative: formatListingUpdatedToday(locale),
   });
+  const categoryHref = resolveSeoCategoryHrefForVendorCategories(
+    vendor.categories,
+    locale as RouteLocale,
+  );
   const row = vendorToCatalogCardSource({
     vendor,
     fallbackTitle: tBrowse("fallbackStoreTitle"),
@@ -825,6 +833,7 @@ export function buildCatalogCardSourceRowForPublishedVendor(
   if (showcase) {
     return {
       ...row,
+      categoryHref,
       display: {
         ...row.display,
         storeTitle: showcase.title,
@@ -836,6 +845,7 @@ export function buildCatalogCardSourceRowForPublishedVendor(
   }
   return {
     ...row,
+    categoryHref,
     display: {
       ...row.display,
       subtitle,
