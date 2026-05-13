@@ -13,6 +13,8 @@
     "report:i18n-identical-to-ru": "node scripts/list-overlay-identical-to-ru.mjs",
     "audit:seo-locales": "tsx scripts/audit-seo-locale-translations.mts",
     "audit:i18n": "tsx scripts/audit-full-i18n.mts",
+    "i18n:full": "tsx scripts/i18n-audit-fix-all.mts",
+    "i18n:audit": "tsx scripts/i18n-audit-fix-all.mts --skip-fix",
     "generate:landing-spec": "tsx scripts/generate-landing-spec.mts",
     "translate:messages": "tsx scripts/translate-messages.mts",
     "translate:messages:all": "tsx scripts/translate-messages.mts --locale=all --align",

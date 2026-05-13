@@ -17,6 +17,23 @@ import type { RouteLocale } from "../lib/seo/route-locale";
 import type { SeoCategoryRoute } from "../lib/catalog/seo-category-route-data";
 import type { CoreSeoLanding } from "../lib/seo/core-seo-landings";
 
+/** Mirrors lib/seo.ts publicRoutes — inlined for script ESM compatibility. */
+const PUBLIC_ROUTES = [
+  "/",
+  "/catalog",
+  "/sell",
+  "/suppliers",
+  "/buyers",
+  "/buyer-service",
+  "/about",
+  "/help",
+  "/faq",
+  "/contact",
+  "/privacy",
+  "/terms",
+  "/refund",
+] as const;
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const TARGET_LOCALES = ["kk", "kg", "uz", "tj"] as const satisfies readonly RouteLocale[];
 type TargetLocale = (typeof TARGET_LOCALES)[number];
@@ -483,7 +500,7 @@ async function auditVendorDb(
 type LiveJob = {
   locale: TargetLocale;
   path: string;
-  kind: "vendor" | "seo-category" | "seo-core" | "faq" | "catalog";
+  kind: "vendor" | "seo-category" | "seo-core" | "faq" | "catalog" | "static";
 };
 
 async function auditLive(
@@ -507,25 +524,40 @@ async function auditLive(
       : vendorSlugs;
 
   const jobs: LiveJob[] = [];
+  const seen = new Set<string>();
+  const push = (job: LiveJob) => {
+    const k = `${job.locale}${job.path}`;
+    if (seen.has(k)) return;
+    seen.add(k);
+    jobs.push(job);
+  };
+
   for (const locale of locales) {
-    jobs.push({ locale, path: `/${locale}/faq`, kind: "faq" });
-    jobs.push({ locale, path: `/${locale}/catalog`, kind: "catalog" });
+    for (const route of PUBLIC_ROUTES) {
+      push({
+        locale,
+        path: route === "/" ? `/${locale}` : `/${locale}${route}`,
+        kind: "static",
+      });
+    }
+    push({ locale, path: `/${locale}/faq`, kind: "faq" });
+    push({ locale, path: `/${locale}/catalog`, kind: "catalog" });
     for (const landing of CORE_SEO_LANDINGS) {
-      jobs.push({
+      push({
         locale,
         path: `/${locale}${landing.path}`,
         kind: "seo-core",
       });
     }
     for (const route of SEO_CATEGORY_ROUTES) {
-      jobs.push({
+      push({
         locale,
         path: `/${locale}${seoCategoryPath(locale, route)}`,
         kind: "seo-category",
       });
     }
     for (const slug of slugs) {
-      jobs.push({
+      push({
         locale,
         path: `/${locale}/catalog/${encodeURIComponent(slug)}`,
         kind: "vendor",
