@@ -61,8 +61,8 @@ export const BUYERS: BuyerDirectoryRow[] = [
     linkedVendorSlug: "dordoi-zakup-aiperi",
   },
   {
-    id: "open-slot-electronics",
-    category: "electronics",
+    id: "open-slot-clothing",
+    category: "textile",
     experienceYears: 0,
     completedOrdersDisplay: "—",
     whatsappDigits: "0",

@@ -302,8 +302,6 @@
       "verifiedBadgeAria": "Tasdiqlangan profil",
       "openSlotBadge": "Bo'sh",
       "openSlotBadgeAria": "Bayerlar katalogidagi bo'sh joy",
-      "openSlotStatsPrimary": "Tarif: 3 oy uchun $400",
-      "openSlotStatsSecondary": "«Elektronika» kategoriyasida 3 tadan 1 joy qoldi",
       "experience": "Tajriba: {years} yil",
       "orders": "Bajarilgan buyurtmalar: {count}",
       "ctaContact": "Bayer bilan bog'lanish",
@@ -342,15 +340,15 @@
             "3": "RF, Qozog'iston va O'zbekistonga konsolidatsiya va yetkazish"
           }
         },
-        "open-slot-electronics": {
+        "open-slot-clothing": {
           "name": "Yangi buyerni kutamiz",
-          "specialization": "Elektronika · Dordoydan opt",
-          "description": "Bu joy katalogda bo'sh. Agar siz Dordoyda gadjetlar, aksessuarlar va elektronika bilan ishlasangiz — profilingizni shu yerga joylashtiring va MDH optoviklaridan murojaatlar oling.",
+          "specialization": "Erkak va ayol kiyimi · Dordoyda xarid",
+          "description": "Bu joy katalogda bo'sh. Agar siz Dordoyda kiyim bo'yicha buyer bo'lsangiz — profilingizni shu yerga joylashtiring va MDH optoviklaridan murojaatlar oling.",
           "services": {
             "0": "Mijozlarning to'g'ridan-to'g'ri murojaatlari — vositachisiz",
             "1": "WhatsApp, qo'ng'iroq va ijtimoiy tarmoqlar bilan kartochka",
             "2": "Tasdiqlashdan keyin «tasdiqlangan buyer» belgisi",
-            "3": "«Elektronika» kategoriyasida qidiruvda ko'rinish"
+            "3": "Bayerlar katalogida ko'rinish"
           }
         }
       }
