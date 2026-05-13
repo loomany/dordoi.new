@@ -1,16 +1,16 @@
 import { Suspense } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import {
   CatalogCategoryFilter,
   CatalogCategoryFilterFallback,
 } from "@/components/catalog/CatalogCategoryFilter";
 import { CatalogBrowseCardGrid } from "@/components/catalog/CatalogBrowseCardGrid";
+import { CatalogPaginationNav } from "@/components/catalog/CatalogPaginationNav";
 import type { ProviderSlug } from "@/data/provider-registry";
 import { getSessionProfile } from "@/lib/auth/session-profile";
 import { fetchBuyerFavoriteKeySet } from "@/lib/favorites/buyer-favorites";
-import { cn } from "@/lib/utils";
 import {
   formatListingUpdatedToday,
   formatProviderAddedDate,
@@ -25,8 +25,6 @@ import {
 
 const SAMPLE_IDS = ["0", "1", "2", "3", "4", "5"] as const;
 const CATALOG_PAGE_SIZE = 12;
-/** First page numbers always listed before an ellipsis (SaaS-style trail). */
-const PAGINATION_LEADING_PAGES = 7;
 
 /** Profile slugs for sample rows — aligns with `data/provider-registry`. */
 const SAMPLE_PROFILE_SLUGS: (ProviderSlug | undefined)[] = [
@@ -56,60 +54,6 @@ function parsePositivePage(value: string | number | undefined | null): number {
   const parsed =
     typeof value === "number" ? value : Number.parseInt(String(value), 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
-}
-
-function buildCatalogBrowsePath(opts: {
-  page?: number;
-  categorySlugs: string[];
-  compareWithPreview?: boolean;
-}): string {
-  const params = new URLSearchParams();
-  if (opts.page != null && opts.page > 1) {
-    params.set("page", String(opts.page));
-  }
-  if (opts.categorySlugs.length > 0) {
-    params.set("cat", opts.categorySlugs.join(","));
-  }
-  if (opts.compareWithPreview) {
-    params.set("compare", "1");
-  }
-  const q = params.toString();
-  return q.length > 0 ? `/catalog?${q}` : "/catalog";
-}
-
-/** Compact page list: `1 2 … 5 6 7 … 39` or `1–7 … 39` at start — one row, no wrap. */
-type CatalogPaginationItem = number | "ellipsis";
-
-function getCatalogPaginationItems(
-  totalPages: number,
-  currentPage: number,
-  delta = 1,
-): CatalogPaginationItem[] {
-  const current = Math.min(Math.max(1, currentPage), totalPages);
-  const range: number[] = [];
-  for (let i = 1; i <= totalPages; i++) {
-    if (
-      i === totalPages ||
-      i <= PAGINATION_LEADING_PAGES ||
-      (i >= current - delta && i <= current + delta)
-    ) {
-      range.push(i);
-    }
-  }
-  const out: CatalogPaginationItem[] = [];
-  let prev: number | undefined;
-  for (const i of range) {
-    if (prev !== undefined) {
-      if (i - prev === 2) {
-        out.push(prev + 1);
-      } else if (i - prev > 2) {
-        out.push("ellipsis");
-      }
-    }
-    out.push(i);
-    prev = i;
-  }
-  return out;
 }
 
 /** Full catalog browse chrome: header, filters, responsive card grid. */
@@ -298,74 +242,13 @@ export async function CatalogBrowseLayout({
                 className="h-px w-full bg-gradient-to-r from-transparent via-border to-transparent dark:via-border/80"
                 aria-hidden
               />
-              <nav
-                className="flex flex-nowrap items-center justify-center gap-1 pt-8 sm:gap-1.5 sm:pt-10"
-                aria-label="Страницы каталога"
-              >
-              <Link
-                href={buildCatalogBrowsePath({
-                  page: Math.max(1, currentPage - 1),
-                  categorySlugs,
-                  compareWithPreview,
-                })}
-                aria-disabled={currentPage === 1}
-                className={cn(
-                  "inline-flex h-9 shrink-0 items-center justify-center rounded-md border border-border/80 bg-card px-2 text-muted-foreground shadow-sm transition-colors hover:bg-muted/60 hover:text-foreground",
-                  currentPage === 1 && "pointer-events-none opacity-45",
-                )}
-              >
-                <ChevronLeft className="size-4" aria-hidden />
-                <span className="sr-only">Предыдущая страница</span>
-              </Link>
-
-              <div className="flex min-w-0 flex-nowrap items-center justify-center gap-1 sm:gap-1.5">
-                {getCatalogPaginationItems(totalPages, currentPage).map((item, idx) =>
-                  item === "ellipsis" ? (
-                    <span
-                      key={`e-${idx}`}
-                      className="inline-flex h-9 shrink-0 select-none items-center px-1 text-sm text-muted-foreground/80"
-                      aria-hidden
-                    >
-                      …
-                    </span>
-                  ) : (
-                    <Link
-                      key={item}
-                      href={buildCatalogBrowsePath({
-                        page: item,
-                        categorySlugs,
-                        compareWithPreview,
-                      })}
-                      aria-current={item === currentPage ? "page" : undefined}
-                      className={cn(
-                        "inline-flex h-9 min-w-9 shrink-0 items-center justify-center rounded-md border px-2 text-sm font-medium tabular-nums transition-colors",
-                        item === currentPage
-                          ? "border-primary/35 bg-primary text-primary-foreground shadow-sm"
-                          : "border-border/80 bg-card text-card-foreground shadow-sm hover:bg-muted/50",
-                      )}
-                    >
-                      {nf.format(item)}
-                    </Link>
-                  ),
-                )}
-              </div>
-
-              <Link
-                href={buildCatalogBrowsePath({
-                  page: Math.min(totalPages, currentPage + 1),
-                  categorySlugs,
-                  compareWithPreview,
-                })}
-                aria-disabled={currentPage === totalPages}
-                className={cn(
-                  "inline-flex h-9 shrink-0 items-center justify-center rounded-md border border-border/80 bg-card px-2 text-muted-foreground shadow-sm transition-colors hover:bg-muted/60 hover:text-foreground",
-                  currentPage === totalPages && "pointer-events-none opacity-45",
-                )}
-              >
-                <ChevronRight className="size-4" aria-hidden />
-                <span className="sr-only">Следующая страница</span>
-              </Link>
-            </nav>
+              <CatalogPaginationNav
+                totalPages={totalPages}
+                currentPage={currentPage}
+                categorySlugs={categorySlugs}
+                compareWithPreview={compareWithPreview}
+                locale={locale}
+              />
             </div>
           ) : null}
         </div>

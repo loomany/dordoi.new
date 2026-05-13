@@ -425,7 +425,7 @@ export function CatalogCard({
       {descTrim ? (
         <section
           aria-label={aboutStoreLabel?.trim() || undefined}
-          className="mt-2.5 min-w-0 flex-1 sm:mt-3"
+          className="mt-2.5 min-w-0 flex-1 md:flex-none sm:mt-3"
         >
           <p className="line-clamp-3 text-[13px] leading-[1.5] text-muted-foreground/90 sm:text-sm sm:leading-snug">
             {truncateForCompact(descTrim)}
@@ -440,14 +440,14 @@ export function CatalogCard({
       <Link
         href={href}
         className={cn(
-          "flex min-h-0 min-w-0 flex-1 flex-col gap-0 cursor-pointer text-left text-inherit no-underline outline-none",
+          "flex min-h-0 min-w-0 flex-1 flex-col gap-0 md:flex-none cursor-pointer text-left text-inherit no-underline outline-none",
           "focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.14_250_/_0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-card",
         )}
       >
         {headlineAndDescription}
       </Link>
     ) : (
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-0">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-0 md:flex-none">
         {headlineAndDescription}
       </div>
     );
@@ -480,7 +480,7 @@ export function CatalogCard({
 
   const shellClass = cn(
     articleClass,
-    "flex h-full min-h-0 w-full flex-col",
+    "flex min-h-0 w-full flex-col md:h-auto",
     variant === "preview" && "ring-1 ring-dashed ring-muted-foreground/25",
   );
 
@@ -491,7 +491,7 @@ export function CatalogCard({
 
   return (
     <article className={shellClass} {...dataAttrs}>
-      <div className="flex h-full min-h-0 flex-1 flex-col">{body}</div>
+      <div className="flex min-h-0 flex-col md:h-auto">{body}</div>
     </article>
   );
 }

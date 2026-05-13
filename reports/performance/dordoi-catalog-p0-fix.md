@@ -285,3 +285,87 @@
 | `/ru/catalog?cat=womens` | 0.96 s | **0.24 s** |
 
 List SELECT теперь **не включает** `parsed_ai_data`; profile/detail SELECT без изменений.
+
+---
+
+## P0.3b production verification
+
+**Дата:** 2026-05-13  
+**Режим:** verification only (код/коммиты не менялись).
+
+### Deployed commit
+
+| Check | Result |
+|-------|--------|
+| `origin/main` HEAD | **`a179a78`** — `perf(catalog): cache public vendor list` |
+| Railway deploy SHA | **Не проверялся** (нет доступа к Railway dashboard/logs) |
+| Косвенный признак | Production отвечает **HTTP 200**; warm TTFB каталога **~1.0–1.1 s** — **без заметного улучшения** vs P0.2 prod baseline (~1.0–1.3 s). Возможны: deploy ещё не завершён, multi-instance без shared cache, или SSR overhead доминирует. |
+
+### Production TTFB after cache
+
+`curl.exe` → `https://dordoi.help`, метрика **TTFB** = `time_starttransfer`.
+
+| URL | Run 1 | Run 2 | Run 3 | Run 4 | Run 5 | Run 6 | Notes |
+|-----|------:|------:|------:|------:|------:|------:|-------|
+| `/ru/catalog` | 2.95 s | 1.02 s | 1.06 s | 1.05 s | 1.07 s | 1.03 s | HTTP 200; run1 cold |
+| `/ru/catalog?page=2` | 2.75 s | 1.01 s | 1.04 s | — | — | — | HTTP 200; 3 runs |
+| `/ru/catalog?cat=womens` | 1.10 s | 1.27 s | 1.42 s | — | — | — | HTTP 200; 3 runs |
+| `/ru` (control) | 0.31 s | — | — | — | — | — | HTTP 200 |
+| `/ru/suppliers` (control) | 0.36 s | — | — | — | — | — | HTTP 200 |
+
+### Warm cache result
+
+**Before P0.3b:**
+- `/ru/catalog` prod warm after P0.2: **~1.0–1.3 s**
+
+**After P0.3b (this check):**
+- `/ru/catalog` prod warm (runs 2–6): **~1.03–1.07 s** — **≈ без изменений**
+- `/ru/catalog?page=2` prod warm: **~1.01–1.04 s**
+- `/ru/catalog?cat=womens` prod warm: **~1.10–1.42 s** (разброс выше)
+
+**Вывод:** цель **0.3–0.6 s** warm на prod **не достигнута** в этом замере. Локально P0.3b давал **~0.24–0.26 s** warm — разрыв prod vs local указывает на deploy lag, per-instance `unstable_cache`, и/или фиксированный ~1 s SSR path (middleware + `getSessionProfile` + dynamic layout).
+
+### Headers
+
+`/ru/catalog`, `?page=2`, `?cat=womens` — одинаково:
+
+| Header | Value |
+|--------|--------|
+| Status | **200 OK** |
+| `Cache-Control` | `private, no-cache, no-store, max-age=0, must-revalidate` |
+| `cf-cache-status` | **DYNAMIC** (ожидаемо для server-side `unstable_cache`) |
+| `x-railway-edge` | `railway/europe-west4-drams3a` |
+| Redirect / `:8080` | **нет** |
+
+### Visual check
+
+Проверка по production HTML (`curl -sL`); браузер/консоль не открывались.
+
+| URL | HTTP | Проверка |
+|-----|------|----------|
+| `/ru/catalog` | 200 | **12**× `data-vendor-card`; HTML ~262 KB |
+| `/ru/catalog?page=2` | 200 | **12** карточек; ~263 KB |
+| `/ru/catalog?cat=womens` | 200 | **12** карточек; ~262 KB |
+| `/ru/catalog/container-04-12` | 200 | profile page ~144 KB |
+
+Консольные ошибки: **не проверялись**.
+
+### Result
+
+| Metric | P0.2 prod warm | P0.3b prod warm (this check) | Local P0.3b warm |
+|--------|----------------|------------------------------|------------------|
+| `/ru/catalog` TTFB | ~1.0–1.3 s | **~1.03–1.07 s** | ~0.24–0.26 s |
+| `/ru/suppliers` TTFB | ~0.28–0.34 s | **~0.36 s** | ~0.22 s |
+
+**Вердикт:** функционально каталог **OK** (12 cards, pagination, filter, profile). **Perf:** warm prod TTFB **не улучшился** заметно vs P0.2 в этом окне — нужна повторная проверка после подтверждения Railway deploy `a179a78` и/или P0.3a (anonymous profile skip).
+
+### Remaining bottlenecks
+
+Do not fix yet:
+
+- middleware `getUser`
+- `force-dynamic` / page-level cache
+- `getSessionProfile` duplicate user lookup
+- images / `product_photos`
+- client JS bundle
+- prod multi-instance `unstable_cache` (no shared data cache between replicas)

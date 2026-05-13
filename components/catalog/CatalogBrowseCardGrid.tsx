@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 
 import { CatalogCard } from "@/components/catalog/CatalogCard";
 import { CatalogFavoriteButton } from "@/components/favorites/CatalogFavoriteButton";
-import {
+import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";import {
   catalogListingKeyFromSampleId,
   catalogListingKeyFromSlug,
 } from "@/lib/catalog/listing-key";
@@ -21,11 +21,11 @@ type Props = {
 };
 
 /**
- * Состояние свёрнутости — **по индексу карточки** (стабильно при SSR и после гидрации).
- * По умолчанию все карточки со сворачиваемыми фото приходят свёрнутыми; раскрывает пользователь.
+ * Свёрнутость — по индексу карточки.
+ * На `lg+` (3 колонки) раскрытие/сворачивание одной карточки синхронизируется со всем рядом.
+ * Ниже `lg` каждая карточка независима.
  */
-export function CatalogBrowseCardGrid({
-  cards,
+export function CatalogBrowseCardGrid({  cards,
   favoriteKeys,
   gridAriaLabel,
   viewProfileLabel,
@@ -34,26 +34,39 @@ export function CatalogBrowseCardGrid({
   expandLabel,
 }: Props) {
   const favoriteSet = new Set(favoriteKeys);
+  const isMobile = useIsCatalogMobile();
+  const desktopCols = 3;
 
-  const [rowCollapsed, setRowCollapsed] = useState<Record<number, boolean>>({});
-
+  const [collapsedByIndex, setCollapsedByIndex] = useState<Record<number, boolean>>({});
   const collapsedForIndex = useCallback(
     (index: number) => {
-      if (Object.prototype.hasOwnProperty.call(rowCollapsed, index)) {
-        return rowCollapsed[index]!;
+      if (Object.prototype.hasOwnProperty.call(collapsedByIndex, index)) {
+        return collapsedByIndex[index]!;
       }
       return true;
     },
-    [rowCollapsed],
+    [collapsedByIndex],
   );
 
-  const setCollapsedForRowOfIndex = useCallback((index: number, next: boolean) => {
-    setRowCollapsed((prev) => ({ ...prev, [index]: next }));
-  }, []);
-
+  const setCollapsedForIndex = useCallback(
+    (index: number, next: boolean) => {
+      setCollapsedByIndex((prev) => {
+        const updates: Record<number, boolean> = { ...prev, [index]: next };
+        if (!isMobile) {
+          const rowStart = Math.floor(index / desktopCols) * desktopCols;
+          const rowEnd = Math.min(rowStart + desktopCols, cards.length);
+          for (let i = rowStart; i < rowEnd; i++) {
+            updates[i] = next;
+          }
+        }
+        return updates;
+      });
+    },
+    [cards.length, isMobile],
+  );
   return (
     <section
-      className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
+      className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start lg:grid-cols-3"
       aria-label={gridAriaLabel}
     >
       {cards.map((c, index) => {
@@ -63,9 +76,12 @@ export function CatalogBrowseCardGrid({
         const initialFavorite = favoriteSet.has(listingKey);
 
         return (
-          <div key={c.id} className="flex h-full min-h-0 w-full min-w-0 flex-col">
+          <div
+            key={c.id}
+            className="flex h-full min-h-0 w-full min-w-0 flex-col md:h-auto"
+          >
             <CatalogCard
-              className="h-full min-h-0 w-full flex-1"
+              className="h-full min-h-0 w-full md:h-auto"
               href={c.href}
               display={c.display}
               photoUrls={c.photoUrls}
@@ -80,7 +96,7 @@ export function CatalogBrowseCardGrid({
               defaultCollapsedMobile
               collapsedExternal={collapsedForIndex(index)}
               onCollapsedExternalChange={(next) =>
-                setCollapsedForRowOfIndex(index, next)
+                setCollapsedForIndex(index, next)
               }
               favoriteSlot={
                 <CatalogFavoriteButton
