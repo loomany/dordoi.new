@@ -1,5 +1,10 @@
 import { digitsOnly } from "@/lib/phone";
 import { mapTwoGisRubricsToSiteCategories } from "@/lib/vendor/2gis-dataset-category-map";
+import {
+  VENDOR_MOQ_DEFAULT_RU,
+  VENDOR_PAYMENT_DEFAULT_RU,
+  VENDOR_RETURNS_DEFAULT_RU,
+} from "@/lib/vendor/vendor-payment-display";
 
 const MODERATION_NOTE =
   "Импорт из выгрузки 2GIS. Проверьте контакты и категорию перед публикацией.";
@@ -212,10 +217,10 @@ export function transformTwoGisRowToVendorInsert(
     description,
     description_detail: null,
     categories: siteCategories,
-    min_batch: "Не указано",
-    payment_methods: "Не указано",
+    min_batch: VENDOR_MOQ_DEFAULT_RU,
+    payment_methods: VENDOR_PAYMENT_DEFAULT_RU,
     delivery_help: false,
-    returns_policy: "Не указано",
+    returns_policy: VENDOR_RETURNS_DEFAULT_RU,
     whatsapp_1: wa1,
     whatsapp_2: waSecond,
     instagram_url: ig,

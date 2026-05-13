@@ -491,10 +491,10 @@
         "profileCta": "Открыть",
         "profileCtaAria": "Профиль магазина — условия, контакты и фото",
         "instagramAria": "Открыть Instagram",
-        "defaultDelivery": "Организация доставки (поможем)",
-        "defaultPayment": "Наличные, безналичный расчет, перевод",
+        "defaultDelivery": "Отправляем и организуем доставку",
+        "defaultPayment": "Наличный расчёт, перевод на банковскую карту",
         "defaultSamples": "Предоставление образцов по договоренности",
-        "defaultDefects": "Условия обсуждаются индивидуально до отправки"
+        "defaultDefects": "Условия обсуждаются индивидуально"
       },
       "cardCollapsedHint": "Карточка свёрнута",
       "favoriteLoginHint": "Войдите в аккаунт, чтобы сохранять поставщиков в избранное.",
@@ -581,10 +581,12 @@
         "returnsBrak": "Возврат брака"
       },
       "termValueDeliveryYes": "Помогаем с доставкой",
-      "termValueDeliveryNo": "По договорённости",
+      "termValueDeliveryNo": "Отправляем и организуем доставку",
       "termValueSamplesYes": "Есть образцы",
       "termValueSamplesAsk": "Уточняйте у продавца",
-      "termReturnsFallback": "Уточняйте у продавца",
+      "termMoqFallback": "Обсуждается индивидуально",
+      "termReturnsFallback": "Условия обсуждаются индивидуально",
+      "termPaymentFallback": "Наличный расчёт, перевод на банковскую карту",
       "listingBlurbFallback": "{title} в каталоге Dordoi.help",
       "mediaSectionTitle": "Медиа",
       "containerLocationCaption": "Где находится продавец",

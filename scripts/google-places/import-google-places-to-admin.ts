@@ -7,6 +7,11 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  VENDOR_MOQ_DEFAULT_RU,
+  VENDOR_PAYMENT_DEFAULT_RU,
+  VENDOR_RETURNS_DEFAULT_RU,
+} from "@/lib/vendor/vendor-payment-display";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -100,10 +105,10 @@ function rowInsertPayload(row: CatalogMatchedRow) {
     description: buildDescription(row),
     description_detail: null as string | null,
     categories: [cat],
-    min_batch: "Не указано",
-    payment_methods: "Не указано",
+    min_batch: VENDOR_MOQ_DEFAULT_RU,
+    payment_methods: VENDOR_PAYMENT_DEFAULT_RU,
     delivery_help: false,
-    returns_policy: "Не указано",
+    returns_policy: VENDOR_RETURNS_DEFAULT_RU,
     whatsapp_1: null as string | null,
     whatsapp_2: null as string | null,
     instagram_url: null as string | null,

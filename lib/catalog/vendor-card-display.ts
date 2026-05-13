@@ -4,6 +4,7 @@
  */
 
 import { localizedMainCategoryLabels } from "@/lib/catalog/vendor-category-normalize";
+import { isVendorTermUnset } from "@/lib/vendor/vendor-payment-display";
 
 export type VendorTradeType = "wholesale" | "retail" | "hybrid";
 
@@ -65,9 +66,13 @@ export function inferCatalogCardSubtitleFallback(
 export function commerceCopyFromVendorRow(
   row: VendorRowForCardInference,
 ): VendorCardCommerceCopy {
-  const payment = row.payment_methods?.trim();
+  const paymentRaw = row.payment_methods?.trim();
+  const payment =
+    paymentRaw && !isVendorTermUnset(paymentRaw) ? paymentRaw : undefined;
   const samplesNote = row.samples_note?.trim();
-  const returns = row.returns_policy?.trim();
+  const returnsRaw = row.returns_policy?.trim();
+  const returns =
+    returnsRaw && !isVendorTermUnset(returnsRaw) ? returnsRaw : undefined;
 
   let samples: string | undefined;
   if (samplesNote) {

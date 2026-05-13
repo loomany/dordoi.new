@@ -36,6 +36,7 @@ import {
   twoGisFirmPageUrlFromGooglePlaceId,
 } from "@/lib/catalog/vendor-map-links";
 import { getShowcaseProfileFields } from "@/lib/catalog/showcase-vendor-i18n";
+import { displayVendorPaymentMethods, displayVendorTerm } from "@/lib/vendor/vendor-payment-display";
 import { baseUrl } from "@/lib/site";
 
 type Props = {
@@ -184,17 +185,23 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
         {
           Icon: Package,
           label: t("termLabels.moq"),
-          value: optionalText(showcase.terms.minBatch),
+          value: displayVendorTerm(showcase.terms.minBatch, t("termMoqFallback")),
         },
         {
           Icon: CreditCard,
           label: t("termLabels.payment"),
-          value: optionalText(showcase.terms.paymentMethods),
+          value: displayVendorPaymentMethods(
+            showcase.terms.paymentMethods,
+            t("termPaymentFallback"),
+          ),
         },
         {
           Icon: Truck,
           label: t("termLabels.shipping"),
-          value: optionalText(showcase.terms.shippingValue),
+          value: optionalText(
+            showcase.terms.shippingValue,
+            t("termValueDeliveryNo"),
+          ),
         },
         {
           Icon: Package,
@@ -204,7 +211,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
         {
           Icon: RotateCcw,
           label: t("termLabels.returnsBrak"),
-          value: optionalText(
+          value: displayVendorTerm(
             showcase.terms.returnsPolicy,
             t("termReturnsFallback"),
           ),
@@ -214,12 +221,15 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
         {
           Icon: Package,
           label: t("termLabels.moq"),
-          value: optionalText(vendor.min_batch),
+          value: displayVendorTerm(vendor.min_batch, t("termMoqFallback")),
         },
         {
           Icon: CreditCard,
           label: t("termLabels.payment"),
-          value: optionalText(vendor.payment_methods),
+          value: displayVendorPaymentMethods(
+            vendor.payment_methods,
+            t("termPaymentFallback"),
+          ),
         },
         {
           Icon: Truck,
@@ -240,7 +250,10 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
         {
           Icon: RotateCcw,
           label: t("termLabels.returnsBrak"),
-          value: optionalText(vendor.returns_policy, t("termReturnsFallback")),
+          value: displayVendorTerm(
+            vendor.returns_policy,
+            t("termReturnsFallback"),
+          ),
         },
       ];
 
