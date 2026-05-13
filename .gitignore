@@ -58,5 +58,15 @@ data/generated/
 
 # sync-all-media resume checkpoint (npm run sync:all-media)
 .sync-all-media.checkpoint.json
+.sync-all-media.checkpoint.*.json
 # overnight wrapper log
 sync-all-media-overnight.log
+sync-all-media-lap*.log
+sync-all-media-pilot.log
+
+# local scratch / audit HTML dumps
+tmp-*
+tmp-local-*
+
+# ad-hoc DB/media backups (scripts)
+/backups/

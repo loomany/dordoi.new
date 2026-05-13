@@ -588,6 +588,13 @@
       "categoryFilterMainCategoriesNav": "Asosiy kategoriyalar",
       "categoryFilterNoMatches": "Mos kelish yo'q",
       "gridAria": "Etkazib beruvchilar katalogi",
+      "paywall": {
+        "title": "Dordoy yetkazib beruvchilari to'liq katalogini oching",
+        "body": "Do'kon nomlari, WhatsApp va Telegram kontaktlari, profillar va opt shartlari — cheklovsiz. Bir to'lovdan keyin xaridingiz uchun yetkazib beruvchini darhol tanlang.",
+        "ctaPayment": "$9.99 evaziga kirishni ochish",
+        "closeDialog": "Yopish",
+        "unlockCard": "Yetkazib beruvchini ochish"
+      },
       "listingAdded": "Qo'shilgan sana {date}",
       "listingUpdated": "Yangilandi {relative}",
       "viewProfile": "Do'kon profili",

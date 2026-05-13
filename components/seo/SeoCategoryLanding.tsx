@@ -2,6 +2,10 @@ import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { SeoBreadcrumbs } from "@/components/seo/SeoBreadcrumbs";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
+import {
+  VendorItemListJsonLd,
+  type VendorItemListEntry,
+} from "@/components/seo/VendorItemListJsonLd";
 import { FaqAccordion } from "@/components/ui/faq-accordion";
 import type { SeoCategoryRoute } from "@/lib/catalog/seo-category-routes";
 import {
@@ -9,12 +13,14 @@ import {
   seoCategoryPath,
 } from "@/lib/catalog/seo-category-routes";
 import type { RouteLocale } from "@/lib/seo/route-locale";
+import { baseUrl } from "@/lib/site";
 
 type SeoCategoryLandingProps = {
   locale: RouteLocale;
   route: SeoCategoryRoute;
   vendorCount: number;
   vendorGrid: ReactNode | null;
+  vendorListItems?: VendorItemListEntry[];
   labels: {
     breadcrumbNav: string;
     breadcrumbHome: string;
@@ -37,11 +43,13 @@ export function SeoCategoryLanding({
   route,
   vendorCount,
   vendorGrid,
+  vendorListItems = [],
   labels,
 }: SeoCategoryLandingProps) {
   const related = getRelatedSeoCategories(route, 6);
   const faq = route.faqByLocale[locale];
   const guideParagraphs = route.seoTextByLocale[locale];
+  const categoryPageUrl = `${baseUrl()}/${locale}${seoCategoryPath(locale, route)}`;
 
   return (
     <article className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
@@ -49,6 +57,8 @@ export function SeoCategoryLanding({
         <header className="space-y-4">
           <SeoBreadcrumbs
             navLabel={labels.breadcrumbNav}
+            locale={locale}
+            currentPageUrl={categoryPageUrl}
             items={[
               { label: labels.breadcrumbHome, href: "/" },
               { label: labels.breadcrumbCatalog, href: "/catalog" },
@@ -144,6 +154,7 @@ export function SeoCategoryLanding({
         </div>
 
         <FaqJsonLd items={faq} />
+        <VendorItemListJsonLd locale={locale} items={vendorListItems} />
       </div>
     </article>
   );

@@ -2,9 +2,16 @@
 
 import { useCallback, useState } from "react";
 
+import { CatalogAccessPaywallModal } from "@/components/catalog/CatalogAccessPaywallModal";
+import type { CatalogAccessPaywallCopy } from "@/components/catalog/CatalogAccessPaywallModal";
 import { CatalogCard } from "@/components/catalog/CatalogCard";
 import { CatalogFavoriteButton } from "@/components/favorites/CatalogFavoriteButton";
-import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";import {
+import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
+import {
+  GUEST_FREE_CATALOG_CARDS,
+  isCatalogCardLockedForGuest,
+} from "@/lib/catalog/catalog-guest-access";
+import {
   catalogListingKeyFromSampleId,
   catalogListingKeyFromSlug,
 } from "@/lib/catalog/listing-key";
@@ -18,6 +25,12 @@ type Props = {
   aboutStoreLabel: string;
   collapseLabel: string;
   expandLabel: string;
+  /** Глобальный индекс первой карточки на странице (для пагинации). */
+  cardGlobalOffset?: number;
+  hasFullCatalogAccess?: boolean;
+  guestFreeCardLimit?: number;
+  paywallCopy?: CatalogAccessPaywallCopy;
+  lockedCardUnlockLabel?: string;
 };
 
 /**
@@ -25,17 +38,24 @@ type Props = {
  * На `lg+` (3 колонки) раскрытие/сворачивание одной карточки синхронизируется со всем рядом.
  * Ниже `lg` каждая карточка независима.
  */
-export function CatalogBrowseCardGrid({  cards,
+export function CatalogBrowseCardGrid({
+  cards,
   favoriteKeys,
   gridAriaLabel,
   viewProfileLabel,
   aboutStoreLabel,
   collapseLabel,
   expandLabel,
+  cardGlobalOffset = 0,
+  hasFullCatalogAccess = true,
+  guestFreeCardLimit = GUEST_FREE_CATALOG_CARDS,
+  paywallCopy,
+  lockedCardUnlockLabel,
 }: Props) {
   const favoriteSet = new Set(favoriteKeys);
   const isMobile = useIsCatalogMobile();
   const desktopCols = 3;
+  const [paywallOpen, setPaywallOpen] = useState(false);
 
   const [collapsedByIndex, setCollapsedByIndex] = useState<Record<number, boolean>>({});
   const collapsedForIndex = useCallback(
@@ -64,54 +84,79 @@ export function CatalogBrowseCardGrid({  cards,
     },
     [cards.length, isMobile],
   );
-  return (
-    <section
-      className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start lg:grid-cols-3"
-      aria-label={gridAriaLabel}
-    >
-      {cards.map((c, index) => {
-        const listingKey = c.slug
-          ? catalogListingKeyFromSlug(c.slug)
-          : catalogListingKeyFromSampleId(c.id);
-        const initialFavorite = favoriteSet.has(listingKey);
 
-        return (
-          <div
-            key={c.id}
-            className="flex h-full min-h-0 w-full min-w-0 flex-col md:h-auto"
-          >
-            <CatalogCard
-              className="h-full min-h-0 w-full md:h-auto"
-              href={c.href}
-              categoryHref={c.categoryHref}
-              display={c.display}
-              photoUrls={c.photoUrls}
-              leadVideo={c.leadVideo}
-              productVideos={c.productVideos}
-              featured={c.featured}
-              viewProfileLabel={viewProfileLabel}
-              aboutStoreLabel={aboutStoreLabel}
-              collapseLabel={collapseLabel}
-              expandLabel={expandLabel}
-              defaultCollapsed
-              defaultCollapsedMobile
-              collapsedExternal={collapsedForIndex(index)}
-              onCollapsedExternalChange={(next) =>
-                setCollapsedForIndex(index, next)
-              }
-              favoriteSlot={
-                <CatalogFavoriteButton
-                  key={`${listingKey}:${initialFavorite}`}
-                  listingKey={listingKey}
-                  initialFavorite={initialFavorite}
-                  variant="card"
-                  showCardLabel={false}
-                />
-              }
-            />
-          </div>
-        );
-      })}
-    </section>
+  const openPaywall = useCallback(() => {
+    setPaywallOpen(true);
+  }, []);
+
+  return (
+    <>
+      <section
+        className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start lg:grid-cols-3"
+        aria-label={gridAriaLabel}
+      >
+        {cards.map((c, index) => {
+          const listingKey = c.slug
+            ? catalogListingKeyFromSlug(c.slug)
+            : catalogListingKeyFromSampleId(c.id);
+          const initialFavorite = favoriteSet.has(listingKey);
+          const locked = isCatalogCardLockedForGuest({
+            hasFullAccess: hasFullCatalogAccess,
+            globalIndex: cardGlobalOffset + index,
+            freeLimit: guestFreeCardLimit,
+          });
+
+          return (
+            <div
+              key={c.id}
+              className="flex h-full min-h-0 w-full min-w-0 flex-col md:h-auto"
+            >
+              <CatalogCard
+                className="h-full min-h-0 w-full md:h-auto"
+                href={c.href}
+                categoryHref={c.categoryHref}
+                display={c.display}
+                photoUrls={c.photoUrls}
+                leadVideo={c.leadVideo}
+                productVideos={c.productVideos}
+                featured={c.featured}
+                viewProfileLabel={viewProfileLabel}
+                aboutStoreLabel={aboutStoreLabel}
+                collapseLabel={collapseLabel}
+                expandLabel={expandLabel}
+                defaultCollapsed
+                defaultCollapsedMobile
+                collapsedExternal={collapsedForIndex(index)}
+                onCollapsedExternalChange={(next) =>
+                  setCollapsedForIndex(index, next)
+                }
+                accessLocked={locked}
+                onAccessLockedClick={locked ? openPaywall : undefined}
+                accessLockedTitleLabel={lockedCardUnlockLabel}
+                favoriteSlot={
+                  locked ? null : (
+                    <CatalogFavoriteButton
+                      key={`${listingKey}:${initialFavorite}`}
+                      listingKey={listingKey}
+                      initialFavorite={initialFavorite}
+                      variant="card"
+                      showCardLabel={false}
+                    />
+                  )
+                }
+              />
+            </div>
+          );
+        })}
+      </section>
+
+      {paywallCopy ? (
+        <CatalogAccessPaywallModal
+          open={paywallOpen}
+          onOpenChange={setPaywallOpen}
+          copy={paywallCopy}
+        />
+      ) : null}
+    </>
   );
 }

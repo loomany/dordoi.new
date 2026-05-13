@@ -48,7 +48,7 @@
   },
   "spacing": {
     "sectionY": "d-space-section-y",
-    "heroPaddingY": "d-space-section-y-lg",
+    "heroPaddingY": "d-space-section-y",
     "blockGap": "d-block-gap",
     "cardPadding": "d-space-lg"
   }

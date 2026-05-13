@@ -4,6 +4,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { CatalogBrowseCardGrid } from "@/components/catalog/CatalogBrowseCardGrid";
 import { SeoCategoryLanding } from "@/components/seo/SeoCategoryLanding";
+import { getSessionProfile } from "@/lib/auth/session-profile";
+import { hasFullCatalogAccess } from "@/lib/catalog/catalog-guest-access";
 import { buildSeoCategoryMetadata } from "@/lib/catalog/seo-category-metadata";
 import { getSeoCategoryVendorPageData } from "@/lib/catalog/seo-category-vendors";
 import {
@@ -42,6 +44,8 @@ export default async function SeoCategoryPage({ params }: Props) {
   if (!route) notFound();
 
   const routeLocale = locale as RouteLocale;
+  const profile = await getSessionProfile();
+  const catalogAccessUnlocked = hasFullCatalogAccess(profile);
   const { vendors, totalCount } = await getSeoCategoryVendorPageData(route);
   const tBrowse = await getTranslations("Pages.catalogBrowse");
   const tTree = await getTranslations("catalogCategoryTree");
@@ -60,6 +64,14 @@ export default async function SeoCategoryPage({ params }: Props) {
       <CatalogBrowseCardGrid
         cards={cards}
         favoriteKeys={[]}
+        hasFullCatalogAccess={catalogAccessUnlocked}
+        paywallCopy={{
+          title: tBrowse("paywall.title"),
+          body: tBrowse("paywall.body"),
+          ctaPayment: tBrowse("paywall.ctaPayment"),
+          closeDialog: tBrowse("paywall.closeDialog"),
+        }}
+        lockedCardUnlockLabel={tBrowse("paywall.unlockCard")}
         gridAriaLabel={labels.vendorPreviewTitle}
         viewProfileLabel={tBrowse("vendorCard.profileCta")}
         aboutStoreLabel={tBrowse("vendorCard.aboutStore")}
@@ -74,6 +86,10 @@ export default async function SeoCategoryPage({ params }: Props) {
       route={route}
       vendorCount={totalCount}
       vendorGrid={vendorGrid}
+      vendorListItems={vendors.map((v) => ({
+        slug: v.slug,
+        name: v.store_name?.trim() || v.slug,
+      }))}
       labels={{
         ...labels,
         vendorPreviewBody:

@@ -13,6 +13,8 @@ const DISALLOW_WHEN_INDEXABLE = [
   "/test/",
   "/preview/",
   "/*/cabinet/",
+  "/*?cat=*",
+  "/*?page=*",
 ] as const;
 
 export default function robots(): MetadataRoute.Robots {

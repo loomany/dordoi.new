@@ -9,6 +9,7 @@ import {
   providerContactBySlug,
   PROVIDER_SLUGS,
 } from "@/data/provider-registry";
+import { buildVendorLocalBusinessJsonLd } from "@/lib/catalog/vendor-local-business-jsonld";
 import {
   primaryVendorMainCategoryId,
   vendorProfileRobotsPolicy,
@@ -82,7 +83,13 @@ export default async function ProviderProfilePage({ params }: Props) {
     if (!vendor) {
       notFound();
     }
-    return <DatabaseProviderProfileView vendor={vendor} />;
+    const jsonLd = buildVendorLocalBusinessJsonLd(vendor, locale);
+    return (
+      <>
+        <JsonLd data={jsonLd} />
+        <DatabaseProviderProfileView vendor={vendor} />
+      </>
+    );
   }
 
   const t = await getTranslations({ locale, namespace: "Pages.providerProfile" });

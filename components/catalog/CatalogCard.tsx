@@ -2,10 +2,12 @@
 
 import type { ReactNode } from "react";
 import { useState } from "react";
+import Image from "next/image";
 import { ArrowRight, ChevronDown, ChevronUp, Package, ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
+import { CatalogLockedStoreHeader } from "@/components/catalog/CatalogLockedStoreHeader";
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
 import type { CatalogLeadVideo } from "@/lib/catalog/catalog-lead-video";
 import type { ParsedVendorCardData } from "@/lib/catalog/vendor-card-display";
@@ -53,6 +55,10 @@ export type CatalogCardProps = {
   variant?: "catalog" | "preview";
   /** Заменить стандартный CTA «Профиль магазина» (например кнопка публикации в админке). */
   profileCtaSlot?: ReactNode;
+  /** Гостевой paywall: размыть только название, описание оставить видимым. */
+  accessLocked?: boolean;
+  onAccessLockedClick?: () => void;
+  accessLockedTitleLabel?: string;
 };
 
 function cardInitials(title: string): string {
@@ -84,6 +90,23 @@ function truncateForCompact(text: string): string {
   return truncateAtChars(text, COMPACT_DESC_MAX);
 }
 
+function isNextImageOptimizableUrl(src: string): boolean {
+  try {
+    const u = new URL(src);
+    if (u.protocol !== "https:") return false;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (supabaseUrl) {
+      const host = new URL(supabaseUrl).hostname;
+      if (u.hostname === host && u.pathname.startsWith("/storage/v1/object/public/")) {
+        return true;
+      }
+    }
+    return u.hostname.endsWith(".photo.2gis.com");
+  } catch {
+    return false;
+  }
+}
+
 /** Карточка поставщика в каталоге: компактный вид; при раскрытии — карусель фото под CTA. */
 export function CatalogCard({
   display,
@@ -105,6 +128,9 @@ export function CatalogCard({
   className,
   variant = "catalog",
   profileCtaSlot,
+  accessLocked = false,
+  onAccessLockedClick,
+  accessLockedTitleLabel,
 }: CatalogCardProps) {
   const router = useRouter();
   const tCard = useTranslations("Pages.catalogBrowse.vendorCard");
@@ -159,13 +185,14 @@ export function CatalogCard({
       )}
     >
       {display.logoUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element -- Supabase / внешние URL превью
-        <img
+        <Image
           src={display.logoUrl}
-          alt=""
-          className="size-full object-cover"
-          loading="lazy"
+          alt={display.storeTitle?.trim() || "Логотип продавца"}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover"
           referrerPolicy="no-referrer"
+          unoptimized={!isNextImageOptimizableUrl(display.logoUrl)}
         />
       ) : (
         <span
@@ -216,7 +243,26 @@ export function CatalogCard({
 
   const footerCta =
     profileCtaSlot ??
-    (href ? (
+    (accessLocked && onAccessLockedClick ? (
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onAccessLockedClick();
+        }}
+        aria-label={accessLockedTitleLabel ?? tCard("profileCtaAria")}
+        className={cn(
+          "inline-flex max-w-full shrink-0 items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold leading-tight shadow-sm transition-colors",
+          "border-primary/20 bg-gradient-to-b from-primary/[0.07] to-primary/[0.02] text-primary",
+          "hover:border-primary/35 hover:from-primary/[0.11] hover:to-primary/[0.04]",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:ring-offset-2 focus-visible:ring-offset-card",
+        )}
+      >
+        <span className="min-w-0 truncate">{tCard("profileCta")}</span>
+        <ArrowRight className="size-3 shrink-0 opacity-75" aria-hidden />
+      </button>
+    ) : href ? (
       <Link
         href={href}
         onClick={(e) => e.stopPropagation()}
@@ -398,8 +444,43 @@ export function CatalogCard({
     </>
   );
 
+  const lockedHeadlineAndDescription = (
+    <>
+      <CatalogLockedStoreHeader
+        avatar={avatar}
+        title={display.storeTitle}
+        subtitle={display.subtitle}
+        unlockLabel={accessLockedTitleLabel ?? display.storeTitle}
+        onUnlock={onAccessLockedClick ?? (() => {})}
+        titleReserveRight={titleReserveRight}
+      />
+
+      {descTrim ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onAccessLockedClick?.();
+          }}
+          aria-label={accessLockedTitleLabel}
+          className="mt-2.5 w-full min-w-0 flex-1 rounded-lg text-left transition-colors hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklch,var(--d-card-accent)_35%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-card md:flex-none sm:mt-3"
+        >
+          <span className="sr-only">{aboutStoreLabel?.trim()}</span>
+          <p className="line-clamp-3 text-[13px] leading-[1.5] text-muted-foreground/90 sm:text-sm sm:leading-snug">
+            {truncateForCompact(descTrim)}
+          </p>
+        </button>
+      ) : null}
+    </>
+  );
+
   const mainLinkOrStatic =
-    href != null && href.length > 0 ? (
+    accessLocked ? (
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-0 md:flex-none">
+        {lockedHeadlineAndDescription}
+      </div>
+    ) : href != null && href.length > 0 ? (
       <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-0 md:flex-none">
         <header className={cn("relative flex w-full min-w-0 gap-3", titleReserveRight)}>
           <Link
@@ -482,7 +563,7 @@ export function CatalogCard({
     "relative flex rounded-[var(--d-radius-2xl)] bg-card transition-[box-shadow,border-color]",
     "px-4 pt-4 pb-2.5 shadow-[var(--d-catalog-card-shadow-mobile)] sm:px-5 sm:pt-5 sm:pb-3 lg:shadow-[var(--d-shadow-soft)]",
     cardOutline,
-    href && cn("group cursor-pointer outline-none", cardFocusRing),
+    href && !accessLocked && cn("group cursor-pointer outline-none", cardFocusRing),
     className,
   );
 

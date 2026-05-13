@@ -3,6 +3,7 @@ import { SeoBreadcrumbs } from "@/components/seo/SeoBreadcrumbs";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import type { CoreSeoLanding } from "@/lib/seo/core-seo-landings";
 import type { RouteLocale } from "@/lib/seo/route-locale";
+import { baseUrl } from "@/lib/site";
 
 type SeoCoreLandingProps = {
   locale: RouteLocale;
@@ -37,6 +38,8 @@ export function SeoCoreLanding({ locale, landing, labels }: SeoCoreLandingProps)
     <article className="mx-auto max-w-3xl space-y-6 px-4 py-10 sm:px-6 sm:py-12">
       <SeoBreadcrumbs
         navLabel={labels.breadcrumbNav}
+        locale={locale}
+        currentPageUrl={`${baseUrl()}/${locale}${landing.path}`}
         items={[
           { label: labels.breadcrumbHome, href: "/" },
           { label: landing.h1ByLocale[locale] },

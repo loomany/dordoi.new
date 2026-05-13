@@ -522,6 +522,13 @@
       "categoryFilterMainCategoriesNav": "Главные категории",
       "categoryFilterNoMatches": "Нет совпадений",
       "gridAria": "Каталог поставщиков",
+      "paywall": {
+        "title": "Откройте весь каталог поставщиков Дордоя",
+        "body": "Смотрите названия магазинов, контакты WhatsApp и Telegram, профили и условия опта — без ограничений. Один платёж, и вы сразу можете выбрать поставщика под свою закупку.",
+        "ctaPayment": "Открыть доступ за $9.99",
+        "closeDialog": "Закрыть",
+        "unlockCard": "Открыть поставщика"
+      },
       "listingAdded": "Добавлено {date}",
       "listingUpdated": "Обновлено {relative}",
       "viewProfile": "Профиль магазина",

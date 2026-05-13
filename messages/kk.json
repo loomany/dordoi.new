@@ -588,6 +588,13 @@
       "categoryFilterMainCategoriesNav": "Негізгі санаттар",
       "categoryFilterNoMatches": "Сәйкестік жоқ",
       "gridAria": "Жеткізушілер каталоги",
+      "paywall": {
+        "title": "Дордой жеткізушілерінің толық каталогын ашыңыз",
+        "body": "Дүкен атаулары, WhatsApp пен Telegram контактілері, профильдер мен опт шарттары — шектеусіз. Бір төлемнен кейін жеткізушіні сатып алуға бірден таңдай аласыз.",
+        "ctaPayment": "$9.99-ға қолжетімділікті ашу",
+        "closeDialog": "Жабу",
+        "unlockCard": "Жеткізушіні ашу"
+      },
       "listingAdded": "{date} күні қосылды",
       "listingUpdated": "{relative} жаңартылды",
       "viewProfile": "Дүкен профилі",

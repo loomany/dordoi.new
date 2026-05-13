@@ -4,6 +4,7 @@ import {
   hreflangAlternatesFromLocalePaths,
 } from "@/lib/hreflang";
 import { getIndexableSeoCategoriesForSitemap } from "@/lib/catalog/seo-category-sitemap";
+import { fetchIndexableVendorSlugsForSitemap } from "@/lib/catalog/vendor-sitemap";
 import { seoCategoryPathsByLocale } from "@/lib/catalog/seo-category-routes";
 import { CORE_SEO_LANDINGS } from "@/lib/seo/core-seo-landings";
 import { baseUrl, siteIndexable } from "@/lib/site";
@@ -78,6 +79,16 @@ export async function buildSitemapXmlBody(): Promise<string> {
       const loc = `${root}/${locale}${path}`;
       const languages = hreflangAlternatesFromLocalePaths(pathsByLocale);
       appendUrlBlock(urlBlocks, loc, languages, "0.75");
+    }
+  }
+
+  const vendorSlugs = await fetchIndexableVendorSlugsForSitemap();
+  for (const slug of vendorSlugs) {
+    const path = `/catalog/${slug}`;
+    const languages = hreflangAlternatesForPath(path);
+    for (const locale of routing.locales) {
+      const loc = `${root}/${locale}${path}`;
+      appendUrlBlock(urlBlocks, loc, languages, "0.65");
     }
   }
 

@@ -26,7 +26,7 @@ function indexFollowMetadata(): Pick<Metadata, "robots"> {
   };
 }
 
-function defaultOgImages(): {
+export function defaultOgImages(): {
   openGraphImages: NonNullable<NonNullable<Metadata["openGraph"]>["images"]>;
   twitterImages: NonNullable<NonNullable<Metadata["twitter"]>["images"]>;
 } {

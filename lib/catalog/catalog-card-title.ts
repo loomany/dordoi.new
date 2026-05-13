@@ -25,6 +25,10 @@ export function isGenericCategoryLabel(name: string | null | undefined): boolean
   if (/^модная\s+одежда/u.test(t)) return true;
   if (/^стильная\s+/u.test(t)) return true;
   if (/^широкий\s+ассортимент/u.test(t)) return true;
+  if (/^(?:магазин|бутик|шоурум)\s+.+\s+одежд/iu.test(t)) return true;
+  if (/^(?:магазин|бутик|шоурум)\s+.+\s+костюм/iu.test(t)) return true;
+  if (/^(?:женск|мужск|детск|джинсов|спортивн)\w*\s+одежд/iu.test(t)) return true;
+  if (/^горнолыжн\w*\s+костюм/iu.test(t)) return true;
   return false;
 }
 

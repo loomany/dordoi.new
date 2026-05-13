@@ -1,6 +1,7 @@
 import "server-only";
 
 import { unstable_cache } from "next/cache";
+import { cache } from "react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getAiCatalogDisplayOverlay,
@@ -89,7 +90,7 @@ export type PublishedVendorRow = {
 /** Публичный каталог не показывает эти витрины (нормализация: trim + lower case). */
 const BLOCKED_CATALOG_STORE_NAMES = new Set(["cosmos", "123"]);
 
-function isHiddenFromPublicCatalogSlug(
+export function isHiddenFromPublicCatalogSlug(
   slug: string | null | undefined,
 ): boolean {
   const key = typeof slug === "string" ? slug.trim() : "";
@@ -99,7 +100,7 @@ function isHiddenFromPublicCatalogSlug(
   );
 }
 
-function isBlockedPublicCatalogStoreName(
+export function isBlockedPublicCatalogStoreName(
   storeName: string | null | undefined,
 ): boolean {
   const key =
@@ -108,11 +109,11 @@ function isBlockedPublicCatalogStoreName(
 }
 
 const PUBLISHED_VENDOR_SELECT_FIELDS =
-  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, parsed_ai_data";
+  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
 
 /** List query для пагинированного `/catalog` — с `parsed_ai_data` для текста ИИ на карточке. */
 const PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS =
-  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, parsed_ai_data";
+  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
 
 const PUBLISHED_VENDOR_PROFILE_SELECT_FIELDS =
   "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at, followers_count, parsed_ai_data";
@@ -686,7 +687,7 @@ export async function fetchRecommendedVendorsForProfile(
 }
 
 /** Один опубликованный продавец по SEO slug для страницы `/catalog/{slug}`. */
-export async function fetchPublishedVendorBySlug(
+async function fetchPublishedVendorBySlugRaw(
   slug: string,
 ): Promise<PublishedVendorRow | null> {
   if (isHiddenFromPublicCatalogSlug(slug)) {
@@ -714,6 +715,9 @@ export async function fetchPublishedVendorBySlug(
   }
   return row;
 }
+
+/** Dedupes metadata + page render within one RSC request. */
+export const fetchPublishedVendorBySlug = cache(fetchPublishedVendorBySlugRaw);
 
 /** Форма данных для рендера в `<CatalogCard />` из `CatalogBrowseLayout`. */
 export type CatalogCardSourceRow = {
@@ -761,7 +765,7 @@ export function vendorToCatalogCardSource(opts: {
     dbStoreName: vendor.store_name?.trim() ?? "",
     fallbackTitle,
     catalogBrandNameFromAi: ai?.catalogBrandName,
-    instagramProfileUrl: null,
+    instagramProfileUrl: vendor.instagram_url?.trim() || null,
   });
   const subtitle = dedupeCatalogSubtitle(storeTitle, ai?.subtitle ?? null);
 

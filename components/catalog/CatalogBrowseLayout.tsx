@@ -19,6 +19,9 @@ import {
 } from "@/lib/provider-dates";
 import { filterPublishedVendorsBySubcategorySlugs } from "@/lib/catalog/catalog-category-filter";
 import {
+  hasFullCatalogAccess,
+} from "@/lib/catalog/catalog-guest-access";
+import {
   buildCatalogCardSourceRowForPublishedVendor,
   fetchPublishedVendorsCatalogPage,
   fetchPublishedVendorsForCatalog,
@@ -68,6 +71,7 @@ export async function CatalogBrowseLayout({
   const tTree = await getTranslations("catalogCategoryTree");
   const locale = await getLocale();
   const profile = await getSessionProfile();
+  const catalogAccessUnlocked = hasFullCatalogAccess(profile);
   const favoriteKeys = profile
     ? await fetchBuyerFavoriteKeySet(profile.userId)
     : new Set<string>();
@@ -245,6 +249,15 @@ export async function CatalogBrowseLayout({
             key={currentPage}
             cards={visibleCards}
             favoriteKeys={[...favoriteKeys]}
+            cardGlobalOffset={pageStart}
+            hasFullCatalogAccess={catalogAccessUnlocked}
+            paywallCopy={{
+              title: t("paywall.title"),
+              body: t("paywall.body"),
+              ctaPayment: t("paywall.ctaPayment"),
+              closeDialog: t("paywall.closeDialog"),
+            }}
+            lockedCardUnlockLabel={t("paywall.unlockCard")}
             gridAriaLabel={t("gridAria")}
             viewProfileLabel={t("viewProfile")}
             aboutStoreLabel={t("cardAboutStore")}

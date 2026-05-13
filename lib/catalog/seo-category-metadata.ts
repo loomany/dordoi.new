@@ -7,8 +7,9 @@ import {
   ogLocaleFromRouteLocale,
 } from "@/lib/hreflang";
 import { seoCategoryPathsByLocale } from "@/lib/catalog/seo-category-routes";
-import { baseUrl, siteIndexable } from "@/lib/site";
+import { defaultOgImages } from "@/lib/seo";
 import type { RouteLocale } from "@/lib/seo/route-locale";
+import { baseUrl, siteIndexable } from "@/lib/site";
 
 function categoryRobots(
   route: SeoCategoryRoute,
@@ -40,6 +41,7 @@ export function buildSeoCategoryMetadata(
   const languages = hreflangAlternatesFromLocalePaths(pathsByLocale);
   const title = route.titleByLocale[locale];
   const description = route.descriptionByLocale[locale];
+  const { openGraphImages, twitterImages } = defaultOgImages();
 
   return {
     robots: categoryRobots(route, vendorCount),
@@ -58,11 +60,13 @@ export function buildSeoCategoryMetadata(
       type: "website",
       locale: ogLocaleFromRouteLocale(locale),
       alternateLocale: ogAlternateLocalesForRouteLocale(locale),
+      images: openGraphImages,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: twitterImages,
     },
   };
 }

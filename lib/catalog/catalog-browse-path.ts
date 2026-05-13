@@ -8,7 +8,8 @@ export function buildCatalogBrowsePath(opts: {
     params.set("page", String(opts.page));
   }
   if (opts.categorySlugs.length > 0) {
-    params.set("cat", opts.categorySlugs.join(","));
+    const sortedSlugs = [...opts.categorySlugs].sort();
+    params.set("cat", sortedSlugs.join(","));
   }
   if (opts.compareWithPreview) {
     params.set("compare", "1");
