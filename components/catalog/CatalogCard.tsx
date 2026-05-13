@@ -23,6 +23,9 @@ export type CatalogCardProps = {
   photoUrls?: string[];
   /** Первый слайд карусели — видео (только Asso Corsets). */
   leadVideo?: CatalogLeadVideo;
+  /** Slug витрины + видео URL — резервный client-side lead video. */
+  vendorSlug?: string;
+  productVideos?: string[];
   /** Карточка-подборка / после модерации — акцентная рамка. */
   featured?: boolean;
   /** Кнопка избранного в подвале карточки; клик не всплывает к ссылке карточки. */
@@ -109,6 +112,8 @@ export function CatalogCard({
   href,
   photoUrls,
   leadVideo,
+  vendorSlug,
+  productVideos,
   featured,
   favoriteSlot,
   aboutStoreLabel,
@@ -125,7 +130,9 @@ export function CatalogCard({
   const router = useRouter();
   const tCard = useTranslations("Pages.catalogBrowse.vendorCard");
   const hasPhotos = Boolean(
-    leadVideo || (photoUrls && photoUrls.length > 0),
+    leadVideo ||
+    productVideos?.length ||
+    (photoUrls && photoUrls.length > 0),
   );
   const descTrim = display.description.trim();
 
@@ -173,7 +180,7 @@ export function CatalogCard({
   const avatar = (
     <div
       className={cn(
-        "relative size-14 shrink-0 overflow-hidden rounded-full border border-border bg-muted shadow-sm",
+        "relative size-12 shrink-0 overflow-hidden rounded-full border border-border/80 bg-muted sm:size-[3.25rem]",
         featured && "border-primary/30 ring-2 ring-primary/15",
       )}
     >
@@ -221,7 +228,7 @@ export function CatalogCard({
   ) : null;
 
   const topButtons = canCollapse ? (
-    <span className="absolute right-4 top-4 z-10 flex items-center gap-2">
+    <span className="absolute right-3 top-3 z-10 flex items-center gap-2 sm:right-4 sm:top-4">
       {collapseToggle}
     </span>
   ) : null;
@@ -352,7 +359,7 @@ export function CatalogCard({
     ) : null;
 
   const footerBlock = (
-    <div className="relative z-10 mt-auto flex w-full min-w-0 shrink-0 items-center justify-between gap-2 border-t border-border/60 pt-3 sm:gap-3 sm:pt-4">
+    <div className="relative z-10 mt-auto flex w-full min-w-0 shrink-0 items-center justify-between gap-2 border-t border-border/50 pt-2.5 sm:pt-3">
       <div className="flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2">
         {favoriteSlot ? (
           <div className="flex shrink-0 items-center">{favoriteSlot}</div>
@@ -377,6 +384,8 @@ export function CatalogCard({
           altBase={display.storeTitle}
           className="w-full min-w-0"
           leadVideo={leadVideo}
+          vendorSlug={vendorSlug}
+          productVideos={productVideos}
         />
       </div>
     ) : null;
@@ -404,42 +413,32 @@ export function CatalogCard({
 
   const headlineAndDescription = (
     <>
-      <div className="relative w-full min-w-0">
-        <div className="flex items-center gap-3">
-          <div className="shrink-0 self-center">{avatar}</div>
-          <div className={cn("min-w-0 flex-1 text-left", titleReserveRight)}>
-            <h2 className="text-base font-semibold uppercase leading-tight tracking-tight text-card-foreground sm:text-lg">
-              {display.storeTitle}
-            </h2>
-          </div>
-        </div>
-        <div
-          className={cn(
-            "mt-1 min-h-[2.75rem] pl-[calc(3.5rem+0.75rem)]",
-            titleReserveRight,
-          )}
-        >
+      <header className={cn("relative flex w-full min-w-0 gap-3", titleReserveRight)}>
+        <div className="shrink-0 pt-0.5">{avatar}</div>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-[15px] font-semibold uppercase leading-[1.2] tracking-tight text-card-foreground sm:text-base">
+            {display.storeTitle}
+          </h2>
           {display.subtitle?.trim() ? (
-            <p className="line-clamp-2 text-xs font-normal normal-case leading-snug tracking-normal text-muted-foreground sm:text-sm">
+            <p className="mt-0.5 line-clamp-1 text-xs leading-snug text-muted-foreground/85 sm:text-[13px]">
               {display.subtitle.trim()}
             </p>
-          ) : null}
-        </div>
-      </div>
-
-      <section
-        aria-label={aboutStoreLabel?.trim() || undefined}
-        className="min-h-[4.125rem] min-w-0 flex-1"
-      >
-        <p
-          className={cn(
-            "line-clamp-3 whitespace-pre-line break-words text-sm leading-relaxed text-muted-foreground",
-            !descTrim && "invisible",
+          ) : (
+            <p className="mt-0.5 h-[1.125rem]" aria-hidden />
           )}
+        </div>
+      </header>
+
+      {descTrim ? (
+        <section
+          aria-label={aboutStoreLabel?.trim() || undefined}
+          className="mt-2.5 min-w-0 flex-1 sm:mt-3"
         >
-          {descTrim ? truncateForCompact(descTrim) : "\u00a0"}
-        </p>
-      </section>
+          <p className="line-clamp-3 text-[13px] leading-[1.5] text-muted-foreground/90 sm:text-sm sm:leading-snug">
+            {truncateForCompact(descTrim)}
+          </p>
+        </section>
+      ) : null}
     </>
   );
 
@@ -448,14 +447,14 @@ export function CatalogCard({
       <Link
         href={href}
         className={cn(
-          "flex min-h-0 min-w-0 flex-1 flex-col gap-3 cursor-pointer text-left text-inherit no-underline outline-none",
+          "flex min-h-0 min-w-0 flex-1 flex-col gap-0 cursor-pointer text-left text-inherit no-underline outline-none",
           "focus-visible:ring-2 focus-visible:ring-[oklch(0.55_0.14_250_/_0.35)] focus-visible:ring-offset-2 focus-visible:ring-offset-card",
         )}
       >
         {headlineAndDescription}
       </Link>
     ) : (
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-0">
         {headlineAndDescription}
       </div>
     );
@@ -480,7 +479,7 @@ export function CatalogCard({
 
   const articleClass = cn(
     "relative flex rounded-[var(--d-radius-2xl)] bg-card transition-[box-shadow,border-color]",
-    "px-5 pt-5 pb-2 shadow-[var(--d-catalog-card-shadow-mobile)] sm:px-6 sm:pt-6 sm:pb-2.5 lg:shadow-[var(--d-shadow-soft)]",
+    "px-4 pt-4 pb-2.5 shadow-[var(--d-catalog-card-shadow-mobile)] sm:px-5 sm:pt-5 sm:pb-3 lg:shadow-[var(--d-shadow-soft)]",
     cardOutline,
     href && cn("group cursor-pointer outline-none", cardFocusRing),
     className,
