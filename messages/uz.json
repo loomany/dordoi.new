@@ -300,11 +300,16 @@
       },
       "gridAria": "Bayerlar katalogi",
       "verifiedBadgeAria": "Tasdiqlangan profil",
+      "openSlotBadge": "Bo'sh",
+      "openSlotBadgeAria": "Bayerlar katalogidagi bo'sh joy",
+      "openSlotStatsPrimary": "Tarif: 3 oy uchun $400",
+      "openSlotStatsSecondary": "«Elektronika» kategoriyasida 3 tadan 1 joy qoldi",
       "experience": "Tajriba: {years} yil",
       "orders": "Bajarilgan buyurtmalar: {count}",
       "ctaContact": "Bayer bilan bog'lanish",
       "ctaWhatsApp": "WhatsApp yozish",
       "ctaCall": "Qo'ng'iroq qilish",
+      "ctaClaimSpot": "Joyni band qilish",
       "ctaTelegram": "Telegram",
       "ctaInstagram": "Instagram",
       "buyerSpotModal": {
@@ -337,15 +342,15 @@
             "3": "RF, Qozog'iston va O'zbekistonga konsolidatsiya va yetkazish"
           }
         },
-        "daniyar-isakov": {
-          "name": "Daniya Isakov",
-          "specialization": "Elektronika va Xitoydan Opt",
-          "description": "Djunhaeda gadjetlar, aksessuarlar va elektronika qidiraman. Dordoy orqali Guanchjouda yetkazib beruvchilar bilan to'g'ridan-to'g'ri aloqalarim bor.",
+        "open-slot-electronics": {
+          "name": "Yangi buyerni kutamiz",
+          "specialization": "Elektronika · Dordoydan opt",
+          "description": "Bu joy katalogda bo'sh. Agar siz Dordoyda gadjetlar, aksessuarlar va elektronika bilan ishlasangiz — profilingizni shu yerga joylashtiring va MDH optoviklaridan murojaatlar oling.",
           "services": {
-            "0": "So'rovga mos yetkazib beruvchilarni tanlash",
-            "1": "Pechat va kichik/katta opt bo'yicha muzokaralar va xarid qilish",
-            "2": "Bozorda partiyani tekshirish",
-            "3": "Bishkekdan konsolidatsiya va kargo"
+            "0": "Mijozlarning to'g'ridan-to'g'ri murojaatlari — vositachisiz",
+            "1": "WhatsApp, qo'ng'iroq va ijtimoiy tarmoqlar bilan kartochka",
+            "2": "Tasdiqlashdan keyin «tasdiqlangan buyer» belgisi",
+            "3": "«Elektronika» kategoriyasida qidiruvda ko'rinish"
           }
         }
       }

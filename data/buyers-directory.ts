@@ -21,7 +21,7 @@ export type BuyerDirectoryRow = {
   /** Профиль или канал в Instagram */
   instagramUrl: string;
   /** Portrait under `public/buyers/` (square PNG/JPEG). */
-  photoSrc: string;
+  photoSrc?: string;
   /** Буквы на аватаре, если нет локального фото. */
   initialsLabel?: string;
   /**
@@ -31,6 +31,8 @@ export type BuyerDirectoryRow = {
   liveListing?: boolean;
   /** Slug вендора в БД — для аудита / будущей синхронизации. */
   linkedVendorSlug?: string;
+  /** Пустой слот в каталоге — карточка «занять место». */
+  openSlot?: boolean;
 };
 
 export const BUYERS: BuyerDirectoryRow[] = [
@@ -59,13 +61,13 @@ export const BUYERS: BuyerDirectoryRow[] = [
     linkedVendorSlug: "dordoi-zakup-aiperi",
   },
   {
-    id: "daniyar-isakov",
+    id: "open-slot-electronics",
     category: "electronics",
-    experienceYears: 4,
-    completedOrdersDisplay: "120+",
-    whatsappDigits: "996555030303",
-    telegramUrl: "https://t.me/dordoi_buyers_daniyar",
-    instagramUrl: "https://www.instagram.com/dordoi.help/",
-    photoSrc: "/buyers/portrait-daniyar.png",
+    experienceYears: 0,
+    completedOrdersDisplay: "—",
+    whatsappDigits: "0",
+    telegramUrl: "",
+    instagramUrl: "",
+    openSlot: true,
   },
 ];

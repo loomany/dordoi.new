@@ -47,6 +47,7 @@ export type BuyerCardContactStripStrings = {
   ctaContact: string;
   ctaWhatsApp: string;
   ctaCall: string;
+  ctaClaimSpot: string;
   ctaTelegram: string;
   ctaInstagram: string;
   closeDialog: string;
@@ -66,6 +67,48 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
   const whatsappHref = `https://wa.me/${buyer.whatsappDigits}`;
   const telegramHref = buyer.telegramUrl?.trim() || null;
   const instagramHref = buyer.instagramUrl?.trim() || null;
+
+  if (buyer.openSlot) {
+    return (
+      <>
+        <div className="mt-auto space-y-3 pt-7">
+          <button type="button" onClick={() => setOpen(true)} className={waBtn}>
+            {strings.ctaClaimSpot}
+          </button>
+        </div>
+
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent
+            closeLabel={strings.closeDialog}
+            className="border-slate-200/95 bg-white text-slate-900 sm:p-7"
+          >
+            <DialogHeader className="pr-10">
+              <DialogTitle className="text-left text-base font-semibold leading-snug tracking-tight text-slate-900">
+                {m.title}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 text-sm leading-relaxed text-slate-600">
+              <p>{m.line1}</p>
+              <p>{m.line2}</p>
+              <p className="border-t border-slate-100 pt-3 text-slate-800">
+                <span className="font-medium text-slate-700">
+                  {m.telegramLabel}{" "}
+                </span>
+                <a
+                  href={LOOMANY_TELEGRAM}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-emerald-700 underline-offset-4 hover:text-emerald-800 hover:underline"
+                >
+                  @loomany
+                </a>
+              </p>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
+    );
+  }
 
   if (buyer.liveListing) {
     const phoneDigits = buyer.phoneDigits?.trim() || "";

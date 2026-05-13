@@ -29,11 +29,16 @@ export function BuyersDirectoryInteractive() {
           }}
             strings={{
               verifiedBadgeAria: t("verifiedBadgeAria"),
+              openSlotBadge: t("openSlotBadge"),
+              openSlotBadgeAria: t("openSlotBadgeAria"),
+              openSlotStatsPrimary: t("openSlotStatsPrimary"),
+              openSlotStatsSecondary: t("openSlotStatsSecondary"),
               experienceLine: t("experience", { years: b.experienceYears }),
               ordersLine: t("orders", { count: b.completedOrdersDisplay }),
               ctaContact: t("ctaContact"),
               ctaWhatsApp: t("ctaWhatsApp"),
               ctaCall: t("ctaCall"),
+              ctaClaimSpot: t("ctaClaimSpot"),
               ctaTelegram: t("ctaTelegram"),
               ctaInstagram: t("ctaInstagram"),
               closeDialog: tAuth("closeDialog"),
