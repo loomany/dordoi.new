@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { unauthorized } from "next/navigation";
 
 import { requireAdmin } from "@/lib/auth/assert-admin";
+import { CATALOG_VENDORS_LIST_CACHE_TAG } from "@/lib/catalog/published-vendors";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { routing } from "@/i18n/routing";
 import {
@@ -19,6 +20,7 @@ const PHOTO_BATCH_SELECT =
   "id, vendor_id, status, created_at, vendor_photo_batch_items(photo_url, position), vendors!inner(id, store_name, slug, language, telegram_chat_id)";
 
 function revalidateAllAfterPhotoBatch(slug: string | null): void {
+  revalidateTag(CATALOG_VENDORS_LIST_CACHE_TAG, "max");
   for (const locale of routing.locales) {
     revalidatePath(`/${locale}/cabinet/admin`, "page");
     revalidatePath(`/${locale}/catalog`, "page");

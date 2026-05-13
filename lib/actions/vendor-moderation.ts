@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { unauthorized } from "next/navigation";
 
 import { requireAdmin } from "@/lib/auth/assert-admin";
+import { CATALOG_VENDORS_LIST_CACHE_TAG } from "@/lib/catalog/published-vendors";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   normalizeVendorRows,
@@ -27,6 +28,7 @@ export type ModerationActionState =
   | { ok: false; message: string };
 
 function revalidateCabinetAfterModeration(): void {
+  revalidateTag(CATALOG_VENDORS_LIST_CACHE_TAG, "max");
   for (const locale of routing.locales) {
     revalidatePath(`/${locale}/cabinet/admin`, "page");
     revalidatePath(`/${locale}/cabinet/vendor`, "page");

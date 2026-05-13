@@ -1,11 +1,10 @@
 import "server-only";
 
+import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   getAiCatalogDisplayOverlay,
 } from "@/lib/catalog/parsed-ai-catalog-overlay";
-import { leadVideoForAssoCorsets } from "@/lib/catalog/asso-corsets-lead-video";
-import type { CatalogLeadVideo } from "@/lib/catalog/asso-corsets-lead-video";
 
 export { getAiCatalogDisplayOverlay };
 import {
@@ -105,9 +104,9 @@ function isBlockedPublicCatalogStoreName(
 const PUBLISHED_VENDOR_SELECT_FIELDS =
   "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
 
-/** List query для пагинированного `/catalog` — с `parsed_ai_data` для текста ИИ на карточке. */
+/** List query для пагинированного `/catalog` — без `parsed_ai_data` (P0.2 lightweight SELECT). */
 const PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS =
-  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
+  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url";
 
 const PUBLISHED_VENDOR_PROFILE_SELECT_FIELDS =
   "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at, followers_count, parsed_ai_data";
@@ -230,6 +229,30 @@ export type FetchPublishedVendorsCatalogPageResult = {
   pageSize: number;
 };
 
+/** `unstable_cache` tag for public `/catalog` vendor list (see moderation revalidate). */
+export const CATALOG_VENDORS_LIST_CACHE_TAG = "catalog-vendors-list";
+
+const CATALOG_VENDORS_LIST_CACHE_REVALIDATE_SECONDS = 120;
+
+type NormalizedCatalogPageParams = {
+  page: number;
+  pageSize: number;
+  subcategorySlugs: string[];
+};
+
+function normalizeCatalogPageParams(
+  params: FetchPublishedVendorsCatalogPageParams,
+): NormalizedCatalogPageParams {
+  const subcategorySlugs = normalizeCatalogCategorySlugs(
+    params.subcategorySlugs ?? [],
+  );
+  return {
+    page: parseCatalogPageNumber(params.page),
+    pageSize: parseCatalogPageSize(params.pageSize),
+    subcategorySlugs: [...new Set(subcategorySlugs)].sort(),
+  };
+}
+
 const HIDDEN_PUBLIC_CATALOG_SLUGS: readonly string[] = [
   ...BUYER_ONLY_VENDOR_SLUGS,
   ...SHOWCASE_VENDOR_SLUGS,
@@ -316,24 +339,21 @@ function mapPublishedVendorCatalogListRow(
       typeof r.returns_policy === "string" ? r.returns_policy : null,
     instagram_url:
       typeof r.instagram_url === "string" ? r.instagram_url : null,
-    parsed_ai_data: r.parsed_ai_data,
   };
 }
 
 /**
- * Одна страница опубликованных вендоров для `/catalog`.
- * `parsed_ai_data` в SELECT — на карточке только текст ИИ, не сырой `description`.
- * Подключён в `CatalogBrowseLayout` (кроме debug `?compare=1`).
+ * Одна страница опубликованных вендоров для `/catalog` (Supabase, без кэша).
+ * List SELECT без `parsed_ai_data` — карточки на plain DB fields + commerce columns.
  *
- * Ограничения step 1:
+ * Ограничения:
  * - `?cat=` фильтруется через `categories && tokens` (main/sub slug-и), без нормализации синонимов в БД.
  * - `store_name` blocklist (`cosmos`, `123`) отсекается после SELECT — `totalCount` может быть чуть завышен.
  */
-export async function fetchPublishedVendorsCatalogPage(
-  params: FetchPublishedVendorsCatalogPageParams,
+async function fetchPublishedVendorsCatalogPageRaw(
+  params: NormalizedCatalogPageParams,
 ): Promise<FetchPublishedVendorsCatalogPageResult> {
-  const page = parseCatalogPageNumber(params.page);
-  const pageSize = parseCatalogPageSize(params.pageSize);
+  const { page, pageSize, subcategorySlugs } = params;
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
@@ -369,7 +389,7 @@ export async function fetchPublishedVendorsCatalogPage(
     );
   }
 
-  const categoryTokens = catalogCategoryOverlapTokens(params.subcategorySlugs ?? []);
+  const categoryTokens = catalogCategoryOverlapTokens(subcategorySlugs);
   if (categoryTokens.length > 0) {
     q = q.overlaps("categories", categoryTokens);
   }
@@ -391,6 +411,26 @@ export async function fetchPublishedVendorsCatalogPage(
     page,
     pageSize,
   };
+}
+
+/** Публичный paginated list для `/catalog` — кэш 120s, только vendor rows (без session/favorites). */
+export async function fetchPublishedVendorsCatalogPage(
+  params: FetchPublishedVendorsCatalogPageParams,
+): Promise<FetchPublishedVendorsCatalogPageResult> {
+  const normalized = normalizeCatalogPageParams(params);
+  return unstable_cache(
+    () => fetchPublishedVendorsCatalogPageRaw(normalized),
+    [
+      "published-vendors-catalog-page",
+      String(normalized.page),
+      String(normalized.pageSize),
+      normalized.subcategorySlugs.join(","),
+    ],
+    {
+      revalidate: CATALOG_VENDORS_LIST_CACHE_REVALIDATE_SECONDS,
+      tags: [CATALOG_VENDORS_LIST_CACHE_TAG],
+    },
+  )();
 }
 
 function normalizePublishedVendorRow(row: unknown): PublishedVendorRow | null {
@@ -581,8 +621,6 @@ export type CatalogCardSourceRow = {
   /** Нормализованные поля карточки (каталог / превью админки). */
   display: ParsedVendorCardData;
   photoUrls: string[] | undefined;
-  leadVideo?: CatalogLeadVideo;
-  /** Для client-side lead-video (Asso Corsets). */
   productVideos?: string[];
   featured: boolean;
   /** Локализованная строка «Добавлено …» — рассчитывается в layout. */
@@ -609,11 +647,6 @@ export function vendorToCatalogCardSource(opts: {
   const ai = getAiCatalogDisplayOverlay(vendor.parsed_ai_data);
   const photoUrls =
     vendor.product_photos.length > 0 ? vendor.product_photos : undefined;
-  const leadVideo = leadVideoForAssoCorsets({
-    slug: vendor.slug,
-    productVideos: vendor.product_videos,
-    posterUrl: vendor.product_photos[0],
-  });
 
   const { storeTitle, catalogBrandName } = resolveCatalogStoreTitleForCard({
     dbStoreName: vendor.store_name?.trim() ?? "",
@@ -627,7 +660,8 @@ export function vendorToCatalogCardSource(opts: {
     storeTitle,
     catalogBrandName,
     subtitle,
-    description: ai?.description?.trim() ?? "",
+    description:
+      ai?.description?.trim() ?? vendor.description?.trim() ?? "",
     tradeType: ai?.tradeType ?? inferVendorTradeType(vendor),
     commerce: ai ? ai.commerce : commerceCopyFromVendorRow(vendor),
     logoUrl: vendor.logo_url,
@@ -640,8 +674,10 @@ export function vendorToCatalogCardSource(opts: {
     href: `/catalog/${vendor.slug}`,
     display,
     photoUrls,
-    leadVideo,
-    productVideos: vendor.product_videos,
+    productVideos:
+      vendor.product_videos && vendor.product_videos.length > 0
+        ? vendor.product_videos
+        : undefined,
     featured: false,
     addedLine,
     updatedLine,

@@ -104,3 +104,184 @@
 ### P0.2 step 2
 
 - `CatalogBrowseLayout` подключён к paginated helper (кроме `?compare=1`)
+
+---
+
+## P0.2 production verification
+
+**Дата:** 2026-05-13  
+**Режим:** verification only (код/коммиты не менялись). Отчёт обновлён локально, **не закоммичен**.
+
+### Deployed commit
+
+| Check | Result |
+|-------|--------|
+| `origin/main` HEAD | **`c860f58`** — `perf(catalog): paginate vendor list without parsed_ai_data` |
+| Pre-requisite on `main` | `a6224ad` — `fetchPublishedVendorsCatalogPage` helper в `published-vendors.ts` |
+| Railway deploy SHA | **Не проверялось** (нет доступа к Railway dashboard/logs в этом шаге) |
+| Косвенный признак deploy | Production отвечает **HTTP 200** на все catalog URLs; warm TTFB **~1.0–1.3 s** (было **2.5–4.4 s**) |
+
+### Production TTFB
+
+`curl.exe` → `https://dordoi.help`, метрика **TTFB** = `time_starttransfer`. 5 прогонов.
+
+| URL | Run 1 | Run 2 | Run 3 | Run 4 | Run 5 | Notes |
+|-----|------:|------:|------:|------:|------:|-------|
+| `/ru/catalog` | 3.251 s | 1.275 s | 1.248 s | 1.260 s | 1.282 s | HTTP 200; run1 cold spike |
+| `/ru/catalog?page=2` | 1.311 s | 1.280 s | 1.296 s | 1.364 s | 1.283 s | HTTP 200 |
+| `/ru/catalog?cat=womens` | 1.286 s | 1.266 s | 1.331 s | 0.997 s | 1.038 s | HTTP 200 |
+| `/ru` (control) | 0.349 s | 0.320 s | 0.349 s | 0.312 s | 0.306 s | HTTP 200 |
+| `/ru/suppliers` (control) | 0.336 s | 0.329 s | 0.332 s | 0.336 s | 0.284 s | HTTP 200 |
+
+**Warm median `/ru/catalog` (runs 2–5):** ~**1.26 s** TTFB.
+
+### Headers
+
+`/ru/catalog`, `?page=2`, `?cat=womens` — одинаково:
+
+| Header | Value |
+|--------|--------|
+| Status | **200 OK** |
+| `Cache-Control` | `private, no-cache, no-store, max-age=0, must-revalidate` |
+| `cf-cache-status` | **DYNAMIC** |
+| `Location` | нет (без redirect) |
+| `:8080` в URL/Location | **нет** |
+| `x-railway-edge` | `railway/europe-west4-drams3a` |
+
+### Visual check
+
+Проверка по production HTML (`curl -s`); браузер/консоль не открывались.
+
+| URL | HTTP | Проверка |
+|-----|------|----------|
+| `/ru/catalog` | 200 | **12**× `data-vendor-card`; **24** profile links `/ru/catalog/{slug}`; sample placeholders не доминируют |
+| `/ru/catalog?page=2` | 200 | **12** карточек; HTML ~263 KB |
+| `/ru/catalog?cat=womens` | 200 | страница рендерится |
+| `/ru/catalog/container-04-12` | 200 | profile page OK |
+
+Консольные ошибки: **не проверялись** (нет browser session).
+
+### Result
+
+| Metric | Before (prod audit) | After deploy (this check) |
+|--------|---------------------|---------------------------|
+| `/ru/catalog` prod warm TTFB | **2.5–4.4 s** | **~1.0–1.3 s** (runs 2–5); run1 **3.25 s** |
+| `/ru/catalog?page=2` | *(не в audit)* | **~1.28–1.36 s** |
+| `/ru/catalog?cat=womens` | *(не в audit)* | **~1.0–1.33 s** |
+| Local after P0.2 | 0.62–0.84 s | Prod ~**2× медленнее** local (middleware + network + auth path) |
+
+**Вердикт:** P0.2 **дал заметный выигрыш на production** (~**2×** на warm TTFB, до **~3×** vs верх audit range). Цель **0.7–1.2 s** на prod **почти достигнута** на `?cat=womens` (run 4–5), но `/ru/catalog` стабильно **~1.25 s** — следующий слой: `getSessionProfile`/favorites, middleware, cache.
+
+### Remaining bottlenecks
+
+Не чинить без отдельного approve:
+
+- `getSessionProfile` / favorites
+- `force-dynamic` / cache
+- middleware `getUser`
+- images / `product_photos`
+- client JS bundle
+
+---
+
+## P0.3b implementation — cached public catalog query
+
+**Дата:** 2026-05-13  
+**Scope:** `unstable_cache` на `fetchPublishedVendorsCatalogPage()` + `revalidateTag` в moderation.  
+**Не в scope:** `force-dynamic`, middleware, `getSessionProfile`, favorites, UI, schema.
+
+### What changed
+
+| File | Change |
+|------|--------|
+| `lib/catalog/published-vendors.ts` | `fetchPublishedVendorsCatalogPageRaw()` (Supabase query) + cached `fetchPublishedVendorsCatalogPage()` via `unstable_cache`; export `CATALOG_VENDORS_LIST_CACHE_TAG` |
+| `lib/actions/vendor-moderation.ts` | `revalidateTag(CATALOG_VENDORS_LIST_CACHE_TAG, "max")` в `revalidateCabinetAfterModeration()` (approve/reject vendor) |
+| `lib/actions/vendor-photo-batch-moderation.ts` | то же в `revalidateAllAfterPhotoBatch()` (фото на карточке каталога) |
+
+Кэш оборачивает **только** paginated public vendor rows. `CatalogBrowseLayout` по-прежнему вызывает `getSessionProfile()` / favorites **вне** cache wrapper.
+
+### Cache key
+
+```txt
+[
+  "published-vendors-catalog-page",
+  String(page),
+  String(pageSize),
+  normalizedSubcategorySlugs.join(","),  // unique + sorted after normalizeCatalogCategorySlugs
+]
+```
+
+### TTL / tags
+
+| Setting | Value |
+|---------|-------|
+| `revalidate` | **120** s |
+| `tags` | **`catalog-vendors-list`** (`CATALOG_VENDORS_LIST_CACHE_TAG`) |
+
+### Revalidation coverage
+
+| Event | File | Status |
+|-------|------|--------|
+| Vendor approve / reject | `vendor-moderation.ts` | **Done** — `revalidateTag(..., "max")` |
+| Photo batch approve (карточка) | `vendor-photo-batch-moderation.ts` | **Done** |
+| Admin pending vendor edit | `vendor-admin-pending-edit.ts` | **Not wired** — pending vendors не в public list; низкий приоритет |
+| Vendor self-edit (approved) | — | **Next step** — если есть server action без moderation path |
+| Media sync scripts | `scripts/sync-all-media.ts` | **Not wired** — TTL 120s покрывает; tag при необходимости позже |
+
+**Note:** Next.js 16 требует второй аргумент у `revalidateTag` — используем `"max"`.
+
+### Local benchmark
+
+Окружение: Windows, fresh `npm run build` + `npm run start` (порт 3000 освобождён), `curl.exe -w @curl-format.txt`.  
+Метрика: **TTFB** = `time_starttransfer`. Run 1 = cold cache, Run 2 = warm cache (тот же URL).
+
+| URL | First hit | Warm hit | Notes |
+|-----|----------:|---------:|-------|
+| `/ru/catalog` | **1.52 s** | **0.23 s** | HTTP 200; ~6.5× на warm |
+| `/ru/catalog?page=2` | **1.05 s** | **0.25 s** | HTTP 200 |
+| `/ru/catalog?cat=womens` | **1.05 s** | **0.23 s** | HTTP 200 |
+
+**Сравнение с P0.2 (без cache):** warm TTFB каталога **~0.62–0.84 s** → **~0.23–0.25 s** (близко к `/ru/suppliers` ~0.22 s в P0.2 verification). Cold first hit остаётся ~1.0–1.5 s (Supabase + SSR shell).
+
+### Checks
+
+| Check | Result |
+|-------|--------|
+| `npx tsc --noEmit` | **PASS** |
+| `npm run build` | **PASS** (Next.js 16.2.6) |
+| Cache key: page / pageSize / slugs | **OK** |
+| User profile/favorites вне cache | **OK** — только `fetchPublishedVendorsCatalogPageRaw` |
+| `/ru/catalog`, `?page=2`, `?cat=womens` | **HTTP 200** |
+| `force-dynamic` / middleware / auth untouched | **OK** |
+| `parsed_ai_data` в list SELECT | **Removed** (pre-commit check) — см. ниже |
+
+### Known limitations
+
+1. **Cold TTFB** всё ещё ~1–1.5 s — первый запрос после restart / новый cache key бьёт в Supabase.
+2. **`force-dynamic`** на странице — HTML не edge-cached; выигрыш только на data layer.
+3. **`getSessionProfile()`** на каждый hit — отдельный слой (P0.3a).
+4. **Stale list до 120 s** если approve без moderation path (редко).
+5. **`revalidatePath('/catalog')` alone** не bust `unstable_cache` — нужен tag (добавлен в moderation).
+
+### Next step
+
+1. Deploy P0.3b → prod curl (cold/warm) vs P0.2 baseline.
+2. P0.3a: skip/defer `getSessionProfile` + favorites для anonymous на `/catalog`.
+3. Опционально: `revalidateTag` в vendor self-edit path; убрать `parsed_ai_data` из list SELECT (отдельный perf task).
+4. **Не коммитить** в этом шаге — ждать review diff.
+
+### P0.3b pre-commit SELECT check
+
+- **parsed_ai_data in list SELECT:** **Yes** (был в `PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS` на working tree / post-P0.2 regression)
+- **Action taken:** удалён из `PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS` и из `mapPublishedVendorCatalogListRow`; в `vendorToCatalogCardSource` description fallback на `vendor.description` при отсутствии AI overlay
+- **Build:** **PASS** (`npm run build`, Next.js 16.2.6)
+- **Typecheck:** **PASS** (`npx tsc --noEmit`)
+- **Warm benchmark** (post-fix, `curl.exe -w @curl-format.txt`, TTFB):
+
+| URL | Run 1 | Run 2 (warm) |
+|-----|------:|-------------:|
+| `/ru/catalog` | 0.28 s | **0.26 s** |
+| `/ru/catalog?page=2` | 1.06 s | **0.25 s** |
+| `/ru/catalog?cat=womens` | 0.96 s | **0.24 s** |
+
+List SELECT теперь **не включает** `parsed_ai_data`; profile/detail SELECT без изменений.
