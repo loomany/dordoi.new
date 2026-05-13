@@ -25,6 +25,7 @@ import {
   formatProviderAddedDate,
 } from "@/lib/provider-dates";
 import { isBuyerOnlyVendorSlug } from "@/lib/catalog/buyer-only-vendor-slugs";
+import { isShowcaseVendorSlug } from "@/lib/catalog/showcase-vendor-i18n";
 
 /**
  * Минимальный набор полей `vendors`, нужных для CatalogCard в /catalog.
@@ -68,7 +69,17 @@ export type PublishedVendorRow = {
 };
 
 /** Публичный каталог не показывает эти витрины (нормализация: trim + lower case). */
-const BLOCKED_CATALOG_STORE_NAMES = new Set(["cosmos"]);
+const BLOCKED_CATALOG_STORE_NAMES = new Set(["cosmos", "123"]);
+
+function isHiddenFromPublicCatalogSlug(
+  slug: string | null | undefined,
+): boolean {
+  const key = typeof slug === "string" ? slug.trim() : "";
+  return (
+    key.length > 0 &&
+    (isBuyerOnlyVendorSlug(key) || isShowcaseVendorSlug(key))
+  );
+}
 
 function isBlockedPublicCatalogStoreName(
   storeName: string | null | undefined,
@@ -111,7 +122,7 @@ export async function fetchPublishedVendorsForCatalog(): Promise<PublishedVendor
     .map((row): PublishedVendorRow | null => {
       const r = row as Record<string, unknown>;
       const slug = typeof r.slug === "string" ? r.slug.trim() : "";
-      if (!slug || isBuyerOnlyVendorSlug(slug)) {
+      if (!slug || isHiddenFromPublicCatalogSlug(slug)) {
         return null;
       }
       const id =
@@ -321,7 +332,7 @@ export async function fetchApprovedVendorPhotoBatches(opts: {
 export async function fetchPublishedVendorBySlug(
   slug: string,
 ): Promise<PublishedVendorRow | null> {
-  if (isBuyerOnlyVendorSlug(slug)) {
+  if (isHiddenFromPublicCatalogSlug(slug)) {
     return null;
   }
   const admin = createAdminClient();
