@@ -7,6 +7,7 @@ import {
   CatalogCategoryFilterFallback,
 } from "@/components/catalog/CatalogCategoryFilter";
 import { CatalogBrowseCardGrid } from "@/components/catalog/CatalogBrowseCardGrid";
+import { CatalogPopularCategories } from "@/components/catalog/CatalogPopularCategories";
 import { CatalogBuyerSpotlight } from "@/components/catalog/CatalogBuyerSpotlight";
 import { CatalogPaginationNav } from "@/components/catalog/CatalogPaginationNav";
 import type { ProviderSlug } from "@/data/provider-registry";
@@ -209,6 +210,8 @@ export async function CatalogBrowseLayout({
                 </p>
                 <p className="mt-4 text-sm text-gray-400">{statsLine}</p>
               </header>
+
+              <CatalogPopularCategories />
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <label className="relative flex min-h-11 min-w-0 flex-1 items-center">

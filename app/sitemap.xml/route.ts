@@ -4,7 +4,7 @@ import { buildSitemapXmlBody } from "@/lib/sitemap-xml-body";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const body = buildSitemapXmlBody();
+  const body = await buildSitemapXmlBody();
   return new Response(body, {
     status: 200,
     headers: {

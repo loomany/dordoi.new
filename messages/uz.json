@@ -62,6 +62,26 @@
     "closeSheet": "Panelni yopish"
   },
   "Footer": {
+    "seoDordoiTitle": "Dordoy",
+    "seoCategoriesTitle": "Toifalar",
+    "seoHub": {
+      "catalog": "Yetkazib beruvchilar katalogi",
+      "suppliers": "Dordoy yetkazib beruvchilari",
+      "market": "Dordoy bozori",
+      "wholesale": "Dordoy ulgurji",
+      "buyers": "Xaridorlar",
+      "cargo": "Dordoy kargo"
+    },
+    "seoCategories": {
+      "womens": "Ayollar kiyimi ulgurji",
+      "mens": "Erkaklar kiyimi ulgurji",
+      "kids": "Bolalar kiyimi ulgurji",
+      "footwear": "Poyabzal ulgurji",
+      "bags-leather": "Sumkalar ulgurji",
+      "fabrics-notions": "Matolar ulgurji",
+      "home-textiles": "Uy tekstili",
+      "accessories": "Aksessuarlar ulgurji"
+    },
     "links": {
       "about": "Loyiha haqida",
       "help": "Yordam",
@@ -229,6 +249,25 @@
               "title": "Men buyerlik qilaman",
               "subtitle": "Ulgurji mijozlarni topish"
             }
+          }
+        },
+        "popularSections": {
+          "title": "Mashhur bo‘limlar",
+          "lead": "Dordoy bozorida ulgurji xaridorlar nimani qidiradi.",
+          "hubTitle": "Bo‘limlar",
+          "categoriesTitle": "Toifalar",
+          "catalogCta": "To‘liq katalogni ochish",
+          "hub": {
+            "catalog": "Yetkazib beruvchilar katalogi",
+            "suppliers": "Dordoy yetkazib beruvchilari",
+            "market": "Dordoy bozori",
+            "wholesale": "Dordoy ulgurji",
+            "cargo": "Dordoy kargo"
+          },
+          "categories": {
+            "womens": "Ayollar kiyimi ulgurji",
+            "footwear": "Poyabzal ulgurji",
+            "bags-leather": "Sumkalar ulgurji"
           }
         }
       }
@@ -519,6 +558,20 @@
       "subtitle": "Dordoy bozoridagi tekshirilgan fabrikalar, ustaxona va savdo nuqtalarini toping. Sotuvchilar bilan Dordoi.help xizmati orqali bog'laning.",
       "intro": "Dordoi.help katalogi Bishkekdagi Dordoy bozorining ulgurji sotuvchilarini bir joyga jamlaydi: kiyim, poyabzal, sumka, to'qimachilik va boshqa toifalar. Yetkazib beruvchini nom, qator va toifa bo'yicha qidiring, vitrinalarni solishtiring va do'kon profilini oching.",
       "stats": "{from}–{to} dan {total} ta etkazib beruvchilar ko'rsatilmoqda",
+      "popularCategories": {
+        "title": "Dordoydagi mashhur toifalar",
+        "navAria": "Katalogdagi mashhur toifalar",
+        "categories": {
+          "womens": "Ayollar kiyimi ulgurji",
+          "mens": "Erkaklar kiyimi ulgurji",
+          "kids": "Bolalar kiyimi ulgurji",
+          "footwear": "Poyabzal ulgurji",
+          "bags-leather": "Sumkalar ulgurji",
+          "fabrics-notions": "Mato va furnitura",
+          "home-textiles": "Uy tekstili",
+          "accessories": "Aksessuarlar"
+        }
+      },
       "featuredBuyerAria": "Katalogdagi bayer kartochkasi",
       "featuredBuyerBadge": "Bayer",
       "featuredBuyerLink": "Barcha bayerlar",
