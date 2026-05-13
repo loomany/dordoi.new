@@ -31,6 +31,7 @@
     "audit:catalog-titles": "tsx scripts/audit-catalog-store-titles.ts",
     "audit:catalog-ai-titles": "tsx scripts/audit-catalog-ai-titles.ts",
     "verify:catalog-ai": "tsx scripts/verify-catalog-parsed-ai.ts",
+    "audit:auth-registration": "tsx scripts/audit-auth-registration.ts",
     "bot": "python -m bot"
   },
   "dependencies": {

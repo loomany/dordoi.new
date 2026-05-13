@@ -1,18 +1,16 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { establishSessionAfterOtp } from "@/lib/auth/establish-session";
 import { linkVendorProfileForPhone } from "@/lib/auth/link-vendor-profile";
 import { otpCodesEqual } from "@/lib/auth/otp-compare";
-import { randomPassword } from "@/lib/auth/password";
 import { signRegistrationToken } from "@/lib/auth/registration-token";
 import {
   assertValidPhoneDigits,
   normalizePhone,
   PhoneValidationError,
-  toE164Digits,
 } from "@/lib/phone";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createRouteHandlerSupabase } from "@/lib/supabase/route-handler-client";
 
 const bodySchema = z.object({
   phone: z.string().min(1),
@@ -75,7 +73,7 @@ export async function POST(request: Request) {
 
     const { data: profile, error: profileError } = await admin
       .from("profiles")
-      .select("id, name")
+      .select("id, name, email")
       .eq("phone", digits)
       .maybeSingle();
 
@@ -88,58 +86,14 @@ export async function POST(request: Request) {
     }
 
     if (profile?.id) {
-      const password = randomPassword();
-      const { error: pwError } = await admin.auth.admin.updateUserById(
+      const sessionResult = await establishSessionAfterOtp(
+        admin,
         profile.id,
-        { password },
+        digits,
+        { profileEmail: profile.email },
       );
 
-      if (pwError) {
-        console.error("[verify-code] update password", pwError);
-        return NextResponse.json(
-          { error: "Не удалось выполнить вход", code: "AUTH_UPDATE_FAILED" },
-          { status: 500 },
-        );
-      }
-
-      const { supabase, applyAuthCookiesTo } =
-        await createRouteHandlerSupabase();
-
-      const phoneAuth = await supabase.auth.signInWithPassword({
-        phone: toE164Digits(digits),
-        password,
-      });
-
-      let session =
-        phoneAuth.error === null ? phoneAuth.data.session : null;
-
-      /** У аккаунта могут быть и телефон, и email; вход по телефону иногда не создаёт сессию — пробуем email из Auth. */
-      if (!session) {
-        const { data: authUserData } = await admin.auth.admin.getUserById(
-          profile.id,
-        );
-        const emailFromAuth = authUserData.user?.email?.trim();
-        if (emailFromAuth) {
-          const emailAuth = await supabase.auth.signInWithPassword({
-            email: emailFromAuth,
-            password,
-          });
-          session =
-            emailAuth.error === null ? emailAuth.data.session : null;
-          if (!session) {
-            console.error(
-              "[verify-code] signIn phone",
-              phoneAuth.error,
-              "email",
-              emailAuth.error,
-            );
-          }
-        } else {
-          console.error("[verify-code] signIn", phoneAuth.error);
-        }
-      }
-
-      if (!session) {
+      if (!sessionResult) {
         return NextResponse.json(
           { error: "Не удалось создать сессию", code: "SIGN_IN_FAILED" },
           { status: 500 },
@@ -157,10 +111,10 @@ export async function POST(request: Request) {
       const response = NextResponse.json({
         success: true,
         isNewUser: false,
-        token: session.access_token,
+        token: sessionResult.session.access_token,
         name: profile.name ?? null,
       });
-      applyAuthCookiesTo(response);
+      sessionResult.applyAuthCookiesTo(response);
       return response;
     }
 

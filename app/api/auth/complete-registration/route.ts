@@ -2,14 +2,15 @@ import { NextResponse } from "next/server";
 import type { User } from "@supabase/supabase-js";
 import { email, z } from "zod";
 
+import { establishSessionAfterOtp } from "@/lib/auth/establish-session";
 import { findAuthUserByPhoneDigits } from "@/lib/auth/find-auth-user-by-phone";
 import { linkVendorProfileForPhone } from "@/lib/auth/link-vendor-profile";
 import { randomPassword } from "@/lib/auth/password";
+import { syntheticEmailForPhone } from "@/lib/auth/phone-login-email";
 import { verifyRegistrationToken } from "@/lib/auth/registration-token";
 import { notifyDordoiSiteRegistrationCompleted } from "@/lib/dordoi/analytics/leadNotifications";
 import { assertValidPhoneDigits, toE164Digits } from "@/lib/phone";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createRouteHandlerSupabase } from "@/lib/supabase/route-handler-client";
 
 const bodySchema = z.object({
   name: z.string().min(1).max(200),
@@ -78,6 +79,7 @@ export async function POST(request: Request) {
     }
 
     const admin = createAdminClient();
+    const loginEmail = emailNorm ?? syntheticEmailForPhone(phoneDigits);
 
     const { data: existing } = await admin
       .from("profiles")
@@ -104,9 +106,10 @@ export async function POST(request: Request) {
     if (!authUser) {
       const { data: created, error: createError } =
         await admin.auth.admin.createUser({
+          email: loginEmail,
+          email_confirm: true,
           phone: toE164Digits(phoneDigits),
           phone_confirm: true,
-          email: emailNorm,
           password,
           user_metadata: { full_name: name },
         });
@@ -139,9 +142,8 @@ export async function POST(request: Request) {
         password,
         user_metadata: { full_name: name },
         phone_confirm: true,
-        ...(emailNorm !== undefined
-          ? { email: emailNorm, email_confirm: true }
-          : {}),
+        email: loginEmail,
+        email_confirm: true,
       },
     );
 
@@ -194,35 +196,14 @@ export async function POST(request: Request) {
       console.error("[complete-registration] link vendor", e);
     }
 
-    const { supabase, applyAuthCookiesTo } = await createRouteHandlerSupabase();
+    const sessionResult = await establishSessionAfterOtp(
+      admin,
+      authUser.id,
+      phoneDigits,
+      { profileEmail: emailNorm ?? null },
+    );
 
-    const phoneAuth = await supabase.auth.signInWithPassword({
-      phone: toE164Digits(phoneDigits),
-      password,
-    });
-
-    let session =
-      phoneAuth.error === null ? phoneAuth.data.session : null;
-
-    if (!session && emailNorm !== undefined) {
-      const emailAuth = await supabase.auth.signInWithPassword({
-        email: emailNorm,
-        password,
-      });
-      session = emailAuth.error === null ? emailAuth.data.session : null;
-      if (!session) {
-        console.error(
-          "[complete-registration] signIn phone",
-          phoneAuth.error,
-          "email",
-          emailAuth.error,
-        );
-      }
-    } else if (!session) {
-      console.error("[complete-registration] signIn", phoneAuth.error);
-    }
-
-    if (!session) {
+    if (!sessionResult) {
       return NextResponse.json(
         { error: "Аккаунт создан, но вход не выполнен", code: "SIGN_IN_FAILED" },
         { status: 500 },
@@ -242,10 +223,10 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({
       success: true,
-      token: session.access_token,
+      token: sessionResult.session.access_token,
       name,
     });
-    applyAuthCookiesTo(response);
+    sessionResult.applyAuthCookiesTo(response);
     return response;
   } catch (e) {
     console.error("[complete-registration]", e);
