@@ -13,7 +13,10 @@ import {
 import { CatalogFavoriteButton } from "@/components/favorites/CatalogFavoriteButton";
 import { VendorContactActions } from "@/components/provider/VendorContactActions";
 import { VendorPhotoBatchFeed } from "@/components/provider/VendorPhotoBatchFeed";
+import { VendorRecommendedSellers } from "@/components/provider/VendorRecommendedSellers";
+import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { VendorFaqSection } from "@/components/vendors/VendorFaqSection";
 import { Link } from "@/i18n/navigation";
 import { catalogListingKeyFromSlug } from "@/lib/catalog/listing-key";
 import { stripPublicContactLeaksFromVendorText } from "@/lib/catalog/catalog-card-title";
@@ -21,6 +24,7 @@ import { getAiCatalogDisplayOverlay } from "@/lib/catalog/parsed-ai-catalog-over
 import {
   buildCatalogCardSourceRowForPublishedVendor,
   fetchApprovedVendorPhotoBatches,
+  fetchRecommendedVendorsForProfile,
   type PublishedVendorRow,
 } from "@/lib/catalog/published-vendors";
 import { getSessionProfile } from "@/lib/auth/session-profile";
@@ -37,6 +41,8 @@ import {
 } from "@/lib/catalog/vendor-map-links";
 import { getShowcaseProfileFields } from "@/lib/catalog/showcase-vendor-i18n";
 import { displayVendorPaymentMethods, displayVendorTerm } from "@/lib/vendor/vendor-payment-display";
+import { normalizeVendorCategoryMainSlugs } from "@/lib/catalog/vendor-category-normalize";
+import { buildVendorFaq } from "@/lib/dordoi/vendorFaq";
 import { baseUrl } from "@/lib/site";
 
 type Props = {
@@ -158,6 +164,32 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
   const initialPhotoBatches = await fetchApprovedVendorPhotoBatches({
     vendorId: vendor.id,
     limit: PHOTO_FEED_PAGE_SIZE,
+  });
+  const recommendedVendors = await fetchRecommendedVendorsForProfile(vendor);
+  const recommendedSellerCards = recommendedVendors.map((related) =>
+    buildCatalogCardSourceRowForPublishedVendor(related, {
+      tBrowse,
+      tTreeCategory: (key) => tTree(key),
+      locale,
+    }),
+  );
+  const faqItems = buildVendorFaq({
+    name: pageTitle,
+    category: normalizeVendorCategoryMainSlugs(vendor.categories)[0] ?? null,
+    categoryLabel: categoryLabels[0] ?? null,
+    city: "Бишкек",
+    country: "Кыргызстан",
+    description: vendor.description_detail ?? vendor.description,
+    salesType: cardRow.display.tradeType,
+    minOrder: vendor.min_batch,
+    locationRow: vendor.location_row,
+    hasWhatsapp: Boolean(whatsappHref(vendor.whatsapp_1) || whatsappHref(vendor.whatsapp_2)),
+    hasPhone: Boolean(vendor.phone_number?.trim()),
+    hasInstagram: Boolean(vendor.instagram_url?.trim()),
+    hasTelegram: Boolean(vendor.telegram_url?.trim()),
+    hasRecommendedSellers: recommendedVendors.length > 0,
+    deliveryHelp: vendor.delivery_help,
+    samplesAvailable: vendor.samples_available,
   });
   const description =
     cardRow.display.description.trim() ||
@@ -430,6 +462,19 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                   ) : null}
                 </section>
               ) : null}
+
+              <VendorRecommendedSellers
+                cards={recommendedSellerCards}
+                favoriteKeys={[...favoriteKeys]}
+                title={t("recommendedSellersTitle")}
+                navAriaLabel={t("recommendedSellersNavAria")}
+                viewProfileLabel={tBrowse("viewProfile")}
+                aboutStoreLabel={tBrowse("cardAboutStore")}
+                collapseLabel={tBrowse("cardCollapse")}
+                expandLabel={tBrowse("cardExpand")}
+              />
+              <VendorFaqSection items={faqItems} vendorName={pageTitle} />
+              <FaqJsonLd items={faqItems} />
             </main>
 
             <aside className="order-1 rounded-[var(--d-radius-2xl)] border border-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)] bg-card p-5 shadow-[var(--d-shadow-soft)] lg:sticky lg:top-24 lg:order-none">

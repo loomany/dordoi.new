@@ -14,15 +14,21 @@ type Props = {
   className?: string;
   /** Visually hidden heading for the block (screen readers). */
   ariaLabel?: string;
+  /** Index of the item expanded by default (`open` on `<details>`). */
+  defaultOpenIndex?: number;
 };
 
 /** SEO-friendly FAQ: native `<details>` so content is in initial HTML. */
-export function FaqAccordion({ items, className, ariaLabel }: Props) {
+export function FaqAccordion({ items, className, ariaLabel, defaultOpenIndex }: Props) {
   return (
     <section aria-label={ariaLabel} className={cn("space-y-2", className)}>
       <div className="divide-y divide-gray-200 overflow-hidden rounded-xl border border-gray-200 bg-white">
         {items.map((item, i) => (
-          <details key={i} className="group open:bg-gray-50/60">
+          <details
+            key={i}
+            className="group open:bg-gray-50/60"
+            open={defaultOpenIndex === i ? true : undefined}
+          >
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 text-left font-medium text-gray-900 [&::-webkit-details-marker]:hidden">
               <span className="min-w-0">{item.question}</span>
               <ChevronDown

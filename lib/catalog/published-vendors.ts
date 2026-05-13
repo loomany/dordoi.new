@@ -588,6 +588,101 @@ export async function fetchApprovedVendorPhotoBatches(opts: {
     .filter((x): x is VendorPhotoBatch => x !== null);
 }
 
+const RECOMMENDED_VENDORS_PROFILE_LIMIT = 6;
+
+async function fetchRecommendedVendorCandidates(opts: {
+  excludeSlug: string;
+  categoryTokens: string[];
+  fetchLimit: number;
+}): Promise<PublishedVendorCatalogListRow[]> {
+  const admin = createAdminClient();
+  let q = admin
+    .from("vendors")
+    .select(PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS)
+    .eq("status", "approved")
+    .not("slug", "is", null)
+    .neq("slug", opts.excludeSlug)
+    .order("created_at", { ascending: false })
+    .limit(opts.fetchLimit) as {
+    not: (
+      column: string,
+      operator: string,
+      value: string,
+    ) => typeof q;
+    overlaps: (column: string, value: string[]) => typeof q;
+    limit: (count: number) => PromiseLike<{
+      data: unknown[] | null;
+      error: { message: string } | null;
+    }>;
+  };
+
+  if (HIDDEN_PUBLIC_CATALOG_SLUGS.length > 0) {
+    q = q.not(
+      "slug",
+      "in",
+      `(${HIDDEN_PUBLIC_CATALOG_SLUGS.map((s) => `"${s}"`).join(",")})`,
+    );
+  }
+
+  if (opts.categoryTokens.length > 0) {
+    q = q.overlaps("categories", opts.categoryTokens);
+  }
+
+  const { data, error } = await q.limit(opts.fetchLimit);
+
+  if (error) {
+    console.error("[fetchRecommendedVendorCandidates]", error);
+    return [];
+  }
+
+  return (Array.isArray(data) ? data : [])
+    .map((row) => mapPublishedVendorCatalogListRow(row))
+    .filter((x): x is PublishedVendorCatalogListRow => x !== null);
+}
+
+/**
+ * До 6 похожих продавцов для блока перелинковки на странице профиля.
+ * Сначала — пересечение категорий, затем добор свежими из каталога.
+ */
+export async function fetchRecommendedVendorsForProfile(
+  vendor: Pick<PublishedVendorRow, "slug" | "categories">,
+  limit = RECOMMENDED_VENDORS_PROFILE_LIMIT,
+): Promise<PublishedVendorCatalogListRow[]> {
+  const categoryTokens = catalogCategoryOverlapTokens(vendor.categories);
+  const picked: PublishedVendorCatalogListRow[] = [];
+  const seenSlugs = new Set<string>([vendor.slug]);
+
+  if (categoryTokens.length > 0) {
+    const related = await fetchRecommendedVendorCandidates({
+      excludeSlug: vendor.slug,
+      categoryTokens,
+      fetchLimit: limit * 3,
+    });
+    for (const row of related) {
+      if (picked.length >= limit) break;
+      if (seenSlugs.has(row.slug)) continue;
+      seenSlugs.add(row.slug);
+      picked.push(row);
+    }
+  }
+
+  if (picked.length < limit) {
+    const fallback = await fetchRecommendedVendorCandidates({
+      excludeSlug: vendor.slug,
+      categoryTokens: [],
+      fetchLimit: limit * 4,
+    });
+    for (const row of fallback) {
+      if (picked.length >= limit) break;
+      if (seenSlugs.has(row.slug)) continue;
+      seenSlugs.add(row.slug);
+      picked.push(row);
+    }
+  }
+
+  return picked.slice(0, limit);
+}
+
 /** Один опубликованный продавец по SEO slug для страницы `/catalog/{slug}`. */
 export async function fetchPublishedVendorBySlug(
   slug: string,
