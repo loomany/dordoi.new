@@ -116,6 +116,29 @@ Not executed in this environment (no interactive browser). Suggested checklist:
 
 Server module and `POST /api/dordoi/analytics/event` were added in Step 1A. This document covers **Step 1B** (client tracker), **Step 1C** (vendor moderation admin Telegram), **Step 1E** (registration), **Step 1D** (verification), and **Step 1F** (format refresh).
 
+### 12. Per-chat `MIN_INTERVAL` — traffic vs auth / lead / moderation (2026-05-13)
+
+**Problem:** [`sendDordoiAdminTelegram`](../lib/dordoi/analytics/sendDordoiAdminTelegram.ts) used a **single** in-memory `lastSentByChat` map and `DORDOI_ADMIN_TELEGRAM_MIN_INTERVAL_SECONDS` (default **60s**) for **every** `sendMessage` to the same admin chat. So a **`first_visit`** (or any prior send) could cause the next message within the gap to be skipped (`telegram min_interval skip`), including **«Новая регистрация»** from [`notifyDordoiSiteRegistrationCompleted`](../lib/dordoi/analytics/leadNotifications.ts) — e.g. user opens site, then registers with a new number within 60s → registration Telegram silently not delivered. Same class of issue for server vendor moderation Telegram if a traffic message had just fired.
+
+**Product rule:**
+
+| Kind | `bypassChatMinInterval` | `reason` (optional, debug) |
+|------|-------------------------|----------------------------|
+| `first_visit` only (same admin chat) | **false** — respects global per-chat gap | `traffic` |
+| Other `POST /api/dordoi/analytics/event` types that still send Telegram (CTA, submissions, `vendor_*` from client) | **true** | `lead` or `moderation` |
+| [`notifyDordoiSiteRegistrationCompleted`](../lib/dordoi/analytics/leadNotifications.ts) | **true** | `auth` |
+| [`notifyDordoiVendorModerationStatusChanged`](../lib/dordoi/analytics/leadNotifications.ts) | **true** | `moderation` |
+
+**Registration dedupe (unchanged):** [`rateLimitSiteRegistrationCompleted`](../lib/dordoi/analytics/rateLimit.ts) — key `dordoi:site_reg:<userId>:registration_completed`, **TTL 30 minutes** (same `userId` does not spam repeat completes). Separate from Telegram min interval.
+
+**Env:** `DORDOI_ADMIN_TELEGRAM_MIN_INTERVAL_SECONDS` semantics unchanged for **traffic** (`first_visit`); optional second argument on `sendDordoiAdminTelegram` only.
+
+**Files:** [`sendDordoiAdminTelegram.ts`](../lib/dordoi/analytics/sendDordoiAdminTelegram.ts), [`event/route.ts`](../app/api/dordoi/analytics/event/route.ts), [`leadNotifications.ts`](../lib/dordoi/analytics/leadNotifications.ts).
+
+**Manual smoke:** (1) Open site → `first_visit` Telegram. (2) Within 60s complete **new** phone registration → «Новая регистрация» must arrive. (3) Repeat registration same user within 30 min → dedupe, no duplicate registration Telegram. (4) `first_visit` anti-spam unchanged (visitor / session limits + min interval for that event type).
+
+**Automated (2026-05-13, post-fix):** `npx tsc --noEmit` exit **0**; `npm run build` exit **0**. Commit / push: not without approve.
+
 ---
 
 ## Step 1C — vendor moderation admin Telegram (server-only)

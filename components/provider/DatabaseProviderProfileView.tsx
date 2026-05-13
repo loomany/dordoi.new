@@ -27,7 +27,7 @@ import {
   formatListingUpdatedToday,
   formatProviderAddedDate,
 } from "@/lib/provider-dates";
-import { mapVendorCategoryLabelsForLocale } from "@/lib/catalog/map-vendor-category-labels";
+import { localizedMainCategoryLabels } from "@/lib/catalog/vendor-category-normalize";
 import {
   ensureHttpUrl,
   resolveGoogleMapsHref,
@@ -86,7 +86,7 @@ function MediaImage({
 
 export async function DatabaseProviderProfileView({ vendor }: Props) {
   const t = await getTranslations("Pages.providerProfile");
-  const tCatalog = await getTranslations("catalogCategories");
+  const tTree = await getTranslations("catalogCategoryTree");
   const tBrowse = await getTranslations("Pages.catalogBrowse");
   const locale = await getLocale();
   const profile = await getSessionProfile();
@@ -101,9 +101,7 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
     tBrowse("fallbackStoreTitle");
   const categoryLabels = showcase
     ? showcase.categories
-    : mapVendorCategoryLabelsForLocale(vendor.categories, (key) =>
-        tCatalog(key),
-      );
+    : localizedMainCategoryLabels(vendor.categories, (id) => tTree(`main.${id}`));
   const displayLocationRow = showcase?.locationRow ?? vendor.location_row;
   const listingKey = catalogListingKeyFromSlug(vendor.slug);
   const initialFavorite = favoriteKeys.has(listingKey);

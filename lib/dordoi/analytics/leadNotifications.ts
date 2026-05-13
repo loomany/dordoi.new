@@ -86,7 +86,10 @@ export async function notifyDordoiVendorModerationStatusChanged(
       `Категория: ${catLine}\n\n` +
       `Статус: ${statusLine}`;
 
-    const tg = await sendDordoiAdminTelegram(html);
+    const tg = await sendDordoiAdminTelegram(html, {
+      bypassChatMinInterval: true,
+      reason: "moderation",
+    });
     if (!tg.sent) {
       return {
         ok: true,
@@ -179,7 +182,10 @@ export async function notifyDordoiSiteRegistrationCompleted(
 
     const html = lines.join("\n");
 
-    const tg = await sendDordoiAdminTelegram(html);
+    const tg = await sendDordoiAdminTelegram(html, {
+      bypassChatMinInterval: true,
+      reason: "auth",
+    });
     if (!tg.sent) {
       return {
         ok: true,

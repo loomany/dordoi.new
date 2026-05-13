@@ -192,6 +192,9 @@ export const CATALOG_CATEGORY_TREE: CatalogMainCategory[] = [
   },
 ];
 
+export const CATALOG_MAIN_CATEGORY_IDS: readonly string[] = CATALOG_CATEGORY_TREE.map((m) => m.id);
+export const CATALOG_MAIN_CATEGORY_ID_SET: ReadonlySet<string> = new Set(CATALOG_MAIN_CATEGORY_IDS);
+
 const _slugSet = new Set<string>();
 for (const main of CATALOG_CATEGORY_TREE) {
   for (const sub of main.subcategories) {
@@ -213,6 +216,19 @@ export function findSubcategoryById(id: string): CatalogSubcategory | undefined 
     }
   }
   return undefined;
+}
+
+/** Slug подкатегории или id основной категории → id основной; иначе `null`. */
+export function resolveCatalogSlugToMainId(slug: string): string | null {
+  const t = slug.trim();
+  if (!t) return null;
+  if (CATALOG_MAIN_CATEGORY_ID_SET.has(t)) return t;
+  for (const main of CATALOG_CATEGORY_TREE) {
+    if (main.subcategories.some((s) => s.id === t)) {
+      return main.id;
+    }
+  }
+  return null;
 }
 
 export type SubcategoryWithMain = {

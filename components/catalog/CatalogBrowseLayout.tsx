@@ -21,8 +21,8 @@ import {
   vendorToCatalogCardSource,
   type CatalogCardSourceRow,
 } from "@/lib/catalog/published-vendors";
-import { mapVendorCategoryLabelsForLocale } from "@/lib/catalog/map-vendor-category-labels";
 import { getShowcaseCatalogFields } from "@/lib/catalog/showcase-vendor-i18n";
+import { localizedMainCategoryLabels } from "@/lib/catalog/vendor-category-normalize";
 
 const SAMPLE_IDS = ["0", "1", "2", "3", "4", "5"] as const;
 const CATALOG_PAGE_SIZE = 10;
@@ -120,7 +120,7 @@ export async function CatalogBrowseLayout({
   compareWithPreview = false,
 }: CatalogBrowseLayoutProps) {
   const t = await getTranslations("Pages.catalogBrowse");
-  const tCatalog = await getTranslations("catalogCategories");
+  const tTree = await getTranslations("catalogCategoryTree");
   const locale = await getLocale();
   const profile = await getSessionProfile();
   const favoriteKeys = profile
@@ -156,9 +156,7 @@ export async function CatalogBrowseLayout({
     }
     return {
       ...row,
-      categories: mapVendorCategoryLabelsForLocale(row.categories, (key) =>
-        tCatalog(key),
-      ),
+      categories: localizedMainCategoryLabels(v.categories, (id) => tTree(`main.${id}`)),
     };
   });
 

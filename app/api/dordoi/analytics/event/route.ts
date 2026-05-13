@@ -286,7 +286,15 @@ export async function POST(req: Request) {
     firstPath: firstTouch?.firstPath,
   });
 
-  const tg = await sendDordoiAdminTelegram(html);
+  const telegramSendOpts =
+    body.eventType === "first_visit"
+      ? { reason: "traffic" as const }
+      : body.eventType === "vendor_approved" ||
+          body.eventType === "vendor_rejected"
+        ? { bypassChatMinInterval: true as const, reason: "moderation" as const }
+        : { bypassChatMinInterval: true as const, reason: "lead" as const };
+
+  const tg = await sendDordoiAdminTelegram(html, telegramSendOpts);
   if (!tg.sent) {
     return NextResponse.json({
       ok: true,

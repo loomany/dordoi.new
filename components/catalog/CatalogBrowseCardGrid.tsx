@@ -81,40 +81,40 @@ export function CatalogBrowseCardGrid({
 
         return (
           <div key={c.id} className="flex min-h-0 w-full min-w-0 flex-col">
-          <CatalogCard
-            className="flex min-h-0 w-full"
-            href={c.href}
-            title={c.title}
-            tagline={c.tagline ?? undefined}
-            description={c.description}
-            categories={cardCategories}
-            categoriesSectionLabel={categoriesSectionLabel}
-            avatarUrl={c.avatarUrl ?? undefined}
-            hideAvatar={c.hideAvatar}
-            photoUrls={c.photoUrls}
-            featured={c.featured}
-            addedLine={c.addedLine}
-            updatedLine={c.updatedLine}
-            viewProfileLabel={viewProfileLabel}
-            aboutStoreLabel={aboutStoreLabel}
-            collapseLabel={collapseLabel}
-            expandLabel={expandLabel}
-            defaultCollapsed={defaultCollapsed}
-            defaultCollapsedMobile={defaultCollapsedMobile}
-            collapsedExternal={collapsedForIndex(index)}
-            onCollapsedExternalChange={(next) =>
-              setCollapsedForRowOfIndex(index, next)
-            }
-            favoriteSlot={
-              <CatalogFavoriteButton
-                key={`${listingKey}:${initialFavorite}`}
-                listingKey={listingKey}
-                initialFavorite={initialFavorite}
-                variant="card"
-                showCardLabel={false}
-              />
-            }
-          />
+            <CatalogCard
+              className="flex min-h-0 w-full"
+              href={c.href}
+              title={c.title}
+              tagline={c.tagline ?? undefined}
+              description={c.description}
+              categories={cardCategories}
+              categoriesSectionLabel={categoriesSectionLabel}
+              avatarUrl={c.avatarUrl ?? undefined}
+              hideAvatar={c.hideAvatar}
+              photoUrls={c.photoUrls}
+              featured={c.featured}
+              addedLine={c.addedLine}
+              updatedLine={c.updatedLine}
+              viewProfileLabel={viewProfileLabel}
+              aboutStoreLabel={aboutStoreLabel}
+              collapseLabel={collapseLabel}
+              expandLabel={expandLabel}
+              defaultCollapsed={defaultCollapsed}
+              defaultCollapsedMobile={defaultCollapsedMobile}
+              collapsedExternal={collapsedForIndex(index)}
+              onCollapsedExternalChange={(next) =>
+                setCollapsedForRowOfIndex(index, next)
+              }
+              favoriteSlot={
+                <CatalogFavoriteButton
+                  key={`${listingKey}:${initialFavorite}`}
+                  listingKey={listingKey}
+                  initialFavorite={initialFavorite}
+                  variant="card"
+                  showCardLabel={false}
+                />
+              }
+            />
           </div>
         );
       })}

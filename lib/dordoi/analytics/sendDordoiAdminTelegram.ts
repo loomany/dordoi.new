@@ -11,8 +11,20 @@ export type SendDordoiAdminTelegramResult = {
   delivered: number;
 };
 
+/** Optional send behavior; does not change env parsing. */
+export type SendDordoiAdminTelegramOptions = {
+  /**
+   * When true, skip per-chat `DORDOI_ADMIN_TELEGRAM_MIN_INTERVAL_SECONDS` gating.
+   * Use for auth / moderation / time-sensitive leads so traffic (e.g. first_visit) cannot block them.
+   */
+  bypassChatMinInterval?: boolean;
+  /** Telemetry / debug classification only. */
+  reason?: "traffic" | "lead" | "auth" | "moderation";
+};
+
 export async function sendDordoiAdminTelegram(
   html: string,
+  options?: SendDordoiAdminTelegramOptions,
 ): Promise<SendDordoiAdminTelegramResult> {
   const env = loadDordoiAdminTelegramEnv();
 
@@ -51,12 +63,20 @@ export async function sendDordoiAdminTelegram(
 
   const gapMs = Math.max(0, env.minIntervalSeconds * 1000);
   const now = Date.now();
+  const bypassGap = options?.bypassChatMinInterval === true;
   let delivered = 0;
+
+  if (env.debug && bypassGap && options?.reason) {
+    console.info(
+      "[dordoi-analytics] telegram send bypass min_interval reason=",
+      options.reason,
+    );
+  }
 
   for (const chatId of env.chatIds) {
     const key = String(chatId);
     const last = lastSentByChat.get(key) ?? 0;
-    if (gapMs > 0 && now - last < gapMs) {
+    if (!bypassGap && gapMs > 0 && now - last < gapMs) {
       console.warn("[dordoi-analytics] telegram min_interval skip chat=", key);
       continue;
     }

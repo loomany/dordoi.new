@@ -8,7 +8,6 @@ import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail"
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
 import {
   CATALOG_CARD_COLLAPSED_DESCRIPTION_MAX_CHARS,
-  CATEGORY_LABEL_MAX_CHARS,
   DESCRIPTION_CARD_MAX_CHARS,
 } from "@/lib/vendor/vendor-field-limits";
 import { cn } from "@/lib/utils";
@@ -110,6 +109,7 @@ export function CatalogCard({
   favoriteSlot,
   aboutStoreLabel,
   categories,
+  categoriesSectionLabel,
   collapseLabel,
   expandLabel,
   defaultCollapsed = false,
@@ -123,18 +123,38 @@ export function CatalogCard({
   const descTrim = description.trim();
   const categoryList = (categories ?? []).map((c) => c.trim()).filter(Boolean);
   /**
-   * Первая категория — под заголовком (лимит ввода `CATEGORY_LABEL_MAX_CHARS`);
-   * длинные значения из старых данных мягко обрезаем в превью.
+   * Локализованные категории приходят с сервера; бейджи компактные, лишние — «+N».
    */
-  const headingCategoryRaw = categoryList[0];
-  const headingCategory =
-    headingCategoryRaw && headingCategoryRaw.length > CATEGORY_LABEL_MAX_CHARS
-      ? `${headingCategoryRaw.slice(0, CATEGORY_LABEL_MAX_CHARS).replace(/[\s,.;:!?\-—]+$/u, "")}…`
-      : headingCategoryRaw;
-  const categoriesForChips = headingCategoryRaw
-    ? categoryList.slice(1)
-    : categoryList;
-  const showCategoryChips = categoriesForChips.length > 0;
+  const firstCategoryLabel = categoryList[0];
+  const maxCatBadges = 4;
+  const categoryBadgesVisible = categoryList.slice(0, maxCatBadges);
+  const categoryBadgesOverflow = categoryList.length - categoryBadgesVisible.length;
+
+  const categoryBadgesRow =
+    categoryList.length > 0 ? (
+      <ul
+        className="mt-2 flex flex-wrap items-center justify-center gap-1.5 lg:justify-start"
+        aria-label={categoriesSectionLabel?.trim() || undefined}
+      >
+        {categoryBadgesVisible.map((cat, i) => (
+          <li
+            key={`${i}-${cat}`}
+            className="inline-flex max-w-[11rem] truncate rounded-full border border-foreground/10 bg-muted/40 px-2 py-0.5 text-[11px] font-medium leading-tight text-foreground/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+            title={cat}
+          >
+            {cat}
+          </li>
+        ))}
+        {categoryBadgesOverflow > 0 ? (
+          <li
+            className="inline-flex rounded-full border border-dashed border-muted-foreground/30 bg-muted/25 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-muted-foreground"
+            title={categoryList.slice(maxCatBadges).join(", ")}
+          >
+            +{categoryBadgesOverflow}
+          </li>
+        ) : null}
+      </ul>
+    ) : null;
 
   const canCollapse =
     hasPhotos && Boolean(collapseLabel) && Boolean(expandLabel);
@@ -239,29 +259,6 @@ export function CatalogCard({
       </span>
     ) : null;
 
-  /** Чипы категорий (slice + «+N» счётчик) — общий блок для compact и rail. */
-  const categoryChips = showCategoryChips ? (
-    <ul className="flex min-w-0 flex-wrap items-center gap-1.5">
-      {categoriesForChips.slice(0, 2).map((cat, i) => (
-        <li
-          key={`${i}-${cat}`}
-          className="max-w-[10rem] truncate rounded-full border border-primary/15 bg-secondary/70 px-2.5 py-0.5 text-xs font-medium text-secondary-foreground"
-          title={cat}
-        >
-          {cat}
-        </li>
-      ))}
-      {categoriesForChips.length > 2 ? (
-        <li
-          className="rounded-full border border-primary/15 bg-secondary/70 px-2 py-0.5 text-xs font-semibold text-secondary-foreground"
-          title={categoriesForChips.slice(2).join(", ")}
-        >
-          +{categoriesForChips.length - 2}
-        </li>
-      ) : null}
-    </ul>
-  ) : null;
-
   /** Link-style CTA «Профиль магазина →» — общий для compact и rail. */
   const renderCtaLink = (className?: string) => (
     <span
@@ -309,16 +306,16 @@ export function CatalogCard({
       >
         {title}
       </h2>
-      {headingCategory ? (
-        <p
+      {categoryBadgesRow ? (
+        <div
           className={cn(
-            "mt-1.5 text-center text-sm font-semibold leading-snug text-muted-foreground",
+            "mt-1.5 w-full min-w-0",
             !hideAvatar && "pl-[4.25rem] lg:pl-0",
             hideAvatar && topButtonsCount > 0 && "max-lg:px-0 lg:px-0",
           )}
         >
-          {headingCategory}
-        </p>
+          {categoryBadgesRow}
+        </div>
       ) : null}
     </div>
   );
@@ -343,7 +340,7 @@ export function CatalogCard({
                     </h3>
                   ) : null}
                   <div className="space-y-2 text-sm leading-relaxed">
-                    {tag && tag !== headingCategoryRaw ? (
+                    {tag && tag !== firstCategoryLabel ? (
                       <p className="font-semibold text-card-foreground">{tag}</p>
                     ) : null}
                     {descTrim ? (
@@ -357,12 +354,6 @@ export function CatalogCard({
             ) : (
               railHeadingRow
             )}
-
-            {categoryChips ? (
-              <div className="mt-auto flex flex-col items-start gap-3 border-t border-border/70 pt-3">
-                {categoryChips}
-              </div>
-            ) : null}
           </div>
 
           <div className="flex w-full min-w-0 shrink-0 flex-col lg:h-full lg:min-h-0 lg:max-w-[min(100%,260px)]">
@@ -379,18 +370,11 @@ export function CatalogCard({
             <h2 className="text-center text-sm font-bold leading-tight text-card-foreground sm:text-base lg:text-lg">
               {title}
             </h2>
-            {headingCategory ? (
-              <p className="mt-1.5 text-center text-sm font-semibold leading-snug text-muted-foreground">
-                {headingCategory}
-              </p>
+            {categoryBadgesRow ? (
+              <div className="mt-2 flex justify-center">{categoryBadgesRow}</div>
             ) : null}
-            {tag && tag !== headingCategoryRaw ? (
-              <p
-                className={cn(
-                  "text-center text-sm font-semibold leading-snug text-card-foreground",
-                  headingCategory ? "mt-1" : "mt-1.5",
-                )}
-              >
+            {tag && tag !== firstCategoryLabel ? (
+              <p className="mt-1.5 text-center text-sm font-semibold leading-snug text-card-foreground">
                 {tag}
               </p>
             ) : null}
@@ -403,9 +387,8 @@ export function CatalogCard({
             </p>
           ) : null}
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 pt-1">
-            {categoryChips}
-            {renderCtaLink("ml-auto")}
+          <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2 pt-1">
+            {renderCtaLink()}
           </div>
         </div>
       )}

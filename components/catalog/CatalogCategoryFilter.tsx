@@ -6,13 +6,6 @@ import { ChevronDown, LayoutGrid, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useQueryStates } from "nuqs";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionHeader,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -28,7 +21,10 @@ import {
   localizeCategoryTree,
   type LocalizedCatalogMainCategory,
 } from "@/lib/constants/categories";
-import { normalizeCatalogCategorySlugs } from "@/lib/catalog/catalog-category-filter";
+import {
+  catalogFilterSlugsToMainIds,
+  normalizeCatalogCategorySlugs,
+} from "@/lib/catalog/catalog-category-filter";
 import { catalogQueryParsers } from "@/lib/catalog/catalog-query-parsers";
 import { cn } from "@/lib/utils";
 
@@ -46,39 +42,27 @@ function useIsDesktopMd() {
   return isDesktop;
 }
 
-function filterTree(
-  query: string,
-  tree: LocalizedCatalogMainCategory[],
-): LocalizedCatalogMainCategory[] {
-  const q = query.trim().toLowerCase();
-  if (!q) {
-    return tree;
-  }
-  const out: LocalizedCatalogMainCategory[] = [];
-  for (const main of tree) {
-    const mainHit =
-      main.title.toLowerCase().includes(q) ||
-      main.id.toLowerCase().includes(q);
-    const subs = main.subcategories.filter(
-      (s) =>
-        s.label.toLowerCase().includes(q) ||
-        s.id.toLowerCase().includes(q) ||
-        mainHit,
-    );
-    if (subs.length > 0) {
-      out.push({ ...main, subcategories: subs });
-    }
-  }
-  return out;
+type MainRow = { id: string; emoji: string; title: string };
+
+function mainsFromLocalizedTree(tree: LocalizedCatalogMainCategory[]): MainRow[] {
+  return tree.map((m) => ({ id: m.id, emoji: m.emoji, title: m.title }));
 }
 
-function SubcategoryRow({
-  label,
+function filterMains(query: string, mains: MainRow[]): MainRow[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return mains;
+  return mains.filter(
+    (m) => m.title.toLowerCase().includes(q) || m.id.toLowerCase().includes(q),
+  );
+}
+
+function MainCategoryCheckRow({
+  row,
   checked,
   onToggle,
   largeTouch,
 }: {
-  label: string;
+  row: MainRow;
   checked: boolean;
   onToggle: (next: boolean) => void;
   largeTouch?: boolean;
@@ -94,35 +78,22 @@ function SubcategoryRow({
         checked={checked}
         onCheckedChange={(v) => onToggle(Boolean(v))}
         className="mt-0.5"
-        aria-label={label}
+        aria-label={row.title}
       />
-      <span className="text-sm leading-snug text-foreground">{label}</span>
+      <span className="flex min-w-0 items-start gap-2 leading-snug">
+        <span className="shrink-0 text-base" aria-hidden>
+          {row.emoji}
+        </span>
+        <span className="min-w-0 text-sm text-foreground">{row.title}</span>
+      </span>
     </label>
   );
 }
 
-function FilterInner({
-  search,
-  onSearchChange,
-  filteredMains,
-  activeMainId,
-  onPickMain,
-  draft,
-  toggleDraft,
-  onResetDraft,
-  onApply,
-  applyLabel,
-  resetLabel,
-  searchPlaceholder,
-  mainCategoriesNavAria,
-  noMatchesLabel,
-  desktop,
-}: {
+type FilterPanelProps = {
   search: string;
   onSearchChange: (v: string) => void;
-  filteredMains: LocalizedCatalogMainCategory[],
-  activeMainId: string;
-  onPickMain: (id: string) => void;
+  mains: MainRow[];
   draft: Set<string>;
   toggleDraft: (id: string, checked: boolean) => void;
   onResetDraft: () => void;
@@ -130,16 +101,39 @@ function FilterInner({
   applyLabel: string;
   resetLabel: string;
   searchPlaceholder: string;
-  mainCategoriesNavAria: string;
   noMatchesLabel: string;
-  desktop: boolean;
-}) {
-  const activeMain = filteredMains.find((m) => m.id === activeMainId) ?? filteredMains[0];
+  /** Bottom sheet — крупнее тач и нижняя панель с тенью */
+  sheetLayout?: boolean;
+};
 
+function FilterPanel({
+  search,
+  onSearchChange,
+  mains,
+  draft,
+  toggleDraft,
+  onResetDraft,
+  onApply,
+  applyLabel,
+  resetLabel,
+  searchPlaceholder,
+  noMatchesLabel,
+  sheetLayout,
+}: FilterPanelProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3">
-      <div className="relative shrink-0 px-3 pt-3 md:px-4 md:pt-4">
-        <span className="pointer-events-none absolute left-6 top-1/2 z-[1] -translate-y-1/2 text-muted-foreground md:left-7">
+      <div
+        className={cn(
+          "relative shrink-0",
+          sheetLayout ? "px-3 pt-3" : "border-b border-border/60 px-4 pt-4",
+        )}
+      >
+        <span
+          className={cn(
+            "pointer-events-none absolute top-1/2 z-[1] -translate-y-1/2 text-muted-foreground",
+            sheetLayout ? "left-6" : "left-7",
+          )}
+        >
           <Search className="size-4 stroke-[1.5]" aria-hidden />
         </span>
         <input
@@ -152,87 +146,37 @@ function FilterInner({
         />
       </div>
 
-      {desktop ? (
-        <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,11rem)_1fr] divide-x divide-border overflow-hidden border-t border-border">
-          <nav
-            className="min-h-0 overflow-y-auto overscroll-contain py-2"
-            aria-label={mainCategoriesNavAria}
-          >
-            {filteredMains.map((main) => {
-              const active = main.id === activeMainId;
-              return (
-                <button
-                  key={main.id}
-                  type="button"
-                  onClick={() => onPickMain(main.id)}
-                  className={cn(
-                    "flex w-full items-start gap-2 px-3 py-2.5 text-left text-sm transition-colors",
-                    active
-                      ? "border-l-2 border-l-[color-mix(in_oklch,var(--d-card-accent)_55%,transparent)] bg-[color-mix(in_oklch,var(--d-card-accent)_10%,transparent)] font-medium"
-                      : "border-l-2 border-l-transparent hover:bg-muted/60",
-                  )}
-                >
-                  <span className="shrink-0" aria-hidden>
-                    {main.emoji}
-                  </span>
-                  <span className="min-w-0 leading-snug">{main.title}</span>
-                </button>
-              );
-            })}
-          </nav>
-          <div className="min-h-0 overflow-y-auto overscroll-contain p-3 md:p-4">
-            {activeMain ? (
-              <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
-                {activeMain.subcategories.map((sub) => (
-                  <SubcategoryRow
-                    key={sub.id}
-                    label={sub.label}
-                    checked={draft.has(sub.id)}
-                    onToggle={(next) => toggleDraft(sub.id, next)}
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">{noMatchesLabel}</p>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pb-2">
-          <Accordion multiple defaultValue={[]}>
-            {filteredMains.map((main) => (
-              <AccordionItem key={main.id} value={main.id}>
-                <AccordionHeader>
-                  <AccordionTrigger>
-                    <span className="flex min-w-0 items-center gap-2">
-                      <span aria-hidden>{main.emoji}</span>
-                      <span className="min-w-0">{main.title}</span>
-                    </span>
-                  </AccordionTrigger>
-                </AccordionHeader>
-                <AccordionContent>
-                  <div className="flex flex-col gap-1 pt-1">
-                    {main.subcategories.map((sub) => (
-                      <SubcategoryRow
-                        key={sub.id}
-                        label={sub.label}
-                        checked={draft.has(sub.id)}
-                        onToggle={(next) => toggleDraft(sub.id, next)}
-                        largeTouch
-                      />
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
+      <div
+        className={cn(
+          "min-h-0 flex-1 overflow-y-auto overscroll-contain pb-2",
+          sheetLayout ? "px-3" : "px-2",
+        )}
+      >
+        {mains.length > 0 ? (
+          <div className="flex flex-col gap-1 pt-1">
+            {mains.map((row) => (
+              <MainCategoryCheckRow
+                key={row.id}
+                row={row}
+                checked={draft.has(row.id)}
+                onToggle={(next) => toggleDraft(row.id, next)}
+                largeTouch={Boolean(sheetLayout)}
+              />
             ))}
-          </Accordion>
-        </div>
-      )}
+          </div>
+        ) : (
+          <p className={cn("text-sm text-muted-foreground", sheetLayout ? "px-3" : "px-2")}>
+            {noMatchesLabel}
+          </p>
+        )}
+      </div>
 
       <div
         className={cn(
-          "flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-border bg-card px-3 py-3 md:px-4",
-          !desktop && "sticky bottom-0 z-[1] shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.12)]",
+          "flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-border bg-card py-3",
+          sheetLayout
+            ? "sticky bottom-0 z-[1] px-3 shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.12)]"
+            : "px-4",
         )}
       >
         <Button type="button" variant="outline" size="sm" onClick={onResetDraft}>
@@ -246,6 +190,10 @@ function FilterInner({
   );
 }
 
+/**
+ * Фильтр по основным категориям: кнопка в одной строке с поиском.
+ * Desktop — Popover со списком; mobile — bottom sheet.
+ */
 export function CatalogCategoryFilter() {
   const t = useTranslations("Pages.catalogBrowse");
   const tTree = useTranslations("catalogCategoryTree");
@@ -253,44 +201,42 @@ export function CatalogCategoryFilter() {
     () => localizeCategoryTree(CATALOG_CATEGORY_TREE, tTree),
     [tTree],
   );
-  const isDesktopMq = useIsDesktopMd();
+  const allMains = React.useMemo(() => mainsFromLocalizedTree(localizedTree), [localizedTree]);
+
   const [{ cat }, setCatalogQuery] = useQueryStates(catalogQueryParsers, {
     history: "push",
   });
 
-  const applied = React.useMemo(
-    () => normalizeCatalogCategorySlugs(cat ?? []),
-    [cat],
+  const applied = React.useMemo(() => normalizeCatalogCategorySlugs(cat ?? []), [cat]);
+  const appliedMainIds = React.useMemo(
+    () => [...catalogFilterSlugsToMainIds(applied)],
+    [applied],
   );
-  const appliedCount = applied.length;
+  const appliedCount = appliedMainIds.length;
 
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
-  const [draft, setDraft] = React.useState<Set<string>>(() => new Set(applied));
-  const [activeMainId, setActiveMainId] = React.useState(
-    CATALOG_CATEGORY_TREE[0]?.id ?? "",
-  );
+  const [draft, setDraft] = React.useState<Set<string>>(() => new Set(appliedMainIds));
 
   const filteredMains = React.useMemo(
-    () => filterTree(search, localizedTree),
-    [search, localizedTree],
+    () => filterMains(search, allMains),
+    [search, allMains],
   );
 
-  const displayActiveMainId =
-    filteredMains.find((m) => m.id === activeMainId)?.id ??
-    filteredMains[0]?.id ??
-    CATALOG_CATEGORY_TREE[0]?.id ??
-    "";
+  React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- синхронизация с URL после навигации / смены `?cat=`.
+    setDraft(new Set(appliedMainIds));
+  }, [appliedMainIds]);
 
   const handleFilterOpenChange = React.useCallback(
     (open: boolean) => {
       setFilterOpen(open);
       setSearch("");
       if (open) {
-        setDraft(new Set(applied));
+        setDraft(new Set(appliedMainIds));
       }
     },
-    [applied],
+    [appliedMainIds],
   );
 
   const toggleDraft = React.useCallback((id: string, checked: boolean) => {
@@ -336,99 +282,87 @@ export function CatalogCategoryFilter() {
     </>
   );
 
+  const isDesktopMq = useIsDesktopMd();
   if (isDesktopMq === null) {
     return <CatalogCategoryFilterFallback />;
   }
 
   const isDesktop = isDesktopMq;
 
+  const panelPropsBase = {
+    search,
+    onSearchChange: setSearch,
+    mains: filteredMains,
+    draft,
+    toggleDraft,
+    onResetDraft: resetDraft,
+    onApply: apply,
+    resetLabel: t("categoryFilterReset"),
+    searchPlaceholder: t("categoryFilterSearchPlaceholder"),
+    noMatchesLabel: t("categoryFilterNoMatches"),
+  };
+
+  if (isDesktop) {
+    return (
+      <Popover open={filterOpen} onOpenChange={handleFilterOpenChange}>
+        <PopoverTrigger className={triggerClass} nativeButton>
+          {triggerInner}
+        </PopoverTrigger>
+        <PopoverPortal>
+          <PopoverPositioner side="bottom" align="start" sideOffset={10}>
+            <PopoverContent className="flex w-[min(100vw-2rem,22rem)] max-w-[22rem] flex-col overflow-hidden p-0 shadow-2xl">
+              <FilterPanel
+                {...panelPropsBase}
+                applyLabel={t("categoryFilterApply")}
+                sheetLayout={false}
+              />
+            </PopoverContent>
+          </PopoverPositioner>
+        </PopoverPortal>
+      </Popover>
+    );
+  }
+
   return (
     <>
-      {isDesktop ? (
-        <Popover open={filterOpen} onOpenChange={handleFilterOpenChange}>
-          <PopoverTrigger className={triggerClass} nativeButton>
-            {triggerInner}
-          </PopoverTrigger>
-          <PopoverPortal>
-            <PopoverPositioner side="bottom" align="start" sideOffset={10}>
-              <PopoverContent className="flex max-h-[min(78vh,36rem)] flex-col overflow-hidden p-0 shadow-2xl">
-                <FilterInner
-                  search={search}
-                  onSearchChange={setSearch}
-                  filteredMains={filteredMains}
-                  activeMainId={displayActiveMainId}
-                  onPickMain={setActiveMainId}
-                  draft={draft}
-                  toggleDraft={toggleDraft}
-                  onResetDraft={resetDraft}
-                  onApply={apply}
-                  applyLabel={t("categoryFilterApply")}
-                  resetLabel={t("categoryFilterReset")}
-                  searchPlaceholder={t("categoryFilterSearchPlaceholder")}
-                  mainCategoriesNavAria={t("categoryFilterMainCategoriesNav")}
-                  noMatchesLabel={t("categoryFilterNoMatches")}
-                  desktop
-                />
-              </PopoverContent>
-            </PopoverPositioner>
-          </PopoverPortal>
-        </Popover>
-      ) : (
-        <>
-          <button type="button" className={triggerClass} onClick={() => setFilterOpen(true)}>
-            {triggerInner}
-          </button>
-          <Sheet open={filterOpen} onOpenChange={handleFilterOpenChange}>
-            <SheetContent
-              side="bottom"
-              showCloseButton
-              className={cn(
-                "h-[100dvh] max-h-[100dvh] gap-0 rounded-t-2xl p-0",
-                "data-[side=bottom]:data-ending-style:translate-y-0 data-[side=bottom]:data-starting-style:translate-y-0",
-                "data-[side=bottom]:transition-opacity data-[side=bottom]:duration-200",
-              )}
-            >
-              <AnimatePresence mode="wait">
-                {filterOpen ? (
-                  <motion.div
-                    key="catalog-cat-sheet"
-                    initial={{ opacity: 0.88, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0.92, y: 10 }}
-                    transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.85 }}
-                    className="flex min-h-0 flex-1 flex-col"
-                  >
-                    <SheetHeader className="shrink-0 border-b border-border pb-2 text-left">
-                      <SheetTitle className="text-base font-semibold">
-                        {t("categories")}
-                      </SheetTitle>
-                    </SheetHeader>
-                    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-                      <FilterInner
-                        search={search}
-                        onSearchChange={setSearch}
-                        filteredMains={filteredMains}
-                        activeMainId={displayActiveMainId}
-                        onPickMain={setActiveMainId}
-                        draft={draft}
-                        toggleDraft={toggleDraft}
-                        onResetDraft={resetDraft}
-                        onApply={apply}
-                        applyLabel={t("categoryFilterShowResults")}
-                        resetLabel={t("categoryFilterReset")}
-                        searchPlaceholder={t("categoryFilterSearchPlaceholder")}
-                        mainCategoriesNavAria={t("categoryFilterMainCategoriesNav")}
-                        noMatchesLabel={t("categoryFilterNoMatches")}
-                        desktop={false}
-                      />
-                    </div>
-                  </motion.div>
-                ) : null}
-              </AnimatePresence>
-            </SheetContent>
-          </Sheet>
-        </>
-      )}
+      <button type="button" className={triggerClass} onClick={() => setFilterOpen(true)}>
+        {triggerInner}
+      </button>
+      <Sheet open={filterOpen} onOpenChange={handleFilterOpenChange}>
+        <SheetContent
+          side="bottom"
+          showCloseButton
+          className={cn(
+            "h-[100dvh] max-h-[100dvh] gap-0 rounded-t-2xl p-0",
+            "data-[side=bottom]:data-ending-style:translate-y-0 data-[side=bottom]:data-starting-style:translate-y-0",
+            "data-[side=bottom]:transition-opacity data-[side=bottom]:duration-200",
+          )}
+        >
+          <AnimatePresence mode="wait">
+            {filterOpen ? (
+              <motion.div
+                key="catalog-cat-sheet"
+                initial={{ opacity: 0.88, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0.92, y: 10 }}
+                transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.85 }}
+                className="flex min-h-0 flex-1 flex-col"
+              >
+                <SheetHeader className="shrink-0 border-b border-border pb-2 text-left">
+                  <SheetTitle className="text-base font-semibold">{t("categories")}</SheetTitle>
+                </SheetHeader>
+                <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                  <FilterPanel
+                    {...panelPropsBase}
+                    applyLabel={t("categoryFilterShowResults")}
+                    sheetLayout
+                  />
+                </div>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+        </SheetContent>
+      </Sheet>
     </>
   );
 }
