@@ -5,10 +5,6 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
-import {
-  leadVideoFromProductVideos,
-  type CatalogLeadVideo,
-} from "@/lib/catalog/catalog-lead-video";
 
 type Batch = {
   id: string;
@@ -117,16 +113,7 @@ export function VendorPhotoBatchFeed({
 
   return (
     <div className="flex flex-col gap-8">
-      {batches.map((batch, batchIndex) => {
-        const leadVideo: CatalogLeadVideo | undefined =
-          batchIndex === 0
-            ? leadVideoFromProductVideos({
-                productVideos,
-                posterUrl: batch.photos[0],
-              })
-            : undefined;
-
-        return (
+      {batches.map((batch, batchIndex) => (
         <article
           key={batch.id}
           className="flex flex-col gap-3"
@@ -147,13 +134,11 @@ export function VendorPhotoBatchFeed({
             <CatalogCardPhotoRail
               urls={batch.photos}
               altBase={`${altBase}: ${dateFormatter.format(new Date(batch.createdAt))}`}
-              leadVideo={leadVideo}
               productVideos={batchIndex === 0 ? productVideos : undefined}
             />
           </div>
         </article>
-        );
-      })}
+      ))}
       {hasMore ? (
         <div
           ref={sentinelRef}

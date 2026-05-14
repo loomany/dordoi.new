@@ -2,10 +2,12 @@
 
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import type { CatalogLeadVideo } from "@/lib/catalog/catalog-lead-video";
-import { leadVideoFromProductVideos } from "@/lib/catalog/catalog-lead-video";
+import {
+  buildInterleavedCatalogMediaSlides,
+  type CatalogLeadVideo,
+} from "@/lib/catalog/catalog-lead-video";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -18,11 +20,13 @@ type Props = {
 };
 
 function CatalogCardVideoSlide({
-  leadVideo,
+  src,
+  posterUrl,
   isActive,
   playLabel,
 }: {
-  leadVideo: CatalogLeadVideo;
+  src: string;
+  posterUrl?: string;
   isActive: boolean;
   playLabel: string;
 }) {
@@ -56,17 +60,17 @@ function CatalogCardVideoSlide({
         className="relative block h-full w-full cursor-pointer overflow-hidden bg-muted text-left outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_oklch,var(--d-card-accent)_40%,transparent)]"
         aria-label={playLabel}
       >
-        {leadVideo.posterUrl ? (
+        {posterUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- poster frame
           <img
-            src={leadVideo.posterUrl}
+            src={posterUrl}
             alt=""
             className="pointer-events-none h-full w-full select-none object-cover [-webkit-user-drag:none]"
             draggable={false}
           />
         ) : (
           <video
-            src={leadVideo.src}
+            src={src}
             className="pointer-events-none h-full w-full object-cover"
             preload="metadata"
             muted
@@ -89,12 +93,12 @@ function CatalogCardVideoSlide({
   return (
     <video
       ref={videoRef}
-      src={leadVideo.src}
+      src={src}
       className="h-full w-full object-cover"
       controls
       playsInline
       preload="metadata"
-      poster={leadVideo.posterUrl}
+      poster={posterUrl}
       onClick={(e) => e.stopPropagation()}
     />
   );
@@ -108,20 +112,22 @@ export function CatalogCardPhotoRail({
   urls,
   altBase,
   className,
-  leadVideo: leadVideoProp,
+  leadVideo,
   productVideos,
-  posterUrl,
 }: Props) {
   const t = useTranslations("Pages.catalogBrowse");
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
-  const leadVideo =
-    leadVideoProp ??
-    leadVideoFromProductVideos({
-      productVideos,
-      posterUrl: posterUrl ?? urls[0],
-    });
-  const slideCount = urls.length + (leadVideo ? 1 : 0);
+  const slides = useMemo(
+    () =>
+      buildInterleavedCatalogMediaSlides({
+        productVideos,
+        photoUrls: urls,
+        leadVideo,
+      }),
+    [leadVideo, productVideos, urls],
+  );
+  const slideCount = slides.length;
 
   const onScroll = useCallback(() => {
     const el = scrollerRef.current;
@@ -193,40 +199,37 @@ export function CatalogCardPhotoRail({
             "[&::-webkit-scrollbar]:hidden",
           )}
         >
-          {leadVideo ? (
+          {slides.map((slide, i) => (
             <div
+              key={
+                slide.kind === "video"
+                  ? `video-${slide.src}-${i}`
+                  : `photo-${slide.url}-${i}`
+              }
               className="h-full w-full shrink-0 grow-0 basis-full snap-center snap-always"
               aria-roledescription="slide"
-              aria-label={`1 / ${slideCount}`}
+              aria-label={`${i + 1} / ${slideCount}`}
             >
-              <CatalogCardVideoSlide
-                leadVideo={leadVideo}
-                isActive={active === 0}
-                playLabel={t("catalogPhotoPlayVideo")}
-              />
-            </div>
-          ) : null}
-          {urls.map((url, i) => {
-            const slideIndex = i + (leadVideo ? 1 : 0);
-            return (
-              <div
-                key={`${url}-${i}`}
-                className="h-full w-full shrink-0 grow-0 basis-full snap-center snap-always"
-                aria-roledescription="slide"
-                aria-label={`${slideIndex + 1} / ${slideCount}`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element -- внешние превью URL */}
+              {slide.kind === "video" ? (
+                <CatalogCardVideoSlide
+                  src={slide.src}
+                  posterUrl={slide.posterUrl}
+                  isActive={active === i}
+                  playLabel={t("catalogPhotoPlayVideo")}
+                />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element -- внешние превью URL
                 <img
-                  src={url}
+                  src={slide.url}
                   alt=""
                   className="pointer-events-none h-full w-full select-none object-cover [-webkit-user-drag:none]"
-                  loading={slideIndex === 0 ? "eager" : "lazy"}
+                  loading={i === 0 ? "eager" : "lazy"}
                   decoding="async"
                   draggable={false}
                 />
-              </div>
-            );
-          })}
+              )}
+            </div>
+          ))}
         </div>
 
         {showArrows ? (
