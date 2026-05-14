@@ -16,6 +16,31 @@ export function clip(s: string, max: number): string {
   return s.slice(0, max) + "…";
 }
 
+/** Admin Telegram source line: bold Google Ads when utm_source=google or gclid is present. */
+export function formatAdminTelegramSourceLine(input: {
+  utmSource?: string | null;
+  gclid?: string | null;
+  gclidPresent?: boolean;
+  channelLabel?: string | null;
+}): string {
+  const src = input.utmSource?.trim().toLowerCase();
+  const hasGclid =
+    Boolean(input.gclidPresent) || Boolean(input.gclid?.trim());
+  if (src === "google" || hasGclid) {
+    return "<b>Источник: Google Ads 🎯</b>";
+  }
+  const label = input.channelLabel?.trim() || "Unknown";
+  return `📢 Источник: ${escapeTelegramHtml(clip(label, 120))}`;
+}
+
+export function formatAdminTelegramCampaignLine(
+  campaign?: string | null,
+): string | null {
+  const c = campaign?.trim();
+  if (!c) return null;
+  return `🎯 Кампания: ${escapeTelegramHtml(clip(c, 120))}`;
+}
+
 /** Mask email for admin Telegram (plain text; escape when embedding in HTML). */
 export function maskEmailForAdminTelegram(raw: string | null | undefined): string {
   const e = raw?.trim() ?? "";

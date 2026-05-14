@@ -63,6 +63,10 @@ const bodySchema = z
     maskedEmail: z.string().max(80).optional(),
     telegramHint: z.string().max(80).optional(),
     shortNote: z.string().max(200).optional(),
+    utmSource: z.string().max(200).optional(),
+    utmMedium: z.string().max(200).optional(),
+    utmCampaign: z.string().max(200).optional(),
+    gclid: z.string().max(200).optional(),
   })
   .strict();
 
@@ -128,7 +132,27 @@ export async function POST(req: Request) {
   const headers = req.headers;
   const ua = headers.get("user-agent") ?? "";
   const visitor = detectDordoiVisitorStatus(ua);
-  const firstTouch = parseDordoiFirstTouch(body.firstTouch);
+  const parsedFirstTouch = parseDordoiFirstTouch(body.firstTouch);
+  const utmFromBody = {
+    utmSource: body.utmSource?.trim() || undefined,
+    utmMedium: body.utmMedium?.trim() || undefined,
+    utmCampaign: body.utmCampaign?.trim() || undefined,
+    gclidPresent: Boolean(body.gclid?.trim()),
+  };
+  const firstTouch =
+    parsedFirstTouch || utmFromBody.utmSource || utmFromBody.gclidPresent
+      ? {
+          ...parsedFirstTouch,
+          ...(utmFromBody.utmSource ? { utmSource: utmFromBody.utmSource } : {}),
+          ...(utmFromBody.utmMedium ? { utmMedium: utmFromBody.utmMedium } : {}),
+          ...(utmFromBody.utmCampaign ? { utmCampaign: utmFromBody.utmCampaign } : {}),
+          ...(utmFromBody.gclidPresent
+            ? { gclidPresent: true }
+            : parsedFirstTouch?.gclidPresent
+              ? { gclidPresent: parsedFirstTouch.gclidPresent }
+              : {}),
+        }
+      : undefined;
   const headerReferrer = headers.get("referer") ?? headers.get("referrer");
 
   const channel = classifyDordoiTrafficChannel({

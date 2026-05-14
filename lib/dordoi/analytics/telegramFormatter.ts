@@ -6,7 +6,12 @@ import type {
   DordoiVisitorStatus,
 } from "@/lib/dordoi/analytics/types";
 import { searchQueryLineForTelegram } from "@/lib/dordoi/analytics/channel";
-import { clip, escapeTelegramHtml } from "@/lib/dordoi/analytics/telegramHtml";
+import {
+  clip,
+  escapeTelegramHtml,
+  formatAdminTelegramCampaignLine,
+  formatAdminTelegramSourceLine,
+} from "@/lib/dordoi/analytics/telegramHtml";
 
 export type DordoiTelegramAnalyticsFormatInput = {
   eventType: DordoiAnalyticsEventType;
@@ -82,13 +87,15 @@ function deviceLine(device: DordoiDeviceInfo): string {
 }
 
 function sourceLine(ch: DordoiChannelClassification): string {
-  return `📢 Источник: ${escapeTelegramHtml(clip(ch.channel, 120))}`;
+  return formatAdminTelegramSourceLine({
+    utmSource: ch.utm.source,
+    gclidPresent: ch.paidParams.gclidPresent,
+    channelLabel: ch.channel,
+  });
 }
 
 function campaignLine(ch: DordoiChannelClassification): string | null {
-  const c = ch.utm.campaign?.trim();
-  if (!c) return null;
-  return `🎯 Кампания: ${escapeTelegramHtml(clip(c, 120))}`;
+  return formatAdminTelegramCampaignLine(ch.utm.campaign);
 }
 
 function hotActionLabel(eventType: DordoiAnalyticsEventType): string {

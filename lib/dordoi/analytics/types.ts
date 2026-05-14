@@ -166,6 +166,8 @@ export type DordoiSiteRegistrationAttribution = {
   channel?: string;
   firstPage?: string;
   campaign?: string;
+  utmSource?: string;
+  gclid?: string;
 };
 
 export type DordoiSiteRegistrationNotifyParams = {

@@ -12,6 +12,8 @@ import { pathToAdminLocaleDisplay } from "@/lib/dordoi/analytics/telegramFormatt
 import {
   clip,
   escapeTelegramHtml,
+  formatAdminTelegramCampaignLine,
+  formatAdminTelegramSourceLine,
   maskPhoneDigitsForAdminTelegram,
 } from "@/lib/dordoi/analytics/telegramHtml";
 import type {
@@ -163,12 +165,14 @@ export async function notifyDordoiSiteRegistrationCompleted(
     );
     const roleRu = escapeTelegramHtml(registrationRoleRu(params.role));
 
-    const ch = params.attribution?.channel?.trim();
-    const camp = params.attribution?.campaign?.trim();
-    const channelLine = escapeTelegramHtml(clip(ch || "Unknown", 120));
-    const campaignLine = camp
-      ? `🎯 Кампания: ${escapeTelegramHtml(clip(camp, 120))}`
-      : null;
+    const sourceLine = formatAdminTelegramSourceLine({
+      utmSource: params.attribution?.utmSource,
+      gclid: params.attribution?.gclid,
+      channelLabel: params.attribution?.channel,
+    });
+    const campaignLine = formatAdminTelegramCampaignLine(
+      params.attribution?.campaign,
+    );
 
     const lines = [
       `🆕 Новая регистрация на Dordoi.help`,
@@ -176,7 +180,7 @@ export async function notifyDordoiSiteRegistrationCompleted(
       `🌐 Язык: ${lang}`,
       `👤 Тип: ${roleRu}`,
       `📞 Телефон: ${phoneMasked}`,
-      `📢 Источник: ${channelLine}`,
+      sourceLine,
     ];
     if (campaignLine) lines.push(campaignLine);
     lines.push(``, `Статус: completed`);

@@ -1,16 +1,16 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef } from "react";
 
 import type { DordoiFirstTouchPayload, DordoiLocale } from "@/lib/dordoi/analytics/types";
 
 const STORAGE_VISITOR = "dordoi_visitor_id";
 const STORAGE_SESSION = "dordoi_session_id";
 const STORAGE_FIRST_TOUCH = "dordoi_first_touch";
-const SESSION_FIRST_VISIT = "dordoi_first_visit_sent";
-const LOCAL_LAST_FIRST_VISIT = "dordoi_last_first_visit_notified_at";
-const MS_24H = 24 * 60 * 60 * 1000;
+const STORAGE_UTM_SESSION = "dordoi_utm_session";
+const STORAGE_VISITED = "dordoi_visited";
+const MS_30D = 30 * 24 * 60 * 60 * 1000;
 
 const MAX_HREF = 300;
 const MAX_LABEL = 120;
@@ -20,6 +20,17 @@ type DordoiFirstTouchStored = DordoiFirstTouchPayload & {
   firstSearch: string;
   firstReferrer: string;
   createdAt: string;
+};
+
+type DordoiUtmSessionStored = {
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  gclid?: string;
+};
+
+type DordoiVisitedMark = {
+  until: number;
 };
 
 const ALLOWED_DATA_EVENTS = new Set([
@@ -70,6 +81,74 @@ function parseUtmFromSearch(search: string): Pick<
   };
 }
 
+function readUtmSession(): DordoiUtmSessionStored {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = sessionStorage.getItem(STORAGE_UTM_SESSION);
+    if (!raw) return {};
+    const o = JSON.parse(raw) as DordoiUtmSessionStored;
+    return o && typeof o === "object" ? o : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeUtmSession(data: DordoiUtmSessionStored): void {
+  sessionStorage.setItem(STORAGE_UTM_SESSION, JSON.stringify(data));
+}
+
+function syncUtmSessionFromSearch(search: string): DordoiUtmSessionStored {
+  const q = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  const next: DordoiUtmSessionStored = { ...readUtmSession() };
+  const pick = (param: string, key: keyof DordoiUtmSessionStored) => {
+    const v = q.get(param)?.trim();
+    if (v) next[key] = v;
+  };
+  pick("utm_source", "utmSource");
+  pick("utm_medium", "utmMedium");
+  pick("utm_campaign", "utmCampaign");
+  pick("gclid", "gclid");
+  writeUtmSession(next);
+  return next;
+}
+
+function syncUtmSessionFromParams(
+  searchParams: URLSearchParams,
+): DordoiUtmSessionStored {
+  const next: DordoiUtmSessionStored = { ...readUtmSession() };
+  const pick = (param: string, key: keyof DordoiUtmSessionStored) => {
+    const v = searchParams.get(param)?.trim();
+    if (v) next[key] = v;
+  };
+  pick("utm_source", "utmSource");
+  pick("utm_medium", "utmMedium");
+  pick("utm_campaign", "utmCampaign");
+  pick("gclid", "gclid");
+  writeUtmSession(next);
+  return next;
+}
+
+function hasValidVisitedMark(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = localStorage.getItem(STORAGE_VISITED);
+    if (!raw) return false;
+    const o = JSON.parse(raw) as DordoiVisitedMark;
+    if (!o?.until || !Number.isFinite(o.until) || Date.now() >= o.until) {
+      localStorage.removeItem(STORAGE_VISITED);
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function writeVisitedMark(): void {
+  const mark: DordoiVisitedMark = { until: Date.now() + MS_30D };
+  localStorage.setItem(STORAGE_VISITED, JSON.stringify(mark));
+}
+
 function readFirstTouch(): DordoiFirstTouchStored | null {
   if (typeof window === "undefined") return null;
   try {
@@ -114,18 +193,35 @@ function ensureFirstTouchSnapshot(
   if (readFirstTouch()) return readFirstTouch();
   if (isExcludedPath(pathname)) return null;
 
-  const utm = parseUtmFromSearch(search);
+  const utmFromUrl = parseUtmFromSearch(search);
+  const utmSession = readUtmSession();
   const snap: DordoiFirstTouchStored = {
     firstPath: clip(pathname, 500),
     firstSearch: clip(search, 2000),
     firstReferrer: clip(typeof document !== "undefined" ? document.referrer : "", 2000),
-    ...utm,
+    utmSource: utmFromUrl.utmSource ?? utmSession.utmSource,
+    utmMedium: utmFromUrl.utmMedium ?? utmSession.utmMedium,
+    utmCampaign: utmFromUrl.utmCampaign ?? utmSession.utmCampaign,
+    gclidPresent: utmFromUrl.gclidPresent || Boolean(utmSession.gclid),
+    gbraidPresent: utmFromUrl.gbraidPresent,
+    wbraidPresent: utmFromUrl.wbraidPresent,
     visitorId: clip(visitorId, 200),
     sessionId: clip(sessionId, 200),
     createdAt: new Date().toISOString(),
   };
   writeFirstTouch(snap);
   return snap;
+}
+
+function utmPayloadForPost(
+  utmSession: DordoiUtmSessionStored,
+): Record<string, string | undefined> {
+  return {
+    utmSource: utmSession.utmSource,
+    utmMedium: utmSession.utmMedium,
+    utmCampaign: utmSession.utmCampaign,
+    gclid: utmSession.gclid,
+  };
 }
 
 async function postEvent(body: Record<string, unknown>): Promise<boolean> {
@@ -161,33 +257,34 @@ export type DordoiAnalyticsTrackerProps = {
   locale: DordoiLocale;
 };
 
-export function DordoiAnalyticsTracker({ locale }: DordoiAnalyticsTrackerProps) {
+function DordoiAnalyticsTrackerInner({ locale }: DordoiAnalyticsTrackerProps) {
   const pathname = usePathname() ?? "/";
+  const searchParams = useSearchParams();
   const clickAttached = useRef(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    syncUtmSessionFromParams(searchParams);
+  }, [searchParams]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const path = pathname || "/";
     if (isExcludedPath(path)) return;
 
-    if (sessionStorage.getItem(SESSION_FIRST_VISIT) === "1") return;
-
-    const lastRaw = localStorage.getItem(LOCAL_LAST_FIRST_VISIT);
-    if (lastRaw) {
-      const lastMs = Number(lastRaw);
-      if (Number.isFinite(lastMs) && Date.now() - lastMs < MS_24H) {
-        return;
-      }
-    }
+    if (hasValidVisitedMark()) return;
 
     const searchNow = window.location.search ?? "";
+    const utmSession = syncUtmSessionFromSearch(searchNow);
     const visitorId = getVisitorId();
     const sessionId = getSessionId();
     ensureFirstTouchSnapshot(path, searchNow, visitorId, sessionId);
 
+    writeVisitedMark();
+
     void (async () => {
       const firstTouch = readFirstTouch();
-      const ok = await postEvent({
+      await postEvent({
         eventType: "first_visit",
         path: clip(path + searchNow, 2000),
         search: clip(searchNow, 4000),
@@ -196,14 +293,11 @@ export function DordoiAnalyticsTracker({ locale }: DordoiAnalyticsTrackerProps) 
         sessionId,
         visitorId,
         firstTouch: firstTouch ?? undefined,
+        ...utmPayloadForPost(utmSession),
         timestamp: new Date().toISOString(),
       });
-      if (ok) {
-        sessionStorage.setItem(SESSION_FIRST_VISIT, "1");
-        localStorage.setItem(LOCAL_LAST_FIRST_VISIT, String(Date.now()));
-      }
     })();
-  }, [locale, pathname]);
+  }, [locale, pathname, searchParams]);
 
   useEffect(() => {
     if (typeof window === "undefined" || clickAttached.current) return;
@@ -256,6 +350,7 @@ export function DordoiAnalyticsTracker({ locale }: DordoiAnalyticsTrackerProps) 
       const visitorId = getVisitorId();
       const sessionId = getSessionId();
       const ft = readFirstTouch();
+      const utmSession = readUtmSession();
       const targetHref = hrefRaw ? clip(hrefRaw, MAX_HREF) : undefined;
       const targetLabel = a
         ? labelFromElement(t)
@@ -273,6 +368,7 @@ export function DordoiAnalyticsTracker({ locale }: DordoiAnalyticsTrackerProps) 
         sessionId,
         visitorId,
         firstTouch: ft ?? undefined,
+        ...utmPayloadForPost(utmSession),
         targetHref: targetHref || undefined,
         targetLabel: targetLabel || undefined,
         timestamp: new Date().toISOString(),
@@ -287,4 +383,12 @@ export function DordoiAnalyticsTracker({ locale }: DordoiAnalyticsTrackerProps) 
   }, [locale]);
 
   return null;
+}
+
+export function DordoiAnalyticsTracker(props: DordoiAnalyticsTrackerProps) {
+  return (
+    <Suspense fallback={null}>
+      <DordoiAnalyticsTrackerInner {...props} />
+    </Suspense>
+  );
 }
