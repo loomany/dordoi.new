@@ -35,6 +35,7 @@
     "test:ai-two-vendors": "tsx scripts/test-ai-two-vendors.ts",
     "ai:published-catalog": "tsx scripts/run-ai-published-catalog.ts",
     "ai:pending-moderation": "tsx scripts/run-ai-published-catalog.ts --pending",
+    "test:lemon-webhook": "tsx scripts/test-lemon-webhook-local.mts",
     "audit:catalog-titles": "tsx scripts/audit-catalog-store-titles.ts",
     "audit:catalog-ai-titles": "tsx scripts/audit-catalog-ai-titles.ts",
     "verify:catalog-ai": "tsx scripts/verify-catalog-parsed-ai.ts",
