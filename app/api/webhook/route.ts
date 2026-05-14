@@ -4,9 +4,15 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isDordoiLemonWebhookEvent } from "@/lib/lemonsqueezy/dordoi";
 import { notifyDordoiSubscriptionPayment } from "@/lib/dordoi/analytics/leadNotifications";
 import {
+  isHandledLemonWebhookEvent,
+  resolveLemonWebhookSubscription,
+} from "@/lib/subscription/resolve-lemon-webhook-subscription";
+import {
+  grantCatalogSubscriptionAccess,
+} from "@/lib/subscription/catalog-access-grant";
+import {
   resolveUserIdFromWebhookMeta,
   subscriptionUpsertFromAttributes,
-  upsertSubscriptionRow,
 } from "@/lib/subscription/upsert-from-webhook";
 
 export const runtime = "nodejs";
@@ -18,19 +24,10 @@ type LemonWebhookPayload = {
   };
   data?: {
     id?: string;
-    attributes?: {
-      status?: string;
-      variant_id?: number | string;
-      renews_at?: string | null;
-    };
+    type?: string;
+    attributes?: Record<string, unknown>;
   };
 };
-
-const HANDLED_EVENTS = new Set([
-  "subscription_created",
-  "subscription_updated",
-  "subscription_cancelled",
-]);
 
 function verifyWebhookSignature(rawBody: string, signatureHeader: string | null): boolean {
   const secret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET?.trim();
@@ -67,21 +64,19 @@ export async function POST(request: NextRequest) {
   }
 
   const eventName = payload.meta?.event_name?.trim() ?? "";
-  if (!HANDLED_EVENTS.has(eventName)) {
+  if (!isHandledLemonWebhookEvent(eventName)) {
     return NextResponse.json({ received: true, ignored: true });
   }
 
-  const subscriptionId =
-    typeof payload.data?.id === "string" ? payload.data.id.trim() : "";
-  const attributes = payload.data?.attributes;
-  if (!subscriptionId || !attributes) {
+  const customData = payload.meta?.custom_data;
+  const resolved = await resolveLemonWebhookSubscription(payload);
+  if (!resolved) {
     return NextResponse.json({ error: "invalid_payload" }, { status: 400 });
   }
 
-  const customData = payload.meta?.custom_data;
+  const { subscriptionId, attributes } = resolved;
   const variantId = attributes.variant_id;
 
-  // ScholarshipTop и другие продукты того же магазина — не трогаем subscriptions Dordoi.
   if (!isDordoiLemonWebhookEvent({ variantId, customData })) {
     return NextResponse.json({
       received: true,
@@ -103,12 +98,21 @@ export async function POST(request: NextRequest) {
   const row = subscriptionUpsertFromAttributes(userId, subscriptionId, attributes);
 
   try {
-    await upsertSubscriptionRow(row);
+    await grantCatalogSubscriptionAccess({
+      userId,
+      status: row.status,
+      subscriptionId: row.subscriptionId,
+      variantId: row.variantId,
+      renewsAt: row.renewsAt,
+    });
   } catch {
     return NextResponse.json({ error: "db_upsert_failed" }, { status: 500 });
   }
 
-  if (eventName === "subscription_created") {
+  if (
+    eventName === "subscription_created" ||
+    eventName === "subscription_payment_success"
+  ) {
     void notifyDordoiSubscriptionPayment({
       userId,
       subscriptionId,

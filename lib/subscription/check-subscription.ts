@@ -1,8 +1,10 @@
 import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-
-const ACCESS_STATUSES = new Set(["active"]);
+import {
+  isActiveCatalogSubscriptionStatus,
+  readCatalogSubscriptionMeta,
+} from "@/lib/subscription/catalog-access-grant";
 
 type SubscriptionAccessRow = {
   status: string;
@@ -10,8 +12,9 @@ type SubscriptionAccessRow = {
 };
 
 function hasAccessFromRow(row: SubscriptionAccessRow): boolean {
-  return ACCESS_STATUSES.has(row.status);
+  return isActiveCatalogSubscriptionStatus(row.status);
 }
+
 export async function checkSubscriptionStatus(userId: string): Promise<boolean> {
   if (!userId) {
     return false;
@@ -24,14 +27,24 @@ export async function checkSubscriptionStatus(userId: string): Promise<boolean> 
     .eq("user_id", userId)
     .maybeSingle();
 
-  if (error) {
+  if (!error && data) {
+    return hasAccessFromRow(data as SubscriptionAccessRow);
+  }
+
+  if (error && !error.message.includes("subscriptions")) {
     console.error("[checkSubscriptionStatus]", error);
+  }
+
+  const { data: userData, error: userErr } = await admin.auth.admin.getUserById(
+    userId,
+  );
+  if (userErr) {
+    console.error("[checkSubscriptionStatus] getUserById", userErr);
     return false;
   }
 
-  if (!data) {
-    return false;
-  }
-
-  return hasAccessFromRow(data as SubscriptionAccessRow);
+  const meta = readCatalogSubscriptionMeta(
+    (userData.user?.app_metadata ?? null) as Record<string, unknown> | null,
+  );
+  return isActiveCatalogSubscriptionStatus(meta?.status);
 }
