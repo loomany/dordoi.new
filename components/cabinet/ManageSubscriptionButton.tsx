@@ -5,6 +5,7 @@ import { ExternalLink, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { getSubscriptionCustomerPortalUrl } from "@/app/actions/subscription";
+import { landingBlueCtaClassName } from "@/lib/landing-cta";
 import { cn } from "@/lib/utils";
 
 export function ManageSubscriptionButton() {
@@ -37,22 +38,24 @@ export function ManageSubscriptionButton() {
           {error}
         </p>
       ) : null}
-      <button
-        type="button"
-        onClick={onManage}
-        disabled={isPending}
-        className={cn(
-          "mt-4 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-5 py-2.5 text-sm font-semibold text-zinc-900 transition-colors",
-          "hover:bg-zinc-100 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-50 dark:hover:bg-zinc-800",
-        )}
-      >
-        {isPending ? (
-          <Loader2 className="size-4 animate-spin" aria-hidden />
-        ) : (
-          <ExternalLink className="size-4" aria-hidden />
-        )}
-        {t("manageCta")}
-      </button>
+      <div className="mt-5 flex justify-center">
+        <button
+          type="button"
+          onClick={onManage}
+          disabled={isPending}
+          className={cn(
+            landingBlueCtaClassName,
+            "gap-2 rounded-full px-6 py-2.5 text-sm font-semibold disabled:opacity-60 sm:px-8 sm:py-3 sm:text-base",
+          )}
+        >
+          {isPending ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : (
+            <ExternalLink className="size-4" aria-hidden />
+          )}
+          {t("manageCta")}
+        </button>
+      </div>
     </section>
   );
 }
