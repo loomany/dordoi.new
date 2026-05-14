@@ -3,7 +3,12 @@ import { Inter, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { SiteBrandJsonLd } from "@/components/seo/SiteBrandJsonLd";
+import {
+  GoogleTagManagerBody,
+  GoogleTagManagerHead,
+} from "@/components/seo/GoogleTagManager";
 import { htmlLangFromRouteLocale } from "@/lib/hreflang";
 import { baseUrl, siteIndexable } from "@/lib/site";
 
@@ -71,7 +76,12 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${geistMono.variable} min-h-dvh h-full antialiased`}
     >
+      <head>
+        <GoogleTagManagerHead />
+      </head>
       <body className="flex min-h-dvh flex-col">
+        <GoogleTagManagerBody />
+        <GoogleAnalytics />
         <SiteBrandJsonLd />
         <NuqsAdapter>{children}</NuqsAdapter>
       </body>
