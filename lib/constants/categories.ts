@@ -155,6 +155,7 @@ export const CATALOG_CATEGORY_TREE: CatalogMainCategory[] = [
       { id: "elec-audio" },
       { id: "elec-wearables" },
       { id: "elec-small-appliances" },
+      { id: "elec-lighting" },
     ],
   },
   {
@@ -178,6 +179,17 @@ export const CATALOG_CATEGORY_TREE: CatalogMainCategory[] = [
       { id: "hh-chemicals" },
       { id: "hh-bathroom" },
       { id: "hh-plasticware" },
+    ],
+  },
+  {
+    id: "automotive",
+    emoji: "🚗",
+    subcategories: [
+      { id: "auto-parts" },
+      { id: "auto-accessories" },
+      { id: "auto-chemicals" },
+      { id: "auto-audio" },
+      { id: "auto-tools" },
     ],
   },
   {

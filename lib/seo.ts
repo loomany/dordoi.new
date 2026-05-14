@@ -74,6 +74,8 @@ export function buildPageMetadata(opts: {
   privateArea?: boolean;
   /** Override default robots for vendor profiles etc. */
   robotsPolicy?: "index,follow" | "noindex,follow" | "noindex,nofollow";
+  /** Canonical path (defaults to pathWithoutLocale). Use for catalog → suppliers canonical. */
+  canonicalPathWithoutLocale?: string;
 }): Metadata {
   const path =
     opts.pathWithoutLocale === "/" || opts.pathWithoutLocale === ""
@@ -81,9 +83,16 @@ export function buildPageMetadata(opts: {
       : opts.pathWithoutLocale.startsWith("/")
         ? opts.pathWithoutLocale
         : `/${opts.pathWithoutLocale}`;
+  const canonicalPath =
+    opts.canonicalPathWithoutLocale != null
+      ? opts.canonicalPathWithoutLocale.startsWith("/")
+        ? opts.canonicalPathWithoutLocale
+        : `/${opts.canonicalPathWithoutLocale}`
+      : path;
   const selfUrl = `${baseUrl()}/${opts.locale}${path}`;
+  const canonicalUrl = `${baseUrl()}/${opts.locale}${canonicalPath}`;
   const languages = hreflangAlternatesForPath(
-    opts.pathWithoutLocale === "" ? "/" : opts.pathWithoutLocale,
+    canonicalPath === "" ? "/" : canonicalPath,
   );
   const ogLocale = ogLocaleFromRouteLocale(opts.locale);
   const { openGraphImages, twitterImages } = defaultOgImages();
@@ -94,9 +103,9 @@ export function buildPageMetadata(opts: {
     title: opts.title,
     description: opts.description,
     alternates: opts.privateArea
-      ? { canonical: selfUrl }
+      ? { canonical: canonicalUrl }
       : {
-          canonical: selfUrl,
+          canonical: canonicalUrl,
           languages,
         },
     openGraph: {

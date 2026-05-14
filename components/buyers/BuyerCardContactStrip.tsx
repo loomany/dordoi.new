@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useState, useTransition, type ReactNode } from "react";
 import { Loader2, Send } from "lucide-react";
 import { useLocale } from "next-intl";
 
@@ -9,6 +9,10 @@ import {
   type SubscriptionCheckoutResult,
 } from "@/app/actions/subscription";
 import { useOpenAuthDialog } from "@/components/auth/auth-dialog-context";
+import {
+  CatalogAccessPaywallModal,
+  type CatalogAccessPaywallCopy,
+} from "@/components/catalog/CatalogAccessPaywallModal";
 import type { BuyerDirectoryRow } from "@/data/buyers-directory";
 import { landingBlueCtaClassName } from "@/lib/landing-cta";
 import {
@@ -53,6 +57,57 @@ const socialBtn =
   "inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200/90 bg-white px-2 py-2.5 text-center text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400/50 focus-visible:ring-offset-2 sm:gap-2 sm:text-sm";
 
 const callBtn = `${socialBtn} w-full py-3.5 text-sm`;
+
+const externalLinkProps = {
+  target: "_blank" as const,
+  rel: "noopener noreferrer" as const,
+};
+
+type GatedContactProps = {
+  className: string;
+  label: string;
+  icon?: ReactNode;
+  href: string;
+  unlocked: boolean;
+  onLockedClick: () => void;
+  external?: boolean;
+};
+
+function GatedContact({
+  className,
+  label,
+  icon,
+  href,
+  unlocked,
+  onLockedClick,
+  external = true,
+}: GatedContactProps) {
+  const content = (
+    <>
+      {icon}
+      {icon ? <span className="truncate">{label}</span> : label}
+    </>
+  );
+  if (!unlocked) {
+    return (
+      <button type="button" className={className} onClick={onLockedClick}>
+        {content}
+      </button>
+    );
+  }
+  if (external) {
+    return (
+      <a href={href} className={className} {...externalLinkProps}>
+        {content}
+      </a>
+    );
+  }
+  return (
+    <a href={href} className={className}>
+      {content}
+    </a>
+  );
+}
 
 export type BuyerSpotModalStrings = {
   title: string;
@@ -174,10 +229,21 @@ function BuyerSpotModalBody({
 type Props = {
   buyer: BuyerDirectoryRow;
   strings: BuyerCardContactStripStrings;
+  contactsUnlocked?: boolean;
+  paywallCopy?: CatalogAccessPaywallCopy;
 };
 
-export function BuyerCardContactStrip({ buyer, strings }: Props) {
+export function BuyerCardContactStrip({
+  buyer,
+  strings,
+  contactsUnlocked = false,
+  paywallCopy,
+}: Props) {
   const [open, setOpen] = useState(false);
+  const [paywallOpen, setPaywallOpen] = useState(false);
+  const openPaywall = useCallback(() => {
+    setPaywallOpen(true);
+  }, []);
   const m = strings.buyerSpotModal;
   const whatsappHref = `https://wa.me/${buyer.whatsappDigits}`;
   const telegramHref = buyer.telegramUrl?.trim() || null;
@@ -218,65 +284,78 @@ export function BuyerCardContactStrip({ buyer, strings }: Props) {
     const hasSocialRow = Boolean(telegramHref || instagramHref);
 
     return (
-      <div className={contactFooter}>
-        {showStackedContactCall ? (
-          <>
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
+      <>
+        <div className={contactFooter}>
+          {showStackedContactCall ? (
+            <>
+              <GatedContact
+                className={waBtn}
+                label={strings.ctaContact}
+                href={whatsappHref}
+                unlocked={contactsUnlocked}
+                onLockedClick={openPaywall}
+              />
+              <GatedContact
+                className={callBtn}
+                label={strings.ctaCall}
+                href={`tel:+${callDigits}`}
+                unlocked={contactsUnlocked}
+                onLockedClick={openPaywall}
+                external={false}
+              />
+            </>
+          ) : (
+            <GatedContact
               className={waBtn}
+              label={strings.ctaContact}
+              href={whatsappHref}
+              unlocked={contactsUnlocked}
+              onLockedClick={openPaywall}
+            />
+          )}
+          {hasSocialRow ? (
+            <div
+              className={
+                telegramHref ? "grid grid-cols-2 gap-2" : "grid grid-cols-1 gap-2"
+              }
             >
-              {strings.ctaContact}
-            </a>
-            <a href={`tel:+${callDigits}`} className={callBtn}>
-              {strings.ctaCall}
-            </a>
-          </>
-        ) : (
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={waBtn}
-          >
-            {strings.ctaContact}
-          </a>
-        )}
-        {hasSocialRow ? (
-          <div
-            className={
-              telegramHref ? "grid grid-cols-2 gap-2" : "grid grid-cols-1 gap-2"
-            }
-          >
-            {telegramHref ? (
-              <a
-                href={telegramHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialBtn}
-              >
-                <Send
-                  className="size-3.5 shrink-0 sm:size-4"
-                  strokeWidth={2.25}
+              {telegramHref ? (
+                <GatedContact
+                  className={socialBtn}
+                  label={strings.ctaTelegram}
+                  icon={
+                    <Send
+                      className="size-3.5 shrink-0 sm:size-4"
+                      strokeWidth={2.25}
+                    />
+                  }
+                  href={telegramHref}
+                  unlocked={contactsUnlocked}
+                  onLockedClick={openPaywall}
                 />
-                <span className="truncate">{strings.ctaTelegram}</span>
-              </a>
-            ) : null}
-            {instagramHref ? (
-              <a
-                href={instagramHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={socialBtn}
-              >
-                <InstagramGlyph className="size-3.5 shrink-0 sm:size-4" />
-                <span className="truncate">{strings.ctaInstagram}</span>
-              </a>
-            ) : null}
-          </div>
+              ) : null}
+              {instagramHref ? (
+                <GatedContact
+                  className={socialBtn}
+                  label={strings.ctaInstagram}
+                  icon={<InstagramGlyph className="size-3.5 shrink-0 sm:size-4" />}
+                  href={instagramHref}
+                  unlocked={contactsUnlocked}
+                  onLockedClick={openPaywall}
+                />
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+
+        {paywallCopy ? (
+          <CatalogAccessPaywallModal
+            open={paywallOpen}
+            onOpenChange={setPaywallOpen}
+            copy={paywallCopy}
+          />
         ) : null}
-      </div>
+      </>
     );
   }
 

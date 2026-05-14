@@ -43,4 +43,6 @@ export type VendorApplicationRecord = {
   followers_count?: number | null;
   /** URL видео постов (до 15). */
   product_videos?: string[] | null;
+  /** Снимок ИИ для карточки каталога (`run-ai-*` scripts). */
+  parsed_ai_data?: unknown;
 };

@@ -1,6 +1,7 @@
 export function buildCatalogBrowsePath(opts: {
   page?: number;
   categorySlugs: string[];
+  searchQuery?: string;
   compareWithPreview?: boolean;
 }): string {
   const params = new URLSearchParams();
@@ -10,6 +11,10 @@ export function buildCatalogBrowsePath(opts: {
   if (opts.categorySlugs.length > 0) {
     const sortedSlugs = [...opts.categorySlugs].sort();
     params.set("cat", sortedSlugs.join(","));
+  }
+  const search = opts.searchQuery?.trim();
+  if (search) {
+    params.set("search", search);
   }
   if (opts.compareWithPreview) {
     params.set("compare", "1");

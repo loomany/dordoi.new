@@ -1,13 +1,22 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import type { CatalogAccessPaywallCopy } from "@/components/catalog/CatalogAccessPaywallModal";
 import { CatalogCheckoutResume } from "@/components/catalog/CatalogCheckoutResume";
 import { BuyerCard } from "@/components/buyers/BuyerCard";
 import { BUYERS } from "@/data/buyers-directory";
 
 const SERVICE_KEYS = ["0", "1", "2", "3"] as const;
 
-export function BuyersDirectoryInteractive() {
+type Props = {
+  contactsUnlocked: boolean;
+  paywallCopy: CatalogAccessPaywallCopy;
+};
+
+export function BuyersDirectoryInteractive({
+  contactsUnlocked,
+  paywallCopy,
+}: Props) {
   const t = useTranslations("Pages.buyers");
   const tAuth = useTranslations("Auth");
 
@@ -24,6 +33,8 @@ export function BuyersDirectoryInteractive() {
         <BuyerCard
           key={b.id}
           buyer={b}
+          contactsUnlocked={contactsUnlocked}
+          paywallCopy={paywallCopy}
           profile={{
             name: t(`${base}.name`),
             specialization: t(`${base}.specialization`),

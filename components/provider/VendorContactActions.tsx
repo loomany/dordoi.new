@@ -1,8 +1,13 @@
 "use client";
 
+import { useCallback, useState, type ReactNode } from "react";
 import { MessageCircle, PhoneCall, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import {
+  CatalogAccessPaywallModal,
+  type CatalogAccessPaywallCopy,
+} from "@/components/catalog/CatalogAccessPaywallModal";
 import { CatalogFavoriteButton } from "@/components/favorites/CatalogFavoriteButton";
 import { Link } from "@/i18n/navigation";
 
@@ -33,16 +38,96 @@ export type VendorContactActionsProps = {
   telegramHref: string | null;
   instagramHref: string | null;
   telHref: string | null;
-  /** Ссылки на карты; пустые не рендерятся. */
   googleMapsHref?: string | null;
   twoGisHref?: string | null;
   yandexMapsHref?: string | null;
+  /** Подписка / админ — прямые ссылки; иначе клик открывает paywall. */
+  contactsUnlocked?: boolean;
+  paywallCopy?: CatalogAccessPaywallCopy;
 };
 
 const externalLinkProps = {
   target: "_blank" as const,
   rel: "noopener noreferrer" as const,
 };
+
+type ContactPillProps = {
+  className: string;
+  label: string;
+  icon?: ReactNode;
+  href: string;
+  unlocked: boolean;
+  onLockedClick: () => void;
+  external?: boolean;
+};
+
+function ContactPill({
+  className,
+  label,
+  icon,
+  href,
+  unlocked,
+  onLockedClick,
+  external = true,
+}: ContactPillProps) {
+  if (!unlocked) {
+    return (
+      <button type="button" className={className} onClick={onLockedClick}>
+        {icon}
+        {label}
+      </button>
+    );
+  }
+  if (external) {
+    return (
+      <a href={href} className={className} {...externalLinkProps}>
+        {icon}
+        {label}
+      </a>
+    );
+  }
+  return (
+    <a href={href} className={className}>
+      {icon}
+      {label}
+    </a>
+  );
+}
+
+type MapLinksSectionProps = {
+  mapItems: { href?: string | null; label: string }[];
+  contactsUnlocked: boolean;
+  openPaywall: () => void;
+  pillOutline: string;
+  mapTitle: string;
+};
+
+function MapLinksSection({
+  mapItems,
+  contactsUnlocked,
+  openPaywall,
+  pillOutline,
+  mapTitle,
+}: MapLinksSectionProps) {
+  if (mapItems.length === 0) return null;
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-center text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {mapTitle}
+      </p>
+      {mapItems.map(({ href, label }) => (
+        <ContactPill
+          key={href!.trim()}
+          className={pillOutline}
+          label={label}
+          href={href!.trim()}
+          unlocked={contactsUnlocked}
+          onLockedClick={openPaywall}
+        />
+      ))}
+    </div>
+  );
+}
 
 export function VendorContactActions({
   listingKey,
@@ -55,8 +140,14 @@ export function VendorContactActions({
   googleMapsHref,
   twoGisHref,
   yandexMapsHref,
+  contactsUnlocked = false,
+  paywallCopy,
 }: VendorContactActionsProps) {
   const t = useTranslations("Pages.providerProfile");
+  const [paywallOpen, setPaywallOpen] = useState(false);
+  const openPaywall = useCallback(() => {
+    setPaywallOpen(true);
+  }, []);
 
   const hasDirectContacts = Boolean(
     primaryWhatsapp ||
@@ -75,95 +166,113 @@ export function VendorContactActions({
   const fallbackPrimaryPill =
     "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-[var(--d-card-accent)] py-3.5 text-sm font-semibold text-white shadow-sm transition-[background-color,box-shadow] hover:opacity-95";
 
+  const mapItems = [
+    { href: googleMapsHref, label: t("openInGoogleMaps") },
+    { href: twoGisHref, label: t("openIn2Gis") },
+    { href: yandexMapsHref, label: t("openInYandexMaps") },
+  ].filter((x) => Boolean(x.href?.trim()));
+
   return (
-    <div className="mt-3 flex flex-col gap-3 lg:mt-6">
-      {hasDirectContacts ? (
-        <p className="text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          {t("contactsSectionTitle")}
-        </p>
-      ) : (
-        <p className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-center text-sm leading-relaxed text-muted-foreground">
-          {t("contactLockedMessage")}
-        </p>
-      )}
+    <>
+      <div className="mt-3 flex flex-col gap-3 lg:mt-6">
+        {hasDirectContacts ? (
+          <p className="text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            {t("contactsSectionTitle")}
+          </p>
+        ) : (
+          <p className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-center text-sm leading-relaxed text-muted-foreground">
+            {t("contactLockedMessage")}
+          </p>
+        )}
 
-      {primaryWhatsapp ? (
-        <a href={primaryWhatsapp} className={primaryPill} {...externalLinkProps}>
-          <MessageCircle className="size-4 shrink-0" aria-hidden />
-          {t("ctaWhatsApp")}
-        </a>
-      ) : null}
-      {secondaryWhatsapp ? (
-        <a href={secondaryWhatsapp} className={pillOutline} {...externalLinkProps}>
-          <MessageCircle className="size-4 shrink-0" aria-hidden />
-          {t("ctaWhatsApp2")}
-        </a>
-      ) : null}
-      {telegramHref ? (
-        <a href={telegramHref} className={pillOutline} {...externalLinkProps}>
-          <Send className="size-4 shrink-0" aria-hidden />
-          {t("ctaTelegram")}
-        </a>
-      ) : null}
-      {instagramHref ? (
-        <a href={instagramHref} className={pillOutline} {...externalLinkProps}>
-          <InstagramGlyph className="size-4 shrink-0" />
-          {t("ctaInstagram")}
-        </a>
-      ) : null}
-      {telHref ? (
-        <a href={telHref} className={pillOutline}>
-          <PhoneCall className="size-4 shrink-0" aria-hidden />
-          {t("ctaCall")}
-        </a>
-      ) : null}
+        {primaryWhatsapp ? (
+          <ContactPill
+            className={primaryPill}
+            label={t("ctaWhatsApp")}
+            icon={<MessageCircle className="size-4 shrink-0" aria-hidden />}
+            href={primaryWhatsapp}
+            unlocked={contactsUnlocked}
+            onLockedClick={openPaywall}
+          />
+        ) : null}
+        {secondaryWhatsapp ? (
+          <ContactPill
+            className={pillOutline}
+            label={t("ctaWhatsApp2")}
+            icon={<MessageCircle className="size-4 shrink-0" aria-hidden />}
+            href={secondaryWhatsapp}
+            unlocked={contactsUnlocked}
+            onLockedClick={openPaywall}
+          />
+        ) : null}
+        {telegramHref ? (
+          <ContactPill
+            className={pillOutline}
+            label={t("ctaTelegram")}
+            icon={<Send className="size-4 shrink-0" aria-hidden />}
+            href={telegramHref}
+            unlocked={contactsUnlocked}
+            onLockedClick={openPaywall}
+          />
+        ) : null}
+        {instagramHref ? (
+          <ContactPill
+            className={pillOutline}
+            label={t("ctaInstagram")}
+            icon={<InstagramGlyph className="size-4 shrink-0" />}
+            href={instagramHref}
+            unlocked={contactsUnlocked}
+            onLockedClick={openPaywall}
+          />
+        ) : null}
+        {telHref ? (
+          <ContactPill
+            className={pillOutline}
+            label={t("ctaCall")}
+            icon={<PhoneCall className="size-4 shrink-0" aria-hidden />}
+            href={telHref}
+            unlocked={contactsUnlocked}
+            onLockedClick={openPaywall}
+            external={false}
+          />
+        ) : null}
 
-      {!hasDirectContacts ? (
-        <>
-          <Link href="/contact" className={fallbackPrimaryPill}>
-            {t("ctaRequestContact")}
-          </Link>
-          <Link href="/buyers" className={pillOutline}>
-            {t("ctaFindBuyer")}
-          </Link>
-        </>
-      ) : null}
+        {!hasDirectContacts ? (
+          <>
+            <Link href="/contact" className={fallbackPrimaryPill}>
+              {t("ctaRequestContact")}
+            </Link>
+            <Link href="/buyers" className={pillOutline}>
+              {t("ctaFindBuyer")}
+            </Link>
+          </>
+        ) : null}
 
-      {(() => {
-        const mapItems = [
-          { href: googleMapsHref, label: t("openInGoogleMaps") },
-          { href: twoGisHref, label: t("openIn2Gis") },
-          { href: yandexMapsHref, label: t("openInYandexMaps") },
-        ].filter((x) => Boolean(x.href?.trim()));
-        if (mapItems.length === 0) return null;
-        return (
-          <div className="flex flex-col gap-2">
-            <p className="text-center text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              {t("openOnMap")}
-            </p>
-            {mapItems.map(({ href, label }) => (
-              <a
-                key={href!.trim()}
-                href={href!.trim()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={pillOutline}
-              >
-                {label}
-              </a>
-            ))}
-          </div>
-        );
-      })()}
-
-      <div className="lg:hidden">
-        <CatalogFavoriteButton
-          key={`sidebar:${listingKey}:${initialFavorite}`}
-          listingKey={listingKey}
-          initialFavorite={initialFavorite}
-          variant="sidebar"
+        <MapLinksSection
+          mapItems={mapItems}
+          contactsUnlocked={contactsUnlocked}
+          openPaywall={openPaywall}
+          pillOutline={pillOutline}
+          mapTitle={t("openOnMap")}
         />
+
+        <div className="lg:hidden">
+          <CatalogFavoriteButton
+            key={`sidebar:${listingKey}:${initialFavorite}`}
+            listingKey={listingKey}
+            initialFavorite={initialFavorite}
+            variant="sidebar"
+          />
+        </div>
       </div>
-    </div>
+
+      {paywallCopy ? (
+        <CatalogAccessPaywallModal
+          open={paywallOpen}
+          onOpenChange={setPaywallOpen}
+          copy={paywallCopy}
+        />
+      ) : null}
+    </>
   );
 }

@@ -1,23 +1,28 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
+
 import { DatabaseProviderProfileView } from "@/components/provider/DatabaseProviderProfileView";
-import { ProviderProfileView } from "@/components/provider/ProviderProfileView";
-import { JsonLd } from "@/components/seo/JsonLd";
+import {
+  resolvePublishedVendorCatalogAccess,
+} from "@/lib/catalog/published-vendors";
+import {
+  primaryVendorMainCategoryId,
+  vendorCatalogRobotsPolicy,
+  vendorSuppliersSeoPath,
+} from "@/lib/catalog/vendor-public-seo";
+import { buildPageMetadata } from "@/lib/seo";
+import { routing } from "@/i18n/routing";
 import {
   isProviderSlug,
   providerContactBySlug,
   PROVIDER_SLUGS,
 } from "@/data/provider-registry";
-import { buildVendorLocalBusinessJsonLd } from "@/lib/catalog/vendor-local-business-jsonld";
-import {
-  primaryVendorMainCategoryId,
-  vendorProfileRobotsPolicy,
-} from "@/lib/catalog/vendor-public-seo";
-import { buildPageMetadata } from "@/lib/seo";
+import { ProviderProfileView } from "@/components/provider/ProviderProfileView";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { baseUrl } from "@/lib/site";
-import { routing } from "@/i18n/routing";
-import { fetchPublishedVendorBySlug } from "@/lib/catalog/published-vendors";
+
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -41,11 +46,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     });
   }
 
-  const vendor = await fetchPublishedVendorBySlug(slug);
-  if (!vendor) {
+  const resolved = await resolvePublishedVendorCatalogAccess(slug);
+  if (resolved.kind === "not_found") {
     return { title: "404" };
   }
+  if (resolved.kind === "redirect") {
+    return { title: "Redirect" };
+  }
 
+  const vendor = resolved.vendor;
   const tProvider = await getTranslations({
     locale,
     namespace: "Pages.providerProfile",
@@ -62,9 +71,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return buildPageMetadata({
     locale,
     pathWithoutLocale: `/catalog/${vendor.slug}`,
+    canonicalPathWithoutLocale: vendor.seo_slug
+      ? vendorSuppliersSeoPath(vendor.seo_slug)
+      : undefined,
     title,
     description,
-    robotsPolicy: vendorProfileRobotsPolicy(vendor.slug),
+    robotsPolicy: vendorCatalogRobotsPolicy(),
   });
 }
 
@@ -79,17 +91,14 @@ export default async function ProviderProfilePage({ params }: Props) {
   setRequestLocale(locale);
 
   if (!isProviderSlug(slug)) {
-    const vendor = await fetchPublishedVendorBySlug(slug);
-    if (!vendor) {
+    const resolved = await resolvePublishedVendorCatalogAccess(slug);
+    if (resolved.kind === "not_found") {
       notFound();
     }
-    const jsonLd = buildVendorLocalBusinessJsonLd(vendor, locale);
-    return (
-      <>
-        <JsonLd data={jsonLd} />
-        <DatabaseProviderProfileView vendor={vendor} />
-      </>
-    );
+    if (resolved.kind === "redirect") {
+      permanentRedirect(`/${locale}/catalog/${resolved.opaqueSlug}`);
+    }
+    return <DatabaseProviderProfileView vendor={resolved.vendor} profileMode="catalog" />;
   }
 
   const t = await getTranslations({ locale, namespace: "Pages.providerProfile" });

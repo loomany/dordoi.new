@@ -1,10 +1,9 @@
 /**
- * Прогон ИИ по **всем** опубликованным вендорам каталога (`status = approved`, есть `slug`).
- * Те же правила, что в `parseVendorTextWithOpenAI` и админском playground.
+ * Прогон ИИ по вендорам и запись `parsed_ai_data` (без смены status / публикации).
  *
- * Требования:
- *   - Миграция `20260515130000_vendors_parsed_ai_data.sql`
- *   - `.env.local`: `OPENAI_API_KEY`, Supabase URL + `SUPABASE_SERVICE_ROLE_KEY`
+ * Режимы:
+ *   npm run ai:published-catalog          — approved + slug (каталог)
+ *   npm run ai:pending-moderation           — очередь pending_moderation / pending_review
  *
  * Переменные:
  *   AI_SCRIPT_FORCE=1        — перезаписать уже заполненный `parsed_ai_data`
@@ -12,9 +11,6 @@
  *   AI_SCRIPT_LIMIT=N        — обработать не больше N строк (для теста)
  *   AI_SCRIPT_DELAY_MS=600   — пауза между вызовами OpenAI (мс)
  *   AI_SCRIPT_PAGE_SIZE=100  — размер страницы SELECT
- *
- * Запуск:
- *   npm run ai:published-catalog
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -30,7 +26,7 @@ import type { ParsedVendorCardData } from "@/lib/catalog/vendor-card-display";
 
 type VendorRow = {
   id: string;
-  slug: string;
+  slug: string | null;
   store_name: string | null;
   description: string | null;
   description_detail: string | null;
@@ -156,25 +152,33 @@ function buildDisplay(
   };
 }
 
-async function fetchPublishedVendorPage(
+async function fetchVendorPage(
   admin: SupabaseClient,
+  scope: "published" | "pending",
   from: number,
   to: number,
 ): Promise<VendorRow[]> {
-  const { data, error } = await admin
+  let q = admin
     .from("vendors")
     .select(VENDOR_SELECT)
-    .eq("status", "approved")
-    .not("slug", "is", null)
     .order("created_at", { ascending: false })
     .range(from, to);
+
+  if (scope === "published") {
+    q = q.eq("status", "approved").not("slug", "is", null);
+  } else {
+    q = q.in("status", ["pending_moderation", "pending_review"]);
+  }
+
+  const { data, error } = await q;
 
   if (error) throw error;
   return (data ?? []) as VendorRow[];
 }
 
-async function fetchAllPublishedVendors(
+async function fetchAllVendors(
   admin: SupabaseClient,
+  scope: "published" | "pending",
   pageSize: number,
 ): Promise<VendorRow[]> {
   const out: VendorRow[] = [];
@@ -182,10 +186,12 @@ async function fetchAllPublishedVendors(
 
   for (;;) {
     const to = from + pageSize - 1;
-    const page = await fetchPublishedVendorPage(admin, from, to);
+    const page = await fetchVendorPage(admin, scope, from, to);
     for (const row of page) {
-      const slug = row.slug?.trim();
-      if (!slug || isBuyerOnlyVendorSlug(slug)) continue;
+      if (scope === "published") {
+        const slug = row.slug?.trim();
+        if (!slug || isBuyerOnlyVendorSlug(slug)) continue;
+      }
       if (isBlockedStoreName(row.store_name)) continue;
       out.push(row);
     }
@@ -203,6 +209,14 @@ async function main(): Promise<void> {
     throw new Error("Missing OPENAI_API_KEY");
   }
 
+  const scope: "published" | "pending" = process.argv.includes("--pending")
+    ? "pending"
+    : "published";
+  const payloadSource =
+    scope === "pending"
+      ? "script:run-ai-pending-moderation"
+      : "script:run-ai-published-catalog";
+
   const force = envFlag("AI_SCRIPT_FORCE");
   const dryRun = envFlag("AI_SCRIPT_DRY_RUN");
   const limit = envPositiveInt("AI_SCRIPT_LIMIT", Number.POSITIVE_INFINITY);
@@ -210,10 +224,12 @@ async function main(): Promise<void> {
   const pageSize = envPositiveInt("AI_SCRIPT_PAGE_SIZE", 100);
 
   const admin = createAdmin();
-  const all = await fetchAllPublishedVendors(admin, pageSize);
+  const all = await fetchAllVendors(admin, scope, pageSize);
 
   console.log(
-    `Опубликовано в каталоге (approved + slug, без блок-листа): ${all.length}`,
+    scope === "pending"
+      ? `В очереди модерации (pending): ${all.length}`
+      : `Опубликовано в каталоге (approved + slug, без блок-листа): ${all.length}`,
   );
   if (dryRun) console.log("[dry-run] UPDATE в БД не выполняется.\n");
 
@@ -226,7 +242,7 @@ async function main(): Promise<void> {
   for (const row of all) {
     if (processed >= limit) break;
 
-    const label = `${row.store_name ?? row.slug} (${row.slug})`;
+    const label = `${row.store_name ?? row.slug ?? row.id} (${row.slug ?? row.id})`;
 
     if (!force && hasParsedAiData(row)) {
       skippedExisting++;
@@ -257,7 +273,7 @@ async function main(): Promise<void> {
       const payload: VendorsParsedAiPayloadV1 = {
         schemaVersion: 1,
         generatedAt: new Date().toISOString(),
-        source: "script:run-ai-published-catalog",
+        source: payloadSource,
         display,
         rawDescriptionUsed: raw,
       };
@@ -293,7 +309,7 @@ async function main(): Promise<void> {
   }
 
   console.log("\n──────── Итог ────────");
-  console.log(`Всего в каталоге:     ${all.length}`);
+  console.log(`Всего в выборке:      ${all.length}`);
   console.log(`Успешно:              ${ok}`);
   console.log(`Пропуск (уже есть):   ${skippedExisting}`);
   console.log(`Пропуск (пусто):      ${skippedEmpty}`);

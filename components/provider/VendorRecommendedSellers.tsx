@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from "react";
 
+import { CatalogAccessPaywallModal } from "@/components/catalog/CatalogAccessPaywallModal";
+import type { CatalogAccessPaywallCopy } from "@/components/catalog/CatalogAccessPaywallModal";
 import { CatalogCard } from "@/components/catalog/CatalogCard";
 import { CatalogFavoriteButton } from "@/components/favorites/CatalogFavoriteButton";
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
@@ -20,6 +22,9 @@ type Props = {
   aboutStoreLabel: string;
   collapseLabel: string;
   expandLabel: string;
+  hasFullCatalogAccess?: boolean;
+  paywallCopy?: CatalogAccessPaywallCopy;
+  lockedCardUnlockLabel?: string;
 };
 
 const DESKTOP_COLS = 2;
@@ -37,9 +42,16 @@ export function VendorRecommendedSellers({
   aboutStoreLabel,
   collapseLabel,
   expandLabel,
+  hasFullCatalogAccess = false,
+  paywallCopy,
+  lockedCardUnlockLabel,
 }: Props) {
   const favoriteSet = new Set(favoriteKeys);
   const isMobile = useIsCatalogMobile();
+  const [paywallOpen, setPaywallOpen] = useState(false);
+  const openPaywall = useCallback(() => {
+    setPaywallOpen(true);
+  }, []);
 
   const [collapsedByIndex, setCollapsedByIndex] = useState<Record<number, boolean>>({});
   const collapsedForIndex = useCallback(
@@ -74,6 +86,7 @@ export function VendorRecommendedSellers({
   }
 
   return (
+    <>
     <section className="mt-8 border-t border-border/70 pt-8">
       <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
         {title}
@@ -87,6 +100,7 @@ export function VendorRecommendedSellers({
             ? catalogListingKeyFromSlug(card.slug)
             : catalogListingKeyFromSampleId(card.id);
           const initialFavorite = favoriteSet.has(listingKey);
+          const locked = !hasFullCatalogAccess;
 
           return (
             <div
@@ -111,14 +125,19 @@ export function VendorRecommendedSellers({
                 onCollapsedExternalChange={(next) =>
                   setCollapsedForIndex(index, next)
                 }
+                accessLocked={locked}
+                onAccessLockedClick={locked ? openPaywall : undefined}
+                accessLockedTitleLabel={lockedCardUnlockLabel}
                 favoriteSlot={
-                  <CatalogFavoriteButton
-                    key={`${listingKey}:${initialFavorite}`}
-                    listingKey={listingKey}
-                    initialFavorite={initialFavorite}
-                    variant="card"
-                    showCardLabel={false}
-                  />
+                  locked ? null : (
+                    <CatalogFavoriteButton
+                      key={`${listingKey}:${initialFavorite}`}
+                      listingKey={listingKey}
+                      initialFavorite={initialFavorite}
+                      variant="card"
+                      showCardLabel={false}
+                    />
+                  )
                 }
               />
             </div>
@@ -126,5 +145,14 @@ export function VendorRecommendedSellers({
         })}
       </nav>
     </section>
+
+    {paywallCopy ? (
+      <CatalogAccessPaywallModal
+        open={paywallOpen}
+        onOpenChange={setPaywallOpen}
+        copy={paywallCopy}
+      />
+    ) : null}
+    </>
   );
 }

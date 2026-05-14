@@ -4,4 +4,5 @@ import { parseAsArrayOf, parseAsInteger, parseAsString } from "nuqs/server";
 export const catalogQueryParsers = {
   cat: parseAsArrayOf(parseAsString).withDefault([]),
   page: parseAsInteger,
+  search: parseAsString,
 };

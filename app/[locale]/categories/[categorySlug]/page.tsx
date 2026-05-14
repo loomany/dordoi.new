@@ -8,6 +8,7 @@ import { SeoCategoryLanding } from "@/components/seo/SeoCategoryLanding";
 import { getSessionProfile } from "@/lib/auth/session-profile";
 import { applyCatalogAccessToVendors } from "@/lib/catalog/catalog-vendor-access";
 import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
+import { guestFreeCatalogCardLimit } from "@/lib/catalog/catalog-guest-access";
 import { buildSeoCategoryMetadata } from "@/lib/catalog/seo-category-metadata";
 import { getSeoCategoryVendorPageData } from "@/lib/catalog/seo-category-vendors";
 import {
@@ -50,9 +51,14 @@ export default async function SeoCategoryPage({ params }: Props) {
   const catalogAccessUnlocked = await hasFullCatalogAccess(profile);
   const { vendors: fetchedVendors, totalCount } =
     await getSeoCategoryVendorPageData(route);
+  const guestFreeCardLimit = guestFreeCatalogCardLimit(true, {
+    categoryFilterSlugs: route.sourceCategoryIds,
+    totalVendorsInFilter: totalCount,
+  });
   const accessibleVendors = applyCatalogAccessToVendors(fetchedVendors, {
     hasFullAccess: catalogAccessUnlocked,
     globalOffset: 0,
+    freeLimit: guestFreeCardLimit,
   });
   const tBrowse = await getTranslations("Pages.catalogBrowse");
   const tTree = await getTranslations("catalogCategoryTree");
@@ -63,6 +69,7 @@ export default async function SeoCategoryPage({ params }: Props) {
       tBrowse,
       tTreeCategory: (key) => tTree(key),
       locale,
+      categoryFilterSlugs: route.sourceCategoryIds,
     }),
   );
 
@@ -74,6 +81,7 @@ export default async function SeoCategoryPage({ params }: Props) {
         cards={cards}
         favoriteKeys={[]}
         hasFullCatalogAccess={catalogAccessUnlocked}
+        guestFreeCardLimit={guestFreeCardLimit}
         paywallCopy={{
           title: tBrowse("paywall.title"),
           body: tBrowse("paywall.body"),

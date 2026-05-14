@@ -13,8 +13,18 @@ export function isSafeVendorPublicSlug(slug: string): boolean {
   return SAFE_VENDOR_SLUG_RE.test(normalized);
 }
 
-export function vendorProfileRobotsPolicy(slug: string): VendorProfileRobotsPolicy {
-  return isSafeVendorPublicSlug(slug) ? "index,follow" : "noindex,follow";
+export function vendorSuppliersSeoPath(seoSlug: string): string {
+  return `/suppliers/${seoSlug.trim()}`;
+}
+
+/** Catalog profile pages are never indexed; SEO lives on `/suppliers/`. */
+export function vendorCatalogRobotsPolicy(): VendorProfileRobotsPolicy {
+  return "noindex,follow";
+}
+
+/** Suppliers SEO landing — index when site is indexable. */
+export function vendorSuppliersSeoRobotsPolicy(): VendorProfileRobotsPolicy {
+  return "index,follow";
 }
 
 /** Stable public listing number derived from vendor UUID (not sequential DB id). */

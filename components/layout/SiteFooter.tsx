@@ -35,7 +35,8 @@ export async function SiteFooter() {
 
   const linkClass =
     "text-[11px] leading-snug text-muted-foreground transition-colors hover:text-foreground";
-  const rowClass = "flex flex-wrap items-center gap-x-3 gap-y-2";
+  const rowClass =
+    "flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center";
 
   return (
     <footer className="border-t border-border/60 bg-background">

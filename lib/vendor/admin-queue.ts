@@ -12,7 +12,7 @@ export type AdminVendorRow = VendorApplicationRecord;
 
 /** Единый список полей для карточки модерации и списков. */
 export const VENDOR_APPLICATION_SELECT_FIELDS =
-  "id, store_name, phone_number, status, language, location_row, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, whatsapp_1, whatsapp_2, instagram_url, telegram_url, created_at, telegram_chat_id, application_source, google_place_id, google_maps_uri, moderation_note, quality_flags, quality_note, followers_count";
+  "id, store_name, phone_number, status, language, location_row, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, whatsapp_1, whatsapp_2, instagram_url, telegram_url, created_at, telegram_chat_id, application_source, google_place_id, google_maps_uri, moderation_note, quality_flags, quality_note, followers_count, parsed_ai_data";
 
 export async function fetchVendorsForModeration(opts: {
   filter: "pending" | "all";

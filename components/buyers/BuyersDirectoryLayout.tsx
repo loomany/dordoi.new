@@ -1,10 +1,15 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { BuyersDirectoryInteractive } from "@/components/buyers/BuyersDirectoryInteractive";
+import { getSessionProfile } from "@/lib/auth/session-profile";
+import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
 
 /** Directory of sourcing agents — `/buyers`. */
 export async function BuyersDirectoryLayout() {
   const t = await getTranslations("Pages.buyers");
+  const tBrowse = await getTranslations("Pages.catalogBrowse");
+  const profile = await getSessionProfile();
+  const contactsUnlocked = await hasFullCatalogAccess(profile);
 
   return (
     <div className="bg-gray-50/80 py-6 sm:py-8">
@@ -36,7 +41,18 @@ export async function BuyersDirectoryLayout() {
           />
         </header>
 
-        <BuyersDirectoryInteractive />
+        <BuyersDirectoryInteractive
+          contactsUnlocked={contactsUnlocked}
+          paywallCopy={{
+            title: tBrowse("paywall.title"),
+            body: tBrowse("paywall.body"),
+            ctaPayment: tBrowse("paywall.ctaPayment"),
+            closeDialog: tBrowse("paywall.closeDialog"),
+            planMonthlyPrice: tBrowse("paywall.planMonthlyPrice"),
+            checkoutError: tBrowse("paywall.checkoutError"),
+            checkoutLoading: tBrowse("paywall.checkoutLoading"),
+          }}
+        />
       </div>
     </div>
   );

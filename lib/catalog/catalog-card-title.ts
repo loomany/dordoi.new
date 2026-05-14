@@ -51,7 +51,7 @@ function polishDisplayStoreTitle(title: string): string {
 function isGenericShopDescriptorTail(tail: string): boolean {
   const s = tail.normalize("NFKC").trim().toLowerCase();
   if (!s) return false;
-  return /^(?:магазин|магазины|бутик|шоурум|showroom|оптовый|интернет-магазин|обувной\s+магазин|точка\s+оптовой|швейная\s+фабрика|швейных\s+цех|текстильная\s+компания)(?:\s|$|[,.])/u.test(
+  return /^(?:магазин|магазины|бутик|шоурум|showroom|оптовый|интернет-магазин|обувной\s+магазин|точка\s+оптовой|швейная\s+фабрика|швейных\s+цех|текстильная\s+компания|компания|фирма|предприятие|производство)(?:\s|$|[,.])/u.test(
     s,
   );
 }
@@ -88,6 +88,8 @@ const GENERIC_SHOP_TITLE_SUFFIXES: RegExp[] = [
   /,\s*интернет-магазин$/iu,
   /,\s*обувной\s+магазин$/iu,
   /,\s*текстильная\s+компания$/iu,
+  /,\s*компания\s+по\s+.+$/iu,
+  /,\s*компания$/iu,
   /,\s*швейная\s+фабрика$/iu,
   /,\s*швейных\s+цех$/iu,
   /,\s*магазин$/iu,

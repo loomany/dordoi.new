@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Check, UserPlus } from "lucide-react";
+import type { CatalogAccessPaywallCopy } from "@/components/catalog/CatalogAccessPaywallModal";
 import type { BuyerDirectoryRow } from "@/data/buyers-directory";
 import {
   BuyerCardContactStrip,
@@ -27,10 +28,19 @@ type Props = {
   buyer: BuyerDirectoryRow;
   profile: BuyerCardProfileText;
   strings: BuyerCardStrings;
+  contactsUnlocked?: boolean;
+  paywallCopy?: CatalogAccessPaywallCopy;
   className?: string;
 };
 
-export function BuyerCard({ buyer, profile, strings, className }: Props) {
+export function BuyerCard({
+  buyer,
+  profile,
+  strings,
+  contactsUnlocked = false,
+  paywallCopy,
+  className,
+}: Props) {
   const isOpenSlot = Boolean(buyer.openSlot);
 
   return (
@@ -143,7 +153,12 @@ export function BuyerCard({ buyer, profile, strings, className }: Props) {
         </div>
       )}
 
-      <BuyerCardContactStrip buyer={buyer} strings={strings} />
+      <BuyerCardContactStrip
+        buyer={buyer}
+        strings={strings}
+        contactsUnlocked={contactsUnlocked}
+        paywallCopy={paywallCopy}
+      />
     </article>
   );
 }

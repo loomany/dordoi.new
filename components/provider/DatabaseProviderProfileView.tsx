@@ -27,6 +27,7 @@ import {
   type PublishedVendorRow,
 } from "@/lib/catalog/published-vendors";
 import { getSessionProfile } from "@/lib/auth/session-profile";
+import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
 import { fetchBuyerFavoriteKeySet } from "@/lib/favorites/buyer-favorites";
 import { digitsOnly } from "@/lib/phone";
 import {
@@ -54,6 +55,8 @@ import { buildVendorFaq } from "@/lib/dordoi/vendorFaq";
 
 type Props = {
   vendor: PublishedVendorRow;
+  /** `catalog` — masked H1; `seo` — store name for `/suppliers/` index page. */
+  profileMode?: "catalog" | "seo";
 };
 
 function ensureHttp(value: string): string {
@@ -100,13 +103,17 @@ function MediaImage({
   );
 }
 
-export async function DatabaseProviderProfileView({ vendor }: Props) {
+export async function DatabaseProviderProfileView({
+  vendor,
+  profileMode = "catalog",
+}: Props) {
   const t = await getTranslations("Pages.providerProfile");
   const tVendorFaq = await getTranslations("Pages.providerProfile.vendorFaq");
   const tTree = await getTranslations("catalogCategoryTree");
   const tBrowse = await getTranslations("Pages.catalogBrowse");
   const locale = await getLocale();
   const profile = await getSessionProfile();
+  const catalogAccessUnlocked = await hasFullCatalogAccess(profile);
   const favoriteKeys = profile
     ? await fetchBuyerFavoriteKeySet(profile.userId)
     : new Set<string>();
@@ -144,15 +151,24 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
   const categoryPhrase = primaryMainId
     ? t(`publicSeo.categories.${primaryMainId}`)
     : null;
-  const publicH1 = categoryPhrase
-    ? t("publicSeo.h1WithCategory", { category: categoryPhrase })
-    : t("publicSeo.h1Fallback");
-  const visibleLabel = categoryPhrase
-    ? t("publicSeo.visibleLabelWithCategory", { category: categoryPhrase })
-    : t("publicSeo.visibleLabelNumbered", {
-        number: vendorPublicListingNumber(vendor.id),
-      });
-  const breadcrumbLeaf = t("publicSeo.breadcrumbLeaf");
+  const storeDisplayName =
+    vendor.store_name?.trim() || vendor.seo_slug?.trim() || vendor.slug;
+  const publicH1 =
+    profileMode === "seo"
+      ? storeDisplayName
+      : categoryPhrase
+        ? t("publicSeo.h1WithCategory", { category: categoryPhrase })
+        : t("publicSeo.h1Fallback");
+  const visibleLabel =
+    profileMode === "seo"
+      ? storeDisplayName
+      : categoryPhrase
+        ? t("publicSeo.visibleLabelWithCategory", { category: categoryPhrase })
+        : t("publicSeo.visibleLabelNumbered", {
+            number: vendorPublicListingNumber(vendor.id),
+          });
+  const breadcrumbLeaf =
+    profileMode === "seo" ? storeDisplayName : t("publicSeo.breadcrumbLeaf");
   const seoCategoryRoute = primaryMainId
     ? resolveSeoCategoryForMainId(primaryMainId)
     : undefined;
@@ -500,6 +516,17 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                 aboutStoreLabel={tBrowse("cardAboutStore")}
                 collapseLabel={tBrowse("cardCollapse")}
                 expandLabel={tBrowse("cardExpand")}
+                hasFullCatalogAccess={catalogAccessUnlocked}
+                paywallCopy={{
+                  title: tBrowse("paywall.title"),
+                  body: tBrowse("paywall.body"),
+                  ctaPayment: tBrowse("paywall.ctaPayment"),
+                  closeDialog: tBrowse("paywall.closeDialog"),
+                  planMonthlyPrice: tBrowse("paywall.planMonthlyPrice"),
+                  checkoutError: tBrowse("paywall.checkoutError"),
+                  checkoutLoading: tBrowse("paywall.checkoutLoading"),
+                }}
+                lockedCardUnlockLabel={tBrowse("paywall.unlockCard")}
               />
               <VendorFaqSection
                 items={faqItems}
@@ -539,6 +566,16 @@ export async function DatabaseProviderProfileView({ vendor }: Props) {
                 googleMapsHref={googleMapsPublicHref}
                 twoGisHref={twoGisPublicHref}
                 yandexMapsHref={yandexMapsPublicHref}
+                contactsUnlocked={catalogAccessUnlocked}
+                paywallCopy={{
+                  title: tBrowse("paywall.title"),
+                  body: tBrowse("paywall.body"),
+                  ctaPayment: tBrowse("paywall.ctaPayment"),
+                  closeDialog: tBrowse("paywall.closeDialog"),
+                  planMonthlyPrice: tBrowse("paywall.planMonthlyPrice"),
+                  checkoutError: tBrowse("paywall.checkoutError"),
+                  checkoutLoading: tBrowse("paywall.checkoutLoading"),
+                }}
               />
             </aside>
           </div>

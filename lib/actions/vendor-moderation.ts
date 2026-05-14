@@ -19,6 +19,7 @@ import { routing } from "@/i18n/routing";
 import {
   buildVendorSlug,
   buildVendorSlugWithIdSuffix,
+  slugifyVendorTitle,
 } from "@/lib/catalog/vendor-slug";
 import { notifyVendorApplicationApproved } from "@/lib/telegram/notify-vendor-approved";
 
@@ -32,28 +33,25 @@ function revalidateCabinetAfterModeration(): void {
     revalidatePath(`/${locale}/cabinet/admin`, "page");
     revalidatePath(`/${locale}/cabinet/vendor`, "page");
     revalidatePath(`/${locale}/catalog`, "page");
+    revalidatePath(`/${locale}/suppliers`, "page");
   }
 }
 
 type VendorSlugRow = {
   id: string;
   slug: string | null;
+  seo_slug: string | null;
   store_name: string | null;
   categories: string[] | null;
 };
 
-/**
- * Гарантирует наличие SEO-slug у одобренного продавца.
- * Если slug уже есть — не меняем (стабильный URL для индексации).
- * Если занят базовый — добавляем короткий ID-суффикс. На повторные коллизии
- * возвращаем самый «детерминированный» fallback `store-{id8}`.
- */
-async function ensureVendorSlug(
+async function ensureVendorOpaqueSlug(
   admin: ReturnType<typeof createAdminClient>,
   vendor: VendorSlugRow,
 ): Promise<string | null> {
-  if (vendor.slug && vendor.slug.trim().length > 0) {
-    return vendor.slug.trim();
+  const existing = vendor.slug?.trim();
+  if (existing) {
+    return existing;
   }
 
   const candidates = [
@@ -79,7 +77,7 @@ async function ensureVendorSlug(
       .limit(1);
 
     if (clashErr) {
-      console.error("[ensureVendorSlug] clash check", clashErr);
+      console.error("[ensureVendorOpaqueSlug] clash check", clashErr);
       return null;
     }
 
@@ -94,7 +92,7 @@ async function ensureVendorSlug(
       .is("slug", null);
 
     if (writeErr) {
-      console.error("[ensureVendorSlug] write", writeErr);
+      console.error("[ensureVendorOpaqueSlug] write", writeErr);
       return null;
     }
 
@@ -102,6 +100,72 @@ async function ensureVendorSlug(
   }
 
   return null;
+}
+
+async function ensureVendorSeoSlug(
+  admin: ReturnType<typeof createAdminClient>,
+  vendor: VendorSlugRow,
+): Promise<string | null> {
+  const existing = vendor.seo_slug?.trim();
+  if (existing) {
+    return existing;
+  }
+
+  const base = slugifyVendorTitle(vendor.store_name);
+  const candidates = [
+    base,
+    base ? `${base}-${vendor.id.replace(/-/g, "").slice(0, 6)}` : "",
+    `store-${vendor.id.replace(/-/g, "").slice(0, 8)}`,
+  ].filter((c) => c.length > 0);
+
+  for (const candidate of candidates) {
+    const { data: clash, error: clashErr } = await admin
+      .from("vendors")
+      .select("id")
+      .eq("seo_slug", candidate)
+      .neq("id", vendor.id)
+      .limit(1);
+
+    if (clashErr) {
+      console.error("[ensureVendorSeoSlug] clash check", clashErr);
+      return null;
+    }
+
+    if (clash && clash.length > 0) {
+      continue;
+    }
+
+    const { error: writeErr } = await admin
+      .from("vendors")
+      .update({ seo_slug: candidate })
+      .eq("id", vendor.id)
+      .is("seo_slug", null);
+
+    if (writeErr) {
+      console.error("[ensureVendorSeoSlug] write", writeErr);
+      return null;
+    }
+
+    return candidate;
+  }
+
+  return null;
+}
+
+/**
+ * Opaque `/catalog/{slug}` + readable `/suppliers/{seo_slug}` at first approve.
+ * Existing slugs are kept stable (bulk legacy → opaque migration is a separate script).
+ */
+async function ensureVendorPublicSlugs(
+  admin: ReturnType<typeof createAdminClient>,
+  vendor: VendorSlugRow,
+): Promise<{ opaqueSlug: string | null; seoSlug: string | null }> {
+  const opaqueSlug = await ensureVendorOpaqueSlug(admin, vendor);
+  const seoSlug = await ensureVendorSeoSlug(admin, {
+    ...vendor,
+    slug: opaqueSlug ?? vendor.slug,
+  });
+  return { opaqueSlug, seoSlug };
 }
 
 /**
@@ -149,7 +213,7 @@ export async function updateVendorStatus(
   const { data: vendor, error: fetchErr } = await admin
     .from("vendors")
     .select(
-      "id, phone_number, telegram_chat_id, store_name, language, slug, application_source, categories",
+      "id, phone_number, telegram_chat_id, store_name, language, slug, seo_slug, application_source, categories",
     )
     .eq("id", vendorId)
     .maybeSingle();
@@ -174,9 +238,10 @@ export async function updateVendorStatus(
 
     if (!isGooglePlaces) {
       // SEO-slug фиксируем при первом approve: стабильный URL во всех локалях.
-      const finalSlug = await ensureVendorSlug(admin, {
+      const { opaqueSlug: finalSlug } = await ensureVendorPublicSlugs(admin, {
         id: String(vendor.id),
         slug: typeof vendor.slug === "string" ? vendor.slug : null,
+        seo_slug: typeof vendor.seo_slug === "string" ? vendor.seo_slug : null,
         store_name:
           typeof vendor.store_name === "string" ? vendor.store_name : null,
         categories: Array.isArray(vendor.categories)

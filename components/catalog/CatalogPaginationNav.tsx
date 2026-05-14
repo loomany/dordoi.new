@@ -47,6 +47,7 @@ type Props = {
   totalPages: number;
   currentPage: number;
   categorySlugs: string[];
+  searchQuery?: string;
   compareWithPreview?: boolean;
   locale: string;
 };
@@ -55,6 +56,7 @@ export function CatalogPaginationNav({
   totalPages,
   currentPage,
   categorySlugs,
+  searchQuery = "",
   compareWithPreview = false,
   locale,
 }: Props) {
@@ -62,8 +64,12 @@ export function CatalogPaginationNav({
   const isMobile = useIsCatalogMobile();
   const nf = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   const pathOpts = useMemo(
-    () => ({ categorySlugs, compareWithPreview }),
-    [categorySlugs, compareWithPreview],
+    () => ({
+      categorySlugs,
+      searchQuery: searchQuery.trim() || undefined,
+      compareWithPreview,
+    }),
+    [categorySlugs, searchQuery, compareWithPreview],
   );
   const items = getCatalogPaginationItems(totalPages, currentPage, {
     leadingPages: isMobile ? 4 : 7,

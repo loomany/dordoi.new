@@ -18,6 +18,7 @@ import {
   inferVendorTradeType,
   type ParsedVendorCardData,
 } from "@/lib/catalog/vendor-card-display";
+import { resolveCatalogCardSubtitleForCategoryFilter } from "@/lib/catalog/catalog-card-subtitle-filter";
 import {
   dedupeCatalogSubtitle,
   resolveCatalogStoreTitleForCard,
@@ -26,7 +27,11 @@ import {
   getShowcaseCatalogFields,
   type CatalogBrowseT,
 } from "@/lib/catalog/showcase-vendor-i18n";
-import { resolveSeoCategoryHrefForVendorCategories } from "@/lib/catalog/seo-category-routes";
+import {
+  resolveSeoCategoryHrefForMainId,
+  resolveSeoCategoryHrefForVendorCategories,
+} from "@/lib/catalog/seo-category-routes";
+import { resolveMatchedMainCategoryForFilter } from "@/lib/catalog/catalog-card-subtitle-filter";
 import type { RouteLocale } from "@/lib/seo/route-locale";
 import { localizedMainCategoryLabels } from "@/lib/catalog/vendor-category-normalize";
 import {
@@ -41,10 +46,19 @@ import {
   catalogFilterSlugsToMainIds,
   normalizeCatalogCategorySlugs,
 } from "@/lib/catalog/catalog-category-filter";
+import { filterVendorsByCatalogSearch } from "@/lib/catalog/catalog-vendor-search";
 import {
   isShowcaseVendorSlug,
   SHOWCASE_VENDOR_SLUGS,
 } from "@/lib/catalog/showcase-vendor-i18n";
+import {
+  catalogVendorDisplayRankInputFromRow,
+  compareCatalogVendorsForDisplay,
+} from "@/lib/catalog/vendor-display-rank";
+import {
+  countMainCatalogHubFreePreview,
+  orderVendorsForMainCatalogHub,
+} from "@/lib/catalog/catalog-main-hub-order";
 
 /**
  * Минимальный набор полей `vendors`, нужных для CatalogCard в /catalog.
@@ -53,6 +67,8 @@ import {
 export type PublishedVendorRow = {
   id: string;
   slug: string;
+  /** Readable slug for `/suppliers/{seo_slug}` (SEO index). */
+  seo_slug?: string | null;
   store_name: string | null;
   description: string | null;
   description_detail?: string | null;
@@ -109,14 +125,14 @@ export function isBlockedPublicCatalogStoreName(
 }
 
 const PUBLISHED_VENDOR_SELECT_FIELDS =
-  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
+  "id, slug, seo_slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, telegram_url, parsed_ai_data";
 
 /** List query для пагинированного `/catalog` — с `parsed_ai_data` для текста ИИ на карточке. */
 const PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS =
-  "id, slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, parsed_ai_data";
+  "id, slug, seo_slug, store_name, description, categories, logo_url, product_photos, product_videos, location_row, created_at, min_batch, payment_methods, delivery_help, samples_available, samples_note, returns_policy, instagram_url, telegram_url, parsed_ai_data";
 
 const PUBLISHED_VENDOR_PROFILE_SELECT_FIELDS =
-  "id, slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at, followers_count, parsed_ai_data";
+  "id, slug, seo_slug, store_name, description, description_detail, categories, logo_url, container_photo_url, product_photos, product_videos, location_row, phone_number, min_batch, payment_methods, delivery_help, whatsapp_1, whatsapp_2, instagram_url, telegram_url, google_maps_uri, google_place_id, samples_available, samples_note, returns_policy, created_at, followers_count, parsed_ai_data";
 
 /**
  * Все опубликованные продавцы для публичного каталога.
@@ -129,8 +145,7 @@ export async function fetchPublishedVendorsForCatalog(): Promise<PublishedVendor
     .from("vendors")
     .select(PUBLISHED_VENDOR_SELECT_FIELDS)
     .eq("status", "approved")
-    .not("slug", "is", null)
-    .order("created_at", { ascending: false });
+    .not("slug", "is", null);
 
   if (error) {
     console.error("[fetchPublishedVendorsForCatalog]", error);
@@ -142,6 +157,13 @@ export async function fetchPublishedVendorsForCatalog(): Promise<PublishedVendor
   }
 
   return data
+    .slice()
+    .sort((a, b) =>
+      compareCatalogVendorsForDisplay(
+        catalogVendorDisplayRankInputFromRow(a as Record<string, unknown>),
+        catalogVendorDisplayRankInputFromRow(b as Record<string, unknown>),
+      ),
+    )
     .map((row): PublishedVendorRow | null => {
       const r = row as Record<string, unknown>;
       const slug = typeof r.slug === "string" ? r.slug.trim() : "";
@@ -179,6 +201,7 @@ export async function fetchPublishedVendorsForCatalog(): Promise<PublishedVendor
       return {
         id,
         slug,
+        seo_slug: typeof r.seo_slug === "string" ? r.seo_slug : null,
         store_name: storeName,
         description: typeof r.description === "string" ? r.description : null,
         categories: cats,
@@ -227,6 +250,7 @@ export type FetchPublishedVendorsCatalogPageParams = {
   page: number;
   pageSize: number;
   subcategorySlugs?: string[];
+  searchQuery?: string | null;
 };
 
 export type FetchPublishedVendorsCatalogPageResult = {
@@ -234,6 +258,7 @@ export type FetchPublishedVendorsCatalogPageResult = {
   totalCount: number;
   page: number;
   pageSize: number;
+  mainHubFreePreviewCount?: number;
 };
 
 /** `unstable_cache` tag for public `/catalog` vendor list (see moderation revalidate). */
@@ -245,6 +270,7 @@ type NormalizedCatalogPageParams = {
   page: number;
   pageSize: number;
   subcategorySlugs: string[];
+  searchQuery: string;
 };
 
 function normalizeCatalogPageParams(
@@ -257,6 +283,7 @@ function normalizeCatalogPageParams(
     page: parseCatalogPageNumber(params.page),
     pageSize: parseCatalogPageSize(params.pageSize),
     subcategorySlugs: [...new Set(subcategorySlugs)].sort(),
+    searchQuery: (params.searchQuery ?? "").trim(),
   };
 }
 
@@ -325,6 +352,7 @@ function mapPublishedVendorCatalogListRow(
   return {
     id,
     slug,
+    seo_slug: typeof r.seo_slug === "string" ? r.seo_slug : null,
     store_name: storeName,
     description: typeof r.description === "string" ? r.description : null,
     categories: cats,
@@ -352,41 +380,27 @@ function mapPublishedVendorCatalogListRow(
 
 /**
  * Одна страница опубликованных вендоров для `/catalog` (Supabase, без кэша).
- * `parsed_ai_data` в SELECT — на карточке только текст ИИ, не сырой `description`.
- *
- * Ограничения:
- * - `?cat=` фильтруется через `categories && tokens` (main/sub slug-и), без нормализации синонимов в БД.
- * - `store_name` blocklist (`cosmos`, `123`) отсекается после SELECT — `totalCount` может быть чуть завышен.
+ * Сортировка: закреплённые slug → Telegram-канал → `created_at` desc.
+ * Пагинация в памяти после фильтра (≈ сотни approved строк).
  */
 async function fetchPublishedVendorsCatalogPageRaw(
   params: NormalizedCatalogPageParams,
 ): Promise<FetchPublishedVendorsCatalogPageResult> {
-  const { page, pageSize, subcategorySlugs } = params;
+  const { page, pageSize, subcategorySlugs, searchQuery } = params;
   const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
 
   const admin = createAdminClient();
-  // Supabase filter chain + `count: "exact"` — иначе TS2589 на reassignment.
   let q = admin
     .from("vendors")
-    .select(PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS, { count: "exact" })
+    .select(PUBLISHED_VENDOR_CATALOG_LIST_SELECT_FIELDS)
     .eq("status", "approved")
-    .not("slug", "is", null)
-    .order("created_at", { ascending: false }) as {
+    .not("slug", "is", null) as {
     not: (
       column: string,
       operator: string,
       value: string,
     ) => typeof q;
     overlaps: (column: string, value: string[]) => typeof q;
-    range: (
-      from: number,
-      to: number,
-    ) => PromiseLike<{
-      data: unknown[] | null;
-      error: { message: string } | null;
-      count: number | null;
-    }>;
   };
 
   if (HIDDEN_PUBLIC_CATALOG_SLUGS.length > 0) {
@@ -402,22 +416,49 @@ async function fetchPublishedVendorsCatalogPageRaw(
     q = q.overlaps("categories", categoryTokens);
   }
 
-  const { data, error, count } = await q.range(from, to);
+  const { data, error } = await (q as unknown as Promise<{
+    data: unknown[] | null;
+    error: { message: string } | null;
+  }>);
 
   if (error) {
     console.error("[fetchPublishedVendorsCatalogPage]", error);
     return { vendors: [], totalCount: 0, page, pageSize };
   }
 
-  const vendors = (Array.isArray(data) ? data : [])
+  const sortedRows = (Array.isArray(data) ? data : []).slice().sort((a, b) =>
+    compareCatalogVendorsForDisplay(
+      catalogVendorDisplayRankInputFromRow(a as Record<string, unknown>),
+      catalogVendorDisplayRankInputFromRow(b as Record<string, unknown>),
+      { categoryFilterSlugs: subcategorySlugs },
+    ),
+  );
+
+  let vendors = sortedRows
     .map((row) => mapPublishedVendorCatalogListRow(row))
     .filter((x): x is PublishedVendorCatalogListRow => x !== null);
 
+  if (searchQuery) {
+    vendors = filterVendorsByCatalogSearch(vendors, searchQuery);
+  }
+
+  if (subcategorySlugs.length === 0 && !searchQuery) {
+    vendors = orderVendorsForMainCatalogHub(vendors);
+  }
+
+  const totalCount = vendors.length;
+  const mainHubFreePreviewCount =
+    subcategorySlugs.length === 0 && !searchQuery
+      ? countMainCatalogHubFreePreview(vendors)
+      : undefined;
+  const pagedVendors = vendors.slice(from, from + pageSize);
+
   return {
-    vendors,
-    totalCount: typeof count === "number" && count >= 0 ? count : vendors.length,
+    vendors: pagedVendors,
+    totalCount,
     page,
     pageSize,
+    mainHubFreePreviewCount,
   };
 }
 
@@ -429,10 +470,11 @@ export async function fetchPublishedVendorsCatalogPage(
   return unstable_cache(
     () => fetchPublishedVendorsCatalogPageRaw(normalized),
     [
-      "published-vendors-catalog-page",
+      "published-vendors-catalog-page-v25",
       String(normalized.page),
       String(normalized.pageSize),
       normalized.subcategorySlugs.join(","),
+      normalized.searchQuery,
     ],
     {
       revalidate: CATALOG_VENDORS_LIST_CACHE_REVALIDATE_SECONDS,
@@ -468,6 +510,7 @@ function normalizePublishedVendorRow(row: unknown): PublishedVendorRow | null {
   return {
     id,
     slug,
+    seo_slug: typeof r.seo_slug === "string" ? r.seo_slug : null,
     store_name: typeof r.store_name === "string" ? r.store_name : null,
     description: typeof r.description === "string" ? r.description : null,
     description_detail:
@@ -686,7 +729,7 @@ export async function fetchRecommendedVendorsForProfile(
   return picked.slice(0, limit);
 }
 
-/** Один опубликованный продавец по SEO slug для страницы `/catalog/{slug}`. */
+/** Один опубликованный продавец по opaque slug `/catalog/{slug}`. */
 async function fetchPublishedVendorBySlugRaw(
   slug: string,
 ): Promise<PublishedVendorRow | null> {
@@ -706,6 +749,34 @@ async function fetchPublishedVendorBySlugRaw(
     return null;
   }
 
+  return normalizePublishedVendorProfileRow(data);
+}
+
+/** SEO-страница `/suppliers/{seo_slug}`. */
+async function fetchPublishedVendorBySeoSlugRaw(
+  seoSlug: string,
+): Promise<PublishedVendorRow | null> {
+  const trimmed = seoSlug.trim();
+  if (!trimmed) return null;
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("vendors")
+    .select(PUBLISHED_VENDOR_PROFILE_SELECT_FIELDS)
+    .eq("status", "approved")
+    .eq("seo_slug", trimmed)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[fetchPublishedVendorBySeoSlug]", error);
+    return null;
+  }
+
+  return normalizePublishedVendorProfileRow(data);
+}
+
+function normalizePublishedVendorProfileRow(
+  data: unknown,
+): PublishedVendorRow | null {
   const row = data ? normalizePublishedVendorRow(data) : null;
   if (!row) {
     return null;
@@ -716,8 +787,32 @@ async function fetchPublishedVendorBySlugRaw(
   return row;
 }
 
+export type PublishedVendorCatalogAccess =
+  | { kind: "vendor"; vendor: PublishedVendorRow }
+  | { kind: "redirect"; opaqueSlug: string }
+  | { kind: "not_found" };
+
+/** Resolve `/catalog/{slug}`: opaque slug, or legacy redirect from old seo slug. */
+export async function resolvePublishedVendorCatalogAccess(
+  slug: string,
+): Promise<PublishedVendorCatalogAccess> {
+  const byOpaque = await fetchPublishedVendorBySlug(slug);
+  if (byOpaque) {
+    return { kind: "vendor", vendor: byOpaque };
+  }
+
+  const bySeo = await fetchPublishedVendorBySeoSlug(slug);
+  if (bySeo?.slug) {
+    return { kind: "redirect", opaqueSlug: bySeo.slug };
+  }
+
+  return { kind: "not_found" };
+}
+
 /** Dedupes metadata + page render within one RSC request. */
 export const fetchPublishedVendorBySlug = cache(fetchPublishedVendorBySlugRaw);
+
+export const fetchPublishedVendorBySeoSlug = cache(fetchPublishedVendorBySeoSlugRaw);
 
 /** Форма данных для рендера в `<CatalogCard />` из `CatalogBrowseLayout`. */
 export type CatalogCardSourceRow = {
@@ -808,19 +903,35 @@ export function buildCatalogCardSourceRowForPublishedVendor(
     tBrowse: CatalogBrowseT;
     tTreeCategory: (key: string) => string;
     locale: string;
+    /** Активные slug-и `?cat=` — подзаголовок и categoryHref под выбранную категорию. */
+    categoryFilterSlugs?: readonly string[];
   },
 ): CatalogCardSourceRow {
-  const { tBrowse, tTreeCategory, locale } = opts;
+  const { tBrowse, tTreeCategory, locale, categoryFilterSlugs = [] } = opts;
   const addedLine = tBrowse("listingAdded", {
     date: formatProviderAddedDate(vendor.created_at, locale),
   });
   const updatedLine = tBrowse("listingUpdated", {
     relative: formatListingUpdatedToday(locale),
   });
-  const categoryHref = resolveSeoCategoryHrefForVendorCategories(
+  const matchedFilterMain = resolveMatchedMainCategoryForFilter(
     vendor.categories,
-    locale as RouteLocale,
+    categoryFilterSlugs,
   );
+  const categoryHref =
+    matchedFilterMain != null
+      ? resolveSeoCategoryHrefForMainId(
+          matchedFilterMain,
+          locale as RouteLocale,
+        ) ??
+        resolveSeoCategoryHrefForVendorCategories(
+          vendor.categories,
+          locale as RouteLocale,
+        )
+      : resolveSeoCategoryHrefForVendorCategories(
+          vendor.categories,
+          locale as RouteLocale,
+        );
   const row = vendorToCatalogCardSource({
     vendor,
     fallbackTitle: tBrowse("fallbackStoreTitle"),
@@ -832,9 +943,16 @@ export function buildCatalogCardSourceRowForPublishedVendor(
     vendor.categories,
     (id) => tTreeCategory(`main.${id}`),
   );
-  const subtitle =
+  const baseSubtitle =
     row.display.subtitle?.trim() ||
     dedupeCatalogSubtitle(row.display.storeTitle, subtitleFallback);
+  const subtitle = resolveCatalogCardSubtitleForCategoryFilter({
+    storeTitle: row.display.storeTitle,
+    categories: vendor.categories,
+    categoryFilterSlugs,
+    aiOrFallbackSubtitle: baseSubtitle,
+    tMainCategory: (id) => tTreeCategory(`main.${id}`),
+  });
   const showcase = getShowcaseCatalogFields(vendor.slug, tBrowse);
   if (showcase) {
     return {

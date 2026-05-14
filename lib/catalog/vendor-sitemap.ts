@@ -7,23 +7,22 @@ import {
   isBlockedPublicCatalogStoreName,
   isHiddenFromPublicCatalogSlug,
 } from "@/lib/catalog/published-vendors";
-import { isSafeVendorPublicSlug } from "@/lib/catalog/vendor-public-seo";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { VENDOR_SITEMAP_CHUNK_SIZE } from "@/lib/sitemap/constants";
 
 const VENDOR_SITEMAP_SLUGS_CACHE_REVALIDATE_SECONDS = 120;
 
-async function fetchIndexableVendorSlugsForSitemapRaw(): Promise<string[]> {
+async function fetchIndexableVendorSeoSlugsForSitemapRaw(): Promise<string[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("vendors")
-    .select("slug, store_name")
+    .select("slug, seo_slug, store_name")
     .eq("status", "approved")
-    .not("slug", "is", null)
+    .not("seo_slug", "is", null)
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("[fetchIndexableVendorSlugsForSitemap]", error);
+    console.error("[fetchIndexableVendorSeoSlugsForSitemap]", error);
     return [];
   }
   if (!Array.isArray(data)) {
@@ -34,24 +33,24 @@ async function fetchIndexableVendorSlugsForSitemapRaw(): Promise<string[]> {
   const seen = new Set<string>();
   for (const row of data) {
     const r = row as Record<string, unknown>;
-    const slug = typeof r.slug === "string" ? r.slug.trim() : "";
-    if (!slug || seen.has(slug)) continue;
-    if (isHiddenFromPublicCatalogSlug(slug)) continue;
+    const catalogSlug = typeof r.slug === "string" ? r.slug.trim() : "";
+    const seoSlug = typeof r.seo_slug === "string" ? r.seo_slug.trim() : "";
+    if (!seoSlug || seen.has(seoSlug)) continue;
+    if (catalogSlug && isHiddenFromPublicCatalogSlug(catalogSlug)) continue;
     if (isBlockedPublicCatalogStoreName(r.store_name as string | null | undefined)) {
       continue;
     }
-    if (!isSafeVendorPublicSlug(slug)) continue;
-    seen.add(slug);
-    slugs.push(slug);
+    seen.add(seoSlug);
+    slugs.push(seoSlug);
   }
   return slugs;
 }
 
-/** Approved vendor slugs eligible for sitemap (safe public slug policy). */
+/** Approved vendor `seo_slug` values for sitemap (`/suppliers/{seo_slug}`). */
 export async function fetchIndexableVendorSlugsForSitemap(): Promise<string[]> {
   return unstable_cache(
-    fetchIndexableVendorSlugsForSitemapRaw,
-    ["indexable-vendor-slugs-sitemap"],
+    fetchIndexableVendorSeoSlugsForSitemapRaw,
+    ["indexable-vendor-seo-slugs-sitemap-v2"],
     {
       revalidate: VENDOR_SITEMAP_SLUGS_CACHE_REVALIDATE_SECONDS,
       tags: [CATALOG_VENDORS_LIST_CACHE_TAG],
@@ -66,7 +65,7 @@ export async function getVendorSitemapChunkCount(): Promise<number> {
   return Math.ceil(slugs.length / VENDOR_SITEMAP_CHUNK_SIZE);
 }
 
-/** Slice indexable slugs for a 1-based chunk index. */
+/** Slice indexable seo slugs for a 1-based chunk index. */
 export function sliceVendorSitemapChunk(slugs: string[], chunkIndex: number): string[] {
   if (chunkIndex < 1) return [];
   const start = (chunkIndex - 1) * VENDOR_SITEMAP_CHUNK_SIZE;

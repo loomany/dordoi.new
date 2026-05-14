@@ -33,8 +33,8 @@ async function buildVendorChunkSitemapXmlRaw(chunkIndex: number): Promise<string
   const root = baseUrl();
   const urlBlocks: string[] = [];
 
-  for (const slug of chunkSlugs) {
-    const path = `/catalog/${slug}`;
+  for (const seoSlug of chunkSlugs) {
+    const path = `/suppliers/${seoSlug}`;
     const languages = hreflangAlternatesForPath(path);
     for (const locale of routing.locales) {
       const loc = `${root}/${locale}${path}`;

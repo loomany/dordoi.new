@@ -1,11 +1,16 @@
+import { CatalogBrowseResultsGate } from "@/components/catalog/CatalogBrowseResultsGate";
+import { CatalogBrowseRefreshShell } from "@/components/catalog/CatalogBrowseRefreshShell";
 import { Suspense } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Search } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import {
   CatalogCategoryFilter,
   CatalogCategoryFilterFallback,
 } from "@/components/catalog/CatalogCategoryFilter";
+import {
+  CatalogBrowseSearch,
+  CatalogBrowseSearchFallback,
+} from "@/components/catalog/CatalogBrowseSearch";
 import { CatalogBrowseCardGrid } from "@/components/catalog/CatalogBrowseCardGrid";
 import { CatalogCheckoutResume } from "@/components/catalog/CatalogCheckoutResume";
 import { CatalogPopularCategories } from "@/components/catalog/CatalogPopularCategories";
@@ -19,7 +24,13 @@ import {
   formatProviderAddedDate,
 } from "@/lib/provider-dates";
 import { filterPublishedVendorsBySubcategorySlugs } from "@/lib/catalog/catalog-category-filter";
+import { filterVendorsByCatalogSearch } from "@/lib/catalog/catalog-vendor-search";
 import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
+import { guestFreeCatalogCardLimit } from "@/lib/catalog/catalog-guest-access";
+import {
+  countMainCatalogHubFreePreview,
+  orderVendorsForMainCatalogHub,
+} from "@/lib/catalog/catalog-main-hub-order";
 import { applyCatalogAccessToVendors } from "@/lib/catalog/catalog-vendor-access";
 import {
   buildCatalogCardSourceRowForPublishedVendor,
@@ -45,6 +56,8 @@ type CatalogBrowseLayoutProps = {
   page?: number | string;
   /** Slug подкатегорий из `?cat=` (после нормализации). */
   categorySlugs?: string[];
+  /** Поисковый запрос из `?search=`. */
+  searchQuery?: string;
   /**
    * Debug: после реальных карточек добавляет sample-строки из переводов.
    * Включается через `/catalog?compare=1`.
@@ -65,6 +78,7 @@ function parsePositivePage(value: string | number | undefined | null): number {
 export async function CatalogBrowseLayout({
   page,
   categorySlugs = [],
+  searchQuery = "",
   compareWithPreview = false,
 }: CatalogBrowseLayoutProps) {
   const t = await getTranslations("Pages.catalogBrowse");
@@ -107,12 +121,17 @@ export async function CatalogBrowseLayout({
   });
 
   const nf = new Intl.NumberFormat(locale);
+  const categoryFilterActive = categorySlugs.length > 0;
+  const activeSearch = searchQuery.trim();
   let visibleCards: CatalogCardSourceRow[];
   let totalPages: number;
   let currentPage: number;
   let cardCount: number;
   let pageStart: number;
   let pageEnd: number;
+  let guestFreeCardLimit = guestFreeCatalogCardLimit(categoryFilterActive, {
+    categoryFilterSlugs: categorySlugs,
+  });
 
   if (compareWithPreview) {
     // Debug `/catalog?compare=1` — прежний full fetch + sample rows в памяти.
@@ -121,15 +140,35 @@ export async function CatalogBrowseLayout({
       publishedVendors,
       categorySlugs,
     );
+    const searchFiltered = activeSearch
+      ? filterVendorsByCatalogSearch(publishedVendorsFiltered, activeSearch)
+      : publishedVendorsFiltered;
+    const orderedVendors =
+      categoryFilterActive || activeSearch
+        ? searchFiltered
+        : orderVendorsForMainCatalogHub(searchFiltered);
+    guestFreeCardLimit = guestFreeCatalogCardLimit(categoryFilterActive, {
+      categoryFilterSlugs: categorySlugs,
+      totalVendorsInFilter: orderedVendors.length,
+      mainHubFreePreviewCount:
+        !categoryFilterActive && !activeSearch
+          ? countMainCatalogHubFreePreview(orderedVendors)
+          : undefined,
+    });
     const accessibleVendors = applyCatalogAccessToVendors(
-      publishedVendorsFiltered,
-      { hasFullAccess: catalogAccessUnlocked, globalOffset: 0 },
+      orderedVendors,
+      {
+        hasFullAccess: catalogAccessUnlocked,
+        globalOffset: 0,
+        freeLimit: guestFreeCardLimit,
+      },
     );
     const realCards: CatalogCardSourceRow[] = accessibleVendors.map((v) =>
       buildCatalogCardSourceRowForPublishedVendor(v, {
         tBrowse: t,
         tTreeCategory: (key) => tTree(key),
         locale,
+        categoryFilterSlugs: categorySlugs,
       }),
     );
     const cards = [...realCards, ...sampleCards];
@@ -146,9 +185,15 @@ export async function CatalogBrowseLayout({
       page: requestedPage,
       pageSize: CATALOG_PAGE_SIZE,
       subcategorySlugs: categorySlugs,
+      searchQuery: activeSearch || undefined,
     });
 
     cardCount = catalogPage.totalCount;
+    guestFreeCardLimit = guestFreeCatalogCardLimit(categoryFilterActive, {
+      categoryFilterSlugs: categorySlugs,
+      totalVendorsInFilter: cardCount,
+      mainHubFreePreviewCount: catalogPage.mainHubFreePreviewCount,
+    });
     totalPages = Math.max(1, Math.ceil(cardCount / CATALOG_PAGE_SIZE));
     currentPage = catalogPage.page;
 
@@ -157,6 +202,7 @@ export async function CatalogBrowseLayout({
         page: totalPages,
         pageSize: CATALOG_PAGE_SIZE,
         subcategorySlugs: categorySlugs,
+        searchQuery: activeSearch || undefined,
       });
       currentPage = totalPages;
     }
@@ -165,16 +211,24 @@ export async function CatalogBrowseLayout({
     const accessibleVendors = applyCatalogAccessToVendors(catalogPage.vendors, {
       hasFullAccess: catalogAccessUnlocked,
       globalOffset: pageOffset,
+      freeLimit: guestFreeCardLimit,
     });
     const realCards: CatalogCardSourceRow[] = accessibleVendors.map((v) =>
       buildCatalogCardSourceRowForPublishedVendor(v, {
         tBrowse: t,
         tTreeCategory: (key) => tTree(key),
         locale,
+        categoryFilterSlugs: categorySlugs,
       }),
     );
 
-    if (cardCount === 0) {
+    if (cardCount === 0 && activeSearch) {
+      visibleCards = [];
+      totalPages = 1;
+      currentPage = 1;
+      pageStart = 0;
+      pageEnd = 0;
+    } else if (cardCount === 0) {
       visibleCards = sampleCards;
       cardCount = sampleCards.length;
       totalPages = 1;
@@ -195,6 +249,7 @@ export async function CatalogBrowseLayout({
   });
 
   return (
+    <CatalogBrowseRefreshShell>
     <>
       <CatalogCheckoutResume />
       <div className="bg-[#FAFAF8] pb-12 pt-5 sm:pt-6">
@@ -230,21 +285,10 @@ export async function CatalogBrowseLayout({
                 <p className="mt-4 text-sm text-gray-400">{statsLine}</p>
               </header>
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <label className="relative flex min-h-11 min-w-0 flex-1 items-center">
-                  <span className="sr-only">{t("searchLabel")}</span>
-                  <span className="pointer-events-none absolute left-4 text-gray-400">
-                    <Search className="size-4 stroke-[1.5]" aria-hidden />
-                  </span>
-                  <input
-                    type="search"
-                    name="catalog-q"
-                    placeholder={t("searchPlaceholder")}
-                    aria-label={t("searchLabel")}
-                    className="w-full rounded-full border border-border bg-card py-2.5 pl-11 pr-4 text-sm text-card-foreground placeholder:text-muted-foreground/70 outline-none transition-shadow focus:border-[color-mix(in_oklch,var(--d-card-accent)_45%,transparent)] focus:ring-2 focus:ring-[color-mix(in_oklch,var(--d-card-accent)_22%,transparent)]"
-                    autoComplete="off"
-                  />
-                </label>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                <Suspense fallback={<CatalogBrowseSearchFallback />}>
+                  <CatalogBrowseSearch />
+                </Suspense>
 
                 <Suspense fallback={<CatalogCategoryFilterFallback />}>
                   <CatalogCategoryFilter />
@@ -257,12 +301,17 @@ export async function CatalogBrowseLayout({
         </div>
 
         <div className="mt-6">
-          <CatalogBrowseCardGrid
+          <CatalogBrowseResultsGate
+            skeletonCount={Math.max(visibleCards.length, CATALOG_PAGE_SIZE)}
+            showPaginationSkeleton={totalPages > 1}
+          >
+            <CatalogBrowseCardGrid
             key={currentPage}
             cards={visibleCards}
             favoriteKeys={[...favoriteKeys]}
             cardGlobalOffset={pageStart}
             hasFullCatalogAccess={catalogAccessUnlocked}
+            guestFreeCardLimit={guestFreeCardLimit}
             paywallCopy={{
               title: t("paywall.title"),
               body: t("paywall.body"),
@@ -280,6 +329,12 @@ export async function CatalogBrowseLayout({
             expandLabel={t("cardExpand")}
           />
 
+          {cardCount === 0 && activeSearch ? (
+            <p className="mt-8 text-center text-sm text-muted-foreground">
+              {t("searchNoResults", { query: activeSearch })}
+            </p>
+          ) : null}
+
           {totalPages > 1 ? (
             <div className="mt-8 sm:mt-10">
               <div
@@ -290,6 +345,7 @@ export async function CatalogBrowseLayout({
                 totalPages={totalPages}
                 currentPage={currentPage}
                 categorySlugs={categorySlugs}
+                searchQuery={activeSearch}
                 compareWithPreview={compareWithPreview}
                 locale={locale}
               />
@@ -300,9 +356,11 @@ export async function CatalogBrowseLayout({
               <CatalogPopularCategories />
             </div>
           )}
+          </CatalogBrowseResultsGate>
         </div>
       </div>
     </div>
     </>
+    </CatalogBrowseRefreshShell>
   );
 }

@@ -25,13 +25,15 @@ export default async function CatalogPage({ params, searchParams }: Props) {
   const { locale } = await params;
   const sp = await searchParams;
   const { compare } = sp;
-  const { page: pageParsed, cat: catParsed } = loadCatalogSearchParams(sp);
+  const { page: pageParsed, cat: catParsed, search: searchParsed } =
+    loadCatalogSearchParams(sp);
   setRequestLocale(locale);
   const categorySlugs = normalizeCatalogCategorySlugs(catParsed ?? []);
   return (
     <CatalogBrowseLayout
       page={pageParsed ?? undefined}
       categorySlugs={categorySlugs}
+      searchQuery={searchParsed ?? ""}
       compareWithPreview={compare === "1"}
     />
   );

@@ -372,13 +372,56 @@ export function CatalogCard({
   const photosExpanded =
     hasMedia && !collapsed ? (
       <div className="min-h-0 w-full pt-4">
-        <CatalogCardPhotoRail
-          urls={photoUrls ?? []}
-          altBase={display.storeTitle}
-          className="w-full min-w-0"
-          leadVideo={leadVideo}
-          productVideos={productVideos}
-        />
+        {accessLocked ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onAccessLockedClick?.();
+            }}
+            aria-label={accessLockedTitleLabel ?? display.storeTitle}
+            className="relative block w-full min-w-0 text-left"
+          >
+            <div className="relative overflow-hidden rounded-xl">
+              <div
+                className="pointer-events-none select-none"
+                style={{
+                  filter: "blur(16px)",
+                  WebkitFilter: "blur(16px)",
+                  transform: "scale(1.04)",
+                  transformOrigin: "center center",
+                }}
+                aria-hidden
+              >
+                <CatalogCardPhotoRail
+                  urls={photoUrls ?? []}
+                  altBase={display.storeTitle}
+                  className="w-full min-w-0"
+                  leadVideo={leadVideo}
+                  productVideos={productVideos}
+                />
+              </div>
+              <div
+                className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#FAFAF8]/55 via-white/35 to-[#FAFAF8]/50"
+                aria-hidden
+              />
+              <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-[color-mix(in_oklch,var(--d-card-accent)_30%,transparent)] bg-white/95 text-[var(--d-card-accent)] shadow-sm ring-1 ring-[color-mix(in_oklch,var(--d-card-accent)_14%,transparent)]">
+                  <Lock className="size-5" strokeWidth={2.25} aria-hidden />
+                </span>
+              </span>
+            </div>
+          </button>
+        ) : (
+          <CatalogCardPhotoRail
+            urls={photoUrls ?? []}
+            altBase={display.storeTitle}
+            className="w-full min-w-0"
+            leadVideo={leadVideo}
+            productVideos={productVideos}
+          />
+        )}
       </div>
     ) : null;
 

@@ -64,6 +64,8 @@ export const TWO_GIS_RUBRIC_TO_SITE_MAIN_IDS: Record<string, readonly string[]> 
     Компьютеры: ["electronics"],
     "Аудиотехника и видеотехника": ["electronics"],
     "Бытовая техника": ["electronics"],
+    "Светотехника": ["electronics"],
+    Люстры: ["electronics"],
     "Ремонт телефонов": ["electronics"],
     "Стационарные телефоны": ["electronics"],
     "Пакеты и плёнки": ["packaging-retail"],
@@ -75,6 +77,11 @@ export const TWO_GIS_RUBRIC_TO_SITE_MAIN_IDS: Record<string, readonly string[]> 
     "Бытовая химия": ["household"],
     "Средства гигиены": ["household"],
     "Одноразовая посуда": ["household"],
+    Автозапчасти: ["automotive"],
+    "Автоаксессуары": ["automotive"],
+    Автохимия: ["automotive"],
+    Автозвук: ["automotive"],
+    "Автомобильные аксессуары": ["automotive"],
     "Спортивный инвентарь": ["sports-outdoors"],
     "Товары для туризма и отдыха": ["sports-outdoors"],
     "Товары для рыбалки": ["sports-outdoors"],
@@ -122,7 +129,7 @@ export const TWO_GIS_TOP_CATEGORY_TO_MAIN_IDS: Record<string, readonly string[]>
     green: ["fabrics-notions"],
     construction_market: ["household"],
     printer_services: ["electronics"],
-    service_station: ["household"],
+    service_station: ["automotive"],
     pharmacy: ["beauty"],
   };
 
@@ -151,7 +158,14 @@ function inferMainIdsFromRubricText(rubric: string): readonly string[] | null {
     return null;
   }
   if (
-    /авто|запчаст|легковой автосервис|развал|автозвук|сигнализац|автохим|автоаксессуар|установка и ремонт автооптики|электроустановочн|светотехник|кондиционер|холодильн|сантехник|домофон|охранн|видеонаблюд|ремонт и установка бытовой/.test(
+    /авто|запчаст|легковой автосервис|развал|автозвук|сигнализац|автохим|автоаксессуар|установка и ремонт автооптики|автомобильн/.test(
+      t,
+    )
+  ) {
+    return ["automotive"];
+  }
+  if (
+    /электроустановочн|светотехник|кондиционер|холодильн|сантехник|домофон|охранн|видеонаблюд|ремонт и установка бытовой|люстр|светильник|освещен/.test(
       t,
     )
   ) {
@@ -168,7 +182,7 @@ function inferMainIdsFromRubricText(rubric: string): readonly string[] | null {
   if (/космет|парфюм|красот|маникюр|салон|бад|медицинск|фармац/.test(t))
     return ["beauty"];
   if (
-    /телефон|смарт|компьютер|электрон|заряд|наушн|чехол|кабель|провод|принтер|копировальн|полиграф|печать|флексо|цифровую печать|измерительн|электроинструмент|электротехник|бензоинструмент|малярн|инструмент/.test(
+    /телефон|смарт|компьютер|электрон|заряд|наушн|чехол|кабель|провод|принтер|копировальн|полиграф|печать|флексо|цифровую печать|измерительн|электроинструмент|электротехник|бензоинструмент|малярн|инструмент|светотехник|люстр|светильник|освещен|светодиод|выключател|розетк/.test(
       t,
     )
   ) {

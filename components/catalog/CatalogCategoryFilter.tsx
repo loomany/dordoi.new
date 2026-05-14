@@ -2,12 +2,13 @@
 
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, LayoutGrid, Search } from "lucide-react";
+import { ChevronDown, LayoutGrid, Loader2, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useQueryStates } from "nuqs";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useCatalogBrowseRefreshOptional } from "@/components/catalog/CatalogBrowseRefreshContext";
 import {
   Popover,
   PopoverContent,
@@ -99,6 +100,8 @@ type FilterPanelProps = {
   onResetDraft: () => void;
   onApply: () => void;
   applyLabel: string;
+  applyingLabel: string;
+  applyPending?: boolean;
   resetLabel: string;
   searchPlaceholder: string;
   noMatchesLabel: string;
@@ -115,6 +118,8 @@ function FilterPanel({
   onResetDraft,
   onApply,
   applyLabel,
+  applyingLabel,
+  applyPending = false,
   resetLabel,
   searchPlaceholder,
   noMatchesLabel,
@@ -179,11 +184,18 @@ function FilterPanel({
             : "px-4",
         )}
       >
-        <Button type="button" variant="outline" size="sm" onClick={onResetDraft}>
+        <Button type="button" variant="outline" size="sm" onClick={onResetDraft} disabled={applyPending}>
           {resetLabel}
         </Button>
-        <Button type="button" size="sm" onClick={onApply}>
-          {applyLabel}
+        <Button type="button" size="sm" onClick={onApply} disabled={applyPending}>
+          {applyPending ? (
+            <>
+              <Loader2 className="size-3.5 animate-spin" aria-hidden />
+              {applyingLabel}
+            </>
+          ) : (
+            applyLabel
+          )}
         </Button>
       </div>
     </div>
@@ -251,8 +263,16 @@ export function CatalogCategoryFilter() {
     });
   }, []);
 
+  const refresh = useCatalogBrowseRefreshOptional();
+  const isApplying = refresh?.isRefreshing ?? false;
+
   const apply = React.useCallback(() => {
     const next = normalizeCatalogCategorySlugs([...draft]);
+    const unchanged =
+      next.length === applied.length && next.every((id) => applied.includes(id));
+    if (!unchanged) {
+      refresh?.beginRefresh();
+    }
     void setCatalogQuery(
       {
         cat: next.length > 0 ? next : null,
@@ -261,7 +281,7 @@ export function CatalogCategoryFilter() {
       { shallow: false },
     );
     handleFilterOpenChange(false);
-  }, [draft, setCatalogQuery, handleFilterOpenChange]);
+  }, [draft, setCatalogQuery, handleFilterOpenChange, refresh, applied]);
 
   const resetDraft = React.useCallback(() => {
     setDraft(new Set());
@@ -297,6 +317,8 @@ export function CatalogCategoryFilter() {
     toggleDraft,
     onResetDraft: resetDraft,
     onApply: apply,
+    applyPending: isApplying,
+    applyingLabel: t("categoryFilterApplyingShort"),
     resetLabel: t("categoryFilterReset"),
     searchPlaceholder: t("categoryFilterSearchPlaceholder"),
     noMatchesLabel: t("categoryFilterNoMatches"),
