@@ -9,6 +9,7 @@ import {
   GoogleTagManagerBody,
   GoogleTagManagerHead,
 } from "@/components/seo/GoogleTagManager";
+import { YandexMetrikaBody, YandexMetrikaHead } from "@/components/seo/YandexMetrika";
 import { htmlLangFromRouteLocale } from "@/lib/hreflang";
 import { baseUrl, siteIndexable } from "@/lib/site";
 
@@ -77,9 +78,11 @@ export default async function RootLayout({
       className={`${inter.variable} ${geistMono.variable} min-h-dvh h-full antialiased`}
     >
       <head>
+        <YandexMetrikaHead />
         <GoogleTagManagerHead />
       </head>
       <body className="flex min-h-dvh flex-col">
+        <YandexMetrikaBody />
         <GoogleTagManagerBody />
         <GoogleAnalytics />
         <SiteBrandJsonLd />

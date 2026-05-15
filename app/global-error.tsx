@@ -1,5 +1,7 @@
 "use client";
 
+import { YandexMetrikaBody, YandexMetrikaHead } from "@/components/seo/YandexMetrika";
+
 export default function GlobalError({
   reset,
 }: {
@@ -8,6 +10,9 @@ export default function GlobalError({
 }) {
   return (
     <html lang="ru">
+      <head>
+        <YandexMetrikaHead />
+      </head>
       <body
         style={{
           margin: 0,
@@ -22,6 +27,7 @@ export default function GlobalError({
           color: "#0f172a",
         }}
       >
+        <YandexMetrikaBody />
         <main style={{ maxWidth: 420, textAlign: "center" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
