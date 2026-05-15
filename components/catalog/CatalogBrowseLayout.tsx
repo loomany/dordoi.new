@@ -316,6 +316,7 @@ export async function CatalogBrowseLayout({
               title: t("paywall.title"),
               body: t("paywall.body"),
               ctaPayment: t("paywall.ctaPayment"),
+              ctaPaymentTransfer: t("paywall.ctaPaymentTransfer"),
               closeDialog: t("paywall.closeDialog"),
               planMonthlyPrice: t("paywall.planMonthlyPrice"),
               checkoutError: t("paywall.checkoutError"),

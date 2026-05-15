@@ -600,7 +600,8 @@
       "paywall": {
         "title": "Dordoy yetkazib beruvchilari to'liq katalogini oching",
         "body": "Do'kon nomlari, WhatsApp va Telegram kontaktlari, profillar va opt shartlari — cheklovsiz. Bir to'lovdan keyin xaridingiz uchun yetkazib beruvchini darhol tanlang.",
-        "ctaPayment": "To'lash",
+        "ctaPayment": "Karta orqali to'lash",
+        "ctaPaymentTransfer": "Kartaga o'tkazma orqali to'lash",
         "closeDialog": "Yopish",
         "unlockCard": "Yetkazib beruvchini ochish",
         "planMonthlyLabel": "Oylik",
