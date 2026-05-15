@@ -16,6 +16,7 @@ const firstTouchSchema = z
     gclidPresent: z.boolean().optional(),
     gbraidPresent: z.boolean().optional(),
     wbraidPresent: z.boolean().optional(),
+    yclidPresent: z.boolean().optional(),
     visitorId: z.string().max(200).optional(),
     sessionId: z.string().max(200).optional(),
     createdAt: z.string().max(80).optional(),

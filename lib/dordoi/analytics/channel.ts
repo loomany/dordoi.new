@@ -73,6 +73,15 @@ function isPaidMedium(m: string): boolean {
   );
 }
 
+/** Yandex Direct utm_source values (lowercased). */
+export function isYandexPaidUtmSource(utmSource: string): boolean {
+  return (
+    utmSource === "yandex" ||
+    utmSource === "ya" ||
+    utmSource === "yandex_direct"
+  );
+}
+
 function finish(
   channel: DordoiTrafficChannelLabel,
   sourceBucket: DordoiSourceBucket,
@@ -152,6 +161,8 @@ export function classifyDordoiTrafficChannel(input: {
     Boolean(input.firstTouch?.wbraidPresent) || paramPresent(params, "wbraid");
   const fbclidPresent = paramPresent(params, "fbclid");
   const ttclidPresent = paramPresent(params, "ttclid");
+  const yclidPresent =
+    Boolean(input.firstTouch?.yclidPresent) || paramPresent(params, "yclid");
 
   const utmSource = (params.get("utm_source") ?? "").toLowerCase();
   const utmMedium = (params.get("utm_medium") ?? "").toLowerCase();
@@ -183,6 +194,8 @@ export function classifyDordoiTrafficChannel(input: {
 
   const tiktokPaidAds = ttclidPresent || tiktokPaid;
   const telegramPaidAds = telegramPaid;
+  const yandexPaidAds =
+    yclidPresent || (isYandexPaidUtmSource(utmSource) && paidMedium);
 
   const genericPaid =
     paidMedium && !googlePaidSource && !metaPaidAds && !tiktokPaidAds;
@@ -208,6 +221,7 @@ export function classifyDordoiTrafficChannel(input: {
     wbraidPresent,
     fbclidPresent,
     ttclidPresent,
+    yclidPresent,
   };
 
   const hasUtm =
@@ -244,7 +258,16 @@ export function classifyDordoiTrafficChannel(input: {
   if (telegramPaidAds) {
     return finish("Telegram Ads", "telegram_ads", "telegram paid", utm, paidParams);
   }
-  if (paidMedium && !gclidPresent && !fbclidPresent && !ttclidPresent) {
+  if (yandexPaidAds) {
+    return finish(
+      "Yandex Ads",
+      "yandex_ads",
+      yclidPresent ? "yclid" : "yandex paid",
+      utm,
+      paidParams,
+    );
+  }
+  if (paidMedium && !gclidPresent && !fbclidPresent && !ttclidPresent && !yclidPresent) {
     if (utmSource.includes("tiktok")) {
       return finish("TikTok Ads", "tiktok_ads", "utm tiktok paid", utm, paidParams);
     }

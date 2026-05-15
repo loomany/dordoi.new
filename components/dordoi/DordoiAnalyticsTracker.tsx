@@ -27,6 +27,7 @@ type DordoiUtmSessionStored = {
   utmMedium?: string;
   utmCampaign?: string;
   gclid?: string;
+  yclid?: string;
 };
 
 type DordoiVisitedMark = {
@@ -66,6 +67,7 @@ function parseUtmFromSearch(search: string): Pick<
   | "gclidPresent"
   | "gbraidPresent"
   | "wbraidPresent"
+  | "yclidPresent"
 > {
   const q = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
   const g = (k: string) => Boolean(q.get(k)?.trim());
@@ -78,6 +80,7 @@ function parseUtmFromSearch(search: string): Pick<
     gclidPresent: g("gclid"),
     gbraidPresent: g("gbraid"),
     wbraidPresent: g("wbraid"),
+    yclidPresent: g("yclid"),
   };
 }
 
@@ -108,6 +111,7 @@ function syncUtmSessionFromSearch(search: string): DordoiUtmSessionStored {
   pick("utm_medium", "utmMedium");
   pick("utm_campaign", "utmCampaign");
   pick("gclid", "gclid");
+  pick("yclid", "yclid");
   writeUtmSession(next);
   return next;
 }
@@ -124,6 +128,7 @@ function syncUtmSessionFromParams(
   pick("utm_medium", "utmMedium");
   pick("utm_campaign", "utmCampaign");
   pick("gclid", "gclid");
+  pick("yclid", "yclid");
   writeUtmSession(next);
   return next;
 }
@@ -205,6 +210,7 @@ function ensureFirstTouchSnapshot(
     gclidPresent: utmFromUrl.gclidPresent || Boolean(utmSession.gclid),
     gbraidPresent: utmFromUrl.gbraidPresent,
     wbraidPresent: utmFromUrl.wbraidPresent,
+    yclidPresent: utmFromUrl.yclidPresent || Boolean(utmSession.yclid),
     visitorId: clip(visitorId, 200),
     sessionId: clip(sessionId, 200),
     createdAt: new Date().toISOString(),
@@ -221,6 +227,7 @@ function utmPayloadForPost(
     utmMedium: utmSession.utmMedium,
     utmCampaign: utmSession.utmCampaign,
     gclid: utmSession.gclid,
+    yclid: utmSession.yclid,
   };
 }
 

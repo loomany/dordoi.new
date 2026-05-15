@@ -16,11 +16,41 @@ export function clip(s: string, max: number): string {
   return s.slice(0, max) + "…";
 }
 
-/** Admin Telegram source line: bold Google Ads when utm_source=google or gclid is present. */
+import { isYandexPaidUtmSource } from "@/lib/dordoi/analytics/channel";
+
+function isPaidUtmMedium(medium: string | null | undefined): boolean {
+  const m = medium?.trim().toLowerCase() ?? "";
+  return (
+    m === "cpc" ||
+    m === "ppc" ||
+    m === "paid" ||
+    m === "paid_search" ||
+    m === "paid_social" ||
+    m === "ads"
+  );
+}
+
+export function isYandexDirectAttribution(input: {
+  utmSource?: string | null;
+  utmMedium?: string | null;
+  yclid?: string | null;
+  yclidPresent?: boolean;
+  channelLabel?: string | null;
+}): boolean {
+  if (input.channelLabel === "Yandex Ads") return true;
+  if (Boolean(input.yclidPresent) || Boolean(input.yclid?.trim())) return true;
+  const src = input.utmSource?.trim().toLowerCase() ?? "";
+  return isYandexPaidUtmSource(src) && isPaidUtmMedium(input.utmMedium);
+}
+
+/** Admin Telegram source line: bold Google Ads / Яндекс Директ when paid attribution matches. */
 export function formatAdminTelegramSourceLine(input: {
   utmSource?: string | null;
+  utmMedium?: string | null;
   gclid?: string | null;
   gclidPresent?: boolean;
+  yclid?: string | null;
+  yclidPresent?: boolean;
   channelLabel?: string | null;
 }): string {
   const src = input.utmSource?.trim().toLowerCase();
@@ -28,6 +58,9 @@ export function formatAdminTelegramSourceLine(input: {
     Boolean(input.gclidPresent) || Boolean(input.gclid?.trim());
   if (src === "google" || hasGclid) {
     return "<b>Источник: Google Ads 🎯</b>";
+  }
+  if (isYandexDirectAttribution(input)) {
+    return "<b>Источник: Яндекс Директ 🎯</b>";
   }
   const label = input.channelLabel?.trim() || "Unknown";
   return `📢 Источник: ${escapeTelegramHtml(clip(label, 120))}`;

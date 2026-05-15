@@ -37,6 +37,7 @@ export type DordoiBotCategory =
 
 export type DordoiTrafficChannelLabel =
   | "Google Ads"
+  | "Yandex Ads"
   | "TikTok Ads"
   | "Meta Ads"
   | "Instagram Ads"
@@ -64,6 +65,7 @@ export type DordoiTrafficChannelLabel =
 
 export type DordoiSourceBucket =
   | "google_ads"
+  | "yandex_ads"
   | "tiktok_ads"
   | "meta_ads"
   | "telegram_ads"
@@ -104,6 +106,7 @@ export type DordoiChannelClassification = {
     wbraidPresent: boolean;
     fbclidPresent: boolean;
     ttclidPresent: boolean;
+    yclidPresent: boolean;
   };
 };
 
@@ -133,6 +136,7 @@ export type DordoiFirstTouchPayload = {
   gclidPresent?: boolean;
   gbraidPresent?: boolean;
   wbraidPresent?: boolean;
+  yclidPresent?: boolean;
   visitorId?: string;
   sessionId?: string;
   createdAt?: string;

@@ -67,6 +67,7 @@ const bodySchema = z
     utmMedium: z.string().max(200).optional(),
     utmCampaign: z.string().max(200).optional(),
     gclid: z.string().max(200).optional(),
+    yclid: z.string().max(200).optional(),
   })
   .strict();
 
@@ -138,9 +139,13 @@ export async function POST(req: Request) {
     utmMedium: body.utmMedium?.trim() || undefined,
     utmCampaign: body.utmCampaign?.trim() || undefined,
     gclidPresent: Boolean(body.gclid?.trim()),
+    yclidPresent: Boolean(body.yclid?.trim()),
   };
   const firstTouch =
-    parsedFirstTouch || utmFromBody.utmSource || utmFromBody.gclidPresent
+    parsedFirstTouch ||
+    utmFromBody.utmSource ||
+    utmFromBody.gclidPresent ||
+    utmFromBody.yclidPresent
       ? {
           ...parsedFirstTouch,
           ...(utmFromBody.utmSource ? { utmSource: utmFromBody.utmSource } : {}),
@@ -150,6 +155,11 @@ export async function POST(req: Request) {
             ? { gclidPresent: true }
             : parsedFirstTouch?.gclidPresent
               ? { gclidPresent: parsedFirstTouch.gclidPresent }
+              : {}),
+          ...(utmFromBody.yclidPresent
+            ? { yclidPresent: true }
+            : parsedFirstTouch?.yclidPresent
+              ? { yclidPresent: parsedFirstTouch.yclidPresent }
               : {}),
         }
       : undefined;

@@ -89,7 +89,9 @@ function deviceLine(device: DordoiDeviceInfo): string {
 function sourceLine(ch: DordoiChannelClassification): string {
   return formatAdminTelegramSourceLine({
     utmSource: ch.utm.source,
+    utmMedium: ch.utm.medium,
     gclidPresent: ch.paidParams.gclidPresent,
+    yclidPresent: ch.paidParams.yclidPresent,
     channelLabel: ch.channel,
   });
 }
