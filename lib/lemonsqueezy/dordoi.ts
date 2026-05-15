@@ -1,6 +1,8 @@
 import "server-only";
 
 import { routing } from "@/i18n/routing";
+import type { SubscriptionPlan } from "@/lib/subscription/plans";
+import type { CheckoutContext } from "@/lib/subscription/pending-checkout";
 
 export const DORDOI_LEMON_PROJECT = "dordoi" as const;
 
@@ -74,10 +76,35 @@ function dordoiCheckoutSuccessUrl(
   return `${origin}/${loc}${pathAfterLocale}`;
 }
 
-export function dordoiCatalogCheckoutSuccessUrl(locale?: string | null): string {
-  return dordoiCheckoutSuccessUrl(locale, "/catalog?checkout=success");
+/**
+ * Redirect после успешной оплаты Lemon Squeezy.
+ * Placeholders подставляются Lemon Squeezy: https://docs.lemonsqueezy.com/help/products/link-variables
+ */
+export function dordoiPaymentCheckoutSuccessUrl(
+  locale: string | null | undefined,
+  context: CheckoutContext,
+  plan: SubscriptionPlan,
+): string {
+  const base = dordoiCheckoutSuccessUrl(locale, "/payment/success");
+  const query = new URLSearchParams({
+    context,
+    plan,
+  });
+  return `${base}?${query.toString()}&order_id=[order_id]&order_identifier=[order_identifier]&total=[total]`;
 }
 
-export function dordoiBuyersCheckoutSuccessUrl(locale?: string | null): string {
-  return dordoiCheckoutSuccessUrl(locale, "/buyers?checkout=success");
+/** @deprecated Используйте dordoiPaymentCheckoutSuccessUrl */
+export function dordoiCatalogCheckoutSuccessUrl(
+  locale?: string | null,
+  plan: SubscriptionPlan = "monthly",
+): string {
+  return dordoiPaymentCheckoutSuccessUrl(locale, "catalog", plan);
+}
+
+/** @deprecated Используйте dordoiPaymentCheckoutSuccessUrl */
+export function dordoiBuyersCheckoutSuccessUrl(
+  locale?: string | null,
+  plan: SubscriptionPlan = "monthly",
+): string {
+  return dordoiPaymentCheckoutSuccessUrl(locale, "buyers", plan);
 }

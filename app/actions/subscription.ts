@@ -5,9 +5,8 @@ import { createCheckout, getSubscription } from "@lemonsqueezy/lemonsqueezy.js";
 import { getSessionProfile } from "@/lib/auth/session-profile";
 import {
   DORDOI_LEMON_PROJECT,
-  dordoiBuyersCheckoutSuccessUrl,
-  dordoiCatalogCheckoutSuccessUrl,
   dordoiCatalogVariantIdForPlan,
+  dordoiPaymentCheckoutSuccessUrl,
 } from "@/lib/lemonsqueezy/dordoi";
 import { ensureLemonSqueezyConfigured, lemonSqueezyStoreId } from "@/lib/lemonsqueezy/config";
 import type { SubscriptionPlan } from "@/lib/subscription/plans";
@@ -48,10 +47,7 @@ export async function createDordoiSubscriptionCheckoutUrl(
     ensureLemonSqueezyConfigured();
     const storeId = lemonSqueezyStoreId();
     const variantId = dordoiCatalogVariantIdForPlan(plan);
-    const redirectUrl =
-      context === "buyers"
-        ? dordoiBuyersCheckoutSuccessUrl(locale)
-        : dordoiCatalogCheckoutSuccessUrl(locale);
+    const redirectUrl = dordoiPaymentCheckoutSuccessUrl(locale, context, plan);
 
     const response = await createCheckout(storeId, variantId, {
       checkoutData: {

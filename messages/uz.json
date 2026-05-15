@@ -155,6 +155,14 @@
       "underDevelopment": "Bo‘lim ishlab chiqilmoqda",
       "underDevelopmentAria": "Asosiy kontent tez orada paydo bo‘ladi"
     },
+    "paymentSuccess": {
+      "metaTitle": "To‘lov muvaffaqiyatli yakunlandi",
+      "metaDescription": "Obuna faollashtirildi.",
+      "title": "To‘lov uchun rahmat",
+      "body": "Obuna faollashtirildi. To‘liq kirish ochildi — katalogga o‘tishingiz mumkin.",
+      "ctaCatalog": "Katalogga o‘tish",
+      "ctaBuyers": "Buyerlarga"
+    },
     "home": {
       "h1": "Dordoy bozorining yetkazib beruvchilari, buyerlari va kargosi bitta katalogda",
       "h2": "Dordoyda kerakli kontaktlarni tez toping: yetkazib beruvchilar, buyerlar, kargo",
