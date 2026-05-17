@@ -43,7 +43,7 @@ export default async function CatalogPage({ params, searchParams }: Props) {
         description="Каталог поставщиков рынка Дордой: категории, продавцы, байеры и услуги для оптовых покупателей."
         keywords={["каталог Дордой", "поставщики Дордой", "рынок Дордой"]}
       />
-      <div className="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+      <div className="mx-auto hidden w-full max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
         <AiAnswerBlock {...answer} />
       </div>
       <CatalogBrowseLayout

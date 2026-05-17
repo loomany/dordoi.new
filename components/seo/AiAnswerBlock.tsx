@@ -1,22 +1,29 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { LinkItem } from "@/lib/seo/stage2-content";
+import { cn } from "@/lib/utils";
 
 type AiAnswerBlockProps = {
   title: string;
   paragraphs: string[];
   links?: LinkItem[];
+  /** Скрыть плашку «Коротко» в UI; контент остаётся в разметке для SEO. */
+  hidden?: boolean;
 };
 
 export function AiAnswerBlock({
   title,
   paragraphs,
   links = [],
+  hidden = true,
 }: AiAnswerBlockProps) {
   return (
     <section
       data-ai-answer-block="true"
-      className="rounded-[var(--d-radius-2xl)] border border-primary/20 bg-primary/5 p-5 shadow-[var(--d-shadow-soft)] sm:p-6"
+      className={cn(
+        "rounded-[var(--d-radius-2xl)] border border-primary/20 bg-primary/5 p-5 shadow-[var(--d-shadow-soft)] sm:p-6",
+        hidden && "hidden",
+      )}
     >
       <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
       <div className="mt-3 space-y-3">
