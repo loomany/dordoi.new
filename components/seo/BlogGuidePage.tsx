@@ -1,14 +1,20 @@
 import { ArrowRight } from "lucide-react";
+import { AiAnswerBlock } from "@/components/seo/AiAnswerBlock";
 import { BlogPostingJsonLd } from "@/components/seo/SafePageSchemaJsonLd";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import { SeoBreadcrumbs } from "@/components/seo/SeoBreadcrumbs";
 import { Link } from "@/i18n/navigation";
+import { blogAnswer } from "@/lib/seo/ai-answer-content";
 import type { BlogPostContent } from "@/lib/seo/stage2-content";
 import {
   CORE_LINKS,
   COUNTRY_LINKS,
   POPULAR_CATEGORY_LINKS,
 } from "@/lib/seo/stage2-content";
+import {
+  localizeLinkItems,
+  stage4Copy,
+} from "@/lib/seo/stage4-localized-content";
 import { baseUrl } from "@/lib/site";
 
 type Props = {
@@ -20,6 +26,24 @@ const cardClass =
   "rounded-[var(--d-radius-2xl)] border border-border/60 bg-card p-5 shadow-[var(--d-shadow-soft)]";
 
 export function BlogGuidePage({ locale, post }: Props) {
+  const copy = stage4Copy(locale);
+  const labels = {
+    nav: copy?.nav ?? "Навигация",
+    home: copy?.home ?? "Главная",
+    blog: copy?.blog ?? "Блог",
+    guideEyebrow: copy?.guideEyebrow ?? "Гид Dordoi.help",
+    faq: copy?.faq ?? "FAQ",
+    mainSections: copy?.mainSections ?? "Основные разделы",
+    categories: copy?.categories ?? "Категории",
+    countries: copy?.countries ?? "Страны",
+    openCatalog: copy?.openCatalog ?? "Открыть каталог",
+  };
+  const coreLinks = localizeLinkItems(locale, CORE_LINKS.slice(0, 5));
+  const categoryLinks = localizeLinkItems(locale, POPULAR_CATEGORY_LINKS);
+  const countryLinks = localizeLinkItems(locale, COUNTRY_LINKS);
+  const articleLinks = localizeLinkItems(locale, post.relatedLinks ?? []);
+  const answer = blogAnswer(locale, post.h1);
+
   return (
     <article className="mx-auto max-w-6xl space-y-8 px-4 py-10 sm:px-6 sm:py-12">
       <BlogPostingJsonLd
@@ -34,19 +58,19 @@ export function BlogGuidePage({ locale, post }: Props) {
       <FaqJsonLd items={post.faq} />
 
       <SeoBreadcrumbs
-        navLabel="Навигация"
+        navLabel={labels.nav}
         locale={locale}
         currentPageUrl={`${baseUrl()}/${locale}${post.path}`}
         items={[
-          { label: "Главная", href: "/" },
-          { label: "Блог", href: "/blog" },
+          { label: labels.home, href: "/" },
+          { label: labels.blog, href: "/blog" },
           { label: post.h1 },
         ]}
       />
 
       <header className="space-y-4 rounded-[var(--d-radius-2xl)] border border-border/60 bg-[#FAFAF8] p-6 shadow-[var(--d-shadow-soft)] sm:p-8">
         <p className="text-sm font-semibold uppercase tracking-wide text-primary">
-          Гид Dordoi.help
+          {labels.guideEyebrow}
         </p>
         <h1 className="max-w-4xl text-3xl font-semibold tracking-tight sm:text-5xl">
           {post.h1}
@@ -55,6 +79,8 @@ export function BlogGuidePage({ locale, post }: Props) {
           {post.excerpt}
         </p>
       </header>
+
+      <AiAnswerBlock {...answer} />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
         <div className="space-y-5">
@@ -94,7 +120,7 @@ export function BlogGuidePage({ locale, post }: Props) {
           ))}
 
           <section className={cardClass}>
-            <h2 className="text-2xl font-semibold tracking-tight">FAQ</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">{labels.faq}</h2>
             <dl className="mt-4 space-y-4">
               {post.faq.map((item) => (
                 <div key={item.question}>
@@ -109,14 +135,17 @@ export function BlogGuidePage({ locale, post }: Props) {
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-20">
-          <RelatedLinks title="Основные разделы" links={CORE_LINKS.slice(0, 5)} />
-          <RelatedLinks title="Категории" links={POPULAR_CATEGORY_LINKS} />
-          <RelatedLinks title="Страны" links={COUNTRY_LINKS} />
+          {articleLinks.length > 0 ? (
+            <RelatedLinks title="Полезные ссылки" links={articleLinks} />
+          ) : null}
+          <RelatedLinks title={labels.mainSections} links={coreLinks} />
+          <RelatedLinks title={labels.categories} links={categoryLinks} />
+          <RelatedLinks title={labels.countries} links={countryLinks} />
           <Link
             href="/catalog"
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Открыть каталог
+            {labels.openCatalog}
             <ArrowRight className="size-4" aria-hidden />
           </Link>
         </aside>

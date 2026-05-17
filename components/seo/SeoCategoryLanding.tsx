@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
+import { AiAnswerBlock } from "@/components/seo/AiAnswerBlock";
 import { SeoBreadcrumbs } from "@/components/seo/SeoBreadcrumbs";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import { SafePageSchemaJsonLd } from "@/components/seo/SafePageSchemaJsonLd";
@@ -14,7 +15,10 @@ import {
   seoCategoryPath,
 } from "@/lib/catalog/seo-category-routes";
 import type { RouteLocale } from "@/lib/seo/route-locale";
+import { categoryAnswer } from "@/lib/seo/ai-answer-content";
 import { COUNTRY_LINKS } from "@/lib/seo/stage2-content";
+import { localizeLinkItem, stage4Copy } from "@/lib/seo/stage4-localized-content";
+import { getStage5GuidesForCategory } from "@/lib/seo/stage5-guides";
 import { baseUrl } from "@/lib/site";
 
 type SeoCategoryLandingProps = {
@@ -49,14 +53,23 @@ export function SeoCategoryLanding({
   labels,
 }: SeoCategoryLandingProps) {
   const related = getRelatedSeoCategories(route, 6);
+  const guideLinks = locale === "ru" ? getStage5GuidesForCategory(route.id) : [];
   const faq = route.faqByLocale[locale];
   const guideParagraphs = route.seoTextByLocale[locale];
+  const contentBlocks = route.contentBlocksByLocale[locale] ?? [];
+  const answer = categoryAnswer(locale, route.categoryNameByLocale[locale]);
   const categoryPageUrl = `${baseUrl()}/${locale}${seoCategoryPath(locale, route)}`;
+  const copy = stage4Copy(locale);
+  const supportLinksTitle = copy
+    ? `${copy.cargo} / ${copy.buyerService}`
+    : "Доставка и закупка";
+  const countriesTitle = copy?.countries ?? "Страны";
   const supportLinks = [
     { href: "/buyer-service", label: "Байер на Дордое" },
     { href: "/kargo-dordoi", label: "Карго Дордой" },
     { href: "/dordoi-optom", label: "Дордой оптом" },
-  ];
+  ].map((item) => localizeLinkItem(locale, item));
+  const countryLinks = COUNTRY_LINKS.map((item) => localizeLinkItem(locale, item));
 
   return (
     <article className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
@@ -97,6 +110,8 @@ export function SeoCategoryLanding({
           </div>
         </header>
 
+        <AiAnswerBlock {...answer} />
+
         <section className="space-y-4 rounded-[var(--d-radius-2xl)] border border-border/60 bg-card p-5 shadow-[var(--d-shadow-soft)] sm:p-6">
           <div className="space-y-1">
             <h2 className="text-lg font-semibold tracking-tight">{labels.vendorPreviewTitle}</h2>
@@ -136,6 +151,41 @@ export function SeoCategoryLanding({
             </div>
           </section>
 
+          {contentBlocks.length > 0 ? (
+            <section className="grid gap-5 sm:grid-cols-2">
+              {contentBlocks.map((block) => (
+                <div
+                  key={block.title}
+                  className="space-y-3 rounded-[var(--d-radius-2xl)] border border-border/60 bg-card p-5 shadow-[var(--d-shadow-soft)] sm:p-6"
+                >
+                  <h2 className="text-lg font-semibold tracking-tight">{block.title}</h2>
+                  {block.body ? (
+                    <div className="space-y-3">
+                      {block.body.map((paragraph) => (
+                        <p
+                          key={paragraph.slice(0, 48)}
+                          className="text-sm leading-relaxed text-muted-foreground"
+                        >
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+                  ) : null}
+                  {block.items ? (
+                    <ul className="space-y-2 text-sm leading-relaxed text-muted-foreground">
+                      {block.items.map((item) => (
+                        <li key={item} className="flex gap-2">
+                          <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              ))}
+            </section>
+          ) : null}
+
           {related.length > 0 ? (
             <section className="space-y-4 rounded-[var(--d-radius-2xl)] border border-border/60 bg-card p-5 shadow-[var(--d-shadow-soft)] sm:p-6">
               <h2 className="text-lg font-semibold tracking-tight">{labels.relatedTitle}</h2>
@@ -154,11 +204,27 @@ export function SeoCategoryLanding({
             </section>
           ) : null}
 
+          {guideLinks.length > 0 ? (
+            <section className="space-y-4 rounded-[var(--d-radius-2xl)] border border-border/60 bg-card p-5 shadow-[var(--d-shadow-soft)] sm:p-6">
+              <h2 className="text-lg font-semibold tracking-tight">Гайды по закупке</h2>
+              <ul className="flex flex-wrap gap-2">
+                {guideLinks.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center rounded-full border border-border bg-muted/30 px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-muted/60"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
           <section className="grid gap-5 rounded-[var(--d-radius-2xl)] border border-border/60 bg-card p-5 shadow-[var(--d-shadow-soft)] sm:grid-cols-2 sm:p-6">
             <div className="space-y-3">
-              <h2 className="text-lg font-semibold tracking-tight">
-                Доставка и закупка
-              </h2>
+              <h2 className="text-lg font-semibold tracking-tight">{supportLinksTitle}</h2>
               <ul className="flex flex-wrap gap-2">
                 {supportLinks.map((item) => (
                   <li key={item.href}>
@@ -173,11 +239,9 @@ export function SeoCategoryLanding({
               </ul>
             </div>
             <div className="space-y-3">
-              <h2 className="text-lg font-semibold tracking-tight">
-                Страны
-              </h2>
+              <h2 className="text-lg font-semibold tracking-tight">{countriesTitle}</h2>
               <ul className="flex flex-wrap gap-2">
-                {COUNTRY_LINKS.map((item) => (
+                {countryLinks.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}

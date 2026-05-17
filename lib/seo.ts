@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {
   hreflangAlternatesForPath,
+  hreflangAlternatesFromLocalePaths,
   ogAlternateLocalesForRouteLocale,
   ogLocaleFromRouteLocale,
 } from "@/lib/hreflang";
@@ -76,6 +77,7 @@ export function buildPageMetadata(opts: {
   robotsPolicy?: "index,follow" | "noindex,follow" | "noindex,nofollow";
   /** Canonical path (defaults to pathWithoutLocale). Use for catalog → suppliers canonical. */
   canonicalPathWithoutLocale?: string;
+  alternatePathsByLocale?: Record<string, string>;
 }): Metadata {
   const path =
     opts.pathWithoutLocale === "/" || opts.pathWithoutLocale === ""
@@ -91,9 +93,9 @@ export function buildPageMetadata(opts: {
       : path;
   const selfUrl = `${baseUrl()}/${opts.locale}${path}`;
   const canonicalUrl = `${baseUrl()}/${opts.locale}${canonicalPath}`;
-  const languages = hreflangAlternatesForPath(
-    canonicalPath === "" ? "/" : canonicalPath,
-  );
+  const languages = opts.alternatePathsByLocale
+    ? hreflangAlternatesFromLocalePaths(opts.alternatePathsByLocale)
+    : hreflangAlternatesForPath(canonicalPath === "" ? "/" : canonicalPath);
   const ogLocale = ogLocaleFromRouteLocale(opts.locale);
   const { openGraphImages, twitterImages } = defaultOgImages();
 
@@ -146,9 +148,6 @@ export const publicRoutes = [
   "/dordoi-russia",
   "/dordoi-kyrgyzstan",
   "/blog",
-  "/blog/kak-nayti-postavshchika-dordoi",
-  "/blog/kargo-dordoi-kak-rabotaet-dostavka",
-  "/blog/kak-kupit-optom-na-dordoe",
   "/contact",
   "/privacy",
   "/terms",

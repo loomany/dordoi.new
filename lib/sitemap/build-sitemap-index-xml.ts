@@ -48,9 +48,10 @@ ${entries.join("\n")}
 
 /** Root sitemap index pointing at core + vendor chunk child sitemaps. */
 export async function buildSitemapIndexXml(): Promise<string> {
+  const root = baseUrl();
   return unstable_cache(
     buildSitemapIndexXmlRaw,
-    ["sitemap-index-xml"],
+    ["sitemap-index-xml-v2", root],
     {
       revalidate: SITEMAP_XML_CACHE_REVALIDATE_SECONDS,
       tags: [CATALOG_VENDORS_LIST_CACHE_TAG],

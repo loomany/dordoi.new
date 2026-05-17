@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { BlogGuidePage } from "@/components/seo/BlogGuidePage";
-import { routing } from "@/i18n/routing";
 import { buildPageMetadata } from "@/lib/seo";
+import { blogPostPathsByLocale } from "@/lib/seo/dordoi-blog-localized";
 import { isRouteLocale } from "@/lib/seo/route-locale";
 import {
-  BLOG_POSTS_ALL,
+  blogPostStaticParams,
   resolveBlogPost,
+  resolveBlogPostRedirectPath,
 } from "@/lib/seo/stage2-content";
 
 type Props = {
@@ -15,9 +16,7 @@ type Props = {
 };
 
 export function generateStaticParams() {
-  return routing.locales.flatMap((locale) =>
-    BLOG_POSTS_ALL.map((post) => ({ locale, slug: post.slug })),
-  );
+  return blogPostStaticParams();
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -25,11 +24,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!isRouteLocale(locale)) return { title: "404" };
   const post = resolveBlogPost(slug, locale);
   if (!post) return { title: "404" };
+  const sourceSlug = post.sourceSlug ?? post.slug;
   return buildPageMetadata({
     locale,
     pathWithoutLocale: post.path,
     title: post.title,
     description: post.description,
+    alternatePathsByLocale: blogPostPathsByLocale(sourceSlug),
   });
 }
 
@@ -38,6 +39,10 @@ export default async function BlogPostPage({ params }: Props) {
   if (!isRouteLocale(locale)) notFound();
   setRequestLocale(locale);
   const post = resolveBlogPost(slug, locale);
-  if (!post) notFound();
+  if (!post) {
+    const redirectPath = resolveBlogPostRedirectPath(slug, locale);
+    if (redirectPath) permanentRedirect(`/${locale}${redirectPath}`);
+    notFound();
+  }
   return <BlogGuidePage locale={locale} post={post} />;
 }

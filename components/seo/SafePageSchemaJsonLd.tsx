@@ -1,4 +1,5 @@
 import { JsonLd } from "@/components/seo/JsonLd";
+import { htmlLangFromRouteLocale } from "@/lib/hreflang";
 import { baseUrl, siteIndexable } from "@/lib/site";
 
 type SafePageSchemaType = "WebPage" | "AboutPage" | "CollectionPage";
@@ -45,6 +46,7 @@ export function SafePageSchemaJsonLd({
   if (!siteIndexable()) return null;
 
   const url = absoluteUrl(locale, path);
+  const inLanguage = htmlLangFromRouteLocale(locale);
   const graph: Record<string, unknown>[] = [
     {
       "@type": type,
@@ -52,7 +54,7 @@ export function SafePageSchemaJsonLd({
       url,
       name,
       description,
-      inLanguage: locale,
+      inLanguage,
       isPartOf: { "@id": `${baseUrl()}/#website` },
       publisher: { "@id": `${baseUrl()}/#organization` },
       ...(keywords.length > 0 ? { keywords: keywords.join(", ") } : {}),
@@ -108,6 +110,7 @@ export function BlogPostingJsonLd({
   if (!siteIndexable()) return null;
 
   const url = absoluteUrl(locale, path);
+  const inLanguage = htmlLangFromRouteLocale(locale);
   return (
     <JsonLd
       data={{
@@ -117,7 +120,7 @@ export function BlogPostingJsonLd({
         url,
         headline,
         description,
-        inLanguage: locale,
+        inLanguage,
         datePublished,
         dateModified: dateModified ?? datePublished,
         author: {

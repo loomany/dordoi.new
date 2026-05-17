@@ -2,6 +2,8 @@ import {
   buildCategoryFaq,
   buildCategoryIntro,
   buildCategorySeoText,
+  getCategoryContentOverride,
+  type CategoryContentBlock,
 } from "@/lib/catalog/seo-category-content";
 import type { RouteLocale } from "@/lib/seo/route-locale";
 import { ROUTE_LOCALES } from "@/lib/seo/route-locale";
@@ -17,6 +19,7 @@ export type SeoCategoryRoute = {
   introByLocale: Record<RouteLocale, string>;
   categoryNameByLocale: Record<RouteLocale, string>;
   seoTextByLocale: Record<RouteLocale, string[]>;
+  contentBlocksByLocale: Record<RouteLocale, CategoryContentBlock[]>;
   faqByLocale: Record<RouteLocale, Array<{ question: string; answer: string }>>;
   relatedCategoryIds: string[];
   indexPolicy: "index" | "noindex_if_empty" | "noindex";
@@ -48,6 +51,7 @@ function buildRouteFromSeed(seed: CategorySeed): SeoCategoryRoute {
   const introByLocale = {} as Record<RouteLocale, string>;
   const categoryNameByLocale = {} as Record<RouteLocale, string>;
   const seoTextByLocale = {} as Record<RouteLocale, string[]>;
+  const contentBlocksByLocale = {} as Record<RouteLocale, CategoryContentBlock[]>;
   const faqByLocale = {} as SeoCategoryRoute["faqByLocale"];
   const titleByLocale = {} as Record<RouteLocale, string>;
   const descriptionByLocale = {} as Record<RouteLocale, string>;
@@ -59,21 +63,22 @@ function buildRouteFromSeed(seed: CategorySeed): SeoCategoryRoute {
     titleByLocale[locale] = meta.title;
     descriptionByLocale[locale] = meta.description;
     categoryNameByLocale[locale] = meta.categoryName;
-    introByLocale[locale] = buildCategoryIntro(
+    const contentOverride = getCategoryContentOverride(
       locale,
+      seed.id,
       meta.categoryName,
       meta.categoryNameAcc,
     );
-    seoTextByLocale[locale] = buildCategorySeoText(
-      locale,
-      meta.categoryName,
-      meta.categoryNameAcc,
-    );
-    faqByLocale[locale] = buildCategoryFaq(
-      locale,
-      meta.categoryName,
-      meta.categoryNameAcc,
-    );
+    introByLocale[locale] =
+      contentOverride?.intro ??
+      buildCategoryIntro(locale, meta.categoryName, meta.categoryNameAcc);
+    seoTextByLocale[locale] =
+      contentOverride?.seoText ??
+      buildCategorySeoText(locale, meta.categoryName, meta.categoryNameAcc);
+    contentBlocksByLocale[locale] = contentOverride?.contentBlocks ?? [];
+    faqByLocale[locale] =
+      contentOverride?.faq ??
+      buildCategoryFaq(locale, meta.categoryName, meta.categoryNameAcc);
   }
 
   return {
@@ -87,6 +92,7 @@ function buildRouteFromSeed(seed: CategorySeed): SeoCategoryRoute {
     introByLocale,
     categoryNameByLocale,
     seoTextByLocale,
+    contentBlocksByLocale,
     faqByLocale,
     relatedCategoryIds: seed.relatedCategoryIds,
     indexPolicy: seed.indexPolicy,

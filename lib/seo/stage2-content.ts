@@ -1,4 +1,15 @@
 import type { RouteLocale } from "@/lib/seo/route-locale";
+import {
+  allLocalizedBlogStaticParams,
+  blogPostPathForLocale,
+  blogPostSlugForLocale,
+  sourceSlugFromLocalizedBlogSlug,
+} from "@/lib/seo/dordoi-blog-localized";
+import {
+  localizeBlogPostContent,
+  localizeSeoGrowthPageContent,
+} from "@/lib/seo/stage4-localized-content";
+import { STAGE5_BLOG_POSTS } from "@/lib/seo/stage5-guides";
 
 export type FaqItem = {
   question: string;
@@ -38,6 +49,7 @@ export type SeoGrowthPageContent = {
 
 export type BlogPostContent = {
   slug: string;
+  sourceSlug?: string;
   path: string;
   title: string;
   description: string;
@@ -45,7 +57,11 @@ export type BlogPostContent = {
   excerpt: string;
   datePublished: string;
   dateModified: string;
+  cluster?: string;
+  mainKeyword?: string;
+  intent?: string;
   keywords: string[];
+  relatedLinks?: LinkItem[];
   sections: SeoContentSection[];
   faq: FaqItem[];
 };
@@ -798,11 +814,13 @@ const BLOG_POSTS: BlogPostContent[] = [
 
 const AI_PAGE_BY_ID = new Map(AI_CORE_PAGES.map((page) => [page.id, page]));
 const COUNTRY_PAGE_BY_ID = new Map(COUNTRY_PAGES.map((page) => [page.id, page]));
-const BLOG_POST_BY_SLUG = new Map(BLOG_POSTS.map((post) => [post.slug, post]));
+const ALL_BLOG_POSTS: BlogPostContent[] = [...BLOG_POSTS, ...STAGE5_BLOG_POSTS];
+const BLOG_POST_BY_SLUG = new Map(ALL_BLOG_POSTS.map((post) => [post.slug, post]));
+const BLOG_POST_SOURCE_SLUGS = ALL_BLOG_POSTS.map((post) => post.slug);
 
 export const AI_CORE_PAGE_IDS = AI_CORE_PAGES.map((page) => page.id);
 export const COUNTRY_PAGE_IDS = COUNTRY_PAGES.map((page) => page.id);
-export const BLOG_POSTS_ALL = BLOG_POSTS;
+export const BLOG_POSTS_ALL = ALL_BLOG_POSTS;
 
 export function pageContentForLocale<T>(content: T, _locale: RouteLocale): T {
   return content;
@@ -810,15 +828,29 @@ export function pageContentForLocale<T>(content: T, _locale: RouteLocale): T {
 
 export function resolveAiCorePage(id: string, locale: RouteLocale) {
   const content = AI_PAGE_BY_ID.get(id);
-  return content ? pageContentForLocale(content, locale) : undefined;
+  return content ? localizeSeoGrowthPageContent(content, locale) : undefined;
 }
 
 export function resolveCountryPage(id: string, locale: RouteLocale) {
   const content = COUNTRY_PAGE_BY_ID.get(id);
-  return content ? pageContentForLocale(content, locale) : undefined;
+  return content ? localizeSeoGrowthPageContent(content, locale) : undefined;
 }
 
 export function resolveBlogPost(slug: string, locale: RouteLocale) {
+  const sourceSlug = sourceSlugFromLocalizedBlogSlug(slug, locale) ?? slug;
+  const content = BLOG_POST_BY_SLUG.get(sourceSlug);
+  return content ? localizeBlogPostContent(content, locale) : undefined;
+}
+
+export function resolveBlogPostRedirectPath(slug: string, locale: RouteLocale): string | undefined {
+  if (locale === "ru") return undefined;
   const content = BLOG_POST_BY_SLUG.get(slug);
-  return content ? pageContentForLocale(content, locale) : undefined;
+  if (!content) return undefined;
+  const localizedSlug = blogPostSlugForLocale(content.slug, locale);
+  if (localizedSlug === slug) return undefined;
+  return blogPostPathForLocale(content.slug, locale);
+}
+
+export function blogPostStaticParams() {
+  return allLocalizedBlogStaticParams(BLOG_POST_SOURCE_SLUGS);
 }

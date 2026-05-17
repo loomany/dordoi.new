@@ -22,12 +22,17 @@ export const SEO_HUB_LINKS = [
   { href: "/kargo-dordoi", labelKey: "cargo" },
 ] as const;
 
-/** Top categories for footer (compact — 4). */
+/** Top commercial categories for footer. */
 export const FOOTER_CATEGORY_IDS = [
   "womens",
+  "mens",
+  "kids",
   "footwear",
-  "bags-leather",
   "fabrics-notions",
+  "bags-leather",
+  "underwear-swim",
+  "home-textiles",
+  "accessories",
 ] as const;
 
 /** Popular categories on catalog browse (8). */

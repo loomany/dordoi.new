@@ -1,8 +1,17 @@
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { AiAnswerBlock } from "@/components/seo/AiAnswerBlock";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import { SafePageSchemaJsonLd } from "@/components/seo/SafePageSchemaJsonLd";
 import { SeoBreadcrumbs } from "@/components/seo/SeoBreadcrumbs";
+import { Stage3TrustSections } from "@/components/seo/Stage3TrustSections";
 import { Link } from "@/i18n/navigation";
+import { growthPageAnswer } from "@/lib/seo/ai-answer-content";
+import { getStage3TrustContent } from "@/lib/seo/stage3-trust-content";
+import {
+  localizeLinkItem,
+  localizeRelatedGroupTitle,
+} from "@/lib/seo/stage4-localized-content";
+import { getStage5GuidesForCountry } from "@/lib/seo/stage5-guides";
 import type { SeoGrowthPageContent } from "@/lib/seo/stage2-content";
 import { baseUrl } from "@/lib/site";
 
@@ -23,6 +32,24 @@ export function SeoGrowthLandingPage({
   content,
   relatedLinks = [],
 }: Props) {
+  const trustContent = getStage3TrustContent(locale, content.id);
+  const faq = trustContent?.faq.length
+    ? [...content.faq, ...trustContent.faq]
+    : content.faq;
+  const localizedPrimaryLinks = content.primaryLinks.map((link) =>
+    localizeLinkItem(locale, link),
+  );
+  const answer = growthPageAnswer(locale, content.id);
+  const stage5GuideLinks = locale === "ru" ? getStage5GuidesForCountry(content.id) : [];
+  const relatedGroups =
+    stage5GuideLinks.length > 0
+      ? [...relatedLinks, { title: "Гайды", links: stage5GuideLinks }]
+      : relatedLinks;
+  const localizedRelatedLinks = relatedGroups.map((group) => ({
+    title: localizeRelatedGroupTitle(locale, group.title),
+    links: group.links.map((link) => localizeLinkItem(locale, link)),
+  }));
+
   return (
     <article className="bg-background">
       <SafePageSchemaJsonLd
@@ -34,7 +61,7 @@ export function SeoGrowthLandingPage({
         keywords={content.keywords}
         service={content.service}
       />
-      <FaqJsonLd items={content.faq} />
+      <FaqJsonLd items={faq} />
 
       <div className="mx-auto max-w-6xl space-y-8 px-4 py-10 sm:px-6 sm:py-12">
         <SeoBreadcrumbs
@@ -60,7 +87,7 @@ export function SeoGrowthLandingPage({
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {content.primaryLinks.map((link, index) => (
+            {localizedPrimaryLinks.map((link, index) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -76,6 +103,8 @@ export function SeoGrowthLandingPage({
             ))}
           </div>
         </header>
+
+        <AiAnswerBlock {...answer} />
 
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
           <div className="space-y-5">
@@ -124,12 +153,14 @@ export function SeoGrowthLandingPage({
               </section>
             ))}
 
+            <Stage3TrustSections sections={trustContent?.sections ?? []} />
+
             <section className={cardClass}>
               <h2 className="text-xl font-semibold tracking-tight">
                 Частые вопросы
               </h2>
               <dl className="mt-4 space-y-4">
-                {content.faq.map((item) => (
+                {faq.map((item) => (
                   <div key={item.question}>
                     <dt className="font-medium text-foreground">
                       {item.question}
@@ -143,9 +174,9 @@ export function SeoGrowthLandingPage({
             </section>
           </div>
 
-          {relatedLinks.length > 0 ? (
+          {localizedRelatedLinks.length > 0 ? (
             <aside className="space-y-4 lg:sticky lg:top-20">
-              {relatedLinks.map((group) => (
+              {localizedRelatedLinks.map((group) => (
                 <section key={group.title} className={cardClass}>
                   <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                     {group.title}

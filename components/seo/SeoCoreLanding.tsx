@@ -1,10 +1,16 @@
 import { Link } from "@/i18n/navigation";
+import { AiAnswerBlock } from "@/components/seo/AiAnswerBlock";
 import { SeoBreadcrumbs } from "@/components/seo/SeoBreadcrumbs";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import { SafePageSchemaJsonLd } from "@/components/seo/SafePageSchemaJsonLd";
+import { Stage3TrustSections } from "@/components/seo/Stage3TrustSections";
 import type { CoreSeoLanding } from "@/lib/seo/core-seo-landings";
 import type { RouteLocale } from "@/lib/seo/route-locale";
+import { coreLandingAnswer } from "@/lib/seo/ai-answer-content";
 import { COUNTRY_LINKS } from "@/lib/seo/stage2-content";
+import { getStage3TrustContent } from "@/lib/seo/stage3-trust-content";
+import { localizeLinkItem, stage4Copy } from "@/lib/seo/stage4-localized-content";
+import { getStage5GuidesForCountry } from "@/lib/seo/stage5-guides";
 import { baseUrl } from "@/lib/site";
 
 type SeoCoreLandingProps = {
@@ -26,8 +32,15 @@ type SeoCoreLandingProps = {
 };
 
 export function SeoCoreLanding({ locale, landing, labels }: SeoCoreLandingProps) {
-  const faq = landing.faqByLocale[locale];
+  const trustContent = getStage3TrustContent(locale, landing.id);
+  const faq = trustContent?.faq.length
+    ? [...landing.faqByLocale[locale], ...trustContent.faq]
+    : landing.faqByLocale[locale];
   const bodyParagraphs = landing.bodyByLocale[locale];
+  const copy = stage4Copy(locale);
+  const answer = coreLandingAnswer(locale, landing.id);
+  const countryLinksTitle = copy?.countries ?? "Страны доставки";
+  const guideLinks = locale === "ru" ? getStage5GuidesForCountry(landing.id) : [];
   const service =
     landing.id === "kargo-dordoi"
       ? {
@@ -43,6 +56,7 @@ export function SeoCoreLanding({ locale, landing, labels }: SeoCoreLandingProps)
     { href: "/buyers" as const, label: labels.quickLinkBuyers },
     { href: "/kargo-dordoi" as const, label: labels.quickLinkCargo },
   ];
+  const countryLinks = COUNTRY_LINKS.map((item) => localizeLinkItem(locale, item));
 
   return (
     <article className="mx-auto max-w-3xl space-y-6 px-4 py-10 sm:px-6 sm:py-12">
@@ -73,6 +87,8 @@ export function SeoCoreLanding({ locale, landing, labels }: SeoCoreLandingProps)
       <p className="text-base leading-relaxed text-muted-foreground">
         {landing.introByLocale[locale]}
       </p>
+
+      <AiAnswerBlock {...answer} />
 
       <div className="flex flex-wrap gap-2">
         <Link
@@ -117,10 +133,10 @@ export function SeoCoreLanding({ locale, landing, labels }: SeoCoreLandingProps)
 
       <section className="space-y-2">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          Страны доставки
+          {countryLinksTitle}
         </h2>
         <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
-          {COUNTRY_LINKS.map((item) => (
+          {countryLinks.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
@@ -133,6 +149,26 @@ export function SeoCoreLanding({ locale, landing, labels }: SeoCoreLandingProps)
         </ul>
       </section>
 
+      {guideLinks.length > 0 ? (
+        <section className="space-y-2">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            Гайды
+          </h2>
+          <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+            {guideLinks.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       {bodyParagraphs.length > 0 ? (
         <section className="space-y-3 rounded-xl border border-border/60 bg-muted/20 p-4 sm:p-5">
           {bodyParagraphs.map((paragraph) => (
@@ -142,6 +178,11 @@ export function SeoCoreLanding({ locale, landing, labels }: SeoCoreLandingProps)
           ))}
         </section>
       ) : null}
+
+      <Stage3TrustSections
+        sections={trustContent?.sections ?? []}
+        cardClassName="rounded-xl border border-border/60 bg-card p-4 shadow-[var(--d-shadow-soft)] sm:p-5"
+      />
 
       <section className="space-y-4">
         <h2 className="text-xl font-semibold">{labels.faqTitle}</h2>

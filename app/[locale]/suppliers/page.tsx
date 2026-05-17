@@ -1,7 +1,9 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { AiAnswerBlock } from "@/components/seo/AiAnswerBlock";
 import { SafePageSchemaJsonLd } from "@/components/seo/SafePageSchemaJsonLd";
 import { buildSeoMetadata } from "@/lib/build-seo";
+import { suppliersAnswer } from "@/lib/seo/ai-answer-content";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -16,6 +18,7 @@ export default async function SuppliersPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("Pages.suppliers");
+  const answer = suppliersAnswer(locale);
 
   return (
     <article className="mx-auto max-w-3xl space-y-8 px-4 py-16 sm:px-6">
@@ -32,6 +35,8 @@ export default async function SuppliersPage({ params }: Props) {
       </header>
 
       <p className="leading-relaxed text-muted-foreground">{t("body")}</p>
+
+      <AiAnswerBlock {...answer} />
 
       <p>
         <Link

@@ -11,6 +11,11 @@ import {
 } from "@/lib/hreflang";
 import { seoCategoryPathsByLocale } from "@/lib/catalog/seo-category-routes";
 import { CORE_SEO_LANDINGS } from "@/lib/seo/core-seo-landings";
+import { BLOG_POSTS_ALL } from "@/lib/seo/stage2-content";
+import {
+  blogPostPathForLocale,
+  blogPostPathsByLocale,
+} from "@/lib/seo/dordoi-blog-localized";
 import { publicRoutes } from "@/lib/seo";
 import { baseUrl, siteIndexable } from "@/lib/site";
 import { SITEMAP_XML_CACHE_REVALIDATE_SECONDS } from "@/lib/sitemap/constants";
@@ -32,6 +37,22 @@ async function buildCoreSitemapXmlRaw(): Promise<string> {
       const languages = hreflangAlternatesForPath(pathForAlternates);
       const priority = route === "/" ? "1.0" : "0.7";
       appendUrlBlock(urlBlocks, loc, languages, priority);
+    }
+  }
+
+  const publicRouteSet = new Set<string>(publicRoutes);
+  for (const locale of routing.locales) {
+    for (const post of BLOG_POSTS_ALL) {
+      const sourceSlug = post.sourceSlug ?? post.slug;
+      const path = blogPostPathForLocale(sourceSlug, locale);
+      if (publicRouteSet.has(path)) {
+        continue;
+      }
+      const loc = `${root}/${locale}${path}`;
+      const languages = hreflangAlternatesFromLocalePaths(
+        blogPostPathsByLocale(sourceSlug),
+      );
+      appendUrlBlock(urlBlocks, loc, languages, "0.65");
     }
   }
 
@@ -62,7 +83,7 @@ export async function buildCoreSitemapXml(): Promise<string> {
   const root = baseUrl();
   return unstable_cache(
     buildCoreSitemapXmlRaw,
-    ["sitemap-core-xml-v3", root],
+    ["sitemap-core-xml-v4", root],
     {
       revalidate: SITEMAP_XML_CACHE_REVALIDATE_SECONDS,
       tags: [CATALOG_VENDORS_LIST_CACHE_TAG],
