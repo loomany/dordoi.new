@@ -48,16 +48,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/brand/icon.svg", type: "image/svg+xml" },
       { url: "/favicon.ico", sizes: "32x32", type: "image/x-icon" },
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
       { url: "/brand/logo-192.png", type: "image/png", sizes: "192x192" },
     ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-      { url: "/apple-icon.svg", type: "image/svg+xml" },
-    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
     shortcut: "/favicon.ico",
   },
   manifest: "/manifest.webmanifest",
