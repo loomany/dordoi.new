@@ -11,6 +11,7 @@ import {
 } from "@/components/seo/GoogleTagManager";
 import { YandexMetrikaBody, YandexMetrikaHead } from "@/components/seo/YandexMetrika";
 import { htmlLangFromRouteLocale } from "@/lib/hreflang";
+import { YANDEX_WEBMASTER_VERIFICATION_ID } from "@/lib/seo/yandex-webmaster-verification";
 import { baseUrl, siteIndexable } from "@/lib/site";
 
 const inter = Inter({
@@ -60,6 +61,9 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   manifest: "/manifest.webmanifest",
+  verification: {
+    yandex: YANDEX_WEBMASTER_VERIFICATION_ID,
+  },
 };
 
 export default async function RootLayout({
