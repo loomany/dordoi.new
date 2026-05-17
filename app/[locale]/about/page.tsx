@@ -1,27 +1,47 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import { ArticlePage } from "@/components/content/ArticlePage";
-import { buildSeoMetadata } from "@/lib/build-seo";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { setRequestLocale } from "next-intl/server";
+import { SeoGrowthLandingPage } from "@/components/seo/SeoGrowthLandingPage";
+import { buildPageMetadata } from "@/lib/seo";
+import { isRouteLocale } from "@/lib/seo/route-locale";
+import {
+  CORE_LINKS,
+  COUNTRY_LINKS,
+  POPULAR_CATEGORY_LINKS,
+  resolveAiCorePage,
+} from "@/lib/seo/stage2-content";
 
 type Props = { params: Promise<{ locale: string }> };
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  return buildSeoMetadata(locale, "/about", "Seo.about");
+  if (!isRouteLocale(locale)) return { title: "404" };
+  const content = resolveAiCorePage("about", locale);
+  if (!content) return { title: "404" };
+  return buildPageMetadata({
+    locale,
+    pathWithoutLocale: content.path,
+    title: content.title,
+    description: content.description,
+  });
 }
 
 export default async function AboutPage({ params }: Props) {
   const { locale } = await params;
+  if (!isRouteLocale(locale)) notFound();
   setRequestLocale(locale);
-  const t = await getTranslations("Pages.about");
+  const content = resolveAiCorePage("about", locale);
+  if (!content) notFound();
+
   return (
-    <ArticlePage namespace="about" disclaimer>
-      <div className="space-y-4 leading-relaxed text-muted-foreground">
-        <p>{t("p1")}</p>
-        <p>{t("p2")}</p>
-        <p>{t("p3")}</p>
-        <p>{t("p4")}</p>
-        <p>{t("p5")}</p>
-      </div>
-    </ArticlePage>
+    <SeoGrowthLandingPage
+      locale={locale}
+      content={content}
+      relatedLinks={[
+        { title: "Разделы", links: CORE_LINKS },
+        { title: "Категории", links: POPULAR_CATEGORY_LINKS },
+        { title: "Страны", links: COUNTRY_LINKS },
+      ]}
+    />
   );
 }

@@ -5,10 +5,13 @@ import type { LucideIcon } from "lucide-react";
 import {
   ChevronDown,
   ChevronRight,
+  CircleHelp,
   Globe2,
   LayoutGrid,
   Menu,
+  PackageSearch,
   Store,
+  Truck,
   Users,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -159,9 +162,9 @@ function LocaleSwitcherDropdown({
 }
 
 export function SiteHeader() {
-  const t = useTranslations("Nav");
   const th = useTranslations("Header");
   const tb = useTranslations("brand");
+  const activeLocale = useLocale();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { openAuthDialog, displayName, clearAuthDisplayName } = useAuthDialog();
@@ -238,12 +241,19 @@ export function SiteHeader() {
 
   const nav: {
     href: string;
-    labelKey: "catalog" | "sell" | "buyers";
+    label: string;
     Icon: LucideIcon;
   }[] = [
-    { href: "/catalog", labelKey: "catalog", Icon: LayoutGrid },
-    { href: "/sell", labelKey: "sell", Icon: Store },
-    { href: "/buyers", labelKey: "buyers", Icon: Users },
+    { href: "/catalog", label: "Каталог", Icon: LayoutGrid },
+    { href: "/suppliers", label: "Поставщики", Icon: Store },
+    { href: "/for-buyers", label: "Покупателям", Icon: Users },
+    { href: "/for-sellers", label: "Продавцам", Icon: PackageSearch },
+    { href: "/kargo-dordoi", label: "Карго", Icon: Truck },
+    {
+      href: "/how-it-works",
+      label: activeLocale === "uz" ? "Qanday ishlaydi" : "Как работает",
+      Icon: CircleHelp,
+    },
   ];
 
   return (
@@ -294,7 +304,7 @@ export function SiteHeader() {
                           >
                             <Icon className="size-4" strokeWidth={1.75} />
                           </span>
-                          <span className="min-w-0">{t(item.labelKey)}</span>
+                          <span className="min-w-0">{item.label}</span>
                         </span>
                         <ChevronRight className="size-3.5 shrink-0 text-gray-300 opacity-70" aria-hidden />
                       </Link>
@@ -320,7 +330,7 @@ export function SiteHeader() {
                 href={item.href}
                 className="text-muted-foreground transition-colors hover:text-foreground"
               >
-                {t(item.labelKey)}
+                {item.label}
               </Link>
             ))}
           </nav>

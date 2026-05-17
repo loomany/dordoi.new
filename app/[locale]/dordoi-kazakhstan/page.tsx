@@ -8,15 +8,16 @@ import {
   CORE_LINKS,
   COUNTRY_LINKS,
   POPULAR_CATEGORY_LINKS,
-  resolveAiCorePage,
+  resolveCountryPage,
 } from "@/lib/seo/stage2-content";
 
 type Props = { params: Promise<{ locale: string }> };
+const PAGE_ID = "dordoi-kazakhstan";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   if (!isRouteLocale(locale)) return { title: "404" };
-  const content = resolveAiCorePage("faq", locale);
+  const content = resolveCountryPage(PAGE_ID, locale);
   if (!content) return { title: "404" };
   return buildPageMetadata({
     locale,
@@ -26,11 +27,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default async function FaqPage({ params }: Props) {
+export default async function DordoiKazakhstanPage({ params }: Props) {
   const { locale } = await params;
   if (!isRouteLocale(locale)) notFound();
   setRequestLocale(locale);
-  const content = resolveAiCorePage("faq", locale);
+  const content = resolveCountryPage(PAGE_ID, locale);
   if (!content) notFound();
 
   return (
@@ -38,9 +39,9 @@ export default async function FaqPage({ params }: Props) {
       locale={locale}
       content={content}
       relatedLinks={[
-        { title: "Разделы", links: CORE_LINKS },
-        { title: "Категории", links: POPULAR_CATEGORY_LINKS },
         { title: "Страны", links: COUNTRY_LINKS },
+        { title: "Категории", links: POPULAR_CATEGORY_LINKS },
+        { title: "Разделы", links: CORE_LINKS },
       ]}
     />
   );

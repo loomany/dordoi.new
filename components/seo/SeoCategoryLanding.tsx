@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { SeoBreadcrumbs } from "@/components/seo/SeoBreadcrumbs";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
+import { SafePageSchemaJsonLd } from "@/components/seo/SafePageSchemaJsonLd";
 import {
   VendorItemListJsonLd,
   type VendorItemListEntry,
@@ -13,6 +14,7 @@ import {
   seoCategoryPath,
 } from "@/lib/catalog/seo-category-routes";
 import type { RouteLocale } from "@/lib/seo/route-locale";
+import { COUNTRY_LINKS } from "@/lib/seo/stage2-content";
 import { baseUrl } from "@/lib/site";
 
 type SeoCategoryLandingProps = {
@@ -50,6 +52,11 @@ export function SeoCategoryLanding({
   const faq = route.faqByLocale[locale];
   const guideParagraphs = route.seoTextByLocale[locale];
   const categoryPageUrl = `${baseUrl()}/${locale}${seoCategoryPath(locale, route)}`;
+  const supportLinks = [
+    { href: "/buyer-service", label: "Байер на Дордое" },
+    { href: "/kargo-dordoi", label: "Карго Дордой" },
+    { href: "/dordoi-optom", label: "Дордой оптом" },
+  ];
 
   return (
     <article className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
@@ -147,6 +154,43 @@ export function SeoCategoryLanding({
             </section>
           ) : null}
 
+          <section className="grid gap-5 rounded-[var(--d-radius-2xl)] border border-border/60 bg-card p-5 shadow-[var(--d-shadow-soft)] sm:grid-cols-2 sm:p-6">
+            <div className="space-y-3">
+              <h2 className="text-lg font-semibold tracking-tight">
+                Доставка и закупка
+              </h2>
+              <ul className="flex flex-wrap gap-2">
+                {supportLinks.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center rounded-full border border-border bg-muted/30 px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-muted/60"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="space-y-3">
+              <h2 className="text-lg font-semibold tracking-tight">
+                Страны
+              </h2>
+              <ul className="flex flex-wrap gap-2">
+                {COUNTRY_LINKS.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center rounded-full border border-border bg-muted/30 px-3.5 py-1.5 text-sm font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-muted/60"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+
           <section className="space-y-4 rounded-[var(--d-radius-2xl)] border border-border/60 bg-card p-5 shadow-[var(--d-shadow-soft)] sm:p-6">
             <h2 className="text-lg font-semibold tracking-tight">{labels.faqTitle}</h2>
             <FaqAccordion items={faq} defaultOpenIndex={0} ariaLabel={labels.faqTitle} />
@@ -154,6 +198,14 @@ export function SeoCategoryLanding({
         </div>
 
         <FaqJsonLd items={faq} />
+        <SafePageSchemaJsonLd
+          type="CollectionPage"
+          locale={locale}
+          path={seoCategoryPath(locale, route)}
+          name={route.h1ByLocale[locale]}
+          description={route.introByLocale[locale]}
+          keywords={[route.categoryNameByLocale[locale], "Дордой", "поставщики"]}
+        />
         <VendorItemListJsonLd locale={locale} items={vendorListItems} />
       </div>
     </article>

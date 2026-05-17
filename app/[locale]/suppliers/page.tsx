@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { SafePageSchemaJsonLd } from "@/components/seo/SafePageSchemaJsonLd";
 import { buildSeoMetadata } from "@/lib/build-seo";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -18,6 +19,14 @@ export default async function SuppliersPage({ params }: Props) {
 
   return (
     <article className="mx-auto max-w-3xl space-y-8 px-4 py-16 sm:px-6">
+      <SafePageSchemaJsonLd
+        type="CollectionPage"
+        locale={locale}
+        path="/suppliers"
+        name={t("h1")}
+        description={t("body")}
+        keywords={["поставщики Дордой", "каталог поставщиков", "оптовые продавцы"]}
+      />
       <header className="space-y-3">
         <h1 className="text-4xl font-semibold tracking-tight">{t("h1")}</h1>
       </header>

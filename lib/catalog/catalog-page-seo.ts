@@ -9,13 +9,25 @@ export type CatalogSearchParamsForSeo = {
   cat?: string | string[];
   search?: string;
   sort?: string;
+  filter?: string;
+  gclid?: string;
+  yclid?: string;
+  fbclid?: string;
+  [key: string]: string | string[] | undefined;
 };
 
 export function catalogHasSeoQueryParams(sp: CatalogSearchParamsForSeo): boolean {
+  for (const key of Object.keys(sp)) {
+    if (key.startsWith("utm_")) return true;
+  }
   if (sp.compare === "1") return true;
   if (sp.page && sp.page !== "1") return true;
   if (typeof sp.search === "string" && sp.search.trim().length > 0) return true;
   if (typeof sp.sort === "string" && sp.sort.trim().length > 0) return true;
+  if (typeof sp.filter === "string" && sp.filter.trim().length > 0) return true;
+  if (typeof sp.gclid === "string" && sp.gclid.trim().length > 0) return true;
+  if (typeof sp.yclid === "string" && sp.yclid.trim().length > 0) return true;
+  if (typeof sp.fbclid === "string" && sp.fbclid.trim().length > 0) return true;
   if (Array.isArray(sp.cat)) return sp.cat.length > 0;
   if (typeof sp.cat === "string" && sp.cat.trim().length > 0) return true;
   return false;

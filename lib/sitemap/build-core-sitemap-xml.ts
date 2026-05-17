@@ -59,9 +59,10 @@ async function buildCoreSitemapXmlRaw(): Promise<string> {
 
 /** Static routes, core landings, and indexable SEO categories (all locales). */
 export async function buildCoreSitemapXml(): Promise<string> {
+  const root = baseUrl();
   return unstable_cache(
     buildCoreSitemapXmlRaw,
-    ["sitemap-core-xml"],
+    ["sitemap-core-xml-v3", root],
     {
       revalidate: SITEMAP_XML_CACHE_REVALIDATE_SECONDS,
       tags: [CATALOG_VENDORS_LIST_CACHE_TAG],

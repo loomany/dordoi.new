@@ -1,4 +1,5 @@
 import { setRequestLocale } from "next-intl/server";
+import { SafePageSchemaJsonLd } from "@/components/seo/SafePageSchemaJsonLd";
 import { createLoader } from "nuqs/server";
 import { CatalogBrowseLayout } from "@/components/catalog/CatalogBrowseLayout";
 import { buildCatalogPageMetadata } from "@/lib/catalog/catalog-page-seo";
@@ -12,7 +13,7 @@ const loadCatalogSearchParams = createLoader(catalogQueryParsers);
 
 type Props = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ page?: string; compare?: string; cat?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export async function generateMetadata({ params, searchParams }: Props) {
@@ -30,11 +31,21 @@ export default async function CatalogPage({ params, searchParams }: Props) {
   setRequestLocale(locale);
   const categorySlugs = normalizeCatalogCategorySlugs(catParsed ?? []);
   return (
-    <CatalogBrowseLayout
-      page={pageParsed ?? undefined}
-      categorySlugs={categorySlugs}
-      searchQuery={searchParsed ?? ""}
-      compareWithPreview={compare === "1"}
-    />
+    <>
+      <SafePageSchemaJsonLd
+        type="CollectionPage"
+        locale={locale}
+        path="/catalog"
+        name="Каталог поставщиков Дордой"
+        description="Каталог поставщиков рынка Дордой: категории, продавцы, байеры и услуги для оптовых покупателей."
+        keywords={["каталог Дордой", "поставщики Дордой", "рынок Дордой"]}
+      />
+      <CatalogBrowseLayout
+        page={pageParsed ?? undefined}
+        categorySlugs={categorySlugs}
+        searchQuery={searchParsed ?? ""}
+        compareWithPreview={compare === "1"}
+      />
+    </>
   );
 }

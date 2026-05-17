@@ -10,6 +10,7 @@ import {
 } from "@/components/catalog/CatalogAccessPaywallModal";
 import { CatalogFavoriteButton } from "@/components/favorites/CatalogFavoriteButton";
 import { Link } from "@/i18n/navigation";
+import type { LockedVendorContactAvailability } from "@/lib/catalog/vendor-privacy-types";
 
 function InstagramGlyph({ className }: { className?: string }) {
   return (
@@ -33,14 +34,15 @@ function InstagramGlyph({ className }: { className?: string }) {
 export type VendorContactActionsProps = {
   listingKey: string;
   initialFavorite: boolean;
-  primaryWhatsapp: string | null;
-  secondaryWhatsapp: string | null;
-  telegramHref: string | null;
-  instagramHref: string | null;
-  telHref: string | null;
+  primaryWhatsapp?: string | null;
+  secondaryWhatsapp?: string | null;
+  telegramHref?: string | null;
+  instagramHref?: string | null;
+  telHref?: string | null;
   googleMapsHref?: string | null;
   twoGisHref?: string | null;
   yandexMapsHref?: string | null;
+  lockedContactAvailability?: LockedVendorContactAvailability;
   /** Подписка / админ — прямые ссылки; иначе клик открывает paywall. */
   contactsUnlocked?: boolean;
   paywallCopy?: CatalogAccessPaywallCopy;
@@ -55,7 +57,7 @@ type ContactPillProps = {
   className: string;
   label: string;
   icon?: ReactNode;
-  href: string;
+  href?: string | null;
   unlocked: boolean;
   onLockedClick: () => void;
   external?: boolean;
@@ -70,7 +72,7 @@ function ContactPill({
   onLockedClick,
   external = true,
 }: ContactPillProps) {
-  if (!unlocked) {
+  if (!unlocked || !href) {
     return (
       <button type="button" className={className} onClick={onLockedClick}>
         {icon}
@@ -95,7 +97,7 @@ function ContactPill({
 }
 
 type MapLinksSectionProps = {
-  mapItems: { href?: string | null; label: string }[];
+  mapItems: { href?: string | null; label: string; available: boolean }[];
   contactsUnlocked: boolean;
   openPaywall: () => void;
   pillOutline: string;
@@ -109,18 +111,19 @@ function MapLinksSection({
   pillOutline,
   mapTitle,
 }: MapLinksSectionProps) {
-  if (mapItems.length === 0) return null;
+  const availableMapItems = mapItems.filter((item) => item.available);
+  if (availableMapItems.length === 0) return null;
   return (
     <div className="flex flex-col gap-2">
       <p className="text-center text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
         {mapTitle}
       </p>
-      {mapItems.map(({ href, label }) => (
+      {availableMapItems.map(({ href, label }) => (
         <ContactPill
-          key={href!.trim()}
+          key={label}
           className={pillOutline}
           label={label}
-          href={href!.trim()}
+          href={contactsUnlocked ? href?.trim() : null}
           unlocked={contactsUnlocked}
           onLockedClick={openPaywall}
         />
@@ -140,6 +143,7 @@ export function VendorContactActions({
   googleMapsHref,
   twoGisHref,
   yandexMapsHref,
+  lockedContactAvailability,
   contactsUnlocked = false,
   paywallCopy,
 }: VendorContactActionsProps) {
@@ -149,12 +153,27 @@ export function VendorContactActions({
     setPaywallOpen(true);
   }, []);
 
+  const canShowPrimaryWhatsapp = contactsUnlocked
+    ? Boolean(primaryWhatsapp)
+    : Boolean(lockedContactAvailability?.whatsappPrimaryAvailable);
+  const canShowSecondaryWhatsapp = contactsUnlocked
+    ? Boolean(secondaryWhatsapp)
+    : Boolean(lockedContactAvailability?.whatsappSecondaryAvailable);
+  const canShowTelegram = contactsUnlocked
+    ? Boolean(telegramHref)
+    : Boolean(lockedContactAvailability?.telegramAvailable);
+  const canShowInstagram = contactsUnlocked
+    ? Boolean(instagramHref)
+    : Boolean(lockedContactAvailability?.instagramAvailable);
+  const canShowPhone = contactsUnlocked
+    ? Boolean(telHref)
+    : Boolean(lockedContactAvailability?.phoneAvailable);
   const hasDirectContacts = Boolean(
-    primaryWhatsapp ||
-      secondaryWhatsapp ||
-      telegramHref ||
-      instagramHref ||
-      telHref,
+    canShowPrimaryWhatsapp ||
+      canShowSecondaryWhatsapp ||
+      canShowTelegram ||
+      canShowInstagram ||
+      canShowPhone,
   );
 
   const pillOutline =
@@ -167,10 +186,28 @@ export function VendorContactActions({
     "inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border-0 bg-[var(--d-card-accent)] py-3.5 text-sm font-semibold text-white shadow-sm transition-[background-color,box-shadow] hover:opacity-95";
 
   const mapItems = [
-    { href: googleMapsHref, label: t("openInGoogleMaps") },
-    { href: twoGisHref, label: t("openIn2Gis") },
-    { href: yandexMapsHref, label: t("openInYandexMaps") },
-  ].filter((x) => Boolean(x.href?.trim()));
+    {
+      href: googleMapsHref,
+      label: t("openInGoogleMaps"),
+      available: contactsUnlocked
+        ? Boolean(googleMapsHref?.trim())
+        : Boolean(lockedContactAvailability?.googleMapsAvailable),
+    },
+    {
+      href: twoGisHref,
+      label: t("openIn2Gis"),
+      available: contactsUnlocked
+        ? Boolean(twoGisHref?.trim())
+        : Boolean(lockedContactAvailability?.twoGisAvailable),
+    },
+    {
+      href: yandexMapsHref,
+      label: t("openInYandexMaps"),
+      available: contactsUnlocked
+        ? Boolean(yandexMapsHref?.trim())
+        : Boolean(lockedContactAvailability?.yandexMapsAvailable),
+    },
+  ];
 
   return (
     <>
@@ -185,52 +222,52 @@ export function VendorContactActions({
           </p>
         )}
 
-        {primaryWhatsapp ? (
+        {canShowPrimaryWhatsapp ? (
           <ContactPill
             className={primaryPill}
             label={t("ctaWhatsApp")}
             icon={<MessageCircle className="size-4 shrink-0" aria-hidden />}
-            href={primaryWhatsapp}
+            href={contactsUnlocked ? primaryWhatsapp : null}
             unlocked={contactsUnlocked}
             onLockedClick={openPaywall}
           />
         ) : null}
-        {secondaryWhatsapp ? (
+        {canShowSecondaryWhatsapp ? (
           <ContactPill
             className={pillOutline}
             label={t("ctaWhatsApp2")}
             icon={<MessageCircle className="size-4 shrink-0" aria-hidden />}
-            href={secondaryWhatsapp}
+            href={contactsUnlocked ? secondaryWhatsapp : null}
             unlocked={contactsUnlocked}
             onLockedClick={openPaywall}
           />
         ) : null}
-        {telegramHref ? (
+        {canShowTelegram ? (
           <ContactPill
             className={pillOutline}
             label={t("ctaTelegram")}
             icon={<Send className="size-4 shrink-0" aria-hidden />}
-            href={telegramHref}
+            href={contactsUnlocked ? telegramHref : null}
             unlocked={contactsUnlocked}
             onLockedClick={openPaywall}
           />
         ) : null}
-        {instagramHref ? (
+        {canShowInstagram ? (
           <ContactPill
             className={pillOutline}
             label={t("ctaInstagram")}
             icon={<InstagramGlyph className="size-4 shrink-0" />}
-            href={instagramHref}
+            href={contactsUnlocked ? instagramHref : null}
             unlocked={contactsUnlocked}
             onLockedClick={openPaywall}
           />
         ) : null}
-        {telHref ? (
+        {canShowPhone ? (
           <ContactPill
             className={pillOutline}
             label={t("ctaCall")}
             icon={<PhoneCall className="size-4 shrink-0" aria-hidden />}
-            href={telHref}
+            href={contactsUnlocked ? telHref : null}
             unlocked={contactsUnlocked}
             onLockedClick={openPaywall}
             external={false}

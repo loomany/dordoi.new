@@ -14,6 +14,7 @@ import { getSeoCategoryVendorPageData } from "@/lib/catalog/seo-category-vendors
 import {
   buildCatalogCardSourceRowForPublishedVendor,
 } from "@/lib/catalog/published-vendors";
+import { safeVendorItemListName } from "@/lib/catalog/vendor-privacy";
 import {
   getAllSeoCategoryStaticParams,
   resolveSeoCategoryBySlug,
@@ -78,27 +79,27 @@ export default async function SeoCategoryPage({ params }: Props) {
       <>
         <CatalogCheckoutResume />
         <CatalogBrowseCardGrid
-        cards={cards}
-        favoriteKeys={[]}
-        hasFullCatalogAccess={catalogAccessUnlocked}
-        guestFreeCardLimit={guestFreeCardLimit}
-        paywallCopy={{
-          title: tBrowse("paywall.title"),
-          body: tBrowse("paywall.body"),
-          ctaPayment: tBrowse("paywall.ctaPayment"),
-          ctaPaymentTransfer: tBrowse("paywall.ctaPaymentTransfer"),
-          closeDialog: tBrowse("paywall.closeDialog"),
-          planMonthlyPrice: tBrowse("paywall.planMonthlyPrice"),
-          checkoutError: tBrowse("paywall.checkoutError"),
-          checkoutLoading: tBrowse("paywall.checkoutLoading"),
-        }}
-        lockedCardUnlockLabel={tBrowse("paywall.unlockCard")}
-        gridAriaLabel={labels.vendorPreviewTitle}
-        viewProfileLabel={tBrowse("vendorCard.profileCta")}
-        aboutStoreLabel={tBrowse("vendorCard.aboutStore")}
-        collapseLabel={tBrowse("vendorCard.collapse")}
-        expandLabel={tBrowse("vendorCard.expand")}
-      />
+          cards={cards}
+          favoriteKeys={[]}
+          hasFullCatalogAccess={catalogAccessUnlocked}
+          guestFreeCardLimit={guestFreeCardLimit}
+          paywallCopy={{
+            title: tBrowse("paywall.title"),
+            body: tBrowse("paywall.body"),
+            ctaPayment: tBrowse("paywall.ctaPayment"),
+            ctaPaymentTransfer: tBrowse("paywall.ctaPaymentTransfer"),
+            closeDialog: tBrowse("paywall.closeDialog"),
+            planMonthlyPrice: tBrowse("paywall.planMonthlyPrice"),
+            checkoutError: tBrowse("paywall.checkoutError"),
+            checkoutLoading: tBrowse("paywall.checkoutLoading"),
+          }}
+          lockedCardUnlockLabel={tBrowse("paywall.unlockCard")}
+          gridAriaLabel={labels.vendorPreviewTitle}
+          viewProfileLabel={tBrowse("vendorCard.profileCta")}
+          aboutStoreLabel={tBrowse("vendorCard.aboutStore")}
+          collapseLabel={tBrowse("vendorCard.collapse")}
+          expandLabel={tBrowse("vendorCard.expand")}
+        />
       </>
     ) : null;
 
@@ -108,9 +109,9 @@ export default async function SeoCategoryPage({ params }: Props) {
       route={route}
       vendorCount={totalCount}
       vendorGrid={vendorGrid}
-      vendorListItems={fetchedVendors.map((v) => ({
+      vendorListItems={accessibleVendors.map((v) => ({
         slug: v.slug,
-        name: v.store_name?.trim() || v.slug,
+        name: safeVendorItemListName(v, route.categoryNameByLocale[routeLocale]),
       }))}
       labels={{
         ...labels,

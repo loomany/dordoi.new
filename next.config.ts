@@ -46,6 +46,25 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  async redirects() {
+    return [
+      {
+        source: "/:locale(ru|kk|kg|uz|tj)/dordoi-market",
+        destination: "/:locale/rynok-dordoi",
+        statusCode: 301,
+      },
+      {
+        source: "/:locale(ru|kk|kg|uz|tj)/wholesale",
+        destination: "/:locale/dordoi-optom",
+        statusCode: 301,
+      },
+      {
+        source: "/:locale(ru|kk|kg|uz|tj)/cargo",
+        destination: "/:locale/kargo-dordoi",
+        statusCode: 301,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       ...supabaseStorageRemotePatterns(),

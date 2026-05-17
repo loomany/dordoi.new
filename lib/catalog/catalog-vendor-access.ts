@@ -5,6 +5,7 @@ import type {
   PublishedVendorCatalogListRow,
   PublishedVendorRow,
 } from "@/lib/catalog/published-vendors";
+import { stripLockedVendorContacts } from "@/lib/catalog/vendor-privacy";
 
 type VendorWithSensitiveFields =
   | PublishedVendorRow
@@ -14,14 +15,7 @@ type VendorWithSensitiveFields =
 export function redactVendorSensitiveFields<T extends VendorWithSensitiveFields>(
   vendor: T,
 ): T {
-  return {
-    ...vendor,
-    location_row: null,
-    phone_number: "phone_number" in vendor ? null : undefined,
-    whatsapp_1: "whatsapp_1" in vendor ? null : undefined,
-    whatsapp_2: "whatsapp_2" in vendor ? null : undefined,
-    telegram_url: "telegram_url" in vendor ? null : undefined,
-  };
+  return stripLockedVendorContacts(vendor);
 }
 
 export function applyCatalogAccessToVendors<T extends VendorWithSensitiveFields>(

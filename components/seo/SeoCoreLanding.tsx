@@ -1,8 +1,10 @@
 import { Link } from "@/i18n/navigation";
 import { SeoBreadcrumbs } from "@/components/seo/SeoBreadcrumbs";
 import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
+import { SafePageSchemaJsonLd } from "@/components/seo/SafePageSchemaJsonLd";
 import type { CoreSeoLanding } from "@/lib/seo/core-seo-landings";
 import type { RouteLocale } from "@/lib/seo/route-locale";
+import { COUNTRY_LINKS } from "@/lib/seo/stage2-content";
 import { baseUrl } from "@/lib/site";
 
 type SeoCoreLandingProps = {
@@ -26,6 +28,14 @@ type SeoCoreLandingProps = {
 export function SeoCoreLanding({ locale, landing, labels }: SeoCoreLandingProps) {
   const faq = landing.faqByLocale[locale];
   const bodyParagraphs = landing.bodyByLocale[locale];
+  const service =
+    landing.id === "kargo-dordoi"
+      ? {
+          name: landing.h1ByLocale[locale],
+          serviceType: "Dordoi cargo and delivery guidance",
+          audience: "Wholesale buyers",
+        }
+      : undefined;
 
   const quickLinks = [
     { href: "/catalog" as const, label: labels.quickLinkCatalog },
@@ -36,6 +46,14 @@ export function SeoCoreLanding({ locale, landing, labels }: SeoCoreLandingProps)
 
   return (
     <article className="mx-auto max-w-3xl space-y-6 px-4 py-10 sm:px-6 sm:py-12">
+      <SafePageSchemaJsonLd
+        locale={locale}
+        path={landing.path}
+        name={landing.h1ByLocale[locale]}
+        description={landing.descriptionByLocale[locale]}
+        keywords={[landing.id, "Dordoi.help", "Dordoi Market"]}
+        service={service}
+      />
       <SeoBreadcrumbs
         navLabel={labels.breadcrumbNav}
         locale={locale}
@@ -86,6 +104,24 @@ export function SeoCoreLanding({ locale, landing, labels }: SeoCoreLandingProps)
         <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
           {quickLinks.map((item) => (
             <li key={item.label}>
+              <Link
+                href={item.href}
+                className="font-medium text-primary underline-offset-4 hover:underline"
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="space-y-2">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Страны доставки
+        </h2>
+        <ul className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+          {COUNTRY_LINKS.map((item) => (
+            <li key={item.href}>
               <Link
                 href={item.href}
                 className="font-medium text-primary underline-offset-4 hover:underline"

@@ -5,6 +5,7 @@ import {
   FOOTER_HUB_LINKS,
   seoCategoryLinksForLocale,
 } from "@/lib/seo/seo-internal-links";
+import { COUNTRY_LINKS } from "@/lib/seo/stage2-content";
 import type { RouteLocale } from "@/lib/seo/route-locale";
 
 export async function SiteFooter() {
@@ -27,6 +28,16 @@ export async function SiteFooter() {
     label: t(`seoHub.${item.labelKey}`),
   }));
 
+  const serviceLinks = [
+    { href: "/rynok-dordoi", label: "Рынок Дордой" },
+    { href: "/dordoi-optom", label: "Дордой оптом" },
+    { href: "/buyer-service", label: "Байер" },
+    { href: "/for-buyers", label: "Покупателям" },
+    { href: "/for-sellers", label: "Продавцам" },
+    { href: "/how-it-works", label: "Как работает" },
+    { href: "/blog", label: "Блог" },
+  ];
+
   const categoryLinks = seoCategoryLinksForLocale(
     locale,
     FOOTER_CATEGORY_IDS,
@@ -47,10 +58,26 @@ export async function SiteFooter() {
               {item.label}
             </Link>
           ))}
+          {serviceLinks.map((item) => (
+            <Link key={item.href} href={item.href} className={linkClass}>
+              {item.label}
+            </Link>
+          ))}
           <span className="text-[11px] text-muted-foreground/40" aria-hidden>
             ·
           </span>
           {categoryLinks.map((item) => (
+            <Link key={item.href} href={item.href} className={linkClass}>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <nav className={`mt-3 ${rowClass}`} aria-label="Dordoi.help по странам">
+          <span className="text-[11px] font-medium text-muted-foreground">
+            Страны:
+          </span>
+          {COUNTRY_LINKS.map((item) => (
             <Link key={item.href} href={item.href} className={linkClass}>
               {item.label}
             </Link>

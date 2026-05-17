@@ -25,6 +25,22 @@ function vendorCategoryPhrase(
   return t(`publicSeo.categories.${mainCategoryId}`);
 }
 
+function safeSupplierSeoCopy(
+  t: (key: string, values?: Record<string, string>) => string,
+  categoryPhrase: string | null,
+) {
+  return {
+    title: categoryPhrase
+      ? t("publicSeo.metaTitleWithCategory", { category: categoryPhrase })
+      : t("publicSeo.metaTitleFallback"),
+    description: categoryPhrase
+      ? t("publicSeo.metaDescriptionWithCategory", {
+          category: categoryPhrase,
+        })
+      : t("publicSeo.metaDescriptionFallback"),
+  };
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, seoSlug } = await params;
   const vendor = await fetchPublishedVendorBySeoSlug(seoSlug);
@@ -36,21 +52,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     locale,
     namespace: "Pages.providerProfile",
   });
-  const storeName = vendor.store_name?.trim() || seoSlug;
   const mainCategoryId = primaryVendorMainCategoryId(vendor.categories);
   const categoryPhrase = vendorCategoryPhrase(tProvider, mainCategoryId);
-  const title = categoryPhrase
-    ? tProvider("publicSeo.suppliersMetaTitleWithCategory", {
-        store: storeName,
-        category: categoryPhrase,
-      })
-    : tProvider("publicSeo.suppliersMetaTitle", { store: storeName });
-  const description = categoryPhrase
-    ? tProvider("publicSeo.suppliersMetaDescriptionWithCategory", {
-        store: storeName,
-        category: categoryPhrase,
-      })
-    : tProvider("publicSeo.suppliersMetaDescription", { store: storeName });
+  const { title, description } = safeSupplierSeoCopy(
+    tProvider,
+    categoryPhrase,
+  );
 
   return buildPageMetadata({
     locale,
@@ -70,7 +77,21 @@ export default async function SupplierSeoProfilePage({ params }: Props) {
     notFound();
   }
 
-  const jsonLd = buildVendorSeoLocalBusinessJsonLd(vendor, locale);
+  const tProvider = await getTranslations({
+    locale,
+    namespace: "Pages.providerProfile",
+  });
+  const mainCategoryId = primaryVendorMainCategoryId(vendor.categories);
+  const categoryPhrase = vendorCategoryPhrase(tProvider, mainCategoryId);
+  const seoCopy = safeSupplierSeoCopy(tProvider, categoryPhrase);
+  const jsonLd = buildVendorSeoLocalBusinessJsonLd(
+    vendor,
+    locale,
+    {
+      name: seoCopy.title,
+      description: seoCopy.description,
+    },
+  );
 
   return (
     <>

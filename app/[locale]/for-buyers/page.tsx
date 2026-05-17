@@ -16,7 +16,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   if (!isRouteLocale(locale)) return { title: "404" };
-  const content = resolveAiCorePage("faq", locale);
+  const content = resolveAiCorePage("for-buyers", locale);
   if (!content) return { title: "404" };
   return buildPageMetadata({
     locale,
@@ -26,11 +26,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-export default async function FaqPage({ params }: Props) {
+export default async function ForBuyersPage({ params }: Props) {
   const { locale } = await params;
   if (!isRouteLocale(locale)) notFound();
   setRequestLocale(locale);
-  const content = resolveAiCorePage("faq", locale);
+  const content = resolveAiCorePage("for-buyers", locale);
   if (!content) notFound();
 
   return (

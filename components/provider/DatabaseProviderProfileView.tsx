@@ -18,8 +18,6 @@ import { FaqJsonLd } from "@/components/seo/FaqJsonLd";
 import { VendorFaqSection } from "@/components/vendors/VendorFaqSection";
 import { Link } from "@/i18n/navigation";
 import { catalogListingKeyFromSlug } from "@/lib/catalog/listing-key";
-import { stripPublicContactLeaksFromVendorText } from "@/lib/catalog/catalog-card-title";
-import { getAiCatalogDisplayOverlay } from "@/lib/catalog/parsed-ai-catalog-overlay";
 import {
   buildCatalogCardSourceRowForPublishedVendor,
   fetchApprovedVendorPhotoBatches,
@@ -50,6 +48,11 @@ import {
   primaryVendorMainCategoryId,
   vendorPublicListingNumber,
 } from "@/lib/catalog/vendor-public-seo";
+import {
+  lockedVendorContactAvailability,
+  stripLockedVendorContacts,
+} from "@/lib/catalog/vendor-privacy";
+import { buildSafeVendorPublicDescription } from "@/lib/catalog/vendor-public-description";
 import type { RouteLocale } from "@/lib/seo/route-locale";
 import { buildVendorFaq } from "@/lib/dordoi/vendorFaq";
 
@@ -114,61 +117,58 @@ export async function DatabaseProviderProfileView({
   const locale = await getLocale();
   const profile = await getSessionProfile();
   const catalogAccessUnlocked = await hasFullCatalogAccess(profile);
+  const publicVendor = catalogAccessUnlocked
+    ? vendor
+    : stripLockedVendorContacts(vendor);
+  const lockedContactOptions = catalogAccessUnlocked
+    ? undefined
+    : lockedVendorContactAvailability(vendor);
   const favoriteKeys = profile
     ? await fetchBuyerFavoriteKeySet(profile.userId)
     : new Set<string>();
 
-  const showcase = getShowcaseProfileFields(vendor.slug, tBrowse);
-  const cardRow = buildCatalogCardSourceRowForPublishedVendor(vendor, {
+  const showcase = getShowcaseProfileFields(publicVendor.slug, tBrowse);
+  const cardSourceOptions = {
     tBrowse,
-    tTreeCategory: (key) => tTree(key),
+    tTreeCategory: (key: string) => tTree(key),
     locale,
-  });
-  const aiAboutOverlay = getAiCatalogDisplayOverlay(vendor.parsed_ai_data, locale);
-  const aboutUsesAiSnapshot = Boolean(aiAboutOverlay?.description?.trim());
-  const aboutBodyParagraphs = (() => {
-    if (showcase) {
-      const parts = [showcase.description.trim()];
-      if (showcase.descriptionDetail?.trim()) {
-        parts.push(showcase.descriptionDetail.trim());
-      }
-      return parts
-        .map(stripPublicContactLeaksFromVendorText)
-        .filter((p) => p.length > 0);
-    }
-    if (aboutUsesAiSnapshot) {
-      const ai = stripPublicContactLeaksFromVendorText(
-        cardRow.display.description.trim(),
-      );
-      return ai ? [ai] : [];
-    }
-    return [vendor.description?.trim(), vendor.description_detail?.trim()]
-      .filter(Boolean)
-      .map((p) => stripPublicContactLeaksFromVendorText(p!))
-      .filter((p) => p.length > 0);
-  })();
-  const primaryMainId = primaryVendorMainCategoryId(vendor.categories);
+  };
+  const cardRow = buildCatalogCardSourceRowForPublishedVendor(
+    publicVendor,
+    cardSourceOptions,
+  );
+  // Server-only: keep parsed_ai_data out of publicVendor/RSC, but reuse its
+  // sanitized card description so profile and catalog copy stay identical.
+  const profileDescriptionCardRow = catalogAccessUnlocked
+    ? cardRow
+    : buildCatalogCardSourceRowForPublishedVendor(vendor, cardSourceOptions);
+  const profileCardDescription = profileDescriptionCardRow.display.description;
+  const primaryMainId = primaryVendorMainCategoryId(publicVendor.categories);
   const categoryPhrase = primaryMainId
     ? t(`publicSeo.categories.${primaryMainId}`)
     : null;
   const storeDisplayName =
     vendor.store_name?.trim() || vendor.seo_slug?.trim() || vendor.slug;
+  const safePublicH1 = categoryPhrase
+    ? t("publicSeo.h1WithCategory", { category: categoryPhrase })
+    : t("publicSeo.h1Fallback");
+  const safeVisibleLabel = categoryPhrase
+    ? t("publicSeo.visibleLabelWithCategory", { category: categoryPhrase })
+    : t("publicSeo.visibleLabelNumbered", {
+        number: vendorPublicListingNumber(vendor.id),
+      });
   const publicH1 =
-    profileMode === "seo"
+    profileMode === "seo" && catalogAccessUnlocked
       ? storeDisplayName
-      : categoryPhrase
-        ? t("publicSeo.h1WithCategory", { category: categoryPhrase })
-        : t("publicSeo.h1Fallback");
+      : safePublicH1;
   const visibleLabel =
-    profileMode === "seo"
+    profileMode === "seo" && catalogAccessUnlocked
       ? storeDisplayName
-      : categoryPhrase
-        ? t("publicSeo.visibleLabelWithCategory", { category: categoryPhrase })
-        : t("publicSeo.visibleLabelNumbered", {
-            number: vendorPublicListingNumber(vendor.id),
-          });
+      : safeVisibleLabel;
   const breadcrumbLeaf =
-    profileMode === "seo" ? storeDisplayName : t("publicSeo.breadcrumbLeaf");
+    profileMode === "seo" && catalogAccessUnlocked
+      ? storeDisplayName
+      : t("publicSeo.breadcrumbLeaf");
   const seoCategoryRoute = primaryMainId
     ? resolveSeoCategoryForMainId(primaryMainId)
     : undefined;
@@ -181,35 +181,64 @@ export async function DatabaseProviderProfileView({
   const categoryLabels = showcase
     ? showcase.categories
     : cardRow.display.categories;
-  const displayLocationRow = showcase?.locationRow ?? vendor.location_row;
+  const aboutBodyParagraphs = [
+    buildSafeVendorPublicDescription({
+      cardDescription: profileCardDescription,
+      categoryLabel: categoryLabels[0] ?? categoryPhrase,
+    }),
+  ];
+  const displayLocationRow = catalogAccessUnlocked
+    ? (showcase?.locationRow ?? vendor.location_row)
+    : "Рынок Дордой, Бишкек";
   const listingKey = catalogListingKeyFromSlug(vendor.slug);
   const initialFavorite = favoriteKeys.has(listingKey);
-  const primaryWhatsapp = whatsappHref(vendor.whatsapp_1) ?? whatsappHref(vendor.phone_number);
-  const secondaryWhatsapp = whatsappHref(vendor.whatsapp_2);
-  const telegramHrefResolved = vendor.telegram_url
+  const primaryWhatsapp = catalogAccessUnlocked
+    ? whatsappHref(vendor.whatsapp_1) ?? whatsappHref(vendor.phone_number)
+    : null;
+  const secondaryWhatsapp = catalogAccessUnlocked
+    ? whatsappHref(vendor.whatsapp_2)
+    : null;
+  const telegramHrefResolved = catalogAccessUnlocked && vendor.telegram_url
     ? telegramHref(vendor.telegram_url)
     : null;
-  const instagramHrefResolved = vendor.instagram_url
+  const instagramHrefResolved = catalogAccessUnlocked && vendor.instagram_url
     ? ensureHttp(vendor.instagram_url)
     : null;
-  const telHrefResolved = vendor.phone_number
+  const telHrefResolved = catalogAccessUnlocked && vendor.phone_number
     ? `tel:${digitsOnly(vendor.phone_number)}`
     : null;
-  const googleMapsPublicHref = resolveGoogleMapsHref(
-    vendor.google_maps_uri,
-    vendor.google_place_id,
-  );
-  const twoGisPublicHref =
-    ensureHttpUrl(vendor.two_gis_uri) ??
-    twoGisFirmPageUrlFromGooglePlaceId(vendor.google_place_id);
-  const yandexMapsPublicHref = ensureHttpUrl(vendor.yandex_maps_uri);
+  const googleMapsPublicHref = catalogAccessUnlocked
+    ? resolveGoogleMapsHref(vendor.google_maps_uri, vendor.google_place_id)
+    : null;
+  const twoGisPublicHref = catalogAccessUnlocked
+    ? ensureHttpUrl(vendor.two_gis_uri) ??
+      twoGisFirmPageUrlFromGooglePlaceId(vendor.google_place_id)
+    : null;
+  const yandexMapsPublicHref = catalogAccessUnlocked
+    ? ensureHttpUrl(vendor.yandex_maps_uri)
+    : null;
+  const unlockedContactHrefProps = catalogAccessUnlocked
+    ? {
+        primaryWhatsapp,
+        secondaryWhatsapp,
+        telegramHref: telegramHrefResolved,
+        instagramHref: instagramHrefResolved,
+        telHref: telHrefResolved,
+        googleMapsHref: googleMapsPublicHref,
+        twoGisHref: twoGisPublicHref,
+        yandexMapsHref: yandexMapsPublicHref,
+      }
+    : {};
   const PHOTO_FEED_PAGE_SIZE = 4;
   const initialPhotoBatches = await fetchApprovedVendorPhotoBatches({
     vendorId: vendor.id,
     limit: PHOTO_FEED_PAGE_SIZE,
   });
   const recommendedVendors = await fetchRecommendedVendorsForProfile(vendor);
-  const recommendedSellerCards = recommendedVendors.map((related) =>
+  const safeRecommendedVendors = catalogAccessUnlocked
+    ? recommendedVendors
+    : recommendedVendors.map((related) => stripLockedVendorContacts(related));
+  const recommendedSellerCards = safeRecommendedVendors.map((related) =>
     buildCatalogCardSourceRowForPublishedVendor(related, {
       tBrowse,
       tTreeCategory: (key) => tTree(key),
@@ -221,21 +250,21 @@ export async function DatabaseProviderProfileView({
   const faqItems = buildVendorFaq(
     {
       name: publicH1,
-      category: normalizeVendorCategoryMainSlugs(vendor.categories)[0] ?? null,
+      category: normalizeVendorCategoryMainSlugs(publicVendor.categories)[0] ?? null,
       categoryLabel: categoryLabels[0] ?? null,
       city: tVendorFaq("defaultCity"),
       country: tVendorFaq("defaultCountry"),
       description: aboutDescriptionText,
       salesType: cardRow.display.tradeType,
-      minOrder: vendor.min_batch,
-      locationRow: vendor.location_row,
+      minOrder: publicVendor.min_batch,
+      locationRow: publicVendor.location_row,
       hasWhatsapp: false,
       hasPhone: false,
       hasInstagram: false,
       hasTelegram: false,
       hasRecommendedSellers: recommendedVendors.length > 0,
-      deliveryHelp: vendor.delivery_help,
-      samplesAvailable: vendor.samples_available,
+      deliveryHelp: publicVendor.delivery_help,
+      samplesAvailable: publicVendor.samples_available,
     },
     (key, values) => tVendorFaq(key, values),
   );
@@ -280,29 +309,29 @@ export async function DatabaseProviderProfileView({
         {
           Icon: Package,
           label: t("termLabels.moq"),
-          value: displayVendorTerm(vendor.min_batch, t("termMoqFallback")),
+          value: displayVendorTerm(publicVendor.min_batch, t("termMoqFallback")),
         },
         {
           Icon: CreditCard,
           label: t("termLabels.payment"),
           value: displayVendorPaymentMethods(
-            vendor.payment_methods,
+            publicVendor.payment_methods,
             t("termPaymentFallback"),
           ),
         },
         {
           Icon: Truck,
           label: t("termLabels.shipping"),
-          value: vendor.delivery_help
+          value: publicVendor.delivery_help
             ? t("termValueDeliveryYes")
             : t("termValueDeliveryNo"),
         },
         {
           Icon: Package,
           label: t("termLabels.samples"),
-          value: vendor.samples_note?.trim()
-            ? vendor.samples_note.trim()
-            : vendor.samples_available
+          value: publicVendor.samples_note?.trim()
+            ? publicVendor.samples_note.trim()
+            : publicVendor.samples_available
               ? t("termValueSamplesYes")
               : t("termValueSamplesAsk"),
         },
@@ -310,7 +339,7 @@ export async function DatabaseProviderProfileView({
           Icon: RotateCcw,
           label: t("termLabels.returnsBrak"),
           value: displayVendorTerm(
-            vendor.returns_policy,
+            publicVendor.returns_policy,
             t("termReturnsFallback"),
           ),
         },
@@ -559,14 +588,8 @@ export async function DatabaseProviderProfileView({
               <VendorContactActions
                 listingKey={listingKey}
                 initialFavorite={initialFavorite}
-                primaryWhatsapp={primaryWhatsapp}
-                secondaryWhatsapp={secondaryWhatsapp}
-                telegramHref={telegramHrefResolved}
-                instagramHref={instagramHrefResolved}
-                telHref={telHrefResolved}
-                googleMapsHref={googleMapsPublicHref}
-                twoGisHref={twoGisPublicHref}
-                yandexMapsHref={yandexMapsPublicHref}
+                {...unlockedContactHrefProps}
+                lockedContactAvailability={lockedContactOptions}
                 contactsUnlocked={catalogAccessUnlocked}
                 paywallCopy={{
                   title: tBrowse("paywall.title"),
