@@ -6,12 +6,17 @@ import {
   seoCategoryLinksForLocale,
 } from "@/lib/seo/seo-internal-links";
 import { COUNTRY_LINKS } from "@/lib/seo/stage2-content";
+import {
+  localizeLinkItem,
+  stage4Copy,
+} from "@/lib/seo/stage4-localized-content";
 import type { RouteLocale } from "@/lib/seo/route-locale";
 
 export async function SiteFooter() {
   const t = await getTranslations("Footer");
   const tb = await getTranslations("brand");
   const locale = (await getLocale()) as RouteLocale;
+  const copy = stage4Copy(locale);
 
   const legal = [
     { href: "/about", key: "about" as const },
@@ -36,7 +41,12 @@ export async function SiteFooter() {
     { href: "/for-sellers", label: "Продавцам" },
     { href: "/how-it-works", label: "Как работает" },
     { href: "/blog", label: "Блог" },
-  ];
+  ].map((item) => localizeLinkItem(locale, item));
+
+  const countryLinks = COUNTRY_LINKS.map((item) =>
+    localizeLinkItem(locale, item),
+  );
+  const countriesTitle = copy?.countries ?? "Страны";
 
   const categoryLinks = seoCategoryLinksForLocale(
     locale,
@@ -73,11 +83,14 @@ export async function SiteFooter() {
           ))}
         </nav>
 
-        <nav className={`mt-3 ${rowClass}`} aria-label="Dordoi.help по странам">
+        <nav
+          className={`mt-3 ${rowClass}`}
+          aria-label={`Dordoi.help: ${countriesTitle.toLowerCase()}`}
+        >
           <span className="text-[11px] font-medium text-muted-foreground">
-            Страны:
+            {countriesTitle}:
           </span>
-          {COUNTRY_LINKS.map((item) => (
+          {countryLinks.map((item) => (
             <Link key={item.href} href={item.href} className={linkClass}>
               {item.label}
             </Link>

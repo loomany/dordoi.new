@@ -34,6 +34,7 @@ export function BlogGuidePage({ locale, post }: Props) {
     guideEyebrow: copy?.guideEyebrow ?? "Гид Dordoi.help",
     faq: copy?.faq ?? "FAQ",
     mainSections: copy?.mainSections ?? "Основные разделы",
+    relatedLinks: copy?.usefulLinks ?? "Полезные ссылки",
     categories: copy?.categories ?? "Категории",
     countries: copy?.countries ?? "Страны",
     openCatalog: copy?.openCatalog ?? "Открыть каталог",
@@ -136,7 +137,7 @@ export function BlogGuidePage({ locale, post }: Props) {
 
         <aside className="space-y-4 lg:sticky lg:top-20">
           {articleLinks.length > 0 ? (
-            <RelatedLinks title="Полезные ссылки" links={articleLinks} />
+            <RelatedLinks title={labels.relatedLinks} links={articleLinks} />
           ) : null}
           <RelatedLinks title={labels.mainSections} links={coreLinks} />
           <RelatedLinks title={labels.categories} links={categoryLinks} />

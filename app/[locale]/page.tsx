@@ -19,7 +19,7 @@ export default async function HomePage({ params }: Props) {
     <div>
       <HeroSection />
       <LandingSections />
-      <HomeSeoGrowthLinks />
+      <HomeSeoGrowthLinks locale={locale} />
     </div>
   );
 }

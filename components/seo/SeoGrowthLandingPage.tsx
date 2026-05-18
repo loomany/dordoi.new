@@ -10,6 +10,7 @@ import { getStage3TrustContent } from "@/lib/seo/stage3-trust-content";
 import {
   localizeLinkItem,
   localizeRelatedGroupTitle,
+  stage4Copy,
 } from "@/lib/seo/stage4-localized-content";
 import { getStage5GuidesForCountry } from "@/lib/seo/stage5-guides";
 import type { SeoGrowthPageContent } from "@/lib/seo/stage2-content";
@@ -40,10 +41,18 @@ export function SeoGrowthLandingPage({
     localizeLinkItem(locale, link),
   );
   const answer = growthPageAnswer(locale, content.id);
-  const stage5GuideLinks = locale === "ru" ? getStage5GuidesForCountry(content.id) : [];
+  const copy = stage4Copy(locale);
+  const labels = {
+    nav: copy?.nav ?? "Навигация",
+    home: copy?.home ?? "Главная",
+    faq: copy?.faq ?? "Частые вопросы",
+    guides: copy?.guide ?? "Гайды",
+  };
+  const stage5GuideLinks =
+    locale === "ru" ? getStage5GuidesForCountry(content.id) : [];
   const relatedGroups =
     stage5GuideLinks.length > 0
-      ? [...relatedLinks, { title: "Гайды", links: stage5GuideLinks }]
+      ? [...relatedLinks, { title: labels.guides, links: stage5GuideLinks }]
       : relatedLinks;
   const localizedRelatedLinks = relatedGroups.map((group) => ({
     title: localizeRelatedGroupTitle(locale, group.title),
@@ -65,11 +74,11 @@ export function SeoGrowthLandingPage({
 
       <div className="mx-auto max-w-6xl space-y-8 px-4 py-10 sm:px-6 sm:py-12">
         <SeoBreadcrumbs
-          navLabel="Навигация"
+          navLabel={labels.nav}
           locale={locale}
           currentPageUrl={`${baseUrl()}/${locale}${content.path}`}
           items={[
-            { label: "Главная", href: "/" },
+            { label: labels.home, href: "/" },
             { label: content.h1 },
           ]}
         />
@@ -157,7 +166,7 @@ export function SeoGrowthLandingPage({
 
             <section className={cardClass}>
               <h2 className="text-xl font-semibold tracking-tight">
-                Частые вопросы
+                {labels.faq}
               </h2>
               <dl className="mt-4 space-y-4">
                 {faq.map((item) => (

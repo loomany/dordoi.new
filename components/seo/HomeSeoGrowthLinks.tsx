@@ -4,6 +4,10 @@ import {
   COUNTRY_LINKS,
   POPULAR_CATEGORY_LINKS,
 } from "@/lib/seo/stage2-content";
+import {
+  localizeLinkItems,
+  stage4Copy,
+} from "@/lib/seo/stage4-localized-content";
 
 const workflowLinks = [
   { href: "/how-it-works", label: "Как работает Dordoi.help" },
@@ -45,14 +49,26 @@ function LinkList({
   );
 }
 
-export function HomeSeoGrowthLinks() {
+export function HomeSeoGrowthLinks({ locale }: { locale: string }) {
+  const copy = stage4Copy(locale);
+  const labels = {
+    suppliers: copy?.suppliers ?? "Поставщики",
+    categories: copy?.categories ?? "Популярные категории",
+    countries: copy?.countries ?? "Страны доставки",
+    workflow: copy?.how ?? "Покупка и размещение",
+  };
+  const localizedSupplierLinks = localizeLinkItems(locale, supplierLinks);
+  const localizedCategoryLinks = localizeLinkItems(locale, POPULAR_CATEGORY_LINKS);
+  const localizedCountryLinks = localizeLinkItems(locale, COUNTRY_LINKS);
+  const localizedWorkflowLinks = localizeLinkItems(locale, workflowLinks);
+
   return (
     <section className="border-y border-border/60 bg-muted/20">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-2 lg:grid-cols-4">
-        <LinkList title="Поставщики" links={supplierLinks} />
-        <LinkList title="Популярные категории" links={POPULAR_CATEGORY_LINKS} />
-        <LinkList title="Страны доставки" links={COUNTRY_LINKS} />
-        <LinkList title="Покупка и размещение" links={workflowLinks} />
+        <LinkList title={labels.suppliers} links={localizedSupplierLinks} />
+        <LinkList title={labels.categories} links={localizedCategoryLinks} />
+        <LinkList title={labels.countries} links={localizedCountryLinks} />
+        <LinkList title={labels.workflow} links={localizedWorkflowLinks} />
       </div>
     </section>
   );

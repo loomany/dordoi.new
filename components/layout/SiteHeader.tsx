@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/sheet";
 import { useAuthDialog } from "@/components/auth/auth-dialog-context";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { localizeLinkItem } from "@/lib/seo/stage4-localized-content";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
 
@@ -251,10 +252,13 @@ export function SiteHeader() {
     { href: "/kargo-dordoi", label: "Карго", Icon: Truck },
     {
       href: "/how-it-works",
-      label: activeLocale === "uz" ? "Qanday ishlaydi" : "Как работает",
+      label: "Как работает",
       Icon: CircleHelp,
     },
-  ];
+  ].map((item) => ({
+    ...item,
+    label: localizeLinkItem(activeLocale, item).label,
+  }));
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">

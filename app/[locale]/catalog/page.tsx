@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AiAnswerBlock } from "@/components/seo/AiAnswerBlock";
 import { SafePageSchemaJsonLd } from "@/components/seo/SafePageSchemaJsonLd";
 import { createLoader } from "nuqs/server";
@@ -31,6 +31,7 @@ export default async function CatalogPage({ params, searchParams }: Props) {
   const { page: pageParsed, cat: catParsed, search: searchParsed } =
     loadCatalogSearchParams(sp);
   setRequestLocale(locale);
+  const seo = await getTranslations({ locale, namespace: "Seo.catalog" });
   const categorySlugs = normalizeCatalogCategorySlugs(catParsed ?? []);
   const answer = catalogAnswer(locale);
   return (
@@ -39,9 +40,9 @@ export default async function CatalogPage({ params, searchParams }: Props) {
         type="CollectionPage"
         locale={locale}
         path="/catalog"
-        name="Каталог поставщиков Дордой"
-        description="Каталог поставщиков рынка Дордой: категории, продавцы, байеры и услуги для оптовых покупателей."
-        keywords={["каталог Дордой", "поставщики Дордой", "рынок Дордой"]}
+        name={seo("title")}
+        description={seo("description")}
+        keywords={["Dordoi.help", "Dordoy catalog", "Dordoi suppliers"]}
       />
       <div className="mx-auto hidden w-full max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
         <AiAnswerBlock {...answer} />

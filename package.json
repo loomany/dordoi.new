@@ -13,6 +13,7 @@
     "report:i18n-identical-to-ru": "node scripts/list-overlay-identical-to-ru.mjs",
     "audit:seo-locales": "tsx scripts/audit-seo-locale-translations.mts",
     "seo:smoke:dordoi": "tsx scripts/seo/smoke-dordoi-seo.ts",
+    "seo:i18n:full": "tsx scripts/seo/smoke-dordoi-i18n-full.ts",
     "audit:favicon": "tsx scripts/seo/audit-favicon.mts",
     "audit:i18n": "tsx scripts/audit-full-i18n.mts",
     "i18n:full": "tsx scripts/i18n-audit-fix-all.mts",

@@ -34,6 +34,7 @@ type LocaleCopy = {
   nav: string;
   home: string;
   mainSections: string;
+  usefulLinks: string;
   safeAccessTitle: string;
   safeAccessBody: string;
   notSellerBody: string;
@@ -56,11 +57,12 @@ const COPY: Record<LocalizedRouteLocale, LocaleCopy> = {
     blog: "Блог",
     openCatalog: "Каталогты ашу",
     read: "Оқу",
-    guide: "Гид",
-    guideEyebrow: "Dordoi.help гиду",
-    nav: "Навигация",
+    guide: "Нұсқаулық",
+    guideEyebrow: "Dordoi.help нұсқаулығы",
+    nav: "Бағдарлау",
     home: "Басты бет",
     mainSections: "Негізгі бөлімдер",
+    usefulLinks: "Пайдалы сілтемелер",
     safeAccessTitle: "Контактке қауіпсіз қолжетімділік",
     safeAccessBody:
       "Dordoi.help ашық беттерде сатушының нақты телефонын, мессенджерін, әлеуметтік сілтемесін және дәл орналасуын жарияламауы керек. Контакт әрекеттері сервис ережесі бойынша қолжетімділік ашылғаннан кейін ғана беріледі.",
@@ -84,11 +86,12 @@ const COPY: Record<LocalizedRouteLocale, LocaleCopy> = {
     blog: "Блог",
     openCatalog: "Каталогду ачуу",
     read: "Окуу",
-    guide: "Гид",
-    guideEyebrow: "Dordoi.help гиди",
-    nav: "Навигация",
+    guide: "Колдонмо",
+    guideEyebrow: "Dordoi.help колдонмосу",
+    nav: "Багыттоо",
     home: "Башкы бет",
     mainSections: "Негизги бөлүмдөр",
+    usefulLinks: "Пайдалуу шилтемелер",
     safeAccessTitle: "Контактка коопсуз доступ",
     safeAccessBody:
       "Dordoi.help ачык беттерде сатуучунун так телефонун, мессенджерин, социалдык шилтемесин жана так жайгашуусун жарыялабашы керек. Контакт аракеттери сервистин эрежеси боюнча доступ ачылгандан кийин берилет.",
@@ -117,6 +120,7 @@ const COPY: Record<LocalizedRouteLocale, LocaleCopy> = {
     nav: "Navigatsiya",
     home: "Bosh sahifa",
     mainSections: "Asosiy bo'limlar",
+    usefulLinks: "Foydali havolalar",
     safeAccessTitle: "Kontaktlarga xavfsiz kirish",
     safeAccessBody:
       "Dordoi.help ochiq sahifalarda sotuvchining aniq telefoni, messenjeri, ijtimoiy havolasi va aniq joylashuvini e'lon qilmasligi kerak. Kontakt amallari servis qoidalari bo'yicha kirish ochilgandan keyin beriladi.",
@@ -145,6 +149,7 @@ const COPY: Record<LocalizedRouteLocale, LocaleCopy> = {
     nav: "Навигатсия",
     home: "Саҳифаи асосӣ",
     mainSections: "Қисмҳои асосӣ",
+    usefulLinks: "Пайвандҳои муфид",
     safeAccessTitle: "Дастрасии бехатар ба контактҳо",
     safeAccessBody:
       "Dordoi.help набояд дар саҳифаҳои кушода телефони дақиқ, мессенҷер, шабакаи иҷтимоӣ ва ҷойгиршавии дақиқи фурӯшандаро нашр кунад. Амалҳои контактӣ баъд аз кушодани дастрасӣ тибқи қоидаҳои сервис дода мешаванд.",
@@ -166,6 +171,8 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/faq": "FAQ",
     "/for-buyers": "Сатып алушыларға",
     "/for-sellers": "Сатушыларға",
+    "/sell": "Орналастыру",
+    "/blog": "Блог",
     "/rynok-dordoi": "Дордой нарығы",
     "/dordoi-optom": "Дордой көтерме",
     "/dordoi-kazakhstan": "Қазақстан",
@@ -179,6 +186,9 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/categories/obuv-optom": "Аяқ киім",
     "/categories/tkani-shveynaya-furnitura-optom": "Маталар",
     "/categories/sumki-kozhgalantereya-optom": "Сөмкелер",
+    "/categories/nizhnee-bele-kupalniki-optom": "Іш киім",
+    "/categories/tekstil-dlya-doma-optom": "Үй тоқыма",
+    "/categories/aksessuary-optom": "Аксессуарлар",
   },
   kg: {
     "/catalog": "Каталог",
@@ -190,6 +200,8 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/faq": "FAQ",
     "/for-buyers": "Сатып алуучуларга",
     "/for-sellers": "Сатуучуларга",
+    "/sell": "Жайгаштыруу",
+    "/blog": "Блог",
     "/rynok-dordoi": "Дордой базары",
     "/dordoi-optom": "Дордой оптом",
     "/dordoi-kazakhstan": "Казакстан",
@@ -203,6 +215,9 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/categories/obuv-optom": "Бут кийим",
     "/categories/tkani-shveynaya-furnitura-optom": "Кездемелер",
     "/categories/sumki-kozhgalantereya-optom": "Сумкалар",
+    "/categories/nizhnee-bele-kupalniki-optom": "Ич кийим",
+    "/categories/tekstil-dlya-doma-optom": "Үй текстили",
+    "/categories/aksessuary-optom": "Аксессуарлар",
   },
   uz: {
     "/catalog": "Katalog",
@@ -214,6 +229,8 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/faq": "FAQ",
     "/for-buyers": "Xaridorlarga",
     "/for-sellers": "Sotuvchilarga",
+    "/sell": "Joylashtirish",
+    "/blog": "Blog",
     "/rynok-dordoi": "Dordoy bozori",
     "/dordoi-optom": "Dordoy ulgurji",
     "/dordoi-kazakhstan": "Qozog'iston",
@@ -227,6 +244,9 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/categories/obuv-optom": "Poyabzal",
     "/categories/tkani-shveynaya-furnitura-optom": "Mato",
     "/categories/sumki-kozhgalantereya-optom": "Sumkalar",
+    "/categories/nizhnee-bele-kupalniki-optom": "Ichki kiyim",
+    "/categories/tekstil-dlya-doma-optom": "Uy tekstili",
+    "/categories/aksessuary-optom": "Aksessuarlar",
   },
   tj: {
     "/catalog": "Каталог",
@@ -238,6 +258,8 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/faq": "FAQ",
     "/for-buyers": "Барои харидорон",
     "/for-sellers": "Барои фурӯшандагон",
+    "/sell": "Ҷойгиркунӣ",
+    "/blog": "Блог",
     "/rynok-dordoi": "Бозори Дордой",
     "/dordoi-optom": "Дордой опт",
     "/dordoi-kazakhstan": "Қазоқистон",
@@ -251,6 +273,9 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/categories/obuv-optom": "Пойафзал",
     "/categories/tkani-shveynaya-furnitura-optom": "Матоъ",
     "/categories/sumki-kozhgalantereya-optom": "Сумкаҳо",
+    "/categories/nizhnee-bele-kupalniki-optom": "Либоси зер",
+    "/categories/tekstil-dlya-doma-optom": "Матои хонагӣ",
+    "/categories/aksessuary-optom": "Аксессуарҳо",
   },
 };
 

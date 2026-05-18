@@ -91,6 +91,21 @@ function optionalText(value: string | null | undefined, fallback = "—"): strin
   return trimmed || fallback;
 }
 
+function coarseDordoiLocation(locale: string): string {
+  switch (locale) {
+    case "kk":
+      return "Дордой нарығы, Бішкек";
+    case "kg":
+      return "Дордой базары, Бишкек";
+    case "uz":
+      return "Dordoy bozori, Bishkek";
+    case "tj":
+      return "Бозори Дордой, Бишкек";
+    default:
+      return "Рынок Дордой, Бишкек";
+  }
+}
+
 function MediaImage({
   src,
   alt,
@@ -189,7 +204,7 @@ export async function DatabaseProviderProfileView({
   ];
   const displayLocationRow = catalogAccessUnlocked
     ? (showcase?.locationRow ?? vendor.location_row)
-    : "Рынок Дордой, Бишкек";
+    : coarseDordoiLocation(locale);
   const listingKey = catalogListingKeyFromSlug(vendor.slug);
   const initialFavorite = favoriteKeys.has(listingKey);
   const primaryWhatsapp = catalogAccessUnlocked
@@ -256,7 +271,7 @@ export async function DatabaseProviderProfileView({
       country: tVendorFaq("defaultCountry"),
       description: aboutDescriptionText,
       salesType: cardRow.display.tradeType,
-      minOrder: publicVendor.min_batch,
+      minOrder: displayVendorTerm(publicVendor.min_batch, t("termMoqFallback")),
       locationRow: publicVendor.location_row,
       hasWhatsapp: false,
       hasPhone: false,

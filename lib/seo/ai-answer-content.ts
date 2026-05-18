@@ -1,4 +1,8 @@
 import type { LinkItem } from "@/lib/seo/stage2-content";
+import {
+  localizeLinkItems,
+  stage4Copy,
+} from "@/lib/seo/stage4-localized-content";
 
 export type AiAnswerContent = {
   title: string;
@@ -20,6 +24,45 @@ function title(locale: string) {
 
 function link(href: string, label: string): LinkItem {
   return { href, label };
+}
+
+function localizedAnswer(locale: string, content: AiAnswerContent): AiAnswerContent {
+  return { ...content, links: localizeLinkItems(locale, content.links) };
+}
+
+function localizedGrowthPageAnswer(
+  locale: string,
+  pageId: string,
+): AiAnswerContent | undefined {
+  const copy = stage4Copy(locale);
+  if (!copy) return undefined;
+
+  const pageTitle =
+    pageId === "about"
+      ? `Dordoi.help: ${copy.dordoiMarket}`
+      : pageId === "for-buyers"
+        ? copy.buyers
+        : pageId === "for-sellers"
+          ? copy.sellers
+          : pageId === "how-it-works"
+            ? copy.how
+            : pageId === "faq"
+              ? copy.faq
+              : title(locale);
+  const firstParagraph =
+    locale === "kk"
+      ? `Dordoi.help ${copy.dordoiMarket.toLowerCase()}, ${copy.catalog.toLowerCase()}, ${copy.buyerService.toLowerCase()} және ${copy.cargo.toLowerCase()} туралы ашық ақпарат береді. ${copy.safeAccessBody}`
+      : locale === "kg"
+        ? `Dordoi.help ${copy.dordoiMarket.toLowerCase()}, ${copy.catalog.toLowerCase()}, ${copy.buyerService.toLowerCase()} жана ${copy.cargo.toLowerCase()} тууралуу ачык маалымат берет. ${copy.safeAccessBody}`
+        : locale === "uz"
+          ? `Dordoi.help ${copy.dordoiMarket.toLowerCase()}, ${copy.catalog.toLowerCase()}, ${copy.buyerService.toLowerCase()} va ${copy.cargo.toLowerCase()} haqida ochiq ma'lumot beradi. ${copy.safeAccessBody}`
+          : `Dordoi.help дар бораи ${copy.dordoiMarket.toLowerCase()}, ${copy.catalog.toLowerCase()}, ${copy.buyerService.toLowerCase()} ва ${copy.cargo.toLowerCase()} маълумоти кушода медиҳад. ${copy.safeAccessBody}`;
+
+  return localizedAnswer(locale, {
+    title: pageTitle,
+    paragraphs: [firstParagraph, copy.notSellerBody],
+    links: [link("/catalog", "Каталог"), link("/how-it-works", "Как работает"), link("/faq", "FAQ")],
+  });
 }
 
 export function catalogAnswer(locale: string): AiAnswerContent {
@@ -53,13 +96,13 @@ export function catalogAnswer(locale: string): AiAnswerContent {
       links: [link("/how-it-works", "Чӣ тавр кор мекунад"), link("/faq", "FAQ")],
     },
   };
-  return localized[locale] ?? {
+  return localizedAnswer(locale, localized[locale] ?? {
     title: title(locale),
     paragraphs: [
       "Каталог Dordoi.help помогает найти категории и поставщиков рынка Дордой. Часть информации доступна бесплатно, а контакты продавцов открываются через controlled access.",
     ],
     links: [link("/how-it-works", "Как работает доступ"), link("/faq", "FAQ")],
-  };
+  });
 }
 
 export function suppliersAnswer(locale: string): AiAnswerContent {
@@ -93,13 +136,13 @@ export function suppliersAnswer(locale: string): AiAnswerContent {
       links: [link("/catalog", "Каталог"), link("/for-buyers", "Барои харидорон")],
     },
   };
-  return localized[locale] ?? {
+  return localizedAnswer(locale, localized[locale] ?? {
     title: title(locale),
     paragraphs: [
       "Раздел поставщиков помогает ориентироваться в продавцах и категориях рынка Дордой. Приватные контакты защищены и не публикуются открыто.",
     ],
     links: [link("/catalog", "Открыть каталог"), link("/for-buyers", "Покупателям")],
-  };
+  });
 }
 
 export function growthPageAnswer(locale: string, pageId: string): AiAnswerContent {
@@ -141,19 +184,21 @@ export function growthPageAnswer(locale: string, pageId: string): AiAnswerConten
       links: [link("/how-it-works", "Как работает"), link("/catalog", "Каталог")],
     },
   };
-  if (ru[pageId]) return ru[pageId];
-  return {
+  const localized = localizedGrowthPageAnswer(locale, pageId);
+  if (localized) return localized;
+  if (ru[pageId]) return localizedAnswer(locale, ru[pageId]);
+  return localizedAnswer(locale, {
     title: title(locale),
     paragraphs: [
       "Dordoi.help помогает покупателям ориентироваться в рынке Дордой: находить категории, читать инструкции, переходить к каталогу, байерам и карго-сценариям. Условия цены, доставки и проверки всегда нужно уточнять отдельно.",
     ],
     links: [link("/catalog", "Каталог"), link("/faq", "FAQ")],
-  };
+  });
 }
 
 export function coreLandingAnswer(locale: string, pageId: string): AiAnswerContent {
   if (pageId === "kargo-dordoi") {
-    return {
+    return localizedAnswer(locale, {
       title: title(locale),
       paragraphs: [
         locale === "uz"
@@ -167,19 +212,35 @@ export function coreLandingAnswer(locale: string, pageId: string): AiAnswerConte
                 : "Карго помогает организовать доставку товаров с Дордоя, но сроки, стоимость и условия зависят от маршрута, объёма, веса и оператора.",
       ],
       links: [link("/catalog", "Каталог"), link("/buyer-service", "Байер"), link("/faq", "FAQ")],
-    };
+    });
   }
-  return {
+  const copy = stage4Copy(locale);
+  if (copy) {
+    const body =
+      locale === "kk"
+        ? `Dordoi.help ${copy.dordoiMarket.toLowerCase()}, көтерме санаттар, ${copy.suppliers.toLowerCase()}, ${copy.buyerService.toLowerCase()} және ${copy.cargo.toLowerCase()} туралы түсіндіреді. ${copy.safeAccessBody}`
+        : locale === "kg"
+          ? `Dordoi.help ${copy.dordoiMarket.toLowerCase()}, оптом категориялар, ${copy.suppliers.toLowerCase()}, ${copy.buyerService.toLowerCase()} жана ${copy.cargo.toLowerCase()} тууралуу түшүндүрөт. ${copy.safeAccessBody}`
+          : locale === "uz"
+            ? `Dordoi.help ${copy.dordoiMarket.toLowerCase()}, ulgurji toifalar, ${copy.suppliers.toLowerCase()}, ${copy.buyerService.toLowerCase()} va ${copy.cargo.toLowerCase()} haqida tushuntiradi. ${copy.safeAccessBody}`
+            : `Dordoi.help дар бораи ${copy.dordoiMarket.toLowerCase()}, категорияҳои яклухт, ${copy.suppliers.toLowerCase()}, ${copy.buyerService.toLowerCase()} ва ${copy.cargo.toLowerCase()} мефаҳмонад. ${copy.safeAccessBody}`;
+    return localizedAnswer(locale, {
+      title: title(locale),
+      paragraphs: [body],
+      links: [link("/catalog", "Каталог"), link("/for-buyers", "Покупателям"), link("/blog", "Гайды")],
+    });
+  }
+  return localizedAnswer(locale, {
     title: title(locale),
     paragraphs: [
       "Dordoi.help объясняет рынок Дордой, оптовые категории, поставщиков, байеров и доставку для покупателей из СНГ. Контакты продавцов защищены и открываются только по правилам доступа.",
     ],
     links: [link("/catalog", "Каталог"), link("/for-buyers", "Покупателям"), link("/blog", "Гайды")],
-  };
+  });
 }
 
 export function buyerServiceAnswer(locale: string): AiAnswerContent {
-  return {
+  return localizedAnswer(locale, {
     title: title(locale),
     paragraphs: [
       locale === "uz"
@@ -193,11 +254,11 @@ export function buyerServiceAnswer(locale: string): AiAnswerContent {
               : "Байер может помочь покупателю с поиском, уточнением деталей и организацией закупки, но условия работы и ответственность нужно согласовывать отдельно.",
     ],
     links: [link("/catalog", "Каталог"), link("/kargo-dordoi", "Карго"), link("/faq", "FAQ")],
-  };
+  });
 }
 
 export function categoryAnswer(locale: string, categoryName: string): AiAnswerContent {
-  return {
+  return localizedAnswer(locale, {
     title: title(locale),
     paragraphs: [
       locale === "uz"
@@ -211,11 +272,11 @@ export function categoryAnswer(locale: string, categoryName: string): AiAnswerCo
               : `Эта категория помогает покупателям найти поставщиков и товары на рынке Дордой по направлению «${categoryName}». Для связи с продавцом используйте доступ к контактам на Dordoi.help.`,
     ],
     links: [link("/catalog", "Каталог"), link("/buyer-service", "Байер"), link("/kargo-dordoi", "Карго")],
-  };
+  });
 }
 
 export function blogAnswer(locale: string, h1: string): AiAnswerContent {
-  return {
+  return localizedAnswer(locale, {
     title: title(locale),
     paragraphs: [
       locale === "uz"
@@ -229,5 +290,5 @@ export function blogAnswer(locale: string, h1: string): AiAnswerContent {
               : `Этот гид отвечает на вопрос «${h1}» и помогает покупателю безопаснее подготовиться к закупке на рынке Дордой. В материале нет списков телефонов или социальных сетей продавцов; для контактов используйте официальные страницы Dordoi.help.`,
     ],
     links: [link("/catalog", "Каталог"), link("/how-it-works", "Как работает"), link("/faq", "FAQ")],
-  };
+  });
 }
