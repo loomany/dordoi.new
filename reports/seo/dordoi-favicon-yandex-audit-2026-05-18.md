@@ -150,46 +150,66 @@ Expected after deploy:
 - `favicon.ico` **> 1 KB**, image offset starts with **`0x28`** (BITMAPINFOHEADER), **not** `0x89 PNG`
 - `npm run audit:favicon` with `BASE_URL=https://dordoi.help` — all PASS
 
-## 9. Yandex Webmaster — manual steps
+## 9. Yandex Webmaster — manual steps (post-deploy)
 
-1. Deploy fix (commit + push when approved).
-2. In Yandex Webmaster → **Site diagnostics** / favicon section → **Add** or **Re-check favicon**.
-3. Use **Server response check** tool on `https://dordoi.help/favicon.ico` — expect 200 + image.
-4. Wait **up to ~2 weeks** for favicon DB refresh (Yandex documents periodic updates).
-5. If warning persists after deploy + recheck, confirm ICO bytes on live (no PNG magic inside ICO).
+See **§12** for current manual steps after deploy.
 
 ## 10. Remaining risks
 
-- Yandex may still show old warning until recrawl (live currently serves old 603 B PNG-in-ICO until deploy).
+- Yandex may still show the old warning until Webmaster recheck + favicon DB refresh (up to ~2 weeks).
 - Favicon visual is brand SVG rasterized — design swap possible later via `npm run generate:brand-icons`.
 - `favicon-32x32.png` / `icon-192.png` paths remain 404 by design; metadata uses `favicon-32.png` and `/brand/logo-192.png`.
 
-## 11. Suggested commit (pending owner approval)
+## 11. Deploy and live validation
+
+| Item | Value |
+|------|--------|
+| Commit | `0be316d` — `fix(seo): restore favicon availability for crawlers` |
+| Push | `a351ec9..0be316d` → `origin/main` — success |
+| Deploy | Live updated (audit passed on first post-push check) |
+
+### Live HEAD checks
+
+| URL | Status | Content-Type | Size |
+|-----|--------|--------------|------|
+| `/favicon.ico` | 200 | `image/x-icon` | **5430 B** |
+| `/favicon-16.png` | 200 | `image/png` | 347 B |
+| `/favicon-32.png` | 200 | `image/png` | 581 B |
+| `/apple-touch-icon.png` | 200 | `image/png` | 3310 B |
+
+### YandexFavicons user-agent
 
 ```
-fix(seo): restore favicon availability for crawlers
+curl -I -A "Mozilla/5.0 (compatible; YandexFavicons/1.0; +http://yandex.com/bots)" https://dordoi.help/favicon.ico
 ```
 
-**Do not push without owner approval.**
+Result: **200**, `image/x-icon`, 5430 B, DIB magic **`0x28`**, **not** PNG-in-ICO.
 
-### `git diff --stat` (preview)
+### robots.txt
 
+`/favicon.ico` and icon PNG paths **not** blocked (`Disallow: /favicon` absent).
+
+### Live audit
+
+```bash
+BASE_URL=https://dordoi.help npm run audit:favicon
 ```
- app/layout.tsx                   |   3 +-
- app/manifest.ts                  |   7 ++-
- public/favicon.ico               | Bin 603 -> 5430 bytes
- public/favicon-16.png            |  new
- scripts/generate-brand-icons.mjs |  89 +++++++++++++++++++++++++++++++++------
- scripts/seo/audit-favicon.mts    |  16 ++++++-
-```
+
+Result: **6/6 PASS** (including PNG-in-ICO guard on `/favicon.ico`).
+
+## 12. Yandex Webmaster — manual steps
+
+1. In Yandex Webmaster → **Site diagnostics** / favicon → **Add** or **Re-check favicon**.
+2. Server response check on `https://dordoi.help/favicon.ico` — expect 200 + image.
+3. Wait up to ~2 weeks for favicon DB refresh if UI still shows stale warning.
 
 ## Summary
 
-| Item | Before (live) | After fix (local) |
-|------|---------------|-------------------|
+| Item | Before (live) | After deploy (live) |
+|------|---------------|---------------------|
 | `/favicon.ico` HTTP | 200 | 200 |
-| ICO format | PNG-in-ICO (603 B) | BMP 16+32 (5430 B) |
-| YandexFavicons decode | Likely **fail** | Expected **OK** |
-| Audit script | HTTP-only pass | Detects PNG-in-ICO |
+| ICO format | PNG-in-ICO (603 B) | BMP 16+32 (**5430 B**) |
+| YandexFavicons decode | Likely **fail** | **OK** (BMP DIB `0x28`) |
+| `audit:favicon` | Failed PNG-in-ICO check | **6/6 PASS** |
 
-**Verdict:** Root cause identified (PNG-in-ICO). Minimal fix ready for owner review and deploy.
+**Final verdict:** Fix deployed. Live favicon is crawler-safe BMP-in-ICO. Re-check in Yandex Webmaster manually.
