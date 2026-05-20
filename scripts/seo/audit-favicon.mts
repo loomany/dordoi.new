@@ -10,10 +10,19 @@ const baseUrl = (process.env.BASE_URL ?? "https://dordoi.help").replace(/\/+$/, 
 
 const REQUIRED_STATIC = [
   { path: "/favicon.ico", minBytes: 100, contentTypes: ["image/x-icon", "image/vnd.microsoft.icon"] },
+  { path: "/favicon-16.png", minBytes: 50, contentTypes: ["image/png"] },
   { path: "/favicon-32.png", minBytes: 100, contentTypes: ["image/png"] },
   { path: "/favicon-120.png", minBytes: 500, contentTypes: ["image/png"] },
   { path: "/apple-touch-icon.png", minBytes: 500, contentTypes: ["image/png"] },
 ] as const;
+
+function isPngInIco(buf: Buffer) {
+  if (buf.length < 30) return false;
+  const count = buf.readUInt16LE(4);
+  if (count < 1) return false;
+  const offset = buf.readUInt32LE(18);
+  return offset + 4 <= buf.length && buf[offset] === 0x89 && buf[offset + 1] === 0x50;
+}
 
 async function checkStatic(path: string, minBytes: number, contentTypes: readonly string[]) {
   const url = `${baseUrl}${path}`;
@@ -24,9 +33,10 @@ async function checkStatic(path: string, minBytes: number, contentTypes: readonl
   const ct = res.headers.get("content-type")?.split(";")[0]?.trim() ?? "";
   const buf = res.ok ? Buffer.from(await res.arrayBuffer()) : Buffer.alloc(0);
   const typeOk = contentTypes.some((t) => ct === t || ct.startsWith(`${t};`));
+  const pngInIco = path === "/favicon.ico" && buf.length > 0 && isPngInIco(buf);
   return {
     path,
-    ok: res.ok && buf.length >= minBytes && typeOk,
+    ok: res.ok && buf.length >= minBytes && typeOk && !pngInIco,
     status: res.status,
     contentType: ct,
     bytes: buf.length,
@@ -37,7 +47,9 @@ async function checkStatic(path: string, minBytes: number, contentTypes: readonl
           ? `too small (${buf.length} < ${minBytes} bytes)`
           : !typeOk
             ? `unexpected Content-Type ${ct || "(empty)"}`
-            : undefined,
+            : pngInIco
+              ? "PNG compressed inside ICO (YandexFavicons may fail)"
+              : undefined,
   };
 }
 
