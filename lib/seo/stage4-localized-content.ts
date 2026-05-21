@@ -11,6 +11,7 @@ import {
   localizedBlogMeta,
 } from "@/lib/seo/dordoi-blog-localized";
 import type { RouteLocale } from "@/lib/seo/route-locale";
+import { localizedCategoryHref } from "@/lib/seo/seo-internal-links";
 
 type LocalizedRouteLocale = Exclude<RouteLocale, "ru">;
 
@@ -286,7 +287,9 @@ export function stage4Copy(locale: string): LocaleCopy | undefined {
 
 export function localizeLinkItem(locale: string, link: LinkItem): LinkItem {
   const labels = stage4Copy(locale) ? LINK_LABELS[locale as LocalizedRouteLocale] : undefined;
-  return labels?.[link.href] ? { ...link, label: labels[link.href] } : link;
+  const href = localizedCategoryHref(locale, link.href);
+  const label = labels?.[link.href] ?? link.label;
+  return href === link.href && label === link.label ? link : { href, label };
 }
 
 export function localizeLinkItems(locale: string, links: LinkItem[]): LinkItem[] {

@@ -1,6 +1,8 @@
 import type { RouteLocale } from "@/lib/seo/route-locale";
+import { isRouteLocale } from "@/lib/seo/route-locale";
 import {
   resolveSeoCategoryById,
+  resolveSeoCategoryBySlug,
   seoCategoryPath,
 } from "@/lib/catalog/seo-category-routes";
 
@@ -52,6 +54,18 @@ export type SeoInternalLink = {
   href: string;
   label: string;
 };
+
+const CATEGORY_HREF_RE = /^\/categories\/([^/?#]+)$/;
+
+/** Map legacy RU category paths in link seeds to locale-specific SEO category URLs. */
+export function localizedCategoryHref(locale: string, href: string): string {
+  if (!isRouteLocale(locale)) return href;
+  const match = href.match(CATEGORY_HREF_RE);
+  if (!match) return href;
+  const route = resolveSeoCategoryBySlug("ru", match[1]);
+  if (!route) return href;
+  return seoCategoryPath(locale, route);
+}
 
 export function seoCategoryLinksForLocale(
   locale: RouteLocale,

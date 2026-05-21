@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { CatalogBrowseCardGrid } from "@/components/catalog/CatalogBrowseCardGrid";
@@ -18,6 +18,7 @@ import { safeVendorItemListName } from "@/lib/catalog/vendor-privacy";
 import {
   getAllSeoCategoryStaticParams,
   resolveSeoCategoryBySlug,
+  seoCategoryPath,
 } from "@/lib/catalog/seo-category-routes";
 import { seoCategoryPageLabels } from "@/lib/seo/seo-page-labels";
 import { isRouteLocale, type RouteLocale } from "@/lib/seo/route-locale";
@@ -48,6 +49,11 @@ export default async function SeoCategoryPage({ params }: Props) {
   if (!route) notFound();
 
   const routeLocale = locale as RouteLocale;
+  const canonicalSlug = route.slugsByLocale[routeLocale];
+  if (categorySlug !== canonicalSlug) {
+    permanentRedirect(`/${locale}${seoCategoryPath(routeLocale, route)}`);
+  }
+
   const profile = await getSessionProfile();
   const catalogAccessUnlocked = await hasFullCatalogAccess(profile);
   const { vendors: fetchedVendors, totalCount } =

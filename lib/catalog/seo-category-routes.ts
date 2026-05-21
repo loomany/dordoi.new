@@ -28,7 +28,11 @@ export function resolveSeoCategoryBySlug(
   slug: string,
 ): SeoCategoryRoute | undefined {
   if (!isRouteLocale(locale)) return undefined;
-  return SLUG_INDEX.get(`${locale}:${slug.trim()}`);
+  const trimmed = slug.trim();
+  const direct = SLUG_INDEX.get(`${locale}:${trimmed}`);
+  if (direct) return direct;
+  // Legacy links used RU slugs on /kk, /kg, etc.
+  return SLUG_INDEX.get(`ru:${trimmed}`);
 }
 
 export function resolveSeoCategoryById(id: string): SeoCategoryRoute | undefined {
