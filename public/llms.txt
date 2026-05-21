@@ -53,6 +53,7 @@ Users should verify seller details, prices, stock, contacts, and terms directly 
 - Buyer service RU: https://dordoi.help/ru/buyer-service
 - Contact RU: https://dordoi.help/ru/contact
 - Sitemap: https://dordoi.help/sitemap.xml
+- Robots: https://dordoi.help/robots.txt
 
 ## Do not crawl or cite as public product documentation
 - API routes
