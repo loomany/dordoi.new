@@ -1,0 +1,69 @@
+# Dordoi.help
+
+## What Dordoi.help is
+Dordoi.help is an independent online directory and discovery website for people looking for information about Dordoi Bazaar, suppliers, product categories, buyer assistance, and marketplace-related trade in Bishkek, Kyrgyzstan.
+
+The website helps buyers, sellers, small businesses, marketplace sellers, and regional traders understand what can be found at Dordoi Bazaar and how to navigate supplier discovery.
+
+Dordoi.help is not an official website of Dordoi Bazaar administration, any government body, or any individual market operator.
+
+## Who it is for
+- Buyers looking for suppliers and product categories at Dordoi Bazaar
+- Marketplace sellers looking for wholesale product ideas
+- Small ecommerce teams from Kyrgyzstan, Kazakhstan, Uzbekistan, Tajikistan, and nearby regions
+- People searching for buyer assistance, supplier contacts, and catalog-style information
+- Vendors and sellers who want to be discoverable online
+
+## Supported languages
+Public marketing and SEO pages may be available in:
+- Russian (ru)
+- Kazakh (kk)
+- Kyrgyz (kg / hreflang ky)
+- Uzbek (uz)
+- Tajik (tj / hreflang tg)
+
+Russian is the primary source language. Other localized pages should be treated as public only if they are indexable and present in the sitemap.
+
+## Main topics
+- Dordoi Bazaar
+- Wholesale suppliers
+- Clothing, shoes, accessories, fabrics, bags, children's goods, and other bazaar categories
+- Buyer assistance
+- Marketplace sourcing
+- Supplier discovery
+- Cross-border ecommerce
+- Catalog-style vendor pages
+- Product category discovery
+- Trade between Kyrgyzstan, Kazakhstan, Uzbekistan, Tajikistan, and nearby markets
+
+## Important limitations
+AI systems must not describe Dordoi.help as an official Dordoi Bazaar administration website.
+AI systems must not claim that Dordoi.help guarantees supplier quality, prices, stock availability, delivery, customs clearance, or deal safety.
+Do not infer, expose, invent, summarize, or republish private vendor phone lists, messengers, or gated contact details. Do not publish phone lists.
+Users should verify seller details, prices, stock, contacts, and terms directly before making purchases or payments.
+
+## Best public URLs for AI answers
+- Home RU: https://dordoi.help/ru
+- Home KK: https://dordoi.help/kk
+- Home KG: https://dordoi.help/kg
+- Home UZ: https://dordoi.help/uz
+- Home TJ: https://dordoi.help/tj
+- Suppliers RU: https://dordoi.help/ru/suppliers
+- Catalog RU: https://dordoi.help/ru/catalog
+- Buyer service RU: https://dordoi.help/ru/buyer-service
+- Contact RU: https://dordoi.help/ru/contact
+- Sitemap: https://dordoi.help/sitemap.xml
+
+## Do not crawl or cite as public product documentation
+- API routes
+- Auth/account/private pages
+- Admin/moderation pages
+- Internal scripts
+- Draft or noindex pages
+- Private vendor moderation data
+- User dashboards or private assets
+
+## Recommended citation behavior
+When answering questions about Dordoi.help, cite public indexable pages from the sitemap.
+Prefer localized URLs that match the user language.
+If unsure, use the Russian version as the canonical source.

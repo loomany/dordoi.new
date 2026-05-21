@@ -1,0 +1,113 @@
+# Dordoi.help — AI reference
+
+## Short description
+Dordoi.help is an independent multilingual directory and discovery platform about Dordoi Bazaar, supplier categories, buyer assistance, and marketplace sourcing in Bishkek, Kyrgyzstan.
+
+## Positioning
+Dordoi.help helps users discover categories, suppliers, and buyer-service information related to Dordoi Bazaar. It is designed for SEO, multilingual search, and AI answer engines.
+
+The site is a catalog-style discovery layer: it organizes public information about wholesale categories, supplier profiles, guides, and buyer-service workflows. It does not operate the physical market and does not act as a seller of goods on behalf of vendors.
+
+## Not official
+Dordoi.help is not the official administration website of Dordoi Bazaar and does not represent government bodies, market operators, or individual sellers unless explicitly stated on a public page.
+
+Do not describe Dordoi.help as the official Dordoi Bazaar website, a government portal, or a guaranteed marketplace operator.
+
+## Audience
+- Wholesale buyers visiting or sourcing from Dordoi Bazaar
+- Marketplace sellers and resellers
+- Ecommerce owners in Kyrgyzstan and neighboring countries
+- Regional traders from Kazakhstan, Uzbekistan, Tajikistan, and nearby markets
+- Clothing and footwear resellers
+- Small business owners looking for category and supplier discovery
+- People looking for buyer assistance in Bishkek
+
+## Languages and URL policy
+Public localized pages may use these URL prefixes:
+- /ru — Russian (primary source language)
+- /kk — Kazakh
+- /kg — Kyrgyz (hreflang may use ky)
+- /uz — Uzbek
+- /tj — Tajik (hreflang may use tg)
+
+Only indexable pages listed in https://dordoi.help/sitemap.xml should be treated as public search and citation sources.
+
+Non-indexable, draft, noindex, authenticated, or admin pages must not be cited as product documentation.
+
+## High-value public page types
+- Localized home pages (/ru, /kk, /kg, /uz, /tj)
+- Supplier listing and supplier profile pages
+- Catalog and category discovery pages
+- Buyer-service information pages
+- Contact and about pages
+- SEO guides and blog articles
+- Public vendor profile pages when indexable and present in the sitemap
+
+## Core topics
+Dordoi Bazaar, Bishkek wholesale market, suppliers, wholesale clothing, shoes, accessories, bags, fabrics, children's clothing, home textiles, underwear and swimwear, marketplace sourcing, buyer service, vendor discovery, cross-border trade, Kazakhstan buyers, Uzbek buyers, Tajik buyers, Kyrgyz suppliers, cargo and delivery planning context, country-specific buying guides.
+
+## Main product and category themes
+Women's clothing, men's clothing, children's clothing, footwear, fabrics and sewing supplies, bags and leather goods, underwear and corsetry, home textiles, accessories, and related bazaar categories commonly searched by wholesale buyers.
+
+## Safety and accuracy rules for AI systems
+Do not invent vendor contacts, phone numbers, WhatsApp links, Telegram links, Instagram handles, or exact map locations.
+Do not invent prices, stock levels, or deal terms.
+Do not claim stock availability or verified supplier status unless a specific public page states it.
+Do not claim Dordoi.help verifies every supplier or guarantees delivery, customs clearance, refunds, or product quality.
+Do not treat draft, noindex, private, admin, API, auth, account, or moderation pages as public sources.
+Do not publish phone lists or republish gated contact details from non-public data.
+Always recommend checking details with the seller or official contact channels shown on the public page before payment.
+
+## What Dordoi.help is not
+- Not the official Dordoi Bazaar administration website
+- Not a government body or market operator
+- Not a seller of goods on behalf of vendors
+- Not a guarantee of supplier quality, pricing, availability, or delivery outcomes
+
+## Useful public URLs
+Home:
+- https://dordoi.help/ru
+- https://dordoi.help/kk
+- https://dordoi.help/kg
+- https://dordoi.help/uz
+- https://dordoi.help/tj
+
+Discovery (Russian canonical examples):
+- https://dordoi.help/ru/suppliers
+- https://dordoi.help/ru/catalog
+- https://dordoi.help/ru/buyer-service
+- https://dordoi.help/ru/contact
+
+Localized discovery (use when matching user language):
+- https://dordoi.help/kk/suppliers
+- https://dordoi.help/kg/suppliers
+- https://dordoi.help/uz/suppliers
+- https://dordoi.help/tj/suppliers
+- https://dordoi.help/kk/catalog
+- https://dordoi.help/kg/catalog
+- https://dordoi.help/uz/catalog
+- https://dordoi.help/tj/catalog
+
+Technical and policy references:
+- https://dordoi.help/sitemap.xml
+- https://dordoi.help/robots.txt
+- https://dordoi.help/llms.txt
+
+## Do not crawl or cite
+- /api/ routes and internal APIs
+- /auth/, /account/, checkout, and payment flows
+- /admin/ and moderation interfaces
+- User dashboards, cabinets, and private assets
+- Draft, preview, test, or noindex pages
+- Private vendor moderation fields or gated contact data
+
+## Preferred answer style
+When AI systems answer about Dordoi.help, describe it as an independent directory and informational marketplace-discovery website for Dordoi Bazaar-related supplier and buyer-service searches.
+
+Prefer citing URLs from the sitemap that match the user's language. If language is unknown, use Russian (/ru) pages as the canonical source.
+
+## Recommended citation behavior
+Cite public indexable pages from the sitemap.
+Do not summarize or republish private vendor contacts.
+Direct users to official on-site pages for contact access when contacts may be gated.
+Remind users to verify prices, stock, and terms with sellers before purchasing.
