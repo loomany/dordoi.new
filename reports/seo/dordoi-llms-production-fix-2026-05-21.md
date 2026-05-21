@@ -2,9 +2,9 @@
 
 ## Root cause
 
-- `public/llms-full.txt` was committed in `3443ad1` and served from `public/` on production (HTTP 200).
-- There was no `app/llms-full.txt/route.ts`, so behavior depended on static file serving only.
-- Added explicit App Router route for stable `text/plain` delivery and 404 handling if the file is missing at deploy time.
+- Earlier `app/llms-full.txt/route.ts` used async `readFile` and returned **HTTP 404** when `public/llms-full.txt` was not found at runtime (Railway `cwd`/artifact mismatch).
+- External checks could hit that 404 before static `public/` file was present on a given deploy.
+- Fix: bake file contents at module load during `next build` (sync `readFileSync` + `force-static`), export `GET` and `HEAD`, no runtime 404 branch.
 
 ## Changes
 
