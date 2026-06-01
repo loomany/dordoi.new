@@ -10,6 +10,7 @@ import {
   localizeSeoGrowthPageContent,
 } from "@/lib/seo/stage4-localized-content";
 import { STAGE5_BLOG_POSTS } from "@/lib/seo/stage5-guides";
+import { STAGE6_BISHKEK_BLOG_POSTS } from "@/lib/seo/stage6-bishkek-guides";
 
 export type FaqItem = {
   question: string;
@@ -814,7 +815,11 @@ const BLOG_POSTS: BlogPostContent[] = [
 
 const AI_PAGE_BY_ID = new Map(AI_CORE_PAGES.map((page) => [page.id, page]));
 const COUNTRY_PAGE_BY_ID = new Map(COUNTRY_PAGES.map((page) => [page.id, page]));
-const ALL_BLOG_POSTS: BlogPostContent[] = [...BLOG_POSTS, ...STAGE5_BLOG_POSTS];
+const ALL_BLOG_POSTS: BlogPostContent[] = [
+  ...BLOG_POSTS,
+  ...STAGE5_BLOG_POSTS,
+  ...STAGE6_BISHKEK_BLOG_POSTS,
+];
 const BLOG_POST_BY_SLUG = new Map(ALL_BLOG_POSTS.map((post) => [post.slug, post]));
 const BLOG_POST_SOURCE_SLUGS = ALL_BLOG_POSTS.map((post) => post.slug);
 

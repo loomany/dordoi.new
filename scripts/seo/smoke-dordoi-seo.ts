@@ -59,6 +59,14 @@ const guidePaths = [
   "/ru/blog/tovary-optom-dlya-marketpleysov-kyrgyzstan",
   "/ru/blog/shveynye-tsekha-bishkek-i-proizvodstvo-odezhdy",
   "/ru/blog/poshiv-odezhdy-pod-klyuch-bishkek",
+  "/ru/blog/rynok-bishkek-optovye-rynki-gde-iskat-postavshchikov",
+  "/ru/blog/postavshchiki-bishkek-kak-nayti-optovogo-partnera",
+  "/ru/blog/rynok-dordoi-bishkek-postavshchiki-katalog-i-kategorii",
+  "/ru/blog/optovye-rynki-bishkeka-dordoi-madina-alamedin-kak-vybrat",
+  "/ru/blog/odezhda-optom-bishkek-postavshchiki-dordoi",
+  "/ru/blog/tovary-optom-bishkek-dlya-magazina-i-marketpleysa",
+  "/ru/blog/katalog-postavshchikov-bishkek-kak-polzovatsya",
+  "/ru/blog/kak-vybrat-rynok-v-bishkeke-dlya-optovoy-zakupki",
 ];
 
 const blogHubPaths = ["/ru/blog", "/kk/blog", "/kg/blog", "/uz/blog", "/tj/blog"];
@@ -82,6 +90,10 @@ const localizedGuideSamplePaths = [
   "/kg/blog/dordoi-zhetkiruuchunu-kantip-tabuu",
   "/uz/blog/dordoy-yetkazib-beruvchini-qanday-topish",
   "/tj/blog/dordoi-taminkunandaro-chi-tavr-yoftan",
+  "/kk/blog/bishkek-koterme-naryktar-zhetkizushi-izdeu",
+  "/kg/blog/bishkek-optom-bazarlary-zhetkiruuchu-izdoo",
+  "/uz/blog/bishkek-ulgurji-bozorlar-yetkazib-beruvchi-izlash",
+  "/tj/blog/bozorhoi-yakluhti-bishkek-taminkunanda-yoftan",
 ];
 
 const contentSpotCheckPaths = [
@@ -90,6 +102,8 @@ const contentSpotCheckPaths = [
   "/ru/blog/kontakty-postavshchikov-dordoi-kak-otkryt-bezopasno",
   "/ru/blog/zhenskaya-odezhda-optom-dordoi",
   "/ru/blog/postavshchiki-dlya-wildberries-bishkek",
+  "/ru/blog/rynok-bishkek-optovye-rynki-gde-iskat-postavshchikov",
+  "/ru/blog/postavshchiki-bishkek-kak-nayti-optovogo-partnera",
   "/ru/blog/kak-nayti-postavshchika-dordoi",
   "/kk/blog/dordoi-koterme-tolyk-nuskaulyk",
   "/kg/blog/dordoi-dununon-toluk-koldonmo",

@@ -34,6 +34,7 @@ export async function SiteFooter() {
   }));
 
   const serviceLinks = [
+    { href: "/rynok-bishkek", label: "Рынок Бишкек" },
     { href: "/rynok-dordoi", label: "Рынок Дордой" },
     { href: "/dordoi-optom", label: "Дордой оптом" },
     { href: "/buyer-service", label: "Байер" },

@@ -93,6 +93,7 @@ const corePublicPaths = Array.from(
     "/for-sellers",
     "/kargo-dordoi",
     "/dordoi-optom",
+    "/rynok-bishkek",
     "/rynok-dordoi",
   ]),
 ).filter((path) => path !== "/blog");

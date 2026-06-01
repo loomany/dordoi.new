@@ -197,6 +197,23 @@ export function growthPageAnswer(locale: string, pageId: string): AiAnswerConten
 }
 
 export function coreLandingAnswer(locale: string, pageId: string): AiAnswerContent {
+  if (pageId === "rynok-bishkek") {
+    return localizedAnswer(locale, {
+      title: title(locale),
+      paragraphs: [
+        locale === "uz"
+          ? "Bishkek bozori bo'yicha bu sahifa ulgurji xaridorga Dordoy, toifalar, yetkazib beruvchilar, bayer va kargo yo'nalishlarini tushunishga yordam beradi. Sotuvchilarning maxfiy kontaktlari ochiq e'lon qilinmaydi."
+          : locale === "kk"
+            ? "Бішкек нарығы туралы бұл бет көтерме сатып алушыға Дордойды, санаттарды, жеткізушілерді, байерді және карго бағытын түсінуге көмектеседі. Сатушылардың приват контактілері ашық жарияланбайды."
+            : locale === "kg"
+              ? "Бишкек базары тууралуу бул бет оптом сатып алуучуга Дордойду, категорияларды, жеткирүүчүлөрдү, байерди жана карго багытын түшүнүүгө жардам берет. Сатуучулардын купуя контакттары ачык жарыяланбайт."
+              : locale === "tj"
+                ? "Ин саҳифа дар бораи бозори Бишкек ба харидори яклухт барои фаҳмидани Дордой, категорияҳо, таъминкунандагон, байер ва карго кӯмак мекунад. Контактҳои приватии фурӯшандагон кушода нашр намешаванд."
+                : "Страница про рынок Бишкек помогает оптовому покупателю понять, когда идти к Дордою, как выбрать категорию, где искать поставщиков, когда нужен байер и как заранее продумать карго. Приватные контакты продавцов не публикуются открыто.",
+      ],
+      links: [link("/catalog", "Каталог"), link("/rynok-dordoi", "Рынок Дордой"), link("/buyer-service", "Байер")],
+    });
+  }
   if (pageId === "kargo-dordoi") {
     return localizedAnswer(locale, {
       title: title(locale),

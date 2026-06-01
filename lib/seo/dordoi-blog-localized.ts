@@ -10,6 +10,54 @@ export type LocalizedBlogMeta = {
 type NonRuLocale = Exclude<RouteLocale, "ru">;
 
 const TOPICS: Record<string, Record<NonRuLocale, LocalizedBlogMeta>> = {
+  "rynok-bishkek-optovye-rynki-gde-iskat-postavshchikov": {
+    kk: { slug: "bishkek-koterme-naryktar-zhetkizushi-izdeu", topic: "Бішкек көтерме нарықтары және жеткізушіні қайдан іздеу", keyword: "Бішкек жеткізушілері" },
+    kg: { slug: "bishkek-optom-bazarlary-zhetkiruuchu-izdoo", topic: "Бишкек оптом базарлары жана жеткирүүчүнү кайдан издөө", keyword: "Бишкек жеткирүүчүлөрү" },
+    uz: { slug: "bishkek-ulgurji-bozorlar-yetkazib-beruvchi-izlash", topic: "Bishkek ulgurji bozorlarida yetkazib beruvchi izlash", keyword: "Bishkek yetkazib beruvchilar" },
+    tj: { slug: "bozorhoi-yakluhti-bishkek-taminkunanda-yoftan", topic: "Бозорҳои яклухти Бишкек ва ҷустуҷӯи таъминкунанда", keyword: "таъминкунандагони Бишкек" },
+  },
+  "postavshchiki-bishkek-kak-nayti-optovogo-partnera": {
+    kk: { slug: "bishkek-zhetkizushileri-koterme-seriktes-tabu", topic: "Бішкек жеткізушілері: көтерме серіктесті қалай табу", keyword: "Бішкек жеткізушілері" },
+    kg: { slug: "bishkek-zhetkiruuchuloru-optom-sherik-tabuu", topic: "Бишкек жеткирүүчүлөрү: оптом шерикти кантип табуу", keyword: "Бишкек жеткирүүчүлөрү" },
+    uz: { slug: "bishkek-yetkazib-beruvchilar-ulgurji-hamkor-topish", topic: "Bishkek yetkazib beruvchilari: ulgurji hamkor topish", keyword: "Bishkek yetkazib beruvchilar" },
+    tj: { slug: "taminkunandagoni-bishkek-shariki-yakluht-yoftan", topic: "Таъминкунандагони Бишкек: шарики яклухтро чӣ тавр ёфтан", keyword: "таъминкунандагони Бишкек" },
+  },
+  "rynok-dordoi-bishkek-postavshchiki-katalog-i-kategorii": {
+    kk: { slug: "dordoi-bishkek-zhetkizushiler-katalog-sanattar", topic: "Дордой Бішкек: жеткізушілер, каталог және санаттар", keyword: "Дордой жеткізушілері" },
+    kg: { slug: "dordoi-bishkek-zhetkiruuchulor-katalog-kategoriyalar", topic: "Дордой Бишкек: жеткирүүчүлөр, каталог жана категориялар", keyword: "Дордой жеткирүүчүлөрү" },
+    uz: { slug: "dordoy-bishkek-yetkazib-beruvchilar-katalog-toifalar", topic: "Dordoy Bishkek: yetkazib beruvchilar, katalog va toifalar", keyword: "Dordoy yetkazib beruvchilar" },
+    tj: { slug: "dordoi-bishkek-taminkunandagon-katalog-kategoriyaho", topic: "Дордой Бишкек: таъминкунандагон, каталог ва категорияҳо", keyword: "таъминкунандагони Дордой" },
+  },
+  "optovye-rynki-bishkeka-dordoi-madina-alamedin-kak-vybrat": {
+    kk: { slug: "bishkek-koterme-naryktary-dordoi-madina-alamedin", topic: "Бішкектің көтерме нарықтары: Дордой, Мадина, Аламедин", keyword: "Бішкек көтерме нарықтары" },
+    kg: { slug: "bishkek-optom-bazarlary-dordoi-madina-alamedin", topic: "Бишкектин оптом базарлары: Дордой, Мадина, Аламедин", keyword: "Бишкек оптом базарлары" },
+    uz: { slug: "bishkek-ulgurji-bozorlar-dordoy-madina-alamedin", topic: "Bishkek ulgurji bozorlari: Dordoy, Madina, Alamedin", keyword: "Bishkek ulgurji bozorlar" },
+    tj: { slug: "bozorhoi-yakluhti-bishkek-dordoi-madina-alamedin", topic: "Бозорҳои яклухти Бишкек: Дордой, Мадина, Аламедин", keyword: "бозорҳои яклухти Бишкек" },
+  },
+  "odezhda-optom-bishkek-postavshchiki-dordoi": {
+    kk: { slug: "bishkek-kiim-koterme-dordoi-zhetkizushiler", topic: "Бішкек киім көтерме: Дордой жеткізушілері", keyword: "Бішкек киім көтерме" },
+    kg: { slug: "bishkek-kiyim-optom-dordoi-zhetkiruuchulor", topic: "Бишкек кийим оптом: Дордой жеткирүүчүлөрү", keyword: "Бишкек кийим оптом" },
+    uz: { slug: "bishkek-kiyim-ulgurji-dordoy-yetkazib-beruvchilar", topic: "Bishkek kiyim ulgurji: Dordoy yetkazib beruvchilari", keyword: "Bishkek kiyim ulgurji" },
+    tj: { slug: "libos-yakluht-bishkek-taminkunandagoni-dordoi", topic: "Либос яклухт Бишкек: таъминкунандагони Дордой", keyword: "либос яклухт Бишкек" },
+  },
+  "tovary-optom-bishkek-dlya-magazina-i-marketpleysa": {
+    kk: { slug: "bishkek-tauarlar-koterme-duken-marketpleis", topic: "Бішкек тауарлар көтерме: дүкен және маркетплейс үшін", keyword: "Бішкек тауарлар көтерме" },
+    kg: { slug: "bishkek-tovarlar-optom-dukon-marketpleis", topic: "Бишкек товарлар оптом: дүкөн жана маркетплейс үчүн", keyword: "Бишкек товарлар оптом" },
+    uz: { slug: "bishkek-tovarlar-ulgurji-dokon-marketpleys", topic: "Bishkek tovarlar ulgurji: do'kon va marketpleys uchun", keyword: "Bishkek tovarlar ulgurji" },
+    tj: { slug: "molhoi-yakluht-bishkek-baroi-dukon-marketpleys", topic: "Молҳои яклухт Бишкек: барои дӯкон ва маркетплейс", keyword: "молҳои яклухт Бишкек" },
+  },
+  "katalog-postavshchikov-bishkek-kak-polzovatsya": {
+    kk: { slug: "bishkek-zhetkizushiler-katalogy-qalai-paidalanu", topic: "Бішкек жеткізушілер каталогын қалай пайдалану", keyword: "Бішкек жеткізушілер каталогы" },
+    kg: { slug: "bishkek-zhetkiruuchulor-katalogu-kantip-koldonuu", topic: "Бишкек жеткирүүчүлөр каталогун кантип колдонуу", keyword: "Бишкек жеткирүүчүлөр каталогу" },
+    uz: { slug: "bishkek-yetkazib-beruvchilar-katalogidan-foydalanish", topic: "Bishkek yetkazib beruvchilar katalogidan foydalanish", keyword: "Bishkek yetkazib beruvchilar katalogi" },
+    tj: { slug: "katalogi-taminkunandagoni-bishkek-istifoda", topic: "Каталоги таъминкунандагони Бишкекро чӣ тавр истифода бурдан", keyword: "каталоги таъминкунандагони Бишкек" },
+  },
+  "kak-vybrat-rynok-v-bishkeke-dlya-optovoy-zakupki": {
+    kk: { slug: "bishkekte-koterme-satyp-alu-ushin-naryk-tandau", topic: "Бішкекте көтерме сатып алу үшін нарықты қалай таңдау", keyword: "Бішкек көтерме нарық" },
+    kg: { slug: "bishkekte-optom-satyp-aluu-uchun-bazar-tandoo", topic: "Бишкекте оптом сатып алуу үчүн базарды кантип тандоо", keyword: "Бишкек оптом базар" },
+    uz: { slug: "bishkekda-ulgurji-xarid-uchun-bozor-tanlash", topic: "Bishkekda ulgurji xarid uchun bozor tanlash", keyword: "Bishkek ulgurji bozor" },
+    tj: { slug: "bishkek-baroi-haridi-yakluht-bozor-intihob", topic: "Дар Бишкек барои хариди яклухт бозорро чӣ тавр интихоб кардан", keyword: "Бишкек бозори яклухт" },
+  },
   "kak-nayti-postavshchika-dordoi": {
     kk: { slug: "dordoi-zhetkizushini-qalai-tabu", topic: "Дордой жеткізушісін қалай табуға болады", keyword: "Дордой жеткізушілері" },
     kg: { slug: "dordoi-zhetkiruuchunu-kantip-tabuu", topic: "Дордой жеткирүүчүсүн кантип табуу керек", keyword: "Дордой жеткирүүчүлөрү" },

@@ -174,6 +174,7 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/for-sellers": "Сатушыларға",
     "/sell": "Орналастыру",
     "/blog": "Блог",
+    "/rynok-bishkek": "Бішкек нарығы",
     "/rynok-dordoi": "Дордой нарығы",
     "/dordoi-optom": "Дордой көтерме",
     "/dordoi-kazakhstan": "Қазақстан",
@@ -203,6 +204,7 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/for-sellers": "Сатуучуларга",
     "/sell": "Жайгаштыруу",
     "/blog": "Блог",
+    "/rynok-bishkek": "Бишкек базары",
     "/rynok-dordoi": "Дордой базары",
     "/dordoi-optom": "Дордой оптом",
     "/dordoi-kazakhstan": "Казакстан",
@@ -232,6 +234,7 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/for-sellers": "Sotuvchilarga",
     "/sell": "Joylashtirish",
     "/blog": "Blog",
+    "/rynok-bishkek": "Bishkek bozori",
     "/rynok-dordoi": "Dordoy bozori",
     "/dordoi-optom": "Dordoy ulgurji",
     "/dordoi-kazakhstan": "Qozog'iston",
@@ -261,6 +264,7 @@ const LINK_LABELS: Record<LocalizedRouteLocale, Record<string, string>> = {
     "/for-sellers": "Барои фурӯшандагон",
     "/sell": "Ҷойгиркунӣ",
     "/blog": "Блог",
+    "/rynok-bishkek": "Бозори Бишкек",
     "/rynok-dordoi": "Бозори Дордой",
     "/dordoi-optom": "Дордой опт",
     "/dordoi-kazakhstan": "Қазоқистон",
@@ -287,6 +291,17 @@ export function stage4Copy(locale: string): LocaleCopy | undefined {
 
 export function localizeLinkItem(locale: string, link: LinkItem): LinkItem {
   const labels = stage4Copy(locale) ? LINK_LABELS[locale as LocalizedRouteLocale] : undefined;
+  const blogSlug = link.href.match(/^\/blog\/([^/?#]+)$/)?.[1];
+  if (labels && blogSlug) {
+    const routeLocale = locale as RouteLocale;
+    const meta = localizedBlogMeta(blogSlug, routeLocale);
+    if (meta) {
+      return {
+        href: blogPostPathForLocale(blogSlug, routeLocale),
+        label: meta.h1,
+      };
+    }
+  }
   const href = localizedCategoryHref(locale, link.href);
   const label = labels?.[link.href] ?? link.label;
   return href === link.href && label === link.label ? link : { href, label };

@@ -10,6 +10,7 @@ import {
 } from "@/lib/seo/stage4-localized-content";
 
 const workflowLinks = [
+  { href: "/rynok-bishkek", label: "Рынок Бишкек" },
   { href: "/how-it-works", label: "Как работает Dordoi.help" },
   { href: "/for-buyers", label: "Покупателям" },
   { href: "/for-sellers", label: "Продавцам" },
