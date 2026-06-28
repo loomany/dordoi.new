@@ -52,7 +52,8 @@ export async function POST(request: Request) {
         `Ваш код авторизации: ${code}`,
       );
     } catch (e) {
-      if ((e as Error).message === "GREEN_API_NOT_CONFIGURED") {
+      const message = (e as Error).message;
+      if (message === "GREEN_API_NOT_CONFIGURED") {
         return NextResponse.json(
           {
             error: "Отправка сообщений не настроена на сервере",
@@ -61,19 +62,36 @@ export async function POST(request: Request) {
           { status: 503 },
         );
       }
+      if (message === "EVOLUTION_NOT_CONFIGURED") {
+        return NextResponse.json(
+          {
+            error: "Отправка сообщений не настроена на сервере",
+            code: "EVOLUTION_NOT_CONFIGURED",
+          },
+          { status: 503 },
+        );
+      }
+      if (message === "WHATSAPP_PROVIDER_INVALID") {
+        return NextResponse.json(
+          {
+            error: "Некорректная настройка провайдера WhatsApp",
+            code: "WHATSAPP_PROVIDER_INVALID",
+          },
+          { status: 503 },
+        );
+      }
       throw e;
     }
 
     if (!sendResult.ok) {
-      console.error(
-        "[send-code] Green API",
-        sendResult.status,
-        sendResult.body.slice(0, 500),
-      );
+      const errorCode =
+        sendResult.provider === "evolution"
+          ? "WHATSAPP_SEND_FAILED"
+          : "GREEN_API_SEND_FAILED";
       return NextResponse.json(
         {
           error: "Не удалось отправить сообщение в WhatsApp",
-          code: "GREEN_API_SEND_FAILED",
+          code: errorCode,
         },
         { status: 502 },
       );
