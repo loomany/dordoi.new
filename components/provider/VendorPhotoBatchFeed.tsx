@@ -109,6 +109,7 @@ export function VendorPhotoBatchFeed({
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: "UTC",
   });
 
   return (
