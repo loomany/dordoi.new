@@ -47,6 +47,7 @@ import { normalizeVendorCategoryMainSlugs } from "@/lib/catalog/vendor-category-
 import {
   primaryVendorMainCategoryId,
   vendorPublicListingNumber,
+  vendorPublicStoreLabel,
 } from "@/lib/catalog/vendor-public-seo";
 import {
   lockedVendorContactAvailability,
@@ -162,8 +163,12 @@ export async function DatabaseProviderProfileView({
   const categoryPhrase = primaryMainId
     ? t(`publicSeo.categories.${primaryMainId}`)
     : null;
-  const storeDisplayName =
-    vendor.store_name?.trim() || vendor.seo_slug?.trim() || vendor.slug;
+  const storeDisplayName = vendorPublicStoreLabel(
+    vendor.store_name,
+    t("publicSeo.visibleLabelNumbered", {
+      number: vendorPublicListingNumber(vendor.id),
+    }),
+  );
   const safePublicH1 = categoryPhrase
     ? t("publicSeo.h1WithCategory", { category: categoryPhrase })
     : t("publicSeo.h1Fallback");
@@ -172,18 +177,10 @@ export async function DatabaseProviderProfileView({
     : t("publicSeo.visibleLabelNumbered", {
         number: vendorPublicListingNumber(vendor.id),
       });
-  const publicH1 =
-    profileMode === "seo" && catalogAccessUnlocked
-      ? storeDisplayName
-      : safePublicH1;
-  const visibleLabel =
-    profileMode === "seo" && catalogAccessUnlocked
-      ? storeDisplayName
-      : safeVisibleLabel;
+  const publicH1 = profileMode === "seo" ? storeDisplayName : safePublicH1;
+  const visibleLabel = profileMode === "seo" ? storeDisplayName : safeVisibleLabel;
   const breadcrumbLeaf =
-    profileMode === "seo" && catalogAccessUnlocked
-      ? storeDisplayName
-      : t("publicSeo.breadcrumbLeaf");
+    profileMode === "seo" ? storeDisplayName : t("publicSeo.breadcrumbLeaf");
   const seoCategoryRoute = primaryMainId
     ? resolveSeoCategoryForMainId(primaryMainId)
     : undefined;

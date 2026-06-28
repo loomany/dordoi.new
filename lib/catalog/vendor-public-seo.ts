@@ -35,6 +35,41 @@ export function vendorPublicListingNumber(vendorId: string): string {
   return String(n % 10000).padStart(4, "0");
 }
 
+export function vendorPublicStoreLabel(
+  storeName: string | null | undefined,
+  fallbackLabel: string,
+): string {
+  const normalized = storeName?.replace(/\s+/g, " ").trim();
+  return normalized ? normalized.slice(0, 120) : fallbackLabel;
+}
+
+type VendorSeoTranslator = (
+  key: string,
+  values?: Record<string, string>,
+) => string;
+
+export function buildVendorSuppliersSeoCopy(opts: {
+  t: VendorSeoTranslator;
+  storeLabel: string;
+  categoryPhrase: string | null;
+}) {
+  const { t, storeLabel, categoryPhrase } = opts;
+  return {
+    title: categoryPhrase
+      ? t("publicSeo.suppliersMetaTitleWithCategory", {
+          store: storeLabel,
+          category: categoryPhrase,
+        })
+      : t("publicSeo.suppliersMetaTitle", { store: storeLabel }),
+    description: categoryPhrase
+      ? t("publicSeo.suppliersMetaDescriptionWithCategory", {
+          store: storeLabel,
+          category: categoryPhrase,
+        })
+      : t("publicSeo.suppliersMetaDescription", { store: storeLabel }),
+  };
+}
+
 export function primaryVendorMainCategoryId(
   categories: string[] | null | undefined,
 ): string | undefined {

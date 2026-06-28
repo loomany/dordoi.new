@@ -8,6 +8,7 @@ import {
   buildInterleavedCatalogMediaSlides,
   type CatalogLeadVideo,
 } from "@/lib/catalog/catalog-lead-video";
+import { catalogPhotoAlt } from "@/lib/catalog/catalog-photo-alt";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -65,6 +66,7 @@ function CatalogCardVideoSlide({
           <img
             src={posterUrl}
             alt=""
+            aria-hidden="true"
             className="pointer-events-none h-full w-full select-none object-cover [-webkit-user-drag:none]"
             draggable={false}
           />
@@ -221,7 +223,7 @@ export function CatalogCardPhotoRail({
                 // eslint-disable-next-line @next/next/no-img-element -- внешние превью URL
                 <img
                   src={slide.url}
-                  alt=""
+                  alt={catalogPhotoAlt(altBase, i, slideCount)}
                   className="pointer-events-none h-full w-full select-none object-cover [-webkit-user-drag:none]"
                   loading={i === 0 ? "eager" : "lazy"}
                   decoding="async"

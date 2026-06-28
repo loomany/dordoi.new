@@ -6,7 +6,10 @@ import { DatabaseProviderProfileView } from "@/components/provider/DatabaseProvi
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildVendorSeoLocalBusinessJsonLd } from "@/lib/catalog/vendor-local-business-jsonld";
 import {
+  buildVendorSuppliersSeoCopy,
   primaryVendorMainCategoryId,
+  vendorPublicListingNumber,
+  vendorPublicStoreLabel,
   vendorSuppliersSeoPath,
   vendorSuppliersSeoRobotsPolicy,
 } from "@/lib/catalog/vendor-public-seo";
@@ -25,22 +28,6 @@ function vendorCategoryPhrase(
   return t(`publicSeo.categories.${mainCategoryId}`);
 }
 
-function safeSupplierSeoCopy(
-  t: (key: string, values?: Record<string, string>) => string,
-  categoryPhrase: string | null,
-) {
-  return {
-    title: categoryPhrase
-      ? t("publicSeo.metaTitleWithCategory", { category: categoryPhrase })
-      : t("publicSeo.metaTitleFallback"),
-    description: categoryPhrase
-      ? t("publicSeo.metaDescriptionWithCategory", {
-          category: categoryPhrase,
-        })
-      : t("publicSeo.metaDescriptionFallback"),
-  };
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, seoSlug } = await params;
   const vendor = await fetchPublishedVendorBySeoSlug(seoSlug);
@@ -54,10 +41,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
   const mainCategoryId = primaryVendorMainCategoryId(vendor.categories);
   const categoryPhrase = vendorCategoryPhrase(tProvider, mainCategoryId);
-  const { title, description } = safeSupplierSeoCopy(
-    tProvider,
-    categoryPhrase,
+  const storeLabel = vendorPublicStoreLabel(
+    vendor.store_name,
+    tProvider("publicSeo.visibleLabelNumbered", {
+      number: vendorPublicListingNumber(vendor.id),
+    }),
   );
+  const { title, description } = buildVendorSuppliersSeoCopy({
+    t: tProvider,
+    storeLabel,
+    categoryPhrase,
+  });
 
   return buildPageMetadata({
     locale,
@@ -83,12 +77,22 @@ export default async function SupplierSeoProfilePage({ params }: Props) {
   });
   const mainCategoryId = primaryVendorMainCategoryId(vendor.categories);
   const categoryPhrase = vendorCategoryPhrase(tProvider, mainCategoryId);
-  const seoCopy = safeSupplierSeoCopy(tProvider, categoryPhrase);
+  const storeLabel = vendorPublicStoreLabel(
+    vendor.store_name,
+    tProvider("publicSeo.visibleLabelNumbered", {
+      number: vendorPublicListingNumber(vendor.id),
+    }),
+  );
+  const seoCopy = buildVendorSuppliersSeoCopy({
+    t: tProvider,
+    storeLabel,
+    categoryPhrase,
+  });
   const jsonLd = buildVendorSeoLocalBusinessJsonLd(
     vendor,
     locale,
     {
-      name: seoCopy.title,
+      name: storeLabel,
       description: seoCopy.description,
     },
   );
