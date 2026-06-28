@@ -536,7 +536,6 @@ export async function DatabaseProviderProfileView({
                         initialBatches={initialPhotoBatches}
                         pageSize={PHOTO_FEED_PAGE_SIZE}
                         altBase={t("productPhotosAltBase", { title: visibleLabel })}
-                        locale={locale}
                         productVideos={
                           vendor.product_videos && vendor.product_videos.length > 0
                             ? vendor.product_videos

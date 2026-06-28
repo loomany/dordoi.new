@@ -23,6 +23,15 @@ export function providerDateLocale(locale: string): string {
   }
 }
 
+export function formatProviderUtcDate(iso: string): string {
+  const date = new Date(iso);
+  if (!Number.isFinite(date.getTime())) return iso;
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function formatProviderAddedDate(iso: string, locale: string): string {
   return new Intl.DateTimeFormat(providerDateLocale(locale), SHORT_DATE).format(
     new Date(iso),

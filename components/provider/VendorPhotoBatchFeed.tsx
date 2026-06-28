@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
-import { providerDateLocale } from "@/lib/provider-dates";
+import { formatProviderUtcDate } from "@/lib/provider-dates";
 
 type Batch = {
   id: string;
@@ -18,7 +18,6 @@ type Props = {
   initialBatches: Batch[];
   pageSize?: number;
   altBase: string;
-  locale: string;
   productVideos?: string[];
 };
 
@@ -32,7 +31,6 @@ export function VendorPhotoBatchFeed({
   initialBatches,
   pageSize = 4,
   altBase,
-  locale,
   productVideos,
 }: Props) {
   const t = useTranslations("Pages.providerProfile");
@@ -106,41 +104,35 @@ export function VendorPhotoBatchFeed({
     return null;
   }
 
-  const dateFormatter = new Intl.DateTimeFormat(providerDateLocale(locale), {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-
   return (
     <div className="flex flex-col gap-8">
-      {batches.map((batch, batchIndex) => (
-        <article
-          key={batch.id}
-          className="flex flex-col gap-3"
-          aria-label={`${altBase} — ${dateFormatter.format(new Date(batch.createdAt))}`}
-        >
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            <Calendar
-              className="size-4 text-[var(--d-card-accent)]"
-              aria-hidden
-            />
-            <time dateTime={batch.createdAt}>
-              {t("listingAdded", {
-                date: dateFormatter.format(new Date(batch.createdAt)),
-              })}
-            </time>
-          </div>
-          <div className="mx-auto w-full max-w-sm">
-            <CatalogCardPhotoRail
-              urls={batch.photos}
-              altBase={`${altBase}: ${dateFormatter.format(new Date(batch.createdAt))}`}
-              productVideos={batchIndex === 0 ? productVideos : undefined}
-            />
-          </div>
-        </article>
-      ))}
+      {batches.map((batch, batchIndex) => {
+        const batchDate = formatProviderUtcDate(batch.createdAt);
+        return (
+          <article
+            key={batch.id}
+            className="flex flex-col gap-3"
+            aria-label={`${altBase} — ${batchDate}`}
+          >
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <Calendar
+                className="size-4 text-[var(--d-card-accent)]"
+                aria-hidden
+              />
+              <time dateTime={batch.createdAt}>
+                {t("listingAdded", { date: batchDate })}
+              </time>
+            </div>
+            <div className="mx-auto w-full max-w-sm">
+              <CatalogCardPhotoRail
+                urls={batch.photos}
+                altBase={`${altBase}: ${batchDate}`}
+                productVideos={batchIndex === 0 ? productVideos : undefined}
+              />
+            </div>
+          </article>
+        );
+      })}
       {hasMore ? (
         <div
           ref={sentinelRef}
