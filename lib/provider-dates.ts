@@ -6,8 +6,27 @@ const SHORT_DATE: Intl.DateTimeFormatOptions = {
   year: "numeric",
 };
 
+export function providerDateLocale(locale: string): string {
+  switch (locale) {
+    case "ru":
+      return "ru-RU";
+    case "kk":
+      return "kk-KZ";
+    case "kg":
+      return "ky-KG";
+    case "uz":
+      return "uz-UZ";
+    case "tj":
+      return "tg-TJ";
+    default:
+      return "en-US";
+  }
+}
+
 export function formatProviderAddedDate(iso: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, SHORT_DATE).format(new Date(iso));
+  return new Intl.DateTimeFormat(providerDateLocale(locale), SHORT_DATE).format(
+    new Date(iso),
+  );
 }
 
 /** Relative for recent updates; absolute short date if older than `relativeDaysCutoff` days. */
@@ -32,12 +51,16 @@ export function formatProviderUpdatedDisplay(
 
 /** “Today” in the UI sense — matches `{relative}` in `listingUpdated` copy. */
 export function formatListingUpdatedToday(locale: string): string {
-  return new Intl.RelativeTimeFormat(locale, { numeric: "auto" }).format(0, "day");
+  return new Intl.RelativeTimeFormat(providerDateLocale(locale), {
+    numeric: "auto",
+  }).format(0, "day");
 }
 
 function formatRelativePast(then: Date, now: Date, locale: string): string {
   const diffSec = Math.floor((now.getTime() - then.getTime()) / 1000);
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  const rtf = new Intl.RelativeTimeFormat(providerDateLocale(locale), {
+    numeric: "auto",
+  });
 
   let seconds = diffSec;
   if (seconds < 60) {

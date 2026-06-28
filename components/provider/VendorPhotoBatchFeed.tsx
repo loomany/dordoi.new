@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
+import { providerDateLocale } from "@/lib/provider-dates";
 
 type Batch = {
   id: string;
@@ -105,7 +106,7 @@ export function VendorPhotoBatchFeed({
     return null;
   }
 
-  const dateFormatter = new Intl.DateTimeFormat(locale, {
+  const dateFormatter = new Intl.DateTimeFormat(providerDateLocale(locale), {
     day: "numeric",
     month: "long",
     year: "numeric",

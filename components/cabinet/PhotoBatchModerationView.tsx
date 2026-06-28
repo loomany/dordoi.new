@@ -11,6 +11,7 @@ import {
 import type { PhotoBatchModerationItem } from "@/lib/actions/vendor-photo-batch-types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { providerDateLocale } from "@/lib/provider-dates";
 
 type Props = {
   items: PhotoBatchModerationItem[];
@@ -27,7 +28,7 @@ export function PhotoBatchModerationView({ items, locale }: Props) {
     return null;
   }
 
-  const dateFormatter = new Intl.DateTimeFormat(locale, {
+  const dateFormatter = new Intl.DateTimeFormat(providerDateLocale(locale), {
     dateStyle: "medium",
     timeStyle: "short",
   });
