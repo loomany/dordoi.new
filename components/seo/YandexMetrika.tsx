@@ -40,6 +40,7 @@ export function YandexMetrikaBody() {
           src={`https://mc.yandex.ru/watch/${YANDEX_METRIKA_ID}`}
           style={{ position: "absolute", left: "-9999px" }}
           alt=""
+          aria-hidden="true"
         />
       </div>
     </noscript>
