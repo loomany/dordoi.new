@@ -23,6 +23,7 @@ import {
   fetchApprovedVendorPhotoBatches,
   fetchRecommendedVendorsForProfile,
   type PublishedVendorRow,
+  type VendorPhotoBatch,
 } from "@/lib/catalog/published-vendors";
 import { getSessionProfile } from "@/lib/auth/session-profile";
 import { hasFullCatalogAccess } from "@/lib/catalog/catalog-access";
@@ -61,6 +62,7 @@ type Props = {
   vendor: PublishedVendorRow;
   /** `catalog` — masked H1; `seo` — store name for `/suppliers/` index page. */
   profileMode?: "catalog" | "seo";
+  initialPhotoBatches?: VendorPhotoBatch[];
 };
 
 function ensureHttp(value: string): string {
@@ -125,6 +127,7 @@ function MediaImage({
 export async function DatabaseProviderProfileView({
   vendor,
   profileMode = "catalog",
+  initialPhotoBatches: providedPhotoBatches,
 }: Props) {
   const t = await getTranslations("Pages.providerProfile");
   const tVendorFaq = await getTranslations("Pages.providerProfile.vendorFaq");
@@ -242,10 +245,12 @@ export async function DatabaseProviderProfileView({
       }
     : {};
   const PHOTO_FEED_PAGE_SIZE = 4;
-  const initialPhotoBatches = await fetchApprovedVendorPhotoBatches({
-    vendorId: vendor.id,
-    limit: PHOTO_FEED_PAGE_SIZE,
-  });
+  const initialPhotoBatches =
+    providedPhotoBatches ??
+    (await fetchApprovedVendorPhotoBatches({
+      vendorId: vendor.id,
+      limit: PHOTO_FEED_PAGE_SIZE,
+    }));
   const recommendedVendors = await fetchRecommendedVendorsForProfile(vendor);
   const safeRecommendedVendors = catalogAccessUnlocked
     ? recommendedVendors

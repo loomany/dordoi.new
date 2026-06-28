@@ -33,7 +33,7 @@ const vendor: PublishedVendorRow = {
 };
 
 describe("vendor JSON-LD privacy", () => {
-  it("does not emit LocalBusiness contacts for public supplier pages", () => {
+  it("emits a privacy-safe LocalBusiness for public supplier pages", () => {
     const jsonLd = buildVendorSeoLocalBusinessJsonLd(vendor, "ru", {
       name: "Поставщик женской одежды на рынке Дордой",
       description: "Контакт доступен через сервис Dordoi.help.",
@@ -41,8 +41,11 @@ describe("vendor JSON-LD privacy", () => {
     const serialized = JSON.stringify(jsonLd);
 
     assert.equal(jsonLd["@type"], "ProfilePage");
-    for (const marker of [
+    assert.equal(
+      (jsonLd.mainEntity as Record<string, unknown>)["@type"],
       "LocalBusiness",
+    );
+    for (const marker of [
       "telephone",
       "sameAs",
       "streetAddress",
@@ -61,5 +64,36 @@ describe("vendor JSON-LD privacy", () => {
         `supplier JSON-LD should not contain ${marker}`,
       );
     }
+  });
+
+  it("emits only allowlisted visible media objects", () => {
+    const jsonLd = buildVendorSeoLocalBusinessJsonLd(vendor, "ru", {
+      name: "Asso, магазин женской одежды",
+      description: "Публичное описание поставщика.",
+      category: "Женская одежда",
+      mediaSectionName: "Фото и видео",
+      primaryImageUrl:
+        "https://supabase.dordoi.help/storage/v1/object/public/vendor-media/asso.webp",
+      videoUrls: [
+        "https://supabase.dordoi.help/storage/v1/object/public/vendor-videos/asso.mp4",
+        "https://old-project.supabase.co/storage/v1/object/public/vendor-videos/old.mp4",
+        "http://supabase.dordoi.help/storage/v1/object/public/vendor-videos/insecure.mp4",
+      ],
+    });
+    const serialized = JSON.stringify(jsonLd);
+    const business = jsonLd.mainEntity as Record<string, unknown>;
+
+    assert.equal(business.category, "Женская одежда");
+    assert.equal((business.image as Record<string, unknown>)["@type"], "ImageObject");
+    assert.equal(
+      ((business.video as Record<string, unknown>[])[0])["@type"],
+      "VideoObject",
+    );
+    assert.equal(serialized.includes("vendor-videos/asso.mp4"), true);
+    assert.equal(serialized.includes("old-project.supabase.co"), false);
+    assert.equal(serialized.includes("/insecure.mp4"), false);
+    assert.equal(serialized.includes("uploadDate"), false);
+    assert.equal(serialized.includes("telephone"), false);
+    assert.equal(serialized.includes("streetAddress"), false);
   });
 });

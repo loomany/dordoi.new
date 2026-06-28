@@ -13,7 +13,10 @@ import {
   vendorSuppliersSeoPath,
   vendorSuppliersSeoRobotsPolicy,
 } from "@/lib/catalog/vendor-public-seo";
-import { fetchPublishedVendorBySeoSlug } from "@/lib/catalog/published-vendors";
+import {
+  fetchApprovedVendorPhotoBatches,
+  fetchPublishedVendorBySeoSlug,
+} from "@/lib/catalog/published-vendors";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -88,19 +91,34 @@ export default async function SupplierSeoProfilePage({ params }: Props) {
     storeLabel,
     categoryPhrase,
   });
+  const initialPhotoBatches = await fetchApprovedVendorPhotoBatches({
+    vendorId: vendor.id,
+    limit: 4,
+  });
+  const primaryImageUrl =
+    vendor.container_photo_url ?? initialPhotoBatches[0]?.photos[0] ?? null;
   const jsonLd = buildVendorSeoLocalBusinessJsonLd(
     vendor,
     locale,
     {
       name: storeLabel,
       description: seoCopy.description,
+      category: categoryPhrase,
+      mediaSectionName: tProvider("mediaSectionTitle"),
+      primaryImageUrl,
+      videoUrls:
+        initialPhotoBatches.length > 0 ? vendor.product_videos : undefined,
     },
   );
 
   return (
     <>
       <JsonLd data={jsonLd} />
-      <DatabaseProviderProfileView vendor={vendor} profileMode="seo" />
+      <DatabaseProviderProfileView
+        vendor={vendor}
+        profileMode="seo"
+        initialPhotoBatches={initialPhotoBatches}
+      />
     </>
   );
 }
