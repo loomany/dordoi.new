@@ -78,6 +78,8 @@ const outputs = [
   /** Yandex search snippets prefer 120×120 PNG or SVG (see yandex.ru/support/webmaster favicon). */
   ["public/favicon-120.png", 120, "png"],
   ["public/apple-touch-icon.png", 180, "png"],
+  ["public/icon-192.png", 192, "png"],
+  ["public/icon-512.png", 512, "png"],
   ["public/brand/logo-192.png", 192, "png"],
   ["public/brand/logo-512.png", 512, "png"],
 ];
@@ -105,3 +107,6 @@ console.log("ok", "public/favicon.ico");
 
 fs.copyFileSync("public/brand/icon.svg", "public/apple-icon.svg");
 console.log("ok", "public/apple-icon.svg");
+
+fs.copyFileSync("public/brand/icon.svg", "public/favicon.svg");
+console.log("ok", "public/favicon.svg");
