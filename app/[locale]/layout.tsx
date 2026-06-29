@@ -14,6 +14,26 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
+type IntlMessages = Awaited<ReturnType<typeof getMessages>>;
+
+/** Only namespaces consumed by client components need to cross the RSC boundary. */
+function clientMessages(messages: IntlMessages): IntlMessages {
+  const pages = messages.Pages as IntlMessages;
+  return {
+    Header: messages.Header,
+    brand: messages.brand,
+    Auth: messages.Auth,
+    Cabinet: messages.Cabinet,
+    catalogCategoryTree: messages.catalogCategoryTree,
+    Pages: {
+      catalogBrowse: pages.catalogBrowse,
+      providerProfile: pages.providerProfile,
+      paymentSuccess: pages.paymentSuccess,
+      buyers: pages.buyers,
+    },
+  } as IntlMessages;
+}
+
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
@@ -28,7 +48,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = await getMessages();
 
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider messages={clientMessages(messages)}>
       <AuthDialogProvider>
         <DocumentLang />
         <DordoiAnalyticsTracker locale={locale as DordoiLocale} />

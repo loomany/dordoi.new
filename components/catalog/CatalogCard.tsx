@@ -1,18 +1,41 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { useState } from "react";
+import type { ComponentProps, ReactNode } from "react";
+import { lazy, Suspense, useState } from "react";
 import Image from "next/image";
 import { ArrowRight, ChevronDown, ChevronUp, Lock, Package, ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
-import { CatalogCardPhotoRail } from "@/components/catalog/CatalogCardPhotoRail";
 import { CatalogLockedStoreHeader } from "@/components/catalog/CatalogLockedStoreHeader";
 import { useIsCatalogMobile } from "@/components/catalog/use-is-catalog-mobile";
 import type { CatalogLeadVideo } from "@/lib/catalog/catalog-lead-video";
 import type { ParsedVendorCardData } from "@/lib/catalog/vendor-card-display";
 import { CATALOG_CARD_COLLAPSED_DESCRIPTION_MAX_CHARS } from "@/lib/vendor/vendor-field-limits";
 import { cn } from "@/lib/utils";
+
+const LazyCatalogCardPhotoRail = lazy(
+  () =>
+    import("@/components/catalog/CatalogCardPhotoRail").then(
+      (module) => ({ default: module.CatalogCardPhotoRail }),
+    ),
+);
+
+function CatalogCardPhotoRail(
+  props: ComponentProps<typeof LazyCatalogCardPhotoRail>,
+) {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="aspect-[9/16] w-full animate-pulse rounded-xl border border-border/80 bg-muted"
+          aria-busy="true"
+        />
+      }
+    >
+      <LazyCatalogCardPhotoRail {...props} />
+    </Suspense>
+  );
+}
 
 export type CatalogCardProps = {
   display: ParsedVendorCardData;
